@@ -1,0 +1,47 @@
+From 48727687f5d0091dc4a79106630aee820d464a6d Mon Sep 17 00:00:00 2001
+From: Jonas Konrad <me@yawk.at>
+Date: Tue, 23 Jun 2015 21:56:13 +0200
+Subject: [PATCH] Ignore incoming chat messages before connecting to the
+ backend
+
+Merges SpigotMC/BungeeCord#1515
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index a96e793..50f0308 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
+ 
+ import com.google.common.base.Preconditions;
+ import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -108,13 +109,21 @@ public class UpstreamBridge extends PacketHandler
+     {
+         Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
+ 
+-        ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
++        ServerConnection server = con.getServer();
++
++        // if we're still connecting just ignore this packet
++        if ( server == null )
++        {
++            throw CancelSendSignal.INSTANCE;
++        }
++
++        ChatEvent chatEvent = new ChatEvent( con, server, chat.getMessage() );
+         if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
+         {
+             chat.setMessage( chatEvent.getMessage() );
+             if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, chat.getMessage().substring( 1 ) ) )
+             {
+-                con.getServer().unsafe().sendPacket( chat );
++                server.unsafe().sendPacket( chat );
+             }
+         }
+         throw CancelSendSignal.INSTANCE;
+-- 
+2.8.3
+

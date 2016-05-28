@@ -1,0 +1,109 @@
+From 8b0e4da4f4b65ace743c2124dffb55cc5e9b2ea1 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Thu, 19 May 2016 11:28:45 -0700
+Subject: [PATCH] Rename references from BungeeCord to Waterfall
+
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 3c1bbe9..2a41a50 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -51,7 +51,7 @@ public class BungeeCordLauncher
+ 
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled BungeeCord version " + bungee.getVersion() );
++        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
+diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
+index 9d51608..446dfe2 100644
+--- a/proxy/src/main/java/Test.java
++++ b/proxy/src/main/java/Test.java
+@@ -19,7 +19,7 @@ public class Test
+     {
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled BungeeCord version " + bungee.getVersion() );
++        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
+         bungee.start();
+ 
+         while ( bungee.isRunning )
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index ac08d8e..8ce4ced 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -172,7 +172,7 @@ public class BungeeCord extends ProxyServer
+     public BungeeCord() throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use BungeeCord in directory with ! in path." );
++        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
+ 
+         System.setSecurityManager( new BungeeSecurityManager() );
+ 
+@@ -457,7 +457,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getName()
+     {
+-        return "BungeeCord";
++        return "Waterfall";
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index b079879..b26035c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -16,6 +16,6 @@ public class CommandBungee extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ChatColor.BLUE + "This server is running BungeeCord version " + ProxyServer.getInstance().getVersion() + " by md_5" );
++        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by md_5" );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index cbbe03c..4a49241 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -22,7 +22,7 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "BungeeCord has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart BungeeCord ASAP." );
++        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Waterfall has been reloaded."
++                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Waterfall ASAP." );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index c7547c7..82ff91a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -200,7 +200,7 @@ public class YamlConfig implements ConfigurationAdapter
+             Map<String, Object> val = entry.getValue();
+             String name = entry.getKey();
+             String addr = get( "address", "localhost:25565", val );
+-            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another BungeeCord - Forced Host", val ) );
++            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Waterfall - Forced Host", val ) );
+             boolean restricted = get( "restricted", false, val );
+             InetSocketAddress address = Util.getAddr( addr );
+             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
+diff --git a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index f1ccd4f..d703d6d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "BungeeCord Logger Thread" );
++        super( "Waterfall Logger Thread" );
+         this.logger = logger;
+     }
+ 
+-- 
+2.8.3
+

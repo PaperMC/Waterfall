@@ -1,0 +1,30 @@
+From 6d0fcbace0fb04518462a064d3f08de8e85ade3b Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Mon, 5 Oct 2015 23:20:54 -0400
+Subject: [PATCH] Set a more reasonable Recycler Capacity
+
+Default Netty Recycler capacity is 262k~, resulting in major memory
+consumption over long runtimes that will never free.
+
+This lowers it by 80%, which should only even be hit on the largest of servers.
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 2a41a50..29e2294 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -20,6 +20,12 @@ public class BungeeCordLauncher
+         Security.setProperty( "networkaddress.cache.ttl", "30" );
+         Security.setProperty( "networkaddress.cache.negative.ttl", "10" );
+ 
++        // TODO: remove .default for netty 5!
++        if ( System.getProperty( "io.netty.recycler.maxCapacity.default" ) == null )
++        {
++            System.setProperty( "io.netty.recycler.maxCapacity.default", "50000" );
++        }
++
+         OptionParser parser = new OptionParser();
+         parser.allowsUnrecognizedOptions();
+         parser.acceptsAll( Arrays.asList( "v", "version" ) );
+-- 
+2.8.3
+

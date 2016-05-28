@@ -1,0 +1,80 @@
+From c5c7f68d947f366fef739e0ac3a655baed507bfe Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Thu, 19 May 2016 18:13:48 -0600
+Subject: [PATCH] Clean up and unit test the UUID code.
+
+Also optimizes conversion to mojang-style uuids (by avoiding regex).
+
+diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
+index 86a0055..37e12e9 100644
+--- a/api/src/main/java/net/md_5/bungee/Util.java
++++ b/api/src/main/java/net/md_5/bungee/Util.java
+@@ -80,4 +80,8 @@ public class Util
+     {
+         return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
+     }
++
++    public static String getMojangUUID(UUID uuid) {
++        return uuid.toString().replace( "-", "" );
++    }
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+index 314a1d2..6804ad9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+@@ -73,7 +73,7 @@ public class ServerPing
+ 
+         public String getId()
+         {
+-            return uniqueId.toString().replaceAll( "-", "" );
++            return Util.getMojangUUID(uniqueId);
+         }
+     }
+ 
+diff --git a/api/src/test/java/net/md_5/bungee/util/UtilTest.java b/api/src/test/java/net/md_5/bungee/util/UtilTest.java
+new file mode 100644
+index 0000000..030b5cd
+--- /dev/null
++++ b/api/src/test/java/net/md_5/bungee/util/UtilTest.java
+@@ -0,0 +1,25 @@
++package net.md_5.bungee.util;
++
++import net.md_5.bungee.Util;
++import org.junit.Assert;
++import org.junit.Test;
++
++import java.util.UUID;
++
++import static org.junit.Assert.*;
++
++public class UtilTest {
++
++    private static final String FULL_UUID = "982709b9-6fd8-4627-929d-e7d3b91166ea";
++    private static final String MOJANG_UUID = "982709b96fd84627929de7d3b91166ea";
++
++    @Test
++    public void testGetUUID() throws Exception {
++        Assert.assertEquals(FULL_UUID, Util.getUUID(MOJANG_UUID).toString());
++    }
++
++    @Test
++    public void testGetMojangUUID() throws Exception {
++        assertEquals(MOJANG_UUID, Util.getMojangUUID(UUID.fromString(FULL_UUID)));
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index dab6ef2..ad19168 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -603,7 +603,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String getUUID()
+     {
+-        return uniqueId.toString().replaceAll( "-", "" );
++        return Util.getMojangUUID(uniqueId);
+     }
+ 
+     @Override
+-- 
+2.8.3
+

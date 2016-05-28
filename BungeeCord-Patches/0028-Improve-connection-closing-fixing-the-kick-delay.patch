@@ -1,0 +1,200 @@
+From cd50f5e9403ffc31c760f29aa6fce77490ae5ac3 Mon Sep 17 00:00:00 2001
+From: kamcio96 <k.nadworski@icloud.com>
+Date: Mon, 14 Mar 2016 15:59:52 -0700
+Subject: [PATCH] Improve connection closing, fixing the kick delay.
+
+Merges some of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
+
+@kamcio96 claims that these channel closing changes are removing the need of delayed kick packets
+@Janmm14 can confirm this (at login state) on a no-latency and low-latency connection (<1ms; ~16ms), high-latency connection was not tested, but it should work on these too.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+index 8c1260a..a7dfd1f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+@@ -59,7 +59,7 @@ public class ServerConnection implements Server
+                 @Override
+                 public void run()
+                 {
+-                    ch.getHandle().close();
++                    ch.close();
+                 }
+             }, 100, TimeUnit.MILLISECONDS );
+         }
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index c88ab49..9a13f5c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -379,21 +379,7 @@ public final class UserConnection implements ProxiedPlayer
+                 getName(), BaseComponent.toLegacyText( reason )
+             } );
+ 
+-            // Why do we have to delay this you might ask? Well the simple reason is MOJANG.
+-            // Despite many a bug report posted, ever since the 1.7 protocol rewrite, the client STILL has a race condition upon switching protocols.
+-            // As such, despite the protocol switch packets already having been sent, there is the possibility of a client side exception
+-            // To help combat this we will wait half a second before actually sending the disconnected packet so that whoever is on the other
+-            // end has a somewhat better chance of receiving the proper packet.
+-            ch.getHandle().eventLoop().schedule( new Runnable()
+-            {
+-
+-                @Override
+-                public void run()
+-                {
+-                    unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
+-                    ch.close();
+-                }
+-            }, 500, TimeUnit.MILLISECONDS );
++            ch.close(new Kick(ComponentSerializer.toString( reason )));
+ 
+             if ( server != null )
+             {
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 53d7ef8..0b1be45 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -136,8 +136,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(LegacyHandshake legacyHandshake) throws Exception
+     {
+         this.legacy = true;
+-        ch.getHandle().writeAndFlush( bungee.getTranslation( "outdated_client" ) );
+-        ch.close();
++        ch.close( bungee.getTranslation( "outdated_client" ) );
+     }
+ 
+     @Override
+@@ -179,8 +178,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                             + '\u00a7' + legacy.getPlayers().getMax();
+                 }
+ 
+-                ch.getHandle().writeAndFlush( kickMessage );
+-                ch.close();
++                ch.close( kickMessage );
+             }
+         };
+ 
+@@ -251,8 +249,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         if (!ACCEPT_INVALID_PACKETS) {
+             Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+         }
+-        unsafe.sendPacket( ping );
+-        disconnect( "" );
++        ch.close( ping );
+     }
+ 
+     @Override
+@@ -538,24 +535,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         if ( !disconnecting || !ch.isClosed() )
+         {
+             disconnecting = true;
+-            // Why do we have to delay this you might ask? Well the simple reason is MOJANG.
+-            // Despite many a bug report posted, ever since the 1.7 protocol rewrite, the client STILL has a race condition upon switching protocols.
+-            // As such, despite the protocol switch packets already having been sent, there is the possibility of a client side exception
+-            // To help combat this we will wait half a second before actually sending the disconnected packet so that whoever is on the other
+-            // end has a somewhat better chance of receiving the proper packet.
+-            ch.getHandle().eventLoop().schedule( new Runnable()
+-            {
+-
+-                @Override
+-                public void run()
+-                {
+-                    if ( thisState != State.STATUS && thisState != State.PING )
+-                    {
+-                        unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
+-                    }
+-                    ch.close();
+-                }
+-            }, 500, TimeUnit.MILLISECONDS );
++            if ( thisState != State.STATUS && thisState != State.PING ) {
++                ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
++            } else {
++                ch.close();
++            }
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 50f0308..7565ff9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -79,6 +79,7 @@ public class UpstreamBridge extends PacketHandler
+             {
+                 player.unsafe().sendPacket( packet );
+             }
++            con.getServer().setObsolete(true);
+             con.getServer().disconnect( "Quitting" );
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 06d19c3..76bdff2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -5,6 +5,7 @@ import net.md_5.bungee.compress.PacketDecompressor;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import com.google.common.base.Preconditions;
+ import io.netty.channel.Channel;
++import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelHandler;
+ import io.netty.channel.ChannelHandlerContext;
+ import lombok.Getter;
+@@ -16,7 +17,6 @@ public class ChannelWrapper
+ {
+ 
+     private final Channel ch;
+-    @Getter
+     private volatile boolean closed;
+ 
+     public ChannelWrapper(ChannelHandlerContext ctx)
+@@ -38,23 +38,22 @@ public class ChannelWrapper
+ 
+     public void write(Object packet)
+     {
+-        if ( !closed )
++        if ( !isClosed() )
+         {
+             if ( packet instanceof PacketWrapper )
+             {
+                 ( (PacketWrapper) packet ).setReleased( true );
+-                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
++                ch.writeAndFlush( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
+             } else
+             {
+-                ch.write( packet, ch.voidPromise() );
++                ch.writeAndFlush( packet, ch.voidPromise() );
+             }
+-            ch.flush();
+         }
+     }
+ 
+     public void close()
+     {
+-        if ( !closed )
++        if ( !isClosed() )
+         {
+             closed = true;
+             ch.flush();
+@@ -62,6 +61,22 @@ public class ChannelWrapper
+         }
+     }
+ 
++    /**
++     * Send the given packet, then close the connection
++     *
++     * @param packet the packet to send before closing
++     */
++    public void close(Object packet) {
++        if (!isClosed()) {
++            closed = true;
++            ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
++        }
++    }
++
++    public boolean isClosed() {
++        return closed || !ch.isActive();
++    }
++
+     public void addBefore(String baseName, String name, ChannelHandler handler)
+     {
+         Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
+-- 
+2.8.3
+

@@ -1,0 +1,23 @@
+From be14a36864738f608de88028912627a57eb20515 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Sun, 14 Feb 2016 01:03:27 -0500
+Subject: [PATCH] Reduce max log size to 8MB and don't append to existing log
+ files
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+index cde3194..54275f6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
++++ b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+@@ -27,7 +27,7 @@ public class BungeeLogger extends Logger
+ 
+         try
+         {
+-            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 24, 8, true );
++            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 23, 8, false );
+             fileHandler.setFormatter( formatter );
+             addHandler( fileHandler );
+ 
+-- 
+2.8.3
+

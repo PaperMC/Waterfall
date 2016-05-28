@@ -1,0 +1,22 @@
+From ca5884cd49b8a748e4efd99b72704513c8ea008f Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Fri, 11 Sep 2015 23:50:52 -0400
+Subject: [PATCH] Allow configuration of the log file path/filename
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+index 94e924b..cde3194 100644
+--- a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
++++ b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+@@ -27,7 +27,7 @@ public class BungeeLogger extends Logger
+ 
+         try
+         {
+-            FileHandler fileHandler = new FileHandler( "proxy.log", 1 << 24, 8, true );
++            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 24, 8, true );
+             fileHandler.setFormatter( formatter );
+             addHandler( fileHandler );
+ 
+-- 
+2.8.3
+

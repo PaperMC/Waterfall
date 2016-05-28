@@ -1,0 +1,45 @@
+From 01c78e08ab372071eb749652dc8bcbdeace6ab23 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Thu, 19 May 2016 18:05:33 -0600
+Subject: [PATCH] Micro-optimizations
+
+- PluginManager.dispatchCommand() avoids regex while splitting commands. Java 7 introduced an optimized String.split() that should be used instead (affects command dispatch).
+- Avoid regex in getLocale() by changing from replaceAll(String, String) to replaceAll(char, char)
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 2426bdb..7203d04 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
+ public class PluginManager
+ {
+ 
+-    private static final Pattern argsSplit = Pattern.compile( " " );
+     /*========================================================================*/
+     private final ProxyServer proxy;
+     /*========================================================================*/
+@@ -126,7 +125,7 @@ public class PluginManager
+      */
+     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
+     {
+-        String[] split = argsSplit.split( commandLine, -1 );
++        String[] split = commandLine.split(" ", -1);
+         // Check for chat that only contains " "
+         if ( split.length == 0 )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 018c02e..9881b75 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -567,7 +567,7 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public Locale getLocale()
+     {
+-        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replaceAll( "_", "-" ) ) : locale;
++        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replace( '_', '-' ) ) : locale;
+     }
+ 
+     @Override
+-- 
+2.8.3
+

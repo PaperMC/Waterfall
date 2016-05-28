@@ -1,0 +1,124 @@
+From b790b1d946c66a57af7550795bf63fad398bb137 Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Thu, 19 May 2016 10:46:46 -0700
+Subject: [PATCH] Add Waterfall configuration files
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index edd82c1..b30541b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -79,4 +79,9 @@ public interface ProxyConfig
+      * The favicon used for the server ping list.
+      */
+     Favicon getFaviconObject();
++
++    //
++    // Waterfall Options
++    //
++
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+new file mode 100644
+index 0000000..03160da
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -0,0 +1,19 @@
++
++package io.github.waterfallmc.waterfall.conf;
++
++import lombok.*;
++
++import java.io.File;
++
++import net.md_5.bungee.conf.Configuration;
++import net.md_5.bungee.conf.YamlConfig;
++
++public class WaterfallConfiguration extends Configuration {
++
++    @Override
++    public void load() {
++        super.load();
++        YamlConfig config = new YamlConfig(new File("waterfall.yml"));
++        config.load(false); // Load, but no permissions
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 8ce4ced..3dceb6e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -23,6 +23,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.google.gson.Gson;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
++import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.netty.bootstrap.ServerBootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelException;
+@@ -98,7 +99,7 @@ public class BungeeCord extends ProxyServer
+      * Configuration.
+      */
+     @Getter
+-    public final Configuration config = new Configuration();
++    public final Configuration config = new WaterfallConfiguration();
+     /**
+      * Localization bundle.
+      */
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index 25d87d9..81dd4af 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -24,7 +24,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
+  * Core configuration for the proxy.
+  */
+ @Getter
+-public class Configuration implements ProxyConfig
++public abstract class Configuration implements ProxyConfig
+ {
+ 
+     /**
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 82ff91a..4ec9782 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -42,10 +42,15 @@ public class YamlConfig implements ConfigurationAdapter
+     }
+     private final Yaml yaml;
+     private Map config;
+-    private final File file = new File( "config.yml" );
++    private final File file;
+ 
+-    public YamlConfig()
++    public YamlConfig() {
++        this(new File("config.yml"));
++    }
++
++    public YamlConfig(File file)
+     {
++        this.file = file;
+         DumperOptions options = new DumperOptions();
+         options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
+         yaml = new Yaml( options );
+@@ -54,6 +59,11 @@ public class YamlConfig implements ConfigurationAdapter
+     @Override
+     public void load()
+     {
++        load(true);
++    }
++
++    public void load(boolean doPermissions)
++    {
+         try
+         {
+             file.createNewFile();
+@@ -75,6 +85,7 @@ public class YamlConfig implements ConfigurationAdapter
+             throw new RuntimeException( "Could not load configuration!", ex );
+         }
+ 
++        if (!doPermissions) return;
+         Map<String, Object> permissions = get( "permissions", new HashMap<String, Object>() );
+         if ( permissions.isEmpty() )
+         {
+-- 
+2.8.3
+

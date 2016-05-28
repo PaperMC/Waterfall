@@ -1,0 +1,57 @@
+From bc91805c7d00866d7c320cf01ee5bc79e450cc72 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Wed, 13 Apr 2016 14:00:40 -0400
+Subject: [PATCH] Validate that chat messages are non-blank
+
+
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
+new file mode 100644
+index 0000000..940ad80
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
+@@ -0,0 +1,22 @@
++package io.github.waterfallmc.waterfall;
++
++import lombok.AccessLevel;
++import lombok.NoArgsConstructor;
++
++@NoArgsConstructor(access = AccessLevel.PRIVATE)
++public class StringUtil {
++    public static boolean isBlank(String str) {
++        if (str.isEmpty()) {
++            return true;
++        }
++
++        int l = str.length();
++        for (int i = 0; i < l; i++) {
++            if (!Character.isWhitespace(str.charAt(i))) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 7565ff9..42bb2fb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.connection;
+ 
+ import com.google.common.base.Preconditions;
++import io.github.waterfallmc.waterfall.StringUtil;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.UserConnection;
+@@ -109,6 +110,7 @@ public class UpstreamBridge extends PacketHandler
+     public void handle(Chat chat) throws Exception
+     {
+         Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
++        Preconditions.checkArgument(!StringUtil.isBlank(chat.getMessage()), "Chat message is empty");
+ 
+         ServerConnection server = con.getServer();
+ 
+-- 
+2.8.3
+
