@@ -232,27 +232,13 @@ index 37e12e9..b268bef 100644
      }
  
      /**
-@@ -78,10 +82,17 @@ public class Util
+@@ -78,5 +82,5 @@ public class Util
       */
      public static UUID getUUID(String uuid)
      {
 -        return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
 +        return UUIDUtils.fromString(uuid);
      }
- 
--    public static String getMojangUUID(UUID uuid) {
--        return uuid.toString().replace( "-", "" );
-+    /**
-+     * Converts a UUID to a Mojang UUID
-+     *
-+     * @param uuid The string to be converted
-+     * @return The result
-+     */
-+    public static String getMojangUUID(UUID uuid)
-+    {
-+        return UUIDUtils.toMojangString(uuid);
-     }
- }
 -- 
 2.8.3
 
