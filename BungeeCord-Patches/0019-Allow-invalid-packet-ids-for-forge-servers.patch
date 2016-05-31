@@ -1,4 +1,4 @@
-From 4dffe93274f4dc09c8ee25379bdceec8b2e9df99 Mon Sep 17 00:00:00 2001
+From 7dad680e878e890d1e947b7ef37ffa8db38c8459 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -62,7 +62,7 @@ index 2cbe052..08621b6 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 5ed9fe4..7d14ea7 100644
+index 58c6956..b6e6365 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -29,7 +29,9 @@ import net.md_5.bungee.forge.ForgeUtils;

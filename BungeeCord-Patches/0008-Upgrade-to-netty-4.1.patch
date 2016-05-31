@@ -1,4 +1,4 @@
-From 4710be5dc64500475e0f5ea7606619978081be0c Mon Sep 17 00:00:00 2001
+From a08dfab2aa4d78a8ecffb5278087fd4f846ea9bd Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Upgrade to netty 4.1
@@ -73,10 +73,10 @@ index bbaef39..e094932 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 44f0b61..e327325 100644
+index dd00192..e941803 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -232,7 +232,7 @@ public class ServerConnector extends PacketHandler
+@@ -199,7 +199,7 @@ public class ServerConnector extends PacketHandler
  
              ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -86,7 +86,7 @@ index 44f0b61..e327325 100644
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 7ba0bcb..fa57f28 100644
+index cb9dbaf..2fcc7db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -235,7 +235,7 @@ public class DownstreamBridge extends PacketHandler
@@ -99,7 +99,7 @@ index 7ba0bcb..fa57f28 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f0d0189..aec8251 100644
+index 621a06c..0ec3f81 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -41,9 +41,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
