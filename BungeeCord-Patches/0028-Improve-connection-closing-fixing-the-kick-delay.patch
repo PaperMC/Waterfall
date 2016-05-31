@@ -1,4 +1,4 @@
-From 6b2815428c47ffb0e21f8a9f2409da37ac648191 Mon Sep 17 00:00:00 2001
+From d473177e5c6407f0f0c362bad49da0fbc7a45f19 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 15:59:52 -0700
 Subject: [PATCH] Improve connection closing, fixing the kick delay.
@@ -49,9 +49,32 @@ index c88ab49..9a13f5c 100644
              if ( server != null )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d841090..b27b447 100644
+index d841090..8c19974 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -8,6 +8,7 @@ import java.net.URLEncoder;
+ import java.security.MessageDigest;
+ import java.util.List;
+ import java.util.UUID;
++import java.util.concurrent.atomic.AtomicBoolean;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
+ import com.google.gson.Gson;
+@@ -96,12 +97,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     private boolean legacy;
+     @Getter
+     private String extraDataInHandshake = "";
+-    private boolean disconnecting;
++    private final AtomicBoolean disconnecting = new AtomicBoolean(false);
+ 
+-    @Override
+     public boolean shouldHandle(PacketWrapper packet) throws Exception
+     {
+-        return !disconnecting;
++        return !disconnecting.get();
+     }
+ 
+     private enum State
 @@ -136,8 +136,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LegacyHandshake legacyHandshake) throws Exception
      {
@@ -82,10 +105,14 @@ index d841090..b27b447 100644
      }
  
      @Override
-@@ -538,24 +535,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         if ( !disconnecting || !ch.isClosed() )
+@@ -535,27 +532,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void disconnect(final BaseComponent... reason)
+     {
+-        if ( !disconnecting || !ch.isClosed() )
++        if ( !ch.isClosed() && disconnecting.compareAndSet(false, true) )
          {
-             disconnecting = true;
+-            disconnecting = true;
 -            // Why do we have to delay this you might ask? Well the simple reason is MOJANG.
 -            // Despite many a bug report posted, ever since the 1.7 protocol rewrite, the client STILL has a race condition upon switching protocols.
 -            // As such, despite the protocol switch packets already having been sent, there is the possibility of a client side exception
