@@ -1,0 +1,33 @@
+From c5c7f68d947f366fef739e0ac3a655baed507bfe Mon Sep 17 00:00:00 2001
+From: Jadon Fowler <jadonflower@gmail.com>
+Date: Tue, 31 May 2016 00:36:01 -0600
+Subject: [PATCH] Optimize conversion to Mojang-style UUIDs by avoiding regex
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+index 314a1d2..6804ad9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+@@ -73,7 +73,7 @@ public class ServerPing
+ 
+         public String getId()
+         {
+-            return uniqueId.toString().replaceAll( "-", "" );
++            return uniqueId.toString().replace( "-", "" );
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index dab6ef2..ad19168 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -603,7 +603,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String getUUID()
+     {
+-        return uniqueId.toString().replaceAll( "-", "" );
++        return uniqueId.toString().replace( "-", "" );
+     }
+ 
+     @Override
+-- 
+2.8.3
