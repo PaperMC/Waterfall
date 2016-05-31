@@ -1,4 +1,4 @@
-From cd50f5e9403ffc31c760f29aa6fce77490ae5ac3 Mon Sep 17 00:00:00 2001
+From 96a2e827533d4f8080bd915265e39923d389c256 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 15:59:52 -0700
 Subject: [PATCH] Improve connection closing, fixing the kick delay.
@@ -49,7 +49,7 @@ index c88ab49..9a13f5c 100644
              if ( server != null )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 53d7ef8..0b1be45 100644
+index d841090..b27b447 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -136,8 +136,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

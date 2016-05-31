@@ -1,11 +1,11 @@
-From 851c2b19e31527f7b758f9c924290ad0c950849d Mon Sep 17 00:00:00 2001
+From 1f1df09244b1fe1746f9d48b000d2c54d86f64dc Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Sun, 20 Mar 2016 01:36:23 -0400
 Subject: [PATCH] Better race condition check for disconnect()
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0b1be45..9ced50c 100644
+index b27b447..13a549a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -8,6 +8,7 @@ import java.net.URLEncoder;

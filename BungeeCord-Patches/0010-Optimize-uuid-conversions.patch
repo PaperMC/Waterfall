@@ -1,4 +1,4 @@
-From 84dc97a63f6f751464fcef7853dbc375c4a10439 Mon Sep 17 00:00:00 2001
+From 086218556d597da5c0c353e992df0e558abe20e6 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -204,7 +204,7 @@ index 0000000..7258a26
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 37e12e9..b268bef 100644
+index 86a0055..6c9c6d6 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
 @@ -1,11 +1,15 @@
@@ -232,13 +232,14 @@ index 37e12e9..b268bef 100644
      }
  
      /**
-@@ -78,5 +82,5 @@ public class Util
+@@ -78,6 +82,6 @@ public class Util
       */
      public static UUID getUUID(String uuid)
      {
 -        return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
 +        return UUIDUtils.fromString(uuid);
      }
+ }
 -- 
 2.8.3
 
