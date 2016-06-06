@@ -1,0 +1,32 @@
+From 2c83acc9f07ec8029797c3a0b432a7f7a5b2d4cb Mon Sep 17 00:00:00 2001
+From: kamcio96 <kamcio96@users.noreply.github.com>
+Date: Mon, 6 Jun 2016 13:50:51 +0200
+Subject: [PATCH] Fix `Cannot get ID for packet class Kick`
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 8c19974..cae1f79 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -534,10 +534,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( !ch.isClosed() && disconnecting.compareAndSet(false, true) )
+         {
+-            if ( thisState != State.STATUS && thisState != State.PING ) {
+-                ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
+-            } else {
+-                ch.close();
++            switch (thisState) {
++                case USERNAME:
++                case ENCRYPT:
++                case FINISHED:
++                    ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
++                    break;
++                default:
++                    ch.close();
+             }
+         }
+     }
+-- 
+2.6.3.windows.1
+
