@@ -1,0 +1,694 @@
+From 70750320e472cad8e339550af4430ac85a6c7e70 Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Mon, 27 Jun 2016 13:03:49 -0700
+Subject: [PATCH] Support 1.7 and refractor deserialization code
+
+Now there are seperate methods for deserializing 'modern' versions (that bungeecord supports), and for deserializing 1.7 packets.
+
+diff --git a/protocol/src/main/java/io/github/waterfallmc/waterfall/protocol/MultiVersionPacket.java b/protocol/src/main/java/io/github/waterfallmc/waterfall/protocol/MultiVersionPacket.java
+new file mode 100644
+index 0000000..4f78680
+--- /dev/null
++++ b/protocol/src/main/java/io/github/waterfallmc/waterfall/protocol/MultiVersionPacket.java
+@@ -0,0 +1,45 @@
++package io.github.waterfallmc.waterfall.protocol;
++
++import io.netty.buffer.ByteBuf;
++
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public abstract class MultiVersionPacket extends DefinedPacket {
++
++    protected abstract void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
++
++    protected abstract void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
++
++    @Override
++    public final void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        if (protocolVersion < ProtocolConstants.MINECRAFT_1_8) {
++            v17Read(buf, direction, protocolVersion);
++        } else {
++            modernRead(buf, direction, protocolVersion);
++        }
++    }
++
++    protected abstract void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
++
++    protected abstract void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
++
++    @Override
++    public final void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        if (protocolVersion < ProtocolConstants.MINECRAFT_1_8) {
++            v17Write(buf, direction, protocolVersion);
++        } else {
++            modernWrite(buf, direction, protocolVersion);
++        }
++    }
++
++    @Override
++    public final void read(ByteBuf buf) {
++        throw new UnsupportedOperationException("Violent explosions!");
++    }
++
++    @Override
++    public final void write(ByteBuf buf) {
++        throw new UnsupportedOperationException("Violent explosions!");
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 9c08686..add79f2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol;
+ 
+ import com.google.common.base.Charsets;
++import com.google.common.base.Preconditions;
++
+ import io.netty.buffer.ByteBuf;
+ import java.util.ArrayList;
+ import java.util.List;
+@@ -65,6 +67,38 @@ public abstract class DefinedPacket
+         return ret;
+     }
+ 
++    // Travertine start - 1.7 support
++    public static void writeArrayLegacy(byte[] b, ByteBuf buf, boolean allowExtended)
++    {
++        // (Integer.MAX_VALUE & 0x1FFF9A ) = 2097050 - Forge's current upper limit
++        if ( allowExtended )
++        {
++            Preconditions.checkArgument( b.length <= ( Integer.MAX_VALUE & 0x1FFF9A ), "Cannot send array longer than 2097050 (got %s bytes)", b.length );
++        } else
++        {
++            Preconditions.checkArgument( b.length <= Short.MAX_VALUE, "Cannot send array longer than Short.MAX_VALUE (got %s bytes)", b.length );
++        }
++        // Write a 2 or 3 byte number that represents the length of the packet. (3 byte "shorts" for Forge only)
++        // No vanilla packet should give a 3 byte packet, this method will still retain vanilla behaviour.
++        writeVarShort( buf, b.length );
++        buf.writeBytes( b );
++    }
++
++    public static byte[] readArrayLegacy(ByteBuf buf)
++    {
++        // Read in a 2 or 3 byte number that represents the length of the packet. (3 byte "shorts" for Forge only)
++        // No vanilla packet should give a 3 byte packet, this method will still retain vanilla behaviour.
++        int len = readVarShort( buf );
++
++        // (Integer.MAX_VALUE & 0x1FFF9A ) = 2097050 - Forge's current upper limit
++        Preconditions.checkArgument( len <= ( Integer.MAX_VALUE & 0x1FFF9A ), "Cannot receive array longer than 2097050 (got %s bytes)", len );
++
++        byte[] ret = new byte[ len ];
++        buf.readBytes( ret );
++        return ret;
++    }
++    // Travertine end
++
+     public static void writeStringArray(List<String> s, ByteBuf buf)
+     {
+         writeVarInt( s.size(), buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 4decbb2..15751b3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -132,6 +132,14 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
+                     map( ProtocolConstants.MINECRAFT_1_10, 0x47 )
+             );
++            // Travertine start - 1.7 support
++            TO_CLIENT.registerPacket(
++                    SetCompression.class,
++                    map(ProtocolConstants.MINECRAFT_1_7_2, 0x46, false),
++                    map(ProtocolConstants.MINECRAFT_1_7_6, 0x46, false),
++                    map(ProtocolConstants.MINECRAFT_1_8, 0x46, false)
++            );
++            // Travertine end
+ 
+             TO_SERVER.registerPacket(
+                     KeepAlive.class,
+@@ -234,12 +242,19 @@ public enum Protocol
+     private static class ProtocolMapping {
+         private final int protocolVersion;
+         private final int packetID;
++        private final boolean inherit;
+     }
+     // Helper method
+     private static ProtocolMapping map(int protocol, int id) {
+-        return new ProtocolMapping(protocol, id);
++        // Travertine start - add flag on weather or not to inherit for 1.7 support
++        return map(protocol, id, true);
+     }
+ 
++    private static ProtocolMapping map(int protocol, int id, boolean inherit) {
++        return new ProtocolMapping(protocol, id, inherit);
++    }
++    // Travertine end
++
+     @RequiredArgsConstructor
+     public static class DirectionData
+     {
+@@ -254,7 +269,13 @@ public enum Protocol
+         }
+         private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
+         {
++            // Travertine start - 1.7 support
++            linkedProtocols.put( ProtocolConstants.MINECRAFT_1_7_2, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_7_6
++            ));
+             linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_7_2,
++                    // Travertine end
+                     ProtocolConstants.MINECRAFT_1_9
+             ) );
+             linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
+@@ -311,6 +332,7 @@ public enum Protocol
+                 Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
+                 for ( ProtocolMapping mapping : mappings )
+                 {
++                    if (mapping.inherit) { // Travertine - respect the mapping's inherit flag for 1.7 support
+                     ProtocolData data = protocols.get( mapping.protocolVersion );
+                     data.packetMap.put( packetClass, mapping.packetID );
+                     data.packetConstructors.put( mapping.packetID, constructor );
+@@ -331,6 +353,7 @@ public enum Protocol
+                             registerPacket( packetClass, map( link, mapping.packetID ) );
+                         }
+                     }
++                    }
+                 }
+             } catch ( NoSuchMethodException ex )
+             {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 8a99ff9..087ff92 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -6,6 +6,8 @@ import java.util.List;
+ public class ProtocolConstants
+ {
+ 
++    public static final int MINECRAFT_1_7_2 = 4;
++    public static final int MINECRAFT_1_7_6 = 5;
+     public static final int MINECRAFT_1_8 = 47;
+     public static final int MINECRAFT_1_9 = 107;
+     public static final int MINECRAFT_1_9_1 = 108;
+@@ -13,11 +15,16 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_9_4 = 110;
+     public static final int MINECRAFT_1_10 = 210;
+     public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
++            "1.7.x",
+             "1.8.x",
+             "1.9.x",
+             "1.10.x"
+     );
+-    public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList( ProtocolConstants.MINECRAFT_1_8,
++
++    public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
++            ProtocolConstants.MINECRAFT_1_7_2,
++            ProtocolConstants.MINECRAFT_1_7_6,
++            ProtocolConstants.MINECRAFT_1_8,
+             ProtocolConstants.MINECRAFT_1_9,
+             ProtocolConstants.MINECRAFT_1_9_1,
+             ProtocolConstants.MINECRAFT_1_9_2,
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+index 95ad39b..6144bd6 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+@@ -28,7 +28,7 @@ public class Chat extends DefinedPacket
+     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         message = readString( buf );
+-        if ( direction == ProtocolConstants.Direction.TO_CLIENT )
++        if ( direction == ProtocolConstants.Direction.TO_CLIENT && protocolVersion >= ProtocolConstants.MINECRAFT_1_8 )
+         {
+             position = buf.readByte();
+         }
+@@ -38,7 +38,7 @@ public class Chat extends DefinedPacket
+     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( message, buf );
+-        if ( direction == ProtocolConstants.Direction.TO_CLIENT )
++        if ( direction == ProtocolConstants.Direction.TO_CLIENT && protocolVersion >= ProtocolConstants.MINECRAFT_1_8 )
+         {
+             buf.writeByte( position );
+         }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+index 5c79727..f4db104 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+@@ -31,6 +31,7 @@ public class ClientSettings extends DefinedPacket
+         viewDistance = buf.readByte();
+         chatFlags = protocolVersion >= ProtocolConstants.MINECRAFT_1_9 ? DefinedPacket.readVarInt( buf ) : buf.readUnsignedByte();
+         chatColours = buf.readBoolean();
++        if (protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6) difficulty = buf.readByte();
+         skinParts = buf.readByte();
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+         {
+@@ -51,6 +52,7 @@ public class ClientSettings extends DefinedPacket
+             buf.writeByte( chatFlags );
+         }
+         buf.writeBoolean( chatColours );
++        if (protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6) buf.writeByte(difficulty);
+         buf.writeByte( skinParts );
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+         {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+index a29524c..cb1ffd8 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +14,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionRequest extends DefinedPacket
++public class EncryptionRequest extends MultiVersionPacket
+ {
+ 
+     private String serverId;
+@@ -21,7 +22,7 @@ public class EncryptionRequest extends DefinedPacket
+     private byte[] verifyToken;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         serverId = readString( buf );
+         publicKey = readArray( buf );
+@@ -29,7 +30,14 @@ public class EncryptionRequest extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        serverId = readString(buf);
++        publicKey = readArrayLegacy(buf);
++        verifyToken = readArrayLegacy(buf);
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( serverId, buf );
+         writeArray( publicKey, buf );
+@@ -37,6 +45,13 @@ public class EncryptionRequest extends DefinedPacket
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        writeString(serverId, buf);
++        writeArrayLegacy(publicKey, buf, false);
++        writeArrayLegacy(verifyToken, buf, false);
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+index 06676e4..3d7119b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+@@ -1,11 +1,15 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
++import sun.security.ssl.ProtocolVersion;
++
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+@@ -13,27 +17,39 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionResponse extends DefinedPacket
++public class EncryptionResponse extends MultiVersionPacket
+ {
+ 
+     private byte[] sharedSecret;
+     private byte[] verifyToken;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         sharedSecret = readArray( buf, 128 );
+         verifyToken = readArray( buf, 128 );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        sharedSecret = readArrayLegacy(buf);
++        verifyToken = readArrayLegacy(buf);
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeArray( sharedSecret, buf );
+         writeArray( verifyToken, buf );
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        writeArrayLegacy(sharedSecret, buf, false);
++        writeArrayLegacy(sharedSecret, buf, false);
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+index 0960b7d..28a9ba4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,24 +15,34 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class KeepAlive extends DefinedPacket
++public class KeepAlive extends MultiVersionPacket
+ {
+ 
+     private int randomId;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         randomId = readVarInt( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        randomId = buf.readInt();
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeVarInt( randomId, buf );
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        buf.writeInt(randomId);
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+index 9983ef2..d1a9e17 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -10,17 +12,19 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.util.UUID;
+ 
++import com.google.common.base.Verify;
++
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PlayerListItem extends DefinedPacket
++public class PlayerListItem extends MultiVersionPacket
+ {
+ 
+     private Action action;
+     private Item[] items;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         action = Action.values()[DefinedPacket.readVarInt( buf )];
+         items = new Item[ DefinedPacket.readVarInt( buf ) ];
+@@ -74,7 +78,16 @@ public class PlayerListItem extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        items = new Item[1];
++        Item item = items[0] = new Item();
++        item.displayName = item.username = readString(buf);
++        action = !buf.readBoolean() ? Action.REMOVE_PLAYER : Action.ADD_PLAYER;
++        item.ping = buf.readShort();
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         DefinedPacket.writeVarInt( action.ordinal(), buf );
+         DefinedPacket.writeVarInt( items.length, buf );
+@@ -125,6 +138,15 @@ public class PlayerListItem extends DefinedPacket
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        Verify.verify(items.length == 1, "Can only send 1 item on 1.7, not %s", items.length);
++        Item item = items[0];
++        writeString(item.displayName, buf);
++        buf.writeBoolean(action != Action.REMOVE_PLAYER);
++        buf.writeShort(item.ping);
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+index e094932..beb9a90 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+@@ -2,6 +2,8 @@ package net.md_5.bungee.protocol.packet;
+ 
+ import com.google.common.base.Preconditions;
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import java.io.ByteArrayInputStream;
+ import java.io.DataInput;
+@@ -19,7 +21,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PluginMessage extends DefinedPacket
++public class PluginMessage extends MultiVersionPacket
+ {
+ 
+     public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
+@@ -44,7 +46,7 @@ public class PluginMessage extends DefinedPacket
+     private boolean allowExtendedPacket = false;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         tag = readString( buf );
+         int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
+@@ -54,13 +56,25 @@ public class PluginMessage extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        tag = readString(buf);
++        data = readArrayLegacy(buf);
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( tag, buf );
+         buf.writeBytes( data );
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        writeString(tag, buf);
++        writeArrayLegacy(data, buf, allowExtendedPacket);
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+index ef9b8cf..5984205 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+@@ -28,8 +28,9 @@ public class ScoreboardObjective extends DefinedPacket
+     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         name = readString( buf );
++        if (protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6) value = readString(buf);
+         action = buf.readByte();
+-        if ( action == 0 || action == 2 )
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 && ( action == 0 || action == 2 ) )
+         {
+             value = readString( buf );
+             type = readString( buf );
+@@ -40,8 +41,9 @@ public class ScoreboardObjective extends DefinedPacket
+     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( name, buf );
++        if (protocolVersion <= ProtocolConstants.MINECRAFT_1_7_6) writeString(value, buf);
+         buf.writeByte( action );
+-        if ( action == 0 || action == 2 )
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 && ( action == 0 || action == 2 ) )
+         {
+             writeString( value, buf );
+             writeString( type, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+index 6f0de53..bf64c53 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +15,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardScore extends DefinedPacket
++public class ScoreboardScore extends MultiVersionPacket
+ {
+ 
+     private String itemName;
+@@ -25,7 +27,7 @@ public class ScoreboardScore extends DefinedPacket
+     private int value;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         itemName = readString( buf );
+         action = buf.readByte();
+@@ -37,7 +39,17 @@ public class ScoreboardScore extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        itemName = readString(buf);
++        action = buf.readByte();
++        if (action != 1) {
++            scoreName = readString(buf);
++            value = buf.readInt();
++        }
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( itemName, buf );
+         buf.writeByte( action );
+@@ -49,6 +61,16 @@ public class ScoreboardScore extends DefinedPacket
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        writeString(itemName, buf);
++        buf.writeShort(action);
++        if (action != 1) {
++            writeString(scoreName, buf);
++            buf.writeInt(value);
++        }
++    }
++
++    @Override
+     public void handle(AbstractPacketHandler handler) throws Exception
+     {
+         handler.handle( this );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+index e3bcbc3..b447ecf 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.waterfall.protocol.MultiVersionPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +15,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class TabCompleteRequest extends DefinedPacket
++public class TabCompleteRequest extends MultiVersionPacket
+ {
+ 
+     private String cursor;
+@@ -22,7 +24,7 @@ public class TabCompleteRequest extends DefinedPacket
+     private long position;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         cursor = readString( buf );
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+@@ -37,7 +39,12 @@ public class TabCompleteRequest extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        cursor = readString(buf);
++    }
++
++    @Override
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( cursor, buf );
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+-- 
+2.9.0
+
