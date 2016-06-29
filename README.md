@@ -17,6 +17,18 @@ the ecosystem by allowing changes to be exposed to a wider audience more quickly
 
 Waterfall will still track upstream BungeeCord and merge changes as needed.
 
+How To (Server Admins)
+------
+Download a copy of Waterfall.jar from our buildserver here: [Waterfall](https://ci.aquifermc.org/job/Waterfall/)
+
+Waterfall requires **Java 8** or above.
+
+How To (Compiling From Source)
+------
+To compile Waterfall, you need JDK8, git, bash, maven, and an internet connection.
+
+Clone this repo, run ./build.sh from *bash*, get jar from Waterfall-Proxy/bootstrap/target/
+
 ## Join us
 
 * Feel free to open a PR! We accept contributions.
