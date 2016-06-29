@@ -1,4 +1,4 @@
-From c62c9a57d73ef1db2dbff33fd8e895af0ec1ce6f Mon Sep 17 00:00:00 2001
+From dedf4862695f0f2aae5d43f3acb1ac2f7e0104cb Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Upgrade to netty 4.1
@@ -37,19 +37,18 @@ index 7a74143..58e107e 100644
              <artifactId>trove4j</artifactId>
              <version>3.0.3</version>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index bbaef39..e094932 100644
+index bbaef39..e1344b3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -9,6 +9,8 @@ import java.io.DataInputStream;
+@@ -9,6 +9,7 @@ import java.io.DataInputStream;
  import lombok.AllArgsConstructor;
  import lombok.Data;
  import lombok.EqualsAndHashCode;
-+import io.netty.buffer.ByteBufInputStream;
 +import io.netty.buffer.ByteBufUtil;
  import lombok.NoArgsConstructor;
  import net.md_5.bungee.protocol.AbstractPacketHandler;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -20,9 +22,22 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -20,9 +21,22 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  public class PluginMessage extends DefinedPacket
  {
  
@@ -116,5 +115,5 @@ index 621a06c..0ec3f81 100644
      {
          @Override
 -- 
-2.8.3
+2.7.4 (Apple Git-66)
 
