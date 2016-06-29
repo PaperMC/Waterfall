@@ -1,4 +1,4 @@
-From 96bf7a93e9168180264c32a1b046794707ca7d26 Mon Sep 17 00:00:00 2001
+From fe96d6163b2fcbceb6ea28617a8a871983232136 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:36:10 -0600
 Subject: [PATCH] Don't send KICK packets while in HANDSHAKE state
@@ -6,10 +6,10 @@ Subject: [PATCH] Don't send KICK packets while in HANDSHAKE state
 Use a switch statement for checking the state (best practice when you have lots of cases)
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 8c19974..8bafc6b 100644
+index 378231c..132b73d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -534,10 +534,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -540,10 +540,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( !ch.isClosed() && disconnecting.compareAndSet(false, true) )
          {
@@ -30,5 +30,5 @@ index 8c19974..8bafc6b 100644
          }
      }
 -- 
-2.8.3
+2.8.2
 
