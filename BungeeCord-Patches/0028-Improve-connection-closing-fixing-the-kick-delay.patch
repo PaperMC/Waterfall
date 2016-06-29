@@ -1,4 +1,4 @@
-From d473177e5c6407f0f0c362bad49da0fbc7a45f19 Mon Sep 17 00:00:00 2001
+From 5bb1ba3fe06286ebef3e708cf720ee9cc84fcfb4 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 15:59:52 -0700
 Subject: [PATCH] Improve connection closing, fixing the kick delay.
@@ -49,7 +49,7 @@ index c88ab49..9a13f5c 100644
              if ( server != null )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d841090..8c19974 100644
+index d3635cd..378231c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -8,6 +8,7 @@ import java.net.URLEncoder;
@@ -105,7 +105,7 @@ index d841090..8c19974 100644
      }
  
      @Override
-@@ -535,27 +532,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -541,27 +538,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void disconnect(final BaseComponent... reason)
      {
@@ -223,5 +223,5 @@ index 06d19c3..76bdff2 100644
      {
          Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
 -- 
-2.8.3
+2.8.2
 
