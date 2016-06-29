@@ -1,4 +1,4 @@
-From 570bd1321ef50c23702b4b12dd7e42cb7285c319 Mon Sep 17 00:00:00 2001
+From d7d5585dd6576c5ee2d50c88f5b020ab96726138 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -168,7 +168,7 @@ index fc5ca3a..92ea9b5 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index db9ebbd..6601730 100644
+index db9ebbd..4d16fa3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -191,7 +191,7 @@ index db9ebbd..6601730 100644
       * Set of all listeners.
       */
      private Collection<ListenerInfo> listeners;
-+    private Object serversLock = new Object(); // Waterfall
++    private final Object serversLock = new Object(); // Waterfall
      /**
       * Set of all servers.
       */
