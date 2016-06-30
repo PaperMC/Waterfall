@@ -1,4 +1,4 @@
-From 0e9177292842a998994060fca45185732a5cae91 Mon Sep 17 00:00:00 2001
+From 3c36519ae2b58024198c6425707ee6530105ddad Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -18,9 +18,18 @@ index a4516ed..1f63a2c 100644
              return;
          }
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 29e2294..fb28fd8 100644
+index 3e3ff61..a8d4418 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -48,7 +48,7 @@ public class BungeeCordLauncher
+             if ( buildDate.before( deadline.getTime() ) )
+             {
+                 System.err.println( "*** Warning, this build is outdated ***" );
+-                System.err.println( "*** Please download a new build from https://ci.aquifermc.org/job/Waterfall/ ***" );
++                System.err.println( "*** Please download a new build from https://ci.aquifermc.org/job/Travertine/ ***" );
+                 System.err.println( "*** You will get NO support regarding this build ***" );
+                 System.err.println( "*** Server will start in 10 seconds ***" );
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 @@ -57,7 +57,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
@@ -44,7 +53,7 @@ index 446dfe2..f068a38 100644
  
          while ( bungee.isRunning )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fc5ca3a..2f1b451 100644
+index 92ea9b5..d0ffb70 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -174,7 +174,7 @@ public class BungeeCord extends ProxyServer
@@ -117,6 +126,19 @@ index d703d6d..d8dcdc1 100644
          this.logger = logger;
      }
  
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+index 97a08da..f67df84 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+@@ -19,7 +19,7 @@ public class JenkinsModuleSource implements ModuleSource
+         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
+         try
+         {
+-            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Waterfall_Build/" + version.getBuild() + "/" + module.getName() + ".jar"  );
++            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Travertine_Build/" + version.getBuild() + "/" + module.getName() + ".jar"  );
+             URLConnection con = website.openConnection();
+             // 15 second timeout at various stages
+             con.setConnectTimeout( 15000 );
 -- 
-2.9.0
+2.7.4 (Apple Git-66)
 
