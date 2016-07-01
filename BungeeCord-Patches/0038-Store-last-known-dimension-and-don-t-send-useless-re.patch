@@ -1,4 +1,4 @@
-From 25f02e9f4769d0f21d13294828c245f7422b133f Mon Sep 17 00:00:00 2001
+From 0619f444be30213382fa501bcc12bc5dc68f58bc Mon Sep 17 00:00:00 2001
 From: PunKeel <punkeel@me.com>
 Date: Wed, 8 Apr 2015 22:36:33 +0200
 Subject: [PATCH] Store last known dimension and don't send useless respawn
@@ -48,7 +48,7 @@ index e327325..f1ccd72 100644
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9a13f5c..195869b 100644
+index 9a13f5c..ff103bf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -89,7 +89,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -86,7 +86,7 @@ index 9a13f5c..195869b 100644
          connect( target );
      }
  
-@@ -328,9 +320,6 @@ public final class UserConnection implements ProxiedPlayer
+@@ -328,12 +320,9 @@ public final class UserConnection implements ProxiedPlayer
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
                          connect( def, null, false );
@@ -95,7 +95,11 @@ index 9a13f5c..195869b 100644
 -                        disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
                      } else
                      {
-                         sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
+-                        sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
++                        disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
+                     }
+                 }
+             }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index fa57f28..017c2b2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
@@ -122,5 +126,5 @@ index fa57f28..017c2b2 100644
      {
          return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
 -- 
-2.9.0
+2.7.4 (Apple Git-66)
 
