@@ -1,4 +1,4 @@
-From 96a9466f6b64444c5419c9fffd550dfa040ea2c0 Mon Sep 17 00:00:00 2001
+From caa48805ff72ccbb8c30fb708275c289b9e95cd9 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Sun, 3 Jul 2016 02:45:37 -0400
 Subject: [PATCH] 1.7.x Client Support
@@ -804,7 +804,7 @@ index 962c267..4516330 100644
      public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d0ffb70..55d77d7 100644
+index cc728c7..af2d586 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -149,6 +149,14 @@ public class BungeeCord extends ProxyServer
@@ -966,7 +966,7 @@ index beb8fa6..88aa57f 100644
              // We send the message as part of the handler, so don't send it here.
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ff103bf..dfbfa74 100644
+index 47b37c0..8766eb9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -208,6 +208,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -977,7 +977,7 @@ index ff103bf..dfbfa74 100644
          displayName = name;
      }
  
-@@ -420,7 +421,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -427,7 +428,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent... message)
      {
          // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -986,7 +986,7 @@ index ff103bf..dfbfa74 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
          } else
-@@ -433,7 +434,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -440,7 +441,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent message)
      {
          // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -995,7 +995,7 @@ index ff103bf..dfbfa74 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
          } else
-@@ -570,19 +571,29 @@ public final class UserConnection implements ProxiedPlayer
+@@ -577,19 +578,29 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1033,7 +1033,7 @@ index ff103bf..dfbfa74 100644
      }
  
      @Override
-@@ -605,7 +616,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -612,7 +623,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
