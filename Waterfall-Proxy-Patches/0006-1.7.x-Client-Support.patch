@@ -1,0 +1,1587 @@
+From 96a9466f6b64444c5419c9fffd550dfa040ea2c0 Mon Sep 17 00:00:00 2001
+From: Troy Frew <fuzzy_bot@arenaga.me>
+Date: Sun, 3 Jul 2016 02:45:37 -0400
+Subject: [PATCH] 1.7.x Client Support
+
+
+diff --git a/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
+new file mode 100644
+index 0000000..96b6131
+--- /dev/null
++++ b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
+@@ -0,0 +1,90 @@
++package io.github.waterfallmc.travertine.protocol;
++
++import com.google.common.base.Preconditions;
++import io.netty.buffer.ByteBuf;
++        
++import net.md_5.bungee.protocol.ProtocolConstants;
++        
++public abstract class MultiVersionPacketV17 extends MultiVersionPacketModern
++{
++        
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        v17Read( buf );
++    }
++        
++    @Override
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        switch ( protocolVersion )
++        {
++            case ProtocolConstants.MINECRAFT_1_7_2:
++            case ProtocolConstants.MINECRAFT_1_7_6:
++                v17Read(buf, direction, protocolVersion);
++                break;
++            default:
++                modernRead(buf, direction, protocolVersion);
++                break;
++        }
++    }
++        
++    protected void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        v17Write( buf );
++    }
++        
++    @Override
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        switch ( protocolVersion )
++        {
++            case ProtocolConstants.MINECRAFT_1_7_2:
++            case ProtocolConstants.MINECRAFT_1_7_6:
++                v17Write(buf, direction, protocolVersion);
++                break;
++            default:
++                modernWrite(buf, direction, protocolVersion);
++                break;
++        }
++    }
++        
++    protected void v17Read(ByteBuf buf)
++    {
++        throw new UnsupportedOperationException( "Packet must implement read method" );
++    }
++        
++    protected void v17Write(ByteBuf buf)
++    {
++        throw new UnsupportedOperationException( "Packet must implement write method" );
++    }
++        
++    public static void v17writeArray(byte[] b, ByteBuf buf, boolean allowExtended)
++    {
++        // (Integer.MAX_VALUE & 0x1FFF9A ) = 2097050 - Forge's current upper limit
++        if ( allowExtended )
++        {
++            Preconditions.checkArgument( b.length <= ( Integer.MAX_VALUE & 0x1FFF9A ), "Cannot send array longer than 2097050 (got %s bytes)", b.length );
++        } else
++        {
++            Preconditions.checkArgument( b.length <= Short.MAX_VALUE, "Cannot send array longer than Short.MAX_VALUE (got %s bytes)", b.length );
++        }
++        // Write a 2 or 3 byte number that represents the length of the packet. (3 byte "shorts" for Forge only)
++        // No vanilla packet should give a 3 byte packet, this method will still retain vanilla behaviour.
++        writeVarShort( buf, b.length );
++        buf.writeBytes( b );
++    }
++        
++    public static byte[] v17readArray(ByteBuf buf)
++    {
++        // Read in a 2 or 3 byte number that represents the length of the packet. (3 byte "shorts" for Forge only)
++        // No vanilla packet should give a 3 byte packet, this method will still retain vanilla behaviour.
++        int len = readVarShort( buf );
++
++        // (Integer.MAX_VALUE & 0x1FFF9A ) = 2097050 - Forge's current upper limit
++        Preconditions.checkArgument( len <= ( Integer.MAX_VALUE & 0x1FFF9A ), "Cannot receive array longer than 2097050 (got %s bytes)", len );
++
++        byte[] ret = new byte[ len ];
++        buf.readBytes( ret );
++        return ret;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 4decbb2..0ce7719 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -255,6 +255,8 @@ public enum Protocol
+         private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
+         {
+             linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_7_2,
++                    ProtocolConstants.MINECRAFT_1_7_6,
+                     ProtocolConstants.MINECRAFT_1_9
+             ) );
+             linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index e77808a..c637c20 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -7,6 +7,8 @@ public class ProtocolConstants
+ {
+ 
+     // Travertine start
++    public static final int MINECRAFT_1_7_2 = 4;
++    public static final int MINECRAFT_1_7_6 = 5;
+     public static final int MINECRAFT_1_8 = 47;
+     public static final int MINECRAFT_1_9 = 107;
+     public static final int MINECRAFT_1_9_1 = 108;
+@@ -14,11 +16,14 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_9_4 = 110;
+     public static final int MINECRAFT_1_10 = 210;
+     public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
++            "1.7.x",
+             "1.8.x",
+             "1.9.x",
+             "1.10.x"
+     );
+     public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
++            ProtocolConstants.MINECRAFT_1_7_2,
++            ProtocolConstants.MINECRAFT_1_7_6,
+             ProtocolConstants.MINECRAFT_1_8,
+             ProtocolConstants.MINECRAFT_1_9,
+             ProtocolConstants.MINECRAFT_1_9_1,
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index 6da27fc..65506c2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -7,10 +7,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
+ import io.netty.handler.codec.CorruptedFrameException;
+ 
+ import java.util.List;
++import java.util.concurrent.atomic.AtomicLong;
+ 
+ public class Varint21FrameDecoder extends ByteToMessageDecoder
+ {
+ 
++    private AtomicLong lastEmptyPacket = new AtomicLong(0); // Travertine
+     private static boolean DIRECT_WARNING;
+ 
+     @Override
+@@ -33,7 +35,15 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+                 int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
+                 if ( length == 0 )
+                 {
+-                    throw new CorruptedFrameException( "Empty Packet!" );
++                    // Travertine start - vanilla 1.7 client sometimes sends empty packets.
++                    long currentTime = System.currentTimeMillis();
++                    long lastEmptyPacket = this.lastEmptyPacket.getAndSet(currentTime);
++
++                    if (currentTime - lastEmptyPacket < 50L)
++                    {
++                        throw new CorruptedFrameException( "Too many empty packets" );
++                    }
++                    // Travertine end
+                 }
+ 
+                 if ( in.readableBytes() < length )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+index eccb08c..71431ca 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Chat extends MultiVersionPacketModern // Travertine
++public class Chat extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String message;
+@@ -24,6 +24,14 @@ public class Chat extends MultiVersionPacketModern // Travertine
+         this( message, (byte) 0 );
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        message = readString( buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -34,6 +42,14 @@ public class Chat extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( message, buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+index 328ceab..c0931c2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -14,7 +14,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ClientSettings extends MultiVersionPacketModern // Travertine
++public class ClientSettings extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String locale;
+@@ -25,6 +25,19 @@ public class ClientSettings extends MultiVersionPacketModern // Travertine
+     private byte skinParts;
+     private int mainHand;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        locale = readString( buf );
++        viewDistance = buf.readByte();
++        chatFlags = buf.readUnsignedByte();
++        chatColours = buf.readBoolean();
++        skinParts = buf.readByte();
++        difficulty = buf.readByte();
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -39,6 +52,19 @@ public class ClientSettings extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( locale, buf );
++        buf.writeByte( viewDistance );
++        buf.writeByte( chatFlags );
++        buf.writeBoolean( chatColours );
++        buf.writeByte( skinParts );
++        buf.writeByte( difficulty );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+index 12d26e3..c3234b3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,13 +13,23 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionRequest extends MultiVersionPacketModern // Travertine
++public class EncryptionRequest extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String serverId;
+     private byte[] publicKey;
+     private byte[] verifyToken;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        serverId = readString( buf );
++        publicKey = v17readArray( buf );
++        verifyToken = v17readArray( buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -28,6 +38,16 @@ public class EncryptionRequest extends MultiVersionPacketModern // Travertine
+         verifyToken = readArray( buf );
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( serverId, buf );
++        v17writeArray( publicKey, buf, false );
++        v17writeArray( verifyToken, buf, false );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+index 87a7887..6b43854 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -14,12 +14,21 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionResponse extends MultiVersionPacketModern // Travertine
++public class EncryptionResponse extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private byte[] sharedSecret;
+     private byte[] verifyToken;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        sharedSecret = v17readArray( buf );
++        verifyToken = v17readArray( buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -27,6 +36,15 @@ public class EncryptionResponse extends MultiVersionPacketModern // Travertine
+         verifyToken = readArray( buf, 128 );
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        v17writeArray( sharedSecret, buf, false );
++        v17writeArray( verifyToken, buf, false );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+index 773c4a5..a1d4283 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,17 +13,33 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class KeepAlive extends MultiVersionPacketModern // Travertine
++public class KeepAlive extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private int randomId;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        randomId = buf.readInt();
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         randomId = readVarInt( buf );
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        buf.writeInt( randomId );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+index ff802ae..1883db4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+@@ -2,7 +2,7 @@ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -15,12 +15,24 @@ import java.util.UUID;
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PlayerListItem extends MultiVersionPacketModern // Travertine
++public class PlayerListItem extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private Action action;
+     private Item[] items;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        items = new Item[ 1 ];
++        Item item = items[ 0 ] = new Item();
++        item.displayName = item.username = readString( buf );
++        action = !buf.readBoolean() ? Action.REMOVE_PLAYER : Action.ADD_PLAYER;
++        item.ping = buf.readShort();
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -75,6 +87,17 @@ public class PlayerListItem extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        Item item = items[0]; // Only one at a time
++        writeString( item.displayName, buf ); // TODO: Server unique only!
++        buf.writeBoolean( action != Action.REMOVE_PLAYER );
++        buf.writeShort( item.ping );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+index f980339..6848d4f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+@@ -2,7 +2,7 @@ package net.md_5.bungee.protocol.packet;
+ 
+ import com.google.common.base.Preconditions;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import java.io.ByteArrayInputStream;
+ import java.io.DataInput;
+@@ -19,7 +19,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PluginMessage extends MultiVersionPacketModern // Travertine
++public class PluginMessage extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
+@@ -43,6 +43,15 @@ public class PluginMessage extends MultiVersionPacketModern // Travertine
+      */
+     private boolean allowExtendedPacket = false;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        tag = readString( buf );
++        data = v17readArray( buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -53,6 +62,15 @@ public class PluginMessage extends MultiVersionPacketModern // Travertine
+         buf.readBytes( data );
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( tag, buf );
++        v17writeArray( data, buf, allowExtendedPacket );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+index 9c749f0..7e712e4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardObjective extends MultiVersionPacketModern // Travertine
++public class ScoreboardObjective extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String name;
+@@ -24,6 +24,16 @@ public class ScoreboardObjective extends MultiVersionPacketModern // Travertine
+      */
+     private byte action;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        name = readString( buf );
++        value = readString( buf );
++        action = buf.readByte();
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -36,6 +46,16 @@ public class ScoreboardObjective extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( name, buf );
++        writeString( value, buf );
++        buf.writeByte( action );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+index c2cc0ae..4cb7672 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardScore extends MultiVersionPacketModern // Travertine
++public class ScoreboardScore extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String itemName;
+@@ -24,6 +24,20 @@ public class ScoreboardScore extends MultiVersionPacketModern // Travertine
+     private String scoreName;
+     private int value;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        itemName = readString( buf );
++        action = buf.readByte();
++        if ( action != 1 )
++        {
++            scoreName = readString( buf );
++            value = buf.readInt();
++        }
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -36,6 +50,20 @@ public class ScoreboardScore extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( itemName, buf );
++        buf.writeByte( action );
++        if ( action != 1 )
++        {
++            writeString( scoreName, buf );
++            buf.writeInt( value );
++        }
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+index 8e7c58f..e091c80 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class TabCompleteRequest extends MultiVersionPacketModern // Travertine
++public class TabCompleteRequest extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String cursor;
+@@ -21,6 +21,14 @@ public class TabCompleteRequest extends MultiVersionPacketModern // Travertine
+     private boolean hasPositon;
+     private long position;
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        cursor = readString( buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -36,6 +44,14 @@ public class TabCompleteRequest extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( cursor, buf );
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+index 962c267..4516330 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Team extends MultiVersionPacketModern // Travertine
++public class Team extends MultiVersionPacketV17 // Travertine
+ {
+ 
+     private String name;
+@@ -39,6 +39,31 @@ public class Team extends MultiVersionPacketModern // Travertine
+         this.mode = 1;
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        name = readString( buf );
++        mode = buf.readByte();
++        if ( mode == 0 || mode == 2 )
++        {
++            displayName = readString( buf );
++            prefix = readString( buf );
++            suffix = readString( buf );
++            friendlyFire = buf.readByte();
++        }
++        if ( mode == 0 || mode == 3 || mode == 4 )
++        {
++            int len = buf.readShort();
++            players = new String[ len ];
++            for ( int i = 0; i < len; i++ )
++            {
++                players[i] = readString( buf );
++            }
++        }
++    }
++    // Travertine end
++
+     @Override
+     public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+@@ -68,6 +93,30 @@ public class Team extends MultiVersionPacketModern // Travertine
+         }
+     }
+ 
++    // Travertine start
++    @Override
++    public void v17Write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeString( name, buf );
++        buf.writeByte( mode );
++        if ( mode == 0 || mode == 2 )
++        {
++            writeString( displayName, buf );
++            writeString( prefix, buf );
++            writeString( suffix, buf );
++            buf.writeByte( friendlyFire );
++        }
++        if ( mode == 0 || mode == 3 || mode == 4 )
++        {
++            buf.writeShort( players.length );
++            for ( String player : players )
++            {
++                writeString( player, buf );
++            }
++        }
++    }
++    // Travertine end
++
+     @Override
+     public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d0ffb70..55d77d7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -149,6 +149,14 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( TranslatableComponent.class, new TranslatableComponentSerializer() )
+             .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer() )
+             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
++    // Travertine start
++    public final Gson gsonLegacy = new GsonBuilder()
++            .registerTypeAdapter( BaseComponent.class, new ComponentSerializer() )
++            .registerTypeAdapter( TextComponent.class, new TextComponentSerializer() )
++            .registerTypeAdapter( TranslatableComponent.class, new TranslatableComponentSerializer() )
++            .registerTypeAdapter(ServerPing.PlayerInfo.class, new PlayerInfoSerializer(ProtocolConstants.MINECRAFT_1_7_2))
++            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
++    // Travertine end
+     @Getter
+     private ConnectionThrottle connectionThrottle;
+     private final ModuleManager moduleManager = new ModuleManager();
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java b/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
+index 1e11f68..f5c6e00 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
+@@ -152,11 +152,16 @@ public class BungeeTitle implements Title
+     @Override
+     public Title send(ProxiedPlayer player)
+     {
+-        sendPacket( player, clear );
+-        sendPacket( player, reset );
+-        sendPacket( player, times );
+-        sendPacket( player, subtitle );
+-        sendPacket( player, title );
++        // Travertine start
++        if ( ProtocolConstants.isAfterOrEq( player.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++        {
++            sendPacket( player, clear );
++            sendPacket( player, reset );
++            sendPacket( player, times );
++            sendPacket( player, subtitle );
++            sendPacket( player, title );
++        }
++        // Travertine end
+         return this;
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java b/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
+index dc49bb6..fff9988 100644
+--- a/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
++++ b/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
+@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
+ import com.google.gson.JsonSerializationContext;
+ import com.google.gson.JsonSerializer;
+ import net.md_5.bungee.api.ServerPing;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.lang.reflect.Type;
+ import java.util.UUID;
+@@ -15,13 +16,27 @@ import java.util.UUID;
+ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInfo>, JsonDeserializer<ServerPing.PlayerInfo>
+ {
+ 
++    // Travertine start
++    private final int protocol;
++
++    public PlayerInfoSerializer()
++    {
++        this.protocol = ProtocolConstants.MINECRAFT_1_7_6;
++    }
++
++    public PlayerInfoSerializer(int protocol)
++    {
++        this.protocol = protocol;
++    }
++    // Travertine end
++
+     @Override
+     public ServerPing.PlayerInfo deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+     {
+         JsonObject js = json.getAsJsonObject();
+         ServerPing.PlayerInfo info = new ServerPing.PlayerInfo( js.get( "name" ).getAsString(), (UUID) null );
+         String id = js.get( "id" ).getAsString();
+-        if ( !id.contains( "-" ) )
++        if ( ProtocolConstants.isBeforeOrEq( protocol, ProtocolConstants.MINECRAFT_1_7_2 ) || !id.contains( "-" ) ) // Travertine
+         {
+             info.setId( id );
+         } else
+@@ -36,7 +51,15 @@ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInf
+     {
+         JsonObject out = new JsonObject();
+         out.addProperty( "name", src.getName() );
+-        out.addProperty( "id", src.getUniqueId().toString() );
++        // Travertine start
++        if ( ProtocolConstants.isBeforeOrEq( protocol, ProtocolConstants.MINECRAFT_1_7_2 ) )
++        {
++            out.addProperty( "id", src.getId() );
++        } else
++        {
++            out.addProperty( "id", src.getUniqueId().toString() );
++        }
++        // Travertine end
+         return out;
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index beb8fa6..88aa57f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ 
++import java.nio.charset.StandardCharsets;
+ import java.util.Arrays;
+ import java.util.Queue;
+ import java.util.Set;
+@@ -33,6 +34,7 @@ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.Protocol;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ import net.md_5.bungee.protocol.packet.Handshake;
+@@ -230,10 +232,21 @@ public class ServerConnector extends PacketHandler
+ 
+             user.unsafe().sendPacket( modLogin );
+ 
+-            ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
+-            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+-            brand.release();
++            // Travertine start
++            String brandString = bungee.getName() + " (" + bungee.getVersion() + ")";
++
++            if ( ProtocolConstants.isBeforeOrEq( user.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) )
++            {
++                System.out.println(user.getPendingConnection().getVersion());
++                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brandString.getBytes(StandardCharsets.UTF_8), handshakeHandler.isServerForge() ) );
++            } else
++            {
++                ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
++                DefinedPacket.writeString(brandString, brand);
++                user.unsafe().sendPacket(new PluginMessage("MC|Brand", brand, handshakeHandler.isServerForge()));
++                brand.release();
++            }
++            // Travertine end
+         } else
+         {
+             user.getServer().setObsolete( true );
+@@ -359,6 +372,12 @@ public class ServerConnector extends PacketHandler
+         if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )
+         {
+             this.handshakeHandler.handle( pluginMessage );
++            // Travertine start
++            if (user.getForgeClientHandler().checkUserOutdated()) {
++                ch.close();
++                user.getPendingConnects().remove(target);
++            }
++            // Travertine end
+ 
+             // We send the message as part of the handler, so don't send it here.
+             throw CancelSendSignal.INSTANCE;
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index ff103bf..dfbfa74 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -208,6 +208,7 @@ public final class UserConnection implements ProxiedPlayer
+     public void setDisplayName(String name)
+     {
+         Preconditions.checkNotNull( name, "displayName" );
++        Preconditions.checkArgument(name.length() <= 16, "Display name cannot be longer than 16 characters"); // Travertine
+         displayName = name;
+     }
+ 
+@@ -420,7 +421,7 @@ public final class UserConnection implements ProxiedPlayer
+     public void sendMessage(ChatMessageType position, BaseComponent... message)
+     {
+         // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
+-        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() == ProtocolConstants.MINECRAFT_1_8 ) // Travertine
+         {
+             sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
+         } else
+@@ -433,7 +434,7 @@ public final class UserConnection implements ProxiedPlayer
+     public void sendMessage(ChatMessageType position, BaseComponent message)
+     {
+         // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
+-        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() == ProtocolConstants.MINECRAFT_1_8 ) // Travertine
+         {
+             sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
+         } else
+@@ -570,19 +571,29 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public void setTabHeader(BaseComponent header, BaseComponent footer)
+     {
+-        unsafe().sendPacket( new PlayerListHeaderFooter(
+-                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
+-                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
+-        ) );
++        // Travertine start
++        if ( ProtocolConstants.isAfterOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++        {
++            unsafe().sendPacket(new PlayerListHeaderFooter(
++                    (header != null) ? ComponentSerializer.toString(header) : EMPTY_TEXT,
++                    (footer != null) ? ComponentSerializer.toString(footer) : EMPTY_TEXT
++            ));
++        }
++        // Travertine end
+     }
+ 
+     @Override
+     public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
+     {
+-        unsafe().sendPacket( new PlayerListHeaderFooter(
+-                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
+-                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
+-        ) );
++        // Travertine start
++        if ( ProtocolConstants.isAfterOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++        {
++            unsafe().sendPacket(new PlayerListHeaderFooter(
++                    (header != null) ? ComponentSerializer.toString(header) : EMPTY_TEXT,
++                    (footer != null) ? ComponentSerializer.toString(footer) : EMPTY_TEXT
++            ));
++        }
++        // Travertine end
+     }
+ 
+     @Override
+@@ -605,7 +616,7 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void setCompressionThreshold(int compressionThreshold)
+     {
+-        if ( ch.getHandle().isActive() && this.compressionThreshold == -1 )
++        if ( ch.getHandle().isActive() && this.compressionThreshold == -1 && ProtocolConstants.isAfterOrEq( getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) ) // Travertine
+         {
+             this.compressionThreshold = compressionThreshold;
+             unsafe.sendPacket( new SetCompression( compressionThreshold ) );
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 8ce578e..d838c2b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -29,6 +29,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
+ import net.md_5.bungee.netty.PacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.PacketWrapper;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+@@ -246,13 +247,22 @@ public class DownstreamBridge extends PacketHandler
+ 
+         if ( pluginMessage.getTag().equals( "MC|Brand" ) )
+         {
+-            ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
+-            String serverBrand = DefinedPacket.readString( brand );
+-            brand.release();
+-            brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
+-            pluginMessage.setData( brand );
+-            brand.release();
++            // Travertine start
++            if ( ProtocolConstants.isAfterOrEq( con.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++            {
++                ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
++                String serverBrand = DefinedPacket.readString( brand );
++                brand.release();
++                brand = ByteBufAllocator.DEFAULT.heapBuffer();
++                DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
++                pluginMessage.setData( brand );
++                brand.release();
++            } else
++            {
++                String serverBrand = new String( pluginMessage.getData(), "UTF-8" );
++                pluginMessage.setData( ( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand ).getBytes( "UTF-8" ) );
++            }
++            // Travertine end
+             // changes in the packet are ignored so we need to send it manually
+             con.unsafe().sendPacket( pluginMessage );
+             throw CancelSendSignal.INSTANCE;
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 132b73d..8223cba 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -13,6 +13,9 @@ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
+ import com.google.gson.Gson;
+ import java.util.concurrent.TimeUnit;
++
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.*;
+@@ -216,8 +219,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     @Override
+                     public void done(ProxyPingEvent pingResult, Throwable error)
+                     {
+-                        Gson gson = BungeeCord.getInstance().gson;
+-                        unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
++                        Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson; // Travertine
++                        // Travertine start
++                        if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
++                        {
++                            // Minecraft < 1.9 doesn't send string server descriptions as chat components. Older 1.7
++                            // clients even crash when encountering a chat component instead of a string. To be on the
++                            // safe side, always send legacy descriptions for < 1.9 clients.
++                            JsonElement element = gson.toJsonTree(pingResult.getResponse());
++                            Preconditions.checkArgument(element.isJsonObject(), "Response is not a JSON object");
++                            JsonObject object = element.getAsJsonObject();
++                            object.addProperty("description", pingResult.getResponse().getDescription());
++
++                            unsafe.sendPacket(new StatusResponse(gson.toJson(element)));
++                        } else
++                        {
++                            unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
++                        }
++                        // Travertine end
+                     }
+                 };
+ 
+@@ -498,7 +517,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                             userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
+                             userCon.init();
+ 
+-                            unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
++                            // Travertine start
++                            if ( ProtocolConstants.isAfterOrEq( getVersion() , ProtocolConstants.MINECRAFT_1_7_6 ) )
++                            {
++                                unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
++                            } else
++                            {
++                                unsafe.sendPacket( new LoginSuccess( getUUID(), getName() ) ); // Without dashes, for older clients.
++                            }
++                            // Travertine end
+                             ch.setProtocol( Protocol.GAME );
+ 
+                             ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+index 30fc756..ff30b61 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+@@ -53,7 +53,7 @@ public class PingHandler extends PacketHandler
+     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+     public void handle(StatusResponse statusResponse) throws Exception
+     {
+-        Gson gson = BungeeCord.getInstance().gson;
++        Gson gson = protocol == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson; // Travertine
+         callback.done( gson.fromJson( statusResponse.getResponse(), ServerPing.class ), null );
+         channel.close();
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 42bb2fb..3b6eeaf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -78,7 +78,12 @@ public class UpstreamBridge extends PacketHandler
+             } );
+             for ( ProxiedPlayer player : con.getServer().getInfo().getPlayers() )
+             {
+-                player.unsafe().sendPacket( packet );
++                // Travertine start
++                if ( ProtocolConstants.isAfterOrEq( player.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++                {
++                    player.unsafe().sendPacket( packet );
++                }
++                // Travertine end
+             }
+             con.getServer().setObsolete(true);
+             con.getServer().disconnect( "Quitting" );
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index 9a00c0f..daaee49 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -26,6 +26,10 @@ public abstract class EntityMap
+         // Travertine start
+         switch ( version )
+         {
++            case ProtocolConstants.MINECRAFT_1_7_2:
++                return EntityMap_1_7_2.INSTANCE;
++            case ProtocolConstants.MINECRAFT_1_7_6:
++                return EntityMap_1_7_6.INSTANCE;
+             case ProtocolConstants.MINECRAFT_1_8:
+                 return EntityMap_1_8.INSTANCE;
+             case ProtocolConstants.MINECRAFT_1_9:
+@@ -113,13 +117,17 @@ public abstract class EntityMap
+             return;
+         }
+ 
+-        if ( ints[packetId] )
+-        {
+-            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
+-        } else if ( varints[packetId] )
+-        {
+-            rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
++        // Travertine start - negative packet ids
++        if(packetId>=0) {
++            if ( ints[ packetId ] )
++            {
++                rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
++            } else if ( varints[ packetId ] )
++            {
++                rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
++            }
+         }
++        // Travertine end
+         packet.readerIndex( readerIndex );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
+new file mode 100644
+index 0000000..65c1a9e
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
+@@ -0,0 +1,102 @@
++// Travertine start
++package net.md_5.bungee.entitymap;
++
++import io.netty.buffer.ByteBuf;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++class EntityMap_1_7_2 extends EntityMap
++{
++
++    static final EntityMap INSTANCE = new EntityMap_1_7_2();
++
++    EntityMap_1_7_2()
++    {
++        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Equipment
++        addRewrite( 0x0A, ProtocolConstants.Direction.TO_CLIENT, false ); // Use bed
++        addRewrite( 0x0B, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation
++        addRewrite( 0x0C, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player
++        addRewrite( 0x0D, ProtocolConstants.Direction.TO_CLIENT, false ); // Collect Item
++        addRewrite( 0x0E, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object
++        addRewrite( 0x0F, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob
++        addRewrite( 0x10, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting
++        addRewrite( 0x11, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb
++        addRewrite( 0x12, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Velocity
++        addRewrite( 0x14, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity
++        addRewrite( 0x15, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Relative Move
++        addRewrite( 0x16, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Look
++        addRewrite( 0x17, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Look and Relative Move
++        addRewrite( 0x18, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Teleport
++        addRewrite( 0x19, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Head Look
++        addRewrite( 0x1A, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status
++        addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity
++        addRewrite( 0x1C, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Metadata
++        addRewrite( 0x1D, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Effect
++        addRewrite( 0x1E, ProtocolConstants.Direction.TO_CLIENT, false ); // Remove Entity Effect
++        addRewrite( 0x20, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Properties
++        addRewrite( 0x25, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation
++        addRewrite( 0x2C, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Global Entity
++
++        addRewrite( 0x02, ProtocolConstants.Direction.TO_SERVER, false ); // Use Entity
++        addRewrite( 0x0A, ProtocolConstants.Direction.TO_SERVER, false ); // Animation
++        addRewrite( 0x0B, ProtocolConstants.Direction.TO_SERVER, false ); // Entity Action
++    }
++
++    @Override
++    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
++    {
++        super.rewriteClientbound( packet, oldId, newId );
++
++        //Special cases
++        int readerIndex = packet.readerIndex();
++        int packetId = DefinedPacket.readVarInt( packet );
++        int packetIdLength = packet.readerIndex() - readerIndex;
++        if ( packetId == 0x0D /* Collect Item */ || packetId == 0x1B /* Attach Entity */ )
++        {
++            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength + 4 );
++        } else if ( packetId == 0x13 /* Destroy Entities */ )
++        {
++            int count = packet.getByte( packetIdLength );
++            for ( int i = 0; i < count; i++ )
++            {
++                rewriteInt( packet, oldId, newId, packetIdLength + 1 + i * 4 );
++            }
++        } else if ( packetId == 0x0E /* Spawn Object */ )
++        {
++            DefinedPacket.readVarInt( packet );
++            int type = packet.readUnsignedByte();
++
++            if ( type == 60 || type == 90 )
++            {
++                packet.skipBytes( 14 );
++                int position = packet.readerIndex();
++                int readId = packet.readInt();
++                int changedId = -1;
++                if ( readId == oldId )
++                {
++                    packet.setInt( position, newId );
++                    changedId = newId;
++                } else if ( readId == newId )
++                {
++                    packet.setInt( position, oldId );
++                    changedId = oldId;
++                }
++                if ( changedId != -1 )
++                {
++                    if ( changedId == 0 && readId != 0 )
++                    { // Trim off the extra data
++                        packet.readerIndex( readerIndex );
++                        packet.writerIndex( packet.readableBytes() - 6 );
++                    } else if ( changedId != 0 && readId == 0 )
++                    { // Add on the extra data
++                        packet.readerIndex( readerIndex );
++                        packet.capacity( packet.readableBytes() + 6 );
++                        packet.writerIndex( packet.readableBytes() + 6 );
++                    }
++                }
++            }
++        }
++        packet.readerIndex( readerIndex );
++    }
++}
++// Travertine end
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+new file mode 100644
+index 0000000..6755fe8
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+@@ -0,0 +1,62 @@
++// Travertine start
++package net.md_5.bungee.entitymap;
++
++import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
++import io.netty.buffer.ByteBuf;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.UserConnection;
++import net.md_5.bungee.connection.LoginResult;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++class EntityMap_1_7_6 extends EntityMap_1_7_2
++{
++
++    static final EntityMap_1_7_6 INSTANCE = new EntityMap_1_7_6();
++
++    @Override
++    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
++    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
++    {
++        super.rewriteClientbound( packet, oldId, newId );
++
++        int readerIndex = packet.readerIndex();
++        int packetId = DefinedPacket.readVarInt( packet );
++        int packetIdLength = packet.readerIndex() - readerIndex;
++        if ( packetId == 0x0C /* Spawn Player */ )
++        {
++            DefinedPacket.readVarInt( packet );
++            int idLength = packet.readerIndex() - readerIndex - packetIdLength;
++            String uuid = DefinedPacket.readString( packet );
++            String username = DefinedPacket.readString( packet );
++            int props = DefinedPacket.readVarInt( packet );
++            if ( props == 0 )
++            {
++                UserConnection player = (UserConnection) BungeeCord.getInstance().getPlayer( username );
++                if ( player != null )
++                {
++                    LoginResult profile = player.getPendingConnection().getLoginProfile();
++                    if ( profile != null && profile.getProperties() != null
++                            && profile.getProperties().length >= 1 )
++                    {
++                        ByteBuf rest = packet.copy();
++                        packet.readerIndex( readerIndex );
++                        packet.writerIndex( readerIndex + packetIdLength + idLength );
++                        DefinedPacket.writeString( player.getUniqueId().toString(), packet );
++                        DefinedPacket.writeString( username, packet );
++                        DefinedPacket.writeVarInt( profile.getProperties().length, packet );
++                        for ( LoginResult.Property property : profile.getProperties() )
++                        {
++                            DefinedPacket.writeString( property.getName(), packet );
++                            DefinedPacket.writeString( property.getValue(), packet );
++                            DefinedPacket.writeString( property.getSignature(), packet );
++                        }
++                        packet.writeBytes( rest );
++                        rest.release();
++                    }
++                }
++            }
++        }
++        packet.readerIndex( readerIndex );
++    }
++}
++// Travertine end
+diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+index 314fd43..732b2f5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+@@ -21,6 +21,12 @@ public class ForgeClientHandler
+     @NonNull
+     private final UserConnection con;
+ 
++    // Travertine start
++    @Getter
++    @Setter(AccessLevel.PACKAGE)
++    private boolean forgeOutdated = false;
++    // Travertine end
++
+     /**
+      * The users' mod list.
+      */
+@@ -156,4 +162,21 @@ public class ForgeClientHandler
+     {
+         return fmlTokenInHandshake || clientModList != null;
+     }
++
++    // Travertine start
++    /**
++     * Checks to see if a user is using an outdated FML build, and takes
++     * appropriate action on the User side. This should only be called during a
++     * server connection, by the ServerConnector
++     *
++     * @return <code>true</code> if the user's FML build is outdated, otherwise
++     * <code>false</code>
++     */
++    public boolean checkUserOutdated() {
++        if (forgeOutdated) {
++            con.disconnect(BungeeCord.getInstance().getTranslation("connect_kick_outdated_forge"));
++        }
++        return forgeOutdated;
++    }
++    // Travertine end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
+index d025863..4665880 100644
+--- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
++++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
+@@ -4,6 +4,7 @@ import java.util.Map;
+ import net.md_5.bungee.ServerConnector;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.forge.ForgeLogger.LogDirection;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ 
+ /**
+@@ -85,6 +86,22 @@ enum ForgeClientHandshakeState implements IForgeClientPacketHandler<ForgeClientH
+                     // Once we've done it, no point doing it again.
+                     Map<String, String> clientModList = ForgeUtils.readModList( message );
+                     con.getForgeClientHandler().setClientModList( clientModList );
++                    // Travertine start
++                    // If the user is below 1.8, we need to check the version of FML - it's not always an OK version.
++                    if ( ProtocolConstants.isBeforeOrEq( con.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) )
++                    {
++                        // Get the version from the mod list.
++                        int buildNumber = ForgeUtils.getFmlBuildNumber( clientModList );
++
++                        // If we get 0, we're probably using a testing build, so let it though. Otherwise, check the build number.
++                        if ( buildNumber < ForgeConstants.FML_MIN_BUILD_VERSION && buildNumber != 0 )
++                        {
++                            // Mark the user as an old Forge user. This will then cause any Forge ServerConnectors to cancel any
++                            // connections to it.
++                            con.getForgeClientHandler().setForgeOutdated( true );
++                        }
++                    }
++                    // Travertine end
+                 }
+ 
+                 return WAITINGSERVERDATA;
+diff --git a/proxy/src/main/java/net/md_5/bungee/tab/Global.java b/proxy/src/main/java/net/md_5/bungee/tab/Global.java
+index 7cbe1bb..958bb06 100644
+--- a/proxy/src/main/java/net/md_5/bungee/tab/Global.java
++++ b/proxy/src/main/java/net/md_5/bungee/tab/Global.java
+@@ -90,7 +90,26 @@ public class Global extends TabList
+             item.setGamemode( ( (UserConnection) p ).getGamemode() );
+             item.setPing( p.getPing() );
+         }
+-        player.unsafe().sendPacket( playerListItem );
++        // Travertine start
++        if ( ProtocolConstants.isAfterOrEq( player.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++        {
++            player.unsafe().sendPacket( playerListItem );
++        } else
++        {
++            // Split up the packet
++            for ( PlayerListItem.Item item : playerListItem.getItems() )
++            {
++                PlayerListItem packet = new PlayerListItem();
++                packet.setAction( playerListItem.getAction() );
++
++                packet.setItems( new PlayerListItem.Item[]
++                        {
++                                item
++                        } );
++                player.unsafe().sendPacket( packet );
++            }
++        }
++        // Travertine end
+         PlayerListItem packet = new PlayerListItem();
+         packet.setAction( PlayerListItem.Action.ADD_PLAYER );
+         PlayerListItem.Item item = new PlayerListItem.Item();
+diff --git a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
+index 0f7edad..a8792a4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
++++ b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
+@@ -12,6 +12,7 @@ public class ServerUnique extends TabList
+ {
+ 
+     private final Collection<UUID> uuids = new HashSet<>();
++    private final Collection<String> usernames = new HashSet<>(); // Travertine - Support for <=1.7.9
+ 
+     public ServerUnique(ProxiedPlayer player)
+     {
+@@ -25,10 +26,26 @@ public class ServerUnique extends TabList
+         {
+             if ( playerListItem.getAction() == PlayerListItem.Action.ADD_PLAYER )
+             {
+-                uuids.add( item.getUuid() );
++                // Travertine start
++                if ( item.getUuid() != null )
++                {
++                    uuids.add( item.getUuid() );
++                } else
++                {
++                    usernames.add( item.getUsername() );
++                }
++                // Travertine end
+             } else if ( playerListItem.getAction() == PlayerListItem.Action.REMOVE_PLAYER )
+             {
+-                uuids.remove( item.getUuid() );
++                // Travertine start
++                if ( item.getUuid() != null )
++                {
++                    uuids.remove( item.getUuid() );
++                } else
++                {
++                    usernames.remove( item.getUsername() );
++                }
++                // Travertine end
+             }
+         }
+         player.unsafe().sendPacket( playerListItem );
+@@ -45,16 +62,44 @@ public class ServerUnique extends TabList
+     {
+         PlayerListItem packet = new PlayerListItem();
+         packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
+-        PlayerListItem.Item[] items = new PlayerListItem.Item[ uuids.size() ];
++        PlayerListItem.Item[] items = new PlayerListItem.Item[ uuids.size() + usernames.size() ]; // Travertine
+         int i = 0;
+         for ( UUID uuid : uuids )
+         {
+             PlayerListItem.Item item = items[i++] = new PlayerListItem.Item();
+             item.setUuid( uuid );
+         }
++        // Travertine start
++        for ( String username : usernames )
++        {
++            PlayerListItem.Item item = items[i++] = new PlayerListItem.Item();
++            item.setUsername( username );
++            item.setDisplayName( username );
++        }
++        // Travertine end
+         packet.setItems( items );
+-        player.unsafe().sendPacket( packet );
++        // Travertine start
++        if ( ProtocolConstants.isAfterOrEq( player.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
++        {
++            player.unsafe().sendPacket( packet );
++        } else
++        {
++            // Split up the packet
++            for ( PlayerListItem.Item item : packet.getItems() )
++            {
++                PlayerListItem p2 = new PlayerListItem();
++                p2.setAction( packet.getAction() );
++
++                p2.setItems( new PlayerListItem.Item[]
++                        {
++                                item
++                        } );
++                player.unsafe().sendPacket( p2 );
++            }
++        }
++        // Travertine end
+         uuids.clear();
++        usernames.clear(); // Travertine
+     }
+ 
+     @Override
+-- 
+2.7.4 (Apple Git-66)
+

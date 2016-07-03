@@ -1,0 +1,1209 @@
+From 418a16268deded615a49ed3e8af376298499ac49 Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Mon, 27 Jun 2016 13:03:49 -0700
+Subject: [PATCH] Refactor deserialization code
+
+Now there are seperate methods for deserializing 'modern' versions (that bungeecord supports), and for deserializing old packets.
+
+diff --git a/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketModern.java b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketModern.java
+new file mode 100644
+index 0000000..1040430
+--- /dev/null
++++ b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketModern.java
+@@ -0,0 +1,54 @@
++package io.github.waterfallmc.travertine.protocol;
++
++import io.netty.buffer.ByteBuf;
++
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public abstract class MultiVersionPacketModern extends DefinedPacket
++{
++
++    protected void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        read( buf );
++    }
++
++    @Override
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        modernRead(buf, direction, protocolVersion);
++    }
++
++    protected void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        write( buf );
++    }
++
++    @Override
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        modernWrite(buf, direction, protocolVersion);
++    }
++
++    protected void modernRead(ByteBuf buf)
++    {
++        throw new UnsupportedOperationException( "Packet must implement read method" );
++    }
++
++    @Override
++    public void read(ByteBuf buf)
++    {
++        modernRead( buf );
++    }
++
++    protected void modernWrite(ByteBuf buf)
++    {
++        throw new UnsupportedOperationException( "Packet must implement write method" );
++    }
++
++    @Override
++    public void write(ByteBuf buf)
++    {
++        modernWrite( buf );
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 9c08686..94b7ccc 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol;
+ 
+ import com.google.common.base.Charsets;
++import com.google.common.base.Preconditions;
++
+ import io.netty.buffer.ByteBuf;
+ import java.util.ArrayList;
+ import java.util.List;
+@@ -175,25 +177,15 @@ public abstract class DefinedPacket
+         return new UUID( input.readLong(), input.readLong() );
+     }
+ 
+-    public void read(ByteBuf buf)
+-    {
+-        throw new UnsupportedOperationException( "Packet must implement read method" );
+-    }
++    // Travertine start
++    public abstract void read(ByteBuf buf);
+ 
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+-    {
+-        read( buf );
+-    }
++    public abstract void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
+ 
+-    public void write(ByteBuf buf)
+-    {
+-        throw new UnsupportedOperationException( "Packet must implement write method" );
+-    }
++    public abstract void write(ByteBuf buf);
+ 
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+-    {
+-        write( buf );
+-    }
++    public abstract void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion);
++    // Travertine end
+ 
+     public abstract void handle(AbstractPacketHandler handler) throws Exception;
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/BossBar.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/BossBar.java
+index 6b78765..d865af3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/BossBar.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/BossBar.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+@@ -7,13 +8,12 @@ import lombok.NoArgsConstructor;
+ import io.netty.buffer.ByteBuf;
+ import java.util.UUID;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class BossBar extends DefinedPacket
++public class BossBar extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private UUID uuid;
+@@ -31,7 +31,7 @@ public class BossBar extends DefinedPacket
+     }
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         uuid = readUUID( buf );
+         action = readVarInt( buf );
+@@ -67,7 +67,7 @@ public class BossBar extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeUUID( uuid, buf );
+         writeVarInt( action, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+index 95ad39b..eccb08c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Chat extends DefinedPacket
++public class Chat extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String message;
+@@ -25,7 +25,7 @@ public class Chat extends DefinedPacket
+     }
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         message = readString( buf );
+         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
+@@ -35,7 +35,7 @@ public class Chat extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( message, buf );
+         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+index 5c79727..328ceab 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -13,7 +14,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ClientSettings extends DefinedPacket
++public class ClientSettings extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String locale;
+@@ -25,7 +26,7 @@ public class ClientSettings extends DefinedPacket
+     private int mainHand;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         locale = readString( buf );
+         viewDistance = buf.readByte();
+@@ -39,7 +40,7 @@ public class ClientSettings extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( locale, buf );
+         buf.writeByte( viewDistance );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientStatus.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientStatus.java
+index d4314dc..93ee866 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientStatus.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientStatus.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -12,19 +13,19 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ClientStatus extends DefinedPacket
++public class ClientStatus extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private byte payload;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         payload = buf.readByte();
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         buf.writeByte( payload );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+index a29524c..12d26e3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+@@ -1,19 +1,19 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionRequest extends DefinedPacket
++public class EncryptionRequest extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String serverId;
+@@ -21,7 +21,7 @@ public class EncryptionRequest extends DefinedPacket
+     private byte[] verifyToken;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         serverId = readString( buf );
+         publicKey = readArray( buf );
+@@ -29,7 +29,7 @@ public class EncryptionRequest extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( serverId, buf );
+         writeArray( publicKey, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+index 06676e4..87a7887 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
+@@ -1,11 +1,12 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
++
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+@@ -13,21 +14,21 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EncryptionResponse extends DefinedPacket
++public class EncryptionResponse extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private byte[] sharedSecret;
+     private byte[] verifyToken;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         sharedSecret = readArray( buf, 128 );
+         verifyToken = readArray( buf, 128 );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeArray( sharedSecret, buf );
+         writeArray( verifyToken, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 930b347..b8b5836 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -12,7 +13,7 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Handshake extends DefinedPacket
++public class Handshake extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private int protocolVersion;
+@@ -21,7 +22,7 @@ public class Handshake extends DefinedPacket
+     private int requestedProtocol;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         protocolVersion = readVarInt( buf );
+         host = readString( buf );
+@@ -30,7 +31,7 @@ public class Handshake extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeVarInt( protocolVersion, buf );
+         writeString( host, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+index 0960b7d..773c4a5 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,19 +13,19 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class KeepAlive extends DefinedPacket
++public class KeepAlive extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private int randomId;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         randomId = readVarInt( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeVarInt( randomId, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Kick.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Kick.java
+index 05ae1ae..54ff510 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Kick.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Kick.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -12,19 +13,19 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Kick extends DefinedPacket
++public class Kick extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String message;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         message = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeString( message, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyHandshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyHandshake.java
+index 50d7381..3d3620c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyHandshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyHandshake.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -10,17 +11,17 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class LegacyHandshake extends DefinedPacket
++public class LegacyHandshake extends MultiVersionPacketModern // Travertine
+ {
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         throw new UnsupportedOperationException( "Not supported yet." );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         throw new UnsupportedOperationException( "Not supported yet." );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyPing.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyPing.java
+index b0f9be2..dc30f40 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyPing.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LegacyPing.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.RequiredArgsConstructor;
+@@ -11,19 +12,19 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @Data
+ @RequiredArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class LegacyPing extends DefinedPacket
++public class LegacyPing extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private final boolean v1_5;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+index 2e3915c..fa2143d 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Login extends DefinedPacket
++public class Login extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private int entityId;
+@@ -25,7 +25,7 @@ public class Login extends DefinedPacket
+     private boolean reducedDebugInfo;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         entityId = buf.readInt();
+         gameMode = buf.readUnsignedByte();
+@@ -46,7 +46,7 @@ public class Login extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         buf.writeInt( entityId );
+         buf.writeByte( gameMode );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+index 32ba098..81e9c66 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+@@ -4,6 +4,7 @@
+  */
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -16,19 +17,19 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class LoginRequest extends DefinedPacket
++public class LoginRequest extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String data;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         data = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeString( data, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginSuccess.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginSuccess.java
+index 09c718b..ca25e86 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginSuccess.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginSuccess.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -12,21 +13,21 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class LoginSuccess extends DefinedPacket
++public class LoginSuccess extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String uuid;
+     private String username;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         uuid = readString( buf );
+         username = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeString( uuid, buf );
+         writeString( username, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PingPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PingPacket.java
+index 5f24d42..7a1a51c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PingPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PingPacket.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -12,19 +13,19 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PingPacket extends DefinedPacket
++public class PingPacket extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private long time;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         time = buf.readLong();
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         buf.writeLong( time );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListHeaderFooter.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListHeaderFooter.java
+index e76fcab..463aeaa 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListHeaderFooter.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListHeaderFooter.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -7,28 +8,27 @@ import lombok.NoArgsConstructor;
+ 
+ import io.netty.buffer.ByteBuf;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PlayerListHeaderFooter extends DefinedPacket
++public class PlayerListHeaderFooter extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String header;
+     private String footer;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         header = readString( buf );
+         footer = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( header, buf );
+         writeString( footer, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+index 9983ef2..ff802ae 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
+@@ -1,6 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -13,14 +15,14 @@ import java.util.UUID;
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PlayerListItem extends DefinedPacket
++public class PlayerListItem extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private Action action;
+     private Item[] items;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         action = Action.values()[DefinedPacket.readVarInt( buf )];
+         items = new Item[ DefinedPacket.readVarInt( buf ) ];
+@@ -74,7 +76,7 @@ public class PlayerListItem extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         DefinedPacket.writeVarInt( action.ordinal(), buf );
+         DefinedPacket.writeVarInt( items.length, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+index e1344b3..f980339 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+@@ -1,7 +1,8 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+ import com.google.common.base.Preconditions;
+-import net.md_5.bungee.protocol.DefinedPacket;
++
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import java.io.ByteArrayInputStream;
+ import java.io.DataInput;
+@@ -18,7 +19,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class PluginMessage extends DefinedPacket
++public class PluginMessage extends MultiVersionPacketModern // Travertine
+ {
+ 
+     public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
+@@ -43,7 +44,7 @@ public class PluginMessage extends DefinedPacket
+     private boolean allowExtendedPacket = false;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         tag = readString( buf );
+         int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
+@@ -53,7 +54,7 @@ public class PluginMessage extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( tag, buf );
+         buf.writeBytes( data );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
+index d0a7529..ca724fb 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -12,7 +13,7 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Respawn extends DefinedPacket
++public class Respawn extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private int dimension;
+@@ -21,7 +22,7 @@ public class Respawn extends DefinedPacket
+     private String levelType;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         dimension = buf.readInt();
+         difficulty = buf.readUnsignedByte();
+@@ -30,7 +31,7 @@ public class Respawn extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         buf.writeInt( dimension );
+         buf.writeByte( difficulty );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
+index 3a6830d..db5b500 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+@@ -12,7 +13,7 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardDisplay extends DefinedPacket
++public class ScoreboardDisplay extends MultiVersionPacketModern // Travertine
+ {
+ 
+     /**
+@@ -22,14 +23,14 @@ public class ScoreboardDisplay extends DefinedPacket
+     private String name;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         position = buf.readByte();
+         name = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         buf.writeByte( position );
+         writeString( name, buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+index ef9b8cf..9c749f0 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardObjective extends DefinedPacket
++public class ScoreboardObjective extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String name;
+@@ -25,7 +25,7 @@ public class ScoreboardObjective extends DefinedPacket
+     private byte action;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         name = readString( buf );
+         action = buf.readByte();
+@@ -37,7 +37,7 @@ public class ScoreboardObjective extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( name, buf );
+         buf.writeByte( action );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+index 6f0de53..c2cc0ae 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class ScoreboardScore extends DefinedPacket
++public class ScoreboardScore extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String itemName;
+@@ -25,7 +25,7 @@ public class ScoreboardScore extends DefinedPacket
+     private int value;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         itemName = readString( buf );
+         action = buf.readByte();
+@@ -37,7 +37,7 @@ public class ScoreboardScore extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( itemName, buf );
+         buf.writeByte( action );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/SetCompression.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/SetCompression.java
+index 086e3e6..59ea726 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/SetCompression.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/SetCompression.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,19 +14,19 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class SetCompression extends DefinedPacket
++public class SetCompression extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private int threshold;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         threshold = DefinedPacket.readVarInt( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         DefinedPacket.writeVarInt( threshold, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusRequest.java
+index 738f0c9..8235da2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusRequest.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+@@ -10,16 +11,16 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class StatusRequest extends DefinedPacket
++public class StatusRequest extends MultiVersionPacketModern // Travertine
+ {
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+     }
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusResponse.java
+index 69a9d46..964c6bb 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/StatusResponse.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -12,19 +13,19 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class StatusResponse extends DefinedPacket
++public class StatusResponse extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String response;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         response = readString( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeString( response, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+index e3bcbc3..8e7c58f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class TabCompleteRequest extends DefinedPacket
++public class TabCompleteRequest extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String cursor;
+@@ -22,7 +22,7 @@ public class TabCompleteRequest extends DefinedPacket
+     private long position;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         cursor = readString( buf );
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+@@ -37,7 +37,7 @@ public class TabCompleteRequest extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( cursor, buf );
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+@@ -58,3 +58,4 @@ public class TabCompleteRequest extends DefinedPacket
+         handler.handle( this );
+     }
+ }
++
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
+index ebce9a6..ebbac63 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import io.netty.buffer.ByteBuf;
+ import java.util.List;
+@@ -13,19 +14,19 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class TabCompleteResponse extends DefinedPacket
++public class TabCompleteResponse extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private List<String> commands;
+ 
+     @Override
+-    public void read(ByteBuf buf)
++    public void modernRead(ByteBuf buf) // Travertine
+     {
+         commands = readStringArray( buf );
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf)
++    public void modernWrite(ByteBuf buf) // Travertine
+     {
+         writeStringArray( commands, buf );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+index b470579..962c267 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+@@ -1,6 +1,6 @@
+ package net.md_5.bungee.protocol.packet;
+ 
+-import net.md_5.bungee.protocol.DefinedPacket;
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Team extends DefinedPacket
++public class Team extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private String name;
+@@ -40,7 +40,7 @@ public class Team extends DefinedPacket
+     }
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         name = readString( buf );
+         mode = buf.readByte();
+@@ -69,7 +69,7 @@ public class Team extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeString( name, buf );
+         buf.writeByte( mode );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Title.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Title.java
+index 79a1257..cb7719f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Title.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Title.java
+@@ -1,18 +1,18 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketModern;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ 
+ import io.netty.buffer.ByteBuf;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class Title extends DefinedPacket
++public class Title extends MultiVersionPacketModern // Travertine
+ {
+ 
+     private Action action;
+@@ -26,7 +26,7 @@ public class Title extends DefinedPacket
+     private int fadeOut;
+ 
+     @Override
+-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernRead(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         action = Action.values()[readVarInt( buf )];
+         switch ( action )
+@@ -44,7 +44,7 @@ public class Title extends DefinedPacket
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
+     {
+         writeVarInt( action.ordinal(), buf );
+         switch ( action )
+-- 
+2.7.4 (Apple Git-66)
+
