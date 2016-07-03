@@ -1,4 +1,4 @@
-From caa48805ff72ccbb8c30fb708275c289b9e95cd9 Mon Sep 17 00:00:00 2001
+From 907b18736cb53a6ddb79b3d5728672b2bf7e737f Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Sun, 3 Jul 2016 02:45:37 -0400
 Subject: [PATCH] 1.7.x Client Support
@@ -1043,7 +1043,7 @@ index 47b37c0..8766eb9 100644
              this.compressionThreshold = compressionThreshold;
              unsafe.sendPacket( new SetCompression( compressionThreshold ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8ce578e..d838c2b 100644
+index 8ce578e..158386b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
@@ -1054,7 +1054,7 @@ index 8ce578e..d838c2b 100644
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
-@@ -246,13 +247,22 @@ public class DownstreamBridge extends PacketHandler
+@@ -246,13 +247,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "MC|Brand" ) )
          {
@@ -1068,13 +1068,19 @@ index 8ce578e..d838c2b 100644
 +            // Travertine start
 +            if ( ProtocolConstants.isAfterOrEq( con.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
 +            {
-+                ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
-+                String serverBrand = DefinedPacket.readString( brand );
-+                brand.release();
-+                brand = ByteBufAllocator.DEFAULT.heapBuffer();
-+                DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
-+                pluginMessage.setData( brand );
-+                brand.release();
++                try
++                {
++                    ByteBuf brand = Unpooled.wrappedBuffer(pluginMessage.getData());
++                    String serverBrand = DefinedPacket.readString(brand);
++                    brand.release();
++                    brand = ByteBufAllocator.DEFAULT.heapBuffer();
++                    DefinedPacket.writeString(bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand);
++                    pluginMessage.setData(brand);
++                    brand.release();
++                } catch (Exception ProtocolHacksSuck)
++                {
++                    return;
++                }
 +            } else
 +            {
 +                String serverBrand = new String( pluginMessage.getData(), "UTF-8" );
