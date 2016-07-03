@@ -1,4 +1,4 @@
-# Waterfall <a href="https://ci.getwaterfall.xyz/project.html?projectId=Waterfall"><img src="https://ci.getwaterfall.xyz/app/rest/builds/buildType:Waterfall_Build,branch:master/statusIcon"/></a>
+# Waterfall [![Build Status](https://ci.aquifermc.org/job/Waterfall/badge/icon)](https://ci.aquifermc.org/job/Waterfall/)
 
 Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
 
