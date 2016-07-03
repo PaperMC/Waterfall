@@ -1,4 +1,4 @@
-From 248f19f83a821f87e64714766803284e73187be8 Mon Sep 17 00:00:00 2001
+From 2b3864af48ff9c7a5bea57ea40e2f8a8ebe3336a Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
 Subject: [PATCH] Fetch modules from the Waterfall CI
@@ -6,7 +6,7 @@ Subject: [PATCH] Fetch modules from the Waterfall CI
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 9bd2dc9..97a08da 100644
+index 9bd2dc9..fa14161 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 @@ -1,10 +1,11 @@
@@ -28,18 +28,18 @@ index 9bd2dc9..97a08da 100644
          try
          {
 -            URL website = new URL( "http://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Waterfall_Build/" + version.getBuild() + "/" + module.getName() + ".jar"  );
++            URL website = new URL( "https://ci.aquifermc.org/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
              URLConnection con = website.openConnection();
              // 15 second timeout at various stages
              con.setConnectTimeout( 15000 );
              con.setReadTimeout( 15000 );
-+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
++            con.setRequestProperty( "User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36" );
  
 -            Files.write( ByteStreams.toByteArray( con.getInputStream() ), module.getFile() );
-+            Files.copy(con.getInputStream(), module.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
++            Files.copy( con.getInputStream(), module.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING );
              System.out.println( "Download complete" );
          } catch ( IOException ex )
          {
 -- 
-2.8.3
+2.8.2
 
