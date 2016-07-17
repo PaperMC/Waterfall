@@ -1,23 +1,23 @@
-From 585b5449ed9e6be1f52a33e6eb19dd9ed7a5a41e Mon Sep 17 00:00:00 2001
+From 122422dc3cd5b263372cd535c229ed716a5fc9f2 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Sun, 14 Feb 2016 01:03:27 -0500
 Subject: [PATCH] Reduce max log size to 8MB and don't append to existing log
  files
 
 
-diff --git a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
-index cde3194..54275f6 100644
---- a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
-+++ b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+diff --git a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+index 9598fff..2a2e0ed 100644
+--- a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
++++ b/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
 @@ -27,7 +27,7 @@ public class BungeeLogger extends Logger
  
          try
          {
--            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 24, 8, true );
-+            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 23, 8, false );
+-            FileHandler fileHandler = new FileHandler( filePattern, 1 << 24, 8, true );
++            FileHandler fileHandler = new FileHandler( filePattern, 1 << 23, 8, false );
              fileHandler.setFormatter( formatter );
              addHandler( fileHandler );
  
 -- 
-2.8.3
+2.7.4 (Apple Git-66)
 

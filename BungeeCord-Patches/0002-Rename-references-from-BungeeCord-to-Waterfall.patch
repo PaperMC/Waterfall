@@ -1,4 +1,4 @@
-From 3daf09a3028b210960c6e169859f3d81513d93b2 Mon Sep 17 00:00:00 2001
+From 22e693910307942ab8c324265daca16231ecb8e6 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -26,6 +26,19 @@ index 3c1bbe9..5e1773c 100644
          bungee.start();
  
          if ( !options.has( "noconsole" ) )
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index f1ccd4f..d703d6d 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "BungeeCord Logger Thread" );
++        super( "Waterfall Logger Thread" );
+         this.logger = logger;
+     }
+ 
 diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
 index 9d51608..446dfe2 100644
 --- a/proxy/src/main/java/Test.java
@@ -40,7 +53,7 @@ index 9d51608..446dfe2 100644
  
          while ( bungee.isRunning )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ac08d8e..8ce4ced 100644
+index 9825b99..bed662d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -172,7 +172,7 @@ public class BungeeCord extends ProxyServer
@@ -100,19 +113,6 @@ index c7547c7..82ff91a 100644
              boolean restricted = get( "restricted", false, val );
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
-diff --git a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-index f1ccd4f..d703d6d 100644
---- a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-+++ b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
- 
-     public LogDispatcher(BungeeLogger logger)
-     {
--        super( "BungeeCord Logger Thread" );
-+        super( "Waterfall Logger Thread" );
-         this.logger = logger;
-     }
- 
 -- 
 2.7.4 (Apple Git-66)
 

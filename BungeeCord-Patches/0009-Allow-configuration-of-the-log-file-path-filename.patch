@@ -1,22 +1,22 @@
-From 8a70c2911d76569ad26348f69161a8d425b8999d Mon Sep 17 00:00:00 2001
+From 150ebe200bbed2b5822168b258f8b6443c8c6e89 Mon Sep 17 00:00:00 2001
 From: Aikar <aikar@aikar.co>
 Date: Fri, 11 Sep 2015 23:50:52 -0400
 Subject: [PATCH] Allow configuration of the log file path/filename
 
 
-diff --git a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
-index 94e924b..cde3194 100644
---- a/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
-+++ b/proxy/src/main/java/net/md_5/bungee/log/BungeeLogger.java
-@@ -27,7 +27,7 @@ public class BungeeLogger extends Logger
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 177f4d7..4e7702bd 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -206,7 +206,7 @@ public class BungeeCord extends ProxyServer
+         consoleReader = new ConsoleReader();
+         consoleReader.setExpandEvents( false );
  
-         try
-         {
--            FileHandler fileHandler = new FileHandler( "proxy.log", 1 << 24, 8, true );
-+            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 24, 8, true );
-             fileHandler.setFormatter( formatter );
-             addHandler( fileHandler );
+-        logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
++        logger = new BungeeLogger( "BungeeCord", System.getProperty("bungee.log-file", "proxy.log"), consoleReader );
+         System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
+         System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
  
 -- 
-2.8.3
+2.7.4 (Apple Git-66)
 

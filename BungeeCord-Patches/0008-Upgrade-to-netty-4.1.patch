@@ -1,4 +1,4 @@
-From dedf4862695f0f2aae5d43f3acb1ac2f7e0104cb Mon Sep 17 00:00:00 2001
+From 9815eaa1ddf85d5d73c6b2b2b5b67d8d8e6d3a59 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Upgrade to netty 4.1
@@ -7,15 +7,15 @@ Don't access a ByteBuf's underlying array with ByteBuf.array()
   - ByteBuf.array() returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/pom.xml b/pom.xml
-index 309f43d..6fe9ef4 100644
+index ead929e..bd19538 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -82,7 +82,7 @@
+@@ -83,7 +83,7 @@
  
      <properties>
          <build.number>unknown</build.number>
--        <netty.version>4.0.33.Final</netty.version>
-+        <netty.version>4.1.0.CR7</netty.version>
+-        <netty.version>4.0.39.Final</netty.version>
++        <netty.version>4.1.3.Final</netty.version>
          <!-- Require Java 8 -->
          <maven.compiler.source>1.8</maven.compiler.source>
          <maven.compiler.target>1.8</maven.compiler.target>
@@ -72,27 +72,27 @@ index bbaef39..e1344b3 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index dd00192..e941803 100644
+index 977b3de..e941803 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -199,7 +199,7 @@ public class ServerConnector extends PacketHandler
  
              ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
--            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand.array().clone(), handshakeHandler.isServerForge() ) );
+-            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", DefinedPacket.readArray( brand ), handshakeHandler.isServerForge() ) );
 +            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand, handshakeHandler.isServerForge() ) );
              brand.release();
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index cb9dbaf..2fcc7db 100644
+index 3daab36..2fcc7db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -235,7 +235,7 @@ public class DownstreamBridge extends PacketHandler
              brand.release();
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
--            pluginMessage.setData( brand.array().clone() );
+-            pluginMessage.setData( DefinedPacket.readArray( brand ) );
 +            pluginMessage.setData( brand );
              brand.release();
              // changes in the packet are ignored so we need to send it manually
