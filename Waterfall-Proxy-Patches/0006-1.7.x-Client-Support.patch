@@ -1,4 +1,4 @@
-From 907b18736cb53a6ddb79b3d5728672b2bf7e737f Mon Sep 17 00:00:00 2001
+From fa0a1f1d3d5db23727e8c83e753fb8b27d145c88 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Sun, 3 Jul 2016 02:45:37 -0400
 Subject: [PATCH] 1.7.x Client Support
@@ -804,7 +804,7 @@ index 962c267..4516330 100644
      public void modernWrite(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) // Travertine
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cc728c7..af2d586 100644
+index 0863053..127d0a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -149,6 +149,14 @@ public class BungeeCord extends ProxyServer
@@ -907,7 +907,7 @@ index dc49bb6..fff9988 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index beb8fa6..88aa57f 100644
+index d16fa57..0e6c833 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -952,7 +952,7 @@ index beb8fa6..88aa57f 100644
          } else
          {
              user.getServer().setObsolete( true );
-@@ -359,6 +372,12 @@ public class ServerConnector extends PacketHandler
+@@ -363,6 +376,12 @@ public class ServerConnector extends PacketHandler
          if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )
          {
              this.handshakeHandler.handle( pluginMessage );
@@ -966,7 +966,7 @@ index beb8fa6..88aa57f 100644
              // We send the message as part of the handler, so don't send it here.
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 47b37c0..8766eb9 100644
+index fead216..5fce59e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -208,6 +208,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -977,7 +977,7 @@ index 47b37c0..8766eb9 100644
          displayName = name;
      }
  
-@@ -427,7 +428,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -437,7 +438,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent... message)
      {
          // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -986,7 +986,7 @@ index 47b37c0..8766eb9 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
          } else
-@@ -440,7 +441,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -450,7 +451,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent message)
      {
          // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -995,7 +995,7 @@ index 47b37c0..8766eb9 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
          } else
-@@ -577,19 +578,29 @@ public final class UserConnection implements ProxiedPlayer
+@@ -587,19 +588,29 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1033,7 +1033,7 @@ index 47b37c0..8766eb9 100644
      }
  
      @Override
-@@ -612,7 +623,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -622,7 +633,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1043,7 +1043,7 @@ index 47b37c0..8766eb9 100644
              this.compressionThreshold = compressionThreshold;
              unsafe.sendPacket( new SetCompression( compressionThreshold ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8ce578e..158386b 100644
+index 6463f75..4f999de 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
@@ -1054,7 +1054,7 @@ index 8ce578e..158386b 100644
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
-@@ -246,13 +247,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -245,13 +246,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "MC|Brand" ) )
          {

@@ -1,4 +1,4 @@
-From 3c36519ae2b58024198c6425707ee6530105ddad Mon Sep 17 00:00:00 2001
+From 53732747330eb41290f17e8e25e8aadc9e30838d Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -39,6 +39,19 @@ index 3e3ff61..a8d4418 100644
          bungee.start();
  
          if ( !options.has( "noconsole" ) )
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index d703d6d..d8dcdc1 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "Waterfall Logger Thread" );
++        super( "Travertine Logger Thread" );
+         this.logger = logger;
+     }
+ 
 diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
 index 446dfe2..f068a38 100644
 --- a/proxy/src/main/java/Test.java
@@ -53,7 +66,7 @@ index 446dfe2..f068a38 100644
  
          while ( bungee.isRunning )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 92ea9b5..d0ffb70 100644
+index 1d6e535..0863053 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -174,7 +174,7 @@ public class BungeeCord extends ProxyServer
@@ -113,32 +126,6 @@ index 4ec9782..25e9781 100644
              boolean restricted = get( "restricted", false, val );
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
-diff --git a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-index d703d6d..d8dcdc1 100644
---- a/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-+++ b/proxy/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
- 
-     public LogDispatcher(BungeeLogger logger)
-     {
--        super( "Waterfall Logger Thread" );
-+        super( "Travertine Logger Thread" );
-         this.logger = logger;
-     }
- 
-diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 97a08da..f67df84 100644
---- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-+++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -19,7 +19,7 @@ public class JenkinsModuleSource implements ModuleSource
-         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
-         try
-         {
--            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Waterfall_Build/" + version.getBuild() + "/" + module.getName() + ".jar"  );
-+            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Travertine_Build/" + version.getBuild() + "/" + module.getName() + ".jar"  );
-             URLConnection con = website.openConnection();
-             // 15 second timeout at various stages
-             con.setConnectTimeout( 15000 );
 -- 
 2.7.4 (Apple Git-66)
 

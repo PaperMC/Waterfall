@@ -1,4 +1,4 @@
-From 7aa7359005c392b4d3a2430506a7aa0d62334f88 Mon Sep 17 00:00:00 2001
+From 719dee4b38c3f70c332121518e23845796d59fcd Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Mon, 27 Jun 2016 01:56:24 -0400
 Subject: [PATCH] POM Changes
@@ -183,6 +183,42 @@ index 60970e9..ac5a4c2 100644
  
      <dependencies>
          <dependency>
+diff --git a/log/pom.xml b/log/pom.xml
+index 70b874a..281d6fd 100644
+--- a/log/pom.xml
++++ b/log/pom.xml
+@@ -5,18 +5,18 @@
+ 
+     <parent>
+         <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <artifactId>travertine-parent</artifactId>
+         <version>1.10-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+     <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log</artifactId>
++    <artifactId>travertine-log</artifactId>
+     <version>1.10-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Log</name>
+-    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++    <name>Travertine-Log</name>
++    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Travertine and Minecraft related applications.</description>
+ 
+     <dependencies>
+         <dependency>
+@@ -27,7 +27,7 @@
+         </dependency>
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <artifactId>travertine-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 index 0c076f9..9ef13e2 100644
 --- a/module/cmd-alert/pom.xml
@@ -367,7 +403,7 @@ index a2b422c..c4ecb05 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 6fe9ef4..2134785 100644
+index bd19538..c40c7f7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -10,14 +10,14 @@
@@ -400,7 +436,7 @@ index 6fe9ef4..2134785 100644
      </developers>
  
      <modules>
-@@ -56,13 +59,13 @@
+@@ -57,13 +60,13 @@
      </modules>
  
      <scm>
@@ -452,7 +488,7 @@ index 58e107e..5f74b5e 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 9d792b5..1079c13 100644
+index f7277d6..173c8c1 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -5,17 +5,17 @@
@@ -476,12 +512,19 @@ index 9d792b5..1079c13 100644
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <dependencies>
-@@ -40,25 +40,25 @@
+@@ -34,31 +34,31 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>waterfall-api</artifactId>
 +            <artifactId>travertine-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-log</artifactId>
++            <artifactId>travertine-log</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
