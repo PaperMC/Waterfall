@@ -98,3 +98,4 @@ else
   - It is fine to go over 80 lines as long as it doesn't hurt readability
   - There are exceptions, especially in Bungeecord-related files
   - When in doubt, use the same style as the surrounding code
+
