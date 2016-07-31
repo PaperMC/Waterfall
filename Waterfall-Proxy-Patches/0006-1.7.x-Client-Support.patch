@@ -1,4 +1,4 @@
-From 08d8afad706d9e076f7043d4c92c1367b6cb4869 Mon Sep 17 00:00:00 2001
+From fcd2eb6144900c87a33b5aa66658f13f60020dc0 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Sun, 3 Jul 2016 02:45:37 -0400
 Subject: [PATCH] 1.7.x Client Support
@@ -101,7 +101,7 @@ index 0000000..96b6131
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 4decbb2..0ce7719 100644
+index 4decbb2..a6a2ba3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -255,6 +255,8 @@ public enum Protocol
@@ -113,6 +113,15 @@ index 4decbb2..0ce7719 100644
                      ProtocolConstants.MINECRAFT_1_9
              ) );
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
+@@ -291,7 +293,7 @@ public enum Protocol
+             }
+             if ( !hasPacket(id, supportsForge) )
+             {
+-                throw new BadPacketException( "Packet with id " + id + " outside of range " );
++                return null; // Travertine - 1.7 negative packets.
+             }
+ 
+             Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors.get( id );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 index e77808a..c637c20 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
@@ -965,14 +974,14 @@ index d16fa57..8fa3e3e 100644
              // We send the message as part of the handler, so don't send it here.
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index fead216..5fce59e 100644
+index fead216..e05950d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -208,6 +208,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
-+        Preconditions.checkArgument(name.length() <= 16, "Display name cannot be longer than 16 characters"); // Travertine
++        Preconditions.checkArgument( name.length() <= 16, "Display name cannot be longer than 16 characters" ); // Travertine
          displayName = name;
      }
  
@@ -1179,7 +1188,7 @@ index 42bb2fb..3b6eeaf 100644
              con.getServer().setObsolete(true);
              con.getServer().disconnect( "Quitting" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 9a00c0f..daaee49 100644
+index 9a00c0f..50007c6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -26,6 +26,10 @@ public abstract class EntityMap
@@ -1193,30 +1202,6 @@ index 9a00c0f..daaee49 100644
              case ProtocolConstants.MINECRAFT_1_8:
                  return EntityMap_1_8.INSTANCE;
              case ProtocolConstants.MINECRAFT_1_9:
-@@ -113,13 +117,17 @@ public abstract class EntityMap
-             return;
-         }
- 
--        if ( ints[packetId] )
--        {
--            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
--        } else if ( varints[packetId] )
--        {
--            rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
-+        // Travertine start - negative packet ids
-+        if(packetId>=0) {
-+            if ( ints[ packetId ] )
-+            {
-+                rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
-+            } else if ( varints[ packetId ] )
-+            {
-+                rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
-+            }
-         }
-+        // Travertine end
-         packet.readerIndex( readerIndex );
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 new file mode 100644
 index 0000000..65c1a9e
@@ -1588,5 +1573,5 @@ index 0f7edad..a8792a4 100644
  
      @Override
 -- 
-2.9.0.windows.1
+2.7.4 (Apple Git-66)
 
