@@ -1,0 +1,64 @@
+From 429751f8544e16d576ffbd61d6723fe6ed01d075 Mon Sep 17 00:00:00 2001
+From: Troy Frew <fuzzy_bot@arenaga.me>
+Date: Thu, 11 Aug 2016 03:06:40 -0400
+Subject: [PATCH] Initial 1.11 snapshot support. Things may be broken.
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index a6a2ba3..46180e7 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -263,7 +263,8 @@ public enum Protocol
+                     ProtocolConstants.MINECRAFT_1_9_1,
+                     ProtocolConstants.MINECRAFT_1_9_2,
+                     ProtocolConstants.MINECRAFT_1_9_4,
+-                    ProtocolConstants.MINECRAFT_1_10
++                    ProtocolConstants.MINECRAFT_1_10,
++                    ProtocolConstants.MINECRAFT_1_11_16w32a
+             ) );
+         }
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index c637c20..c558231 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -15,11 +15,13 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_9_2 = 109;
+     public static final int MINECRAFT_1_9_4 = 110;
+     public static final int MINECRAFT_1_10 = 210;
++    public static final int MINECRAFT_1_11_16w32a = 301;
+     public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
+             "1.7.x",
+             "1.8.x",
+             "1.9.x",
+-            "1.10.x"
++            "1.10.x",
++            "16w32a"
+     );
+     public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
+             ProtocolConstants.MINECRAFT_1_7_2,
+@@ -29,7 +31,8 @@ public class ProtocolConstants
+             ProtocolConstants.MINECRAFT_1_9_1,
+             ProtocolConstants.MINECRAFT_1_9_2,
+             ProtocolConstants.MINECRAFT_1_9_4,
+-            ProtocolConstants.MINECRAFT_1_10
++            ProtocolConstants.MINECRAFT_1_10,
++            ProtocolConstants.MINECRAFT_1_11_16w32a
+     );
+ 
+     public static final boolean isBeforeOrEq(int before, int other)
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index 50007c6..a034549 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -39,6 +39,7 @@ public abstract class EntityMap
+             case ProtocolConstants.MINECRAFT_1_9_4:
+                 return EntityMap_1_9_4.INSTANCE;
+             case ProtocolConstants.MINECRAFT_1_10:
++            case ProtocolConstants.MINECRAFT_1_11_16w32a:
+                 return EntityMap_1_10.INSTANCE;
+         }
+         // Travertine stop
+-- 
+2.7.4 (Apple Git-66)
+
