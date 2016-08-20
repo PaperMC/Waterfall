@@ -1,4 +1,4 @@
-From fcedeac8bcc63478092a4963c159fe8b91bd310d Mon Sep 17 00:00:00 2001
+From 948e114f61cfb4eacb6e3205f99354e10340de29 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,10 +75,10 @@ index e327325..d16fa57 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index fa57f28..6463f75 100644
+index a8e65fa..4177ef5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -58,16 +58,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -59,16 +59,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -104,7 +104,7 @@ index fa57f28..6463f75 100644
      }
  
      @Override
-@@ -82,7 +85,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -83,7 +86,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -125,7 +125,7 @@ index fa57f28..6463f75 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -453,7 +468,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -457,7 +472,7 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }
@@ -135,5 +135,5 @@ index fa57f28..6463f75 100644
          {
              con.connectNow( event.getCancelServer() );
 -- 
-2.7.4 (Apple Git-66)
+2.8.2
 
