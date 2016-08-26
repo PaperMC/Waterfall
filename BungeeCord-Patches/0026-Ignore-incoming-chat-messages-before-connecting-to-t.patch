@@ -1,4 +1,4 @@
-From 2b89dd0f47d01460bcc216f19be3b696c8d2de14 Mon Sep 17 00:00:00 2001
+From 7e0e1d30dce6f25daef1c4973d7b91b4b9127c2f Mon Sep 17 00:00:00 2001
 From: Jonas Konrad <me@yawk.at>
 Date: Tue, 23 Jun 2015 21:56:13 +0200
 Subject: [PATCH] Ignore incoming chat messages before connecting to the
@@ -7,7 +7,7 @@ Subject: [PATCH] Ignore incoming chat messages before connecting to the
 Merges SpigotMC/BungeeCord#1515
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 0db7d17..11be7e9 100644
+index 9e912d2..7439bbc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
@@ -18,7 +18,7 @@ index 0db7d17..11be7e9 100644
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.Util;
  import net.md_5.bungee.api.ProxyServer;
-@@ -114,13 +115,21 @@ public class UpstreamBridge extends PacketHandler
+@@ -113,13 +114,21 @@ public class UpstreamBridge extends PacketHandler
      {
          Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
  

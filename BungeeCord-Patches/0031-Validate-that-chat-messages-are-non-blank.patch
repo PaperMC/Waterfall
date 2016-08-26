@@ -1,4 +1,4 @@
-From bad5f8b33244ab4ed5323ab193fed5ac3faa278b Mon Sep 17 00:00:00 2001
+From 904621bbf4a75d83aea28840449ee2fffaa69452 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 13 Apr 2016 14:00:40 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
@@ -33,7 +33,7 @@ index 0000000..940ad80
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 80b9098..e4330d6 100644
+index 61be441..3849446 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -1,6 +1,7 @@
@@ -44,7 +44,7 @@ index 80b9098..e4330d6 100644
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.UserConnection;
-@@ -115,6 +116,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -114,6 +115,7 @@ public class UpstreamBridge extends PacketHandler
      public void handle(Chat chat) throws Exception
      {
          Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates

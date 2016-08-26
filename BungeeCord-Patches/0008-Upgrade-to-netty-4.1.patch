@@ -1,4 +1,4 @@
-From 64866791be3cf7e46d59554f38b2fdd33c73c275 Mon Sep 17 00:00:00 2001
+From f85163140995e0bdf5992b0c1993a01ce63aa571 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Upgrade to netty 4.1
@@ -37,21 +37,23 @@ index 7a74143..58e107e 100644
              <artifactId>trove4j</artifactId>
              <version>3.0.3</version>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index bbaef39..8e43374 100644
+index 6dcdece..e67773d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee.protocol.packet;
+@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol.packet;
  
  import com.google.common.base.Preconditions;
+ import com.google.common.base.Predicate;
 +import io.netty.buffer.ByteBufUtil;
  import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
  import java.io.ByteArrayInputStream;
-@@ -20,9 +21,22 @@ import net.md_5.bungee.protocol.ProtocolConstants;
- public class PluginMessage extends DefinedPacket
- {
- 
+@@ -29,10 +30,23 @@ public class PluginMessage extends DefinedPacket
+             return input.getTag().equals( "REGISTER" ) || input.getTag().equals( "MC|Brand" );
+         }
+     };
+-    //
++
 +    public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
 +        this(tag, ByteBufUtil.getBytes(data), allowExtendedPacket);
 +    }
@@ -72,10 +74,10 @@ index bbaef39..8e43374 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 976636a..e941803 100644
+index e599e7e..ccdcf82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -199,7 +199,7 @@ public class ServerConnector extends PacketHandler
+@@ -198,7 +198,7 @@ public class ServerConnector extends PacketHandler
  
              ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -115,5 +117,5 @@ index 621a06c..0ec3f81 100644
      {
          @Override
 -- 
-2.8.2
+2.7.4
 

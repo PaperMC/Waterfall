@@ -1,4 +1,4 @@
-From fc32e223b6d2932832929906d795490987e6318f Mon Sep 17 00:00:00 2001
+From 1e6e4deeec5e5bf1bdee09f83e0b54b65b774f3a Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -64,10 +64,10 @@ index 1fa3ecd..23a5c94 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7e1917f..11c6267 100644
+index 88b179d..b30fc3f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -31,6 +31,8 @@ public class UpstreamBridge extends PacketHandler
+@@ -30,6 +30,8 @@ public class UpstreamBridge extends PacketHandler
      private final ProxyServer bungee;
      private final UserConnection con;
  
@@ -76,7 +76,7 @@ index 7e1917f..11c6267 100644
      public UpstreamBridge(ProxyServer bungee, UserConnection con)
      {
          this.bungee = bungee;
-@@ -127,6 +129,16 @@ public class UpstreamBridge extends PacketHandler
+@@ -126,6 +128,16 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteRequest tabComplete) throws Exception
      {
