@@ -1,4 +1,4 @@
-From 8fa1a3a9009cc9c7e5a7ff1f7237d70c29b4c2d6 Mon Sep 17 00:00:00 2001
+From 45a89cd463d62c74cf093a6ed3261b20027ac3fa Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -7,7 +7,7 @@ Subject: [PATCH] Micro-optimizations
 - Avoid regex in getLocale() by changing from replaceAll(String, String) to replaceAll(char, char)
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 2426bdb..7203d04 100644
+index 71a5a15..520ee31 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
@@ -41,5 +41,5 @@ index 018c02e..9881b75 100644
  
      @Override
 -- 
-2.8.3
+2.7.4
 
