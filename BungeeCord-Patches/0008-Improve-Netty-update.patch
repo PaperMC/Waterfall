@@ -1,24 +1,13 @@
-From f85163140995e0bdf5992b0c1993a01ce63aa571 Mon Sep 17 00:00:00 2001
+From 649eacf548110657a7617fd4b6ca89821300a065 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
-Subject: [PATCH] Upgrade to netty 4.1
+Subject: [PATCH] Improve Netty update
+
+ORIGINAL PATCH - Upgrade to netty 4.1
 
 Don't access a ByteBuf's underlying array with ByteBuf.array()
   - ByteBuf.array() returns the underlying array storage, and does *not* return a view of the buffer as an array
 
-diff --git a/pom.xml b/pom.xml
-index 3319e60..858d367 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -83,7 +83,7 @@
- 
-     <properties>
-         <build.number>unknown</build.number>
--        <netty.version>4.0.40.Final</netty.version>
-+        <netty.version>4.1.4.Final</netty.version>
-         <!-- Require Java 8 -->
-         <maven.compiler.source>1.8</maven.compiler.source>
-         <maven.compiler.target>1.8</maven.compiler.target>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
 index 7a74143..58e107e 100644
 --- a/protocol/pom.xml
@@ -100,16 +89,16 @@ index 288d602..c7e75bf 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 621a06c..0ec3f81 100644
+index a274dde..0ec3f81 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -41,9 +41,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  public class PipelineUtils
  {
  
--    public static final AttributeKey<ListenerInfo> LISTENER = new AttributeKey<>( "ListerInfo" );
--    public static final AttributeKey<UserConnection> USER = new AttributeKey<>( "User" );
--    public static final AttributeKey<BungeeServerInfo> TARGET = new AttributeKey<>( "Target" );
+-    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.valueOf( "ListerInfo" );
+-    public static final AttributeKey<UserConnection> USER = AttributeKey.valueOf( "User" );
+-    public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.valueOf( "Target" );
 +    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
 +    public static final AttributeKey<UserConnection> USER = AttributeKey.newInstance("User");
 +    public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.newInstance("Target");
