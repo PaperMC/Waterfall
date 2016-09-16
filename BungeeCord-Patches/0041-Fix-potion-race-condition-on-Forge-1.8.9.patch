@@ -1,4 +1,4 @@
-From 8d698e6607b6687705a9cb38ab541b658a462034 Mon Sep 17 00:00:00 2001
+From 6dcb9f21b8ce9bfc1cd93c1f4e62ba690dcb6084 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 16:38:37 -0400
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 6f782c8..2d5fc48 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 4decbb2..796daa3 100644
+index 4decbb2..f45737a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -44,7 +44,7 @@ index 4decbb2..796daa3 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -81,6 +83,18 @@ public enum Protocol
+@@ -81,6 +83,21 @@ public enum Protocol
                      BossBar.class,
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
              );
@@ -52,7 +52,10 @@ index 4decbb2..796daa3 100644
 +            TO_CLIENT.registerPacket(
 +                    EntityEffect.class,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
-+                    map(ProtocolConstants.MINECRAFT_1_9, 0x4B)
++                    map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
++                    map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
++                    map(ProtocolConstants.MINECRAFT_1_10, 0x4B)
++
 +            );
 +            TO_CLIENT.registerPacket(
 +                    EntityRemoveEffect.class,
