@@ -1,4 +1,4 @@
-From 775f2851f8552cf918192df5ec3516083d3cc4e3 Mon Sep 17 00:00:00 2001
+From 6228b5e5fbfe99d6c929f063c851ec948e543355 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 25 Apr 2016 23:46:00 -0700
 Subject: [PATCH] Reduce the overhead of lots and lots of teams with the same
@@ -11,10 +11,10 @@ Uses a sorted array to avoid the overhead of the hashset in a team.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
 new file mode 100644
-index 0000000..3a062b6
+index 0000000..c62e3d4
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
-@@ -0,0 +1,177 @@
+@@ -0,0 +1,176 @@
 +package io.github.waterfallmc.waterfall.utils;
 +
 +import lombok.*;
@@ -35,7 +35,7 @@ index 0000000..3a062b6
 +/**
 + * A set that uses a <a href=>binary search</a> to find objects in a <a href=https://en.wikipedia.org/wiki/Sorted_array>sorted array</a>.
 + * Avoids the memory cost of {@link java.util.HashSet}, while maintaining reasonable {@link Set#contains}
-+ * <b>Insertions ma O(N)!</b>
++ * <b>Insertions are O(N)!</b>
 + */
 +public class LowMemorySet<T extends Comparable<T>> extends AbstractSet<T> implements Set<T> {
 +    private final List<T> backing;
@@ -56,7 +56,7 @@ index 0000000..3a062b6
 +        return new LowMemorySet<>(new ArrayList<>(c));
 +    }
 +
-+    @SuppressWarnings("unchecked") // nope
++    @SuppressWarnings({"unchecked", "rawtypes"})
 +    private int indexOf(Object o) {
 +        return Collections.binarySearch((List) backing, o);
 +    }
@@ -71,7 +71,7 @@ index 0000000..3a062b6
 +    }
 +
 +    private void trim(boolean force) {
-+        if (backing instanceof ArrayList && force || trimAggressively) ((ArrayList) backing).trimToSize();
++        if (backing instanceof ArrayList && force || trimAggressively) ((ArrayList<T>) backing).trimToSize();
 +    }
 +
 +    @Override
@@ -88,8 +88,6 @@ index 0000000..3a062b6
 +    public Iterator<T> iterator() {
 +        Iterator<T> backing = this.backing.iterator();
 +        return new Iterator<T>() {
-+            private T last;
-+
 +            @Override
 +            public boolean hasNext() {
 +                return backing.hasNext();
@@ -97,12 +95,12 @@ index 0000000..3a062b6
 +
 +            @Override
 +            public T next() {
-+                return (last = backing.next());
++                return backing.next();
 +            }
 +
 +            @Override
 +            public void remove() {
-+                LowMemorySet.this.remove(last);
++                backing.remove();
 +            }
 +
 +            @Override
@@ -132,7 +130,9 @@ index 0000000..3a062b6
 +
 +    @Override
 +    public boolean remove(Object o) {
-+        T old = backing.remove(indexOf(o));
++        int index = indexOf(o);
++        if (index < 0) return false;
++        T old = backing.remove(index);
 +        this.trim();
 +        assert old == o;
 +        return old != null;
@@ -155,7 +155,6 @@ index 0000000..3a062b6
 +    }
 +
 +    @Override
-+    @SuppressWarnings("unchecked")
 +    public boolean addAll(Collection<? extends T> c) {
 +        if (containsAll(c)) return false;
 +        backing.addAll(c);
@@ -293,5 +292,5 @@ index 0000000..5aa306a
 +
 +}
 -- 
-2.7.4 (Apple Git-66)
+2.9.2
 
