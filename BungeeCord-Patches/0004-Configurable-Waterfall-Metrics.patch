@@ -1,4 +1,4 @@
-From 2b4b56de0968e5a63f727123a3becd03df65edeb Mon Sep 17 00:00:00 2001
+From ffbfeb13e1e15f5cbc13839cef04bd407d43e8c1 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Configurable Waterfall Metrics
@@ -17,143 +17,46 @@ index b30541b..293ec4e 100644
 +     */
 +    boolean isMetrics();
  }
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
-new file mode 100644
-index 0000000..ae5a2a9
---- /dev/null
+diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
+similarity index 96%
+rename from proxy/src/main/java/net/md_5/bungee/Metrics.java
+rename to proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
+index 9523987..ae5a2a9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
-@@ -0,0 +1,131 @@
+@@ -1,4 +1,4 @@
+-package net.md_5.bungee;
 +package io.github.waterfallmc.waterfall;
-+
-+import java.io.BufferedReader;
-+import java.io.IOException;
-+import java.io.InputStreamReader;
-+import java.io.OutputStreamWriter;
-+import java.io.UnsupportedEncodingException;
-+import java.net.URL;
-+import java.net.URLConnection;
-+import java.net.URLEncoder;
-+import java.util.TimerTask;
+ 
+ import java.io.BufferedReader;
+ import java.io.IOException;
+@@ -9,6 +9,8 @@ import java.net.URL;
+ import java.net.URLConnection;
+ import java.net.URLEncoder;
+ import java.util.TimerTask;
 +
 +import net.md_5.bungee.BungeeCord;
-+import net.md_5.bungee.api.ProxyServer;
-+
-+public class Metrics extends TimerTask
-+{
-+
-+    /**
-+     * The current revision number
-+     */
-+    private final static int REVISION = 5;
-+    /**
-+     * The base url of the metrics domain
-+     */
-+    private static final String BASE_URL = "http://mcstats.org";
-+    /**
-+     * The url used to report a server's status
-+     */
-+    private static final String REPORT_URL = "/report/%s";
-+    /**
-+     * Interval of time to ping (in minutes)
-+     */
+ import net.md_5.bungee.api.ProxyServer;
+ 
+ public class Metrics extends TimerTask
+@@ -29,7 +31,7 @@ public class Metrics extends TimerTask
+     /**
+      * Interval of time to ping (in minutes)
+      */
+-    final static int PING_INTERVAL = 10;
 +    public final static int PING_INTERVAL = 10;
-+    boolean firstPost = true;
-+
-+    @Override
-+    public void run()
-+    {
-+        try
-+        {
-+            // We use the inverse of firstPost because if it is the first time we are posting,
-+            // it is not a interval ping, so it evaluates to FALSE
-+            // Each time thereafter it will evaluate to TRUE, i.e PING!
-+            postPlugin( !firstPost );
-+
-+            // After the first post we set firstPost to false
-+            // Each post thereafter will be a ping
-+            firstPost = false;
-+        } catch ( IOException ex )
-+        {
-+            // ProxyServer.getInstance().getLogger().info( "[Metrics] " + ex.getMessage() );
-+        }
-+    }
-+
-+    /**
-+     * Generic method that posts a plugin to the metrics website
-+     */
-+    private void postPlugin(boolean isPing) throws IOException
-+    {
-+        // Construct the post data
-+        final StringBuilder data = new StringBuilder();
-+        data.append( encode( "guid" ) ).append( '=' ).append( encode( BungeeCord.getInstance().config.getUuid() ) );
-+        encodeDataPair( data, "version", ProxyServer.getInstance().getVersion() );
-+        encodeDataPair( data, "server", "0" );
-+        encodeDataPair( data, "players", Integer.toString( ProxyServer.getInstance().getOnlineCount() ) );
-+        encodeDataPair( data, "revision", String.valueOf( REVISION ) );
-+
-+        // If we're pinging, append it
-+        if ( isPing )
-+        {
-+            encodeDataPair( data, "ping", "true" );
-+        }
-+
-+        // Create the url
+     boolean firstPost = true;
+ 
+     @Override
+@@ -71,7 +73,7 @@ public class Metrics extends TimerTask
+         }
+ 
+         // Create the url
+-        URL url = new URL( BASE_URL + String.format( REPORT_URL, encode( "BungeeCord" ) ) );
 +        URL url = new URL( BASE_URL + String.format( REPORT_URL, encode( "Waterfall" ) ) );
-+
-+        // Connect to the website
-+        URLConnection connection;
-+
-+        connection = url.openConnection();
-+
-+        connection.setDoOutput( true );
-+        final BufferedReader reader;
-+        final String response;
-+        try ( OutputStreamWriter writer = new OutputStreamWriter( connection.getOutputStream() ) )
-+        {
-+            writer.write( data.toString() );
-+            writer.flush();
-+            reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
-+            response = reader.readLine();
-+        }
-+        reader.close();
-+
-+        if ( response == null || response.startsWith( "ERR" ) )
-+        {
-+            throw new IOException( response ); //Throw the exception
-+        }
-+    }
-+
-+    /**
-+     * <p>
-+     * Encode a key/value data pair to be used in a HTTP post request. This
-+     * INCLUDES a & so the first key/value pair MUST be included manually,
-+     * e.g:</p>
-+     * <code>
-+     * StringBuffer data = new StringBuffer();
-+     * data.append(encode("guid")).append('=').append(encode(guid));
-+     * encodeDataPair(data, "version", description.getVersion());
-+     * </code>
-+     *
-+     * @param buffer the StringBuilder to append the data pair onto
-+     * @param key the key value
-+     * @param value the value
-+     */
-+    private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException
-+    {
-+        buffer.append( '&' ).append( encode( key ) ).append( '=' ).append( encode( value ) );
-+    }
-+
-+    /**
-+     * Encode text as UTF-8
-+     *
-+     * @param text the text to encode
-+     * @return the encoded text, as UTF-8
-+     */
-+    private static String encode(final String text) throws UnsupportedEncodingException
-+    {
-+        return URLEncoder.encode( text, "UTF-8" );
-+    }
-+}
+ 
+         // Connect to the website
+         URLConnection connection;
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 index 03160da..1fa3ecd 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
@@ -205,141 +108,6 @@ index 33c646a..8fd256c 100644
      }
  
      public void startListeners()
-diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/net/md_5/bungee/Metrics.java
-deleted file mode 100644
-index 9523987..0000000
---- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
-+++ /dev/null
-@@ -1,129 +0,0 @@
--package net.md_5.bungee;
--
--import java.io.BufferedReader;
--import java.io.IOException;
--import java.io.InputStreamReader;
--import java.io.OutputStreamWriter;
--import java.io.UnsupportedEncodingException;
--import java.net.URL;
--import java.net.URLConnection;
--import java.net.URLEncoder;
--import java.util.TimerTask;
--import net.md_5.bungee.api.ProxyServer;
--
--public class Metrics extends TimerTask
--{
--
--    /**
--     * The current revision number
--     */
--    private final static int REVISION = 5;
--    /**
--     * The base url of the metrics domain
--     */
--    private static final String BASE_URL = "http://mcstats.org";
--    /**
--     * The url used to report a server's status
--     */
--    private static final String REPORT_URL = "/report/%s";
--    /**
--     * Interval of time to ping (in minutes)
--     */
--    final static int PING_INTERVAL = 10;
--    boolean firstPost = true;
--
--    @Override
--    public void run()
--    {
--        try
--        {
--            // We use the inverse of firstPost because if it is the first time we are posting,
--            // it is not a interval ping, so it evaluates to FALSE
--            // Each time thereafter it will evaluate to TRUE, i.e PING!
--            postPlugin( !firstPost );
--
--            // After the first post we set firstPost to false
--            // Each post thereafter will be a ping
--            firstPost = false;
--        } catch ( IOException ex )
--        {
--            // ProxyServer.getInstance().getLogger().info( "[Metrics] " + ex.getMessage() );
--        }
--    }
--
--    /**
--     * Generic method that posts a plugin to the metrics website
--     */
--    private void postPlugin(boolean isPing) throws IOException
--    {
--        // Construct the post data
--        final StringBuilder data = new StringBuilder();
--        data.append( encode( "guid" ) ).append( '=' ).append( encode( BungeeCord.getInstance().config.getUuid() ) );
--        encodeDataPair( data, "version", ProxyServer.getInstance().getVersion() );
--        encodeDataPair( data, "server", "0" );
--        encodeDataPair( data, "players", Integer.toString( ProxyServer.getInstance().getOnlineCount() ) );
--        encodeDataPair( data, "revision", String.valueOf( REVISION ) );
--
--        // If we're pinging, append it
--        if ( isPing )
--        {
--            encodeDataPair( data, "ping", "true" );
--        }
--
--        // Create the url
--        URL url = new URL( BASE_URL + String.format( REPORT_URL, encode( "BungeeCord" ) ) );
--
--        // Connect to the website
--        URLConnection connection;
--
--        connection = url.openConnection();
--
--        connection.setDoOutput( true );
--        final BufferedReader reader;
--        final String response;
--        try ( OutputStreamWriter writer = new OutputStreamWriter( connection.getOutputStream() ) )
--        {
--            writer.write( data.toString() );
--            writer.flush();
--            reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
--            response = reader.readLine();
--        }
--        reader.close();
--
--        if ( response == null || response.startsWith( "ERR" ) )
--        {
--            throw new IOException( response ); //Throw the exception
--        }
--    }
--
--    /**
--     * <p>
--     * Encode a key/value data pair to be used in a HTTP post request. This
--     * INCLUDES a & so the first key/value pair MUST be included manually,
--     * e.g:</p>
--     * <code>
--     * StringBuffer data = new StringBuffer();
--     * data.append(encode("guid")).append('=').append(encode(guid));
--     * encodeDataPair(data, "version", description.getVersion());
--     * </code>
--     *
--     * @param buffer the StringBuilder to append the data pair onto
--     * @param key the key value
--     * @param value the value
--     */
--    private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException
--    {
--        buffer.append( '&' ).append( encode( key ) ).append( '=' ).append( encode( value ) );
--    }
--
--    /**
--     * Encode text as UTF-8
--     *
--     * @param text the text to encode
--     * @return the encoded text, as UTF-8
--     */
--    private static String encode(final String text) throws UnsupportedEncodingException
--    {
--        return URLEncoder.encode( text, "UTF-8" );
--    }
--}
 -- 
-2.8.2
+2.10.0
 
