@@ -1,4 +1,4 @@
-From 83671352d2e5739d6506f7a03f111858246eaa89 Mon Sep 17 00:00:00 2001
+From 79cbc4bd219b90f7a8691004cd42760f7a9d0234 Mon Sep 17 00:00:00 2001
 From: Jonas Konrad <me@yawk.at>
 Date: Tue, 23 Jun 2015 21:56:13 +0200
 Subject: [PATCH] Ignore incoming chat messages before connecting to the
@@ -7,12 +7,12 @@ Subject: [PATCH] Ignore incoming chat messages before connecting to the
 Merges SpigotMC/BungeeCord#1515
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 9e912d2..7439bbc 100644
+index 417b2f7..1abeb63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
- 
- import com.google.common.base.Preconditions;
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import java.util.ArrayList;
+ import java.util.List;
  import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.UserConnection;
@@ -43,5 +43,5 @@ index 9e912d2..7439bbc 100644
          }
          throw CancelSendSignal.INSTANCE;
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

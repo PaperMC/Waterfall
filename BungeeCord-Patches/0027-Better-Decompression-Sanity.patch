@@ -1,4 +1,4 @@
-From 8d620bc662cc24b386c1b371b94c35242b4d4288 Mon Sep 17 00:00:00 2001
+From 86a346c6b32e63edaa4fcb3898f80477adfb9ef3 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Fri, 18 Mar 2016 10:53:24 -0700
 Subject: [PATCH] Better Decompression Sanity
@@ -45,10 +45,10 @@ index 21b3ea2..37fe6ac 100644
                  out.add( decompressed );
                  decompressed = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 76bdff2..f5c8f0a 100644
+index 0b0dd73..ba8f940 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -105,7 +105,7 @@ public class ChannelWrapper
+@@ -122,7 +122,7 @@ public class ChannelWrapper
  
          if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
          {
@@ -58,5 +58,5 @@ index 76bdff2..f5c8f0a 100644
          if ( compressionThreshold == -1 )
          {
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

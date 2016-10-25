@@ -1,6 +1,6 @@
-From b790b1d946c66a57af7550795bf63fad398bb137 Mon Sep 17 00:00:00 2001
+From b8a481fec8d1606361e8aa557ae22d32dd0a486a Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
-Date: Thu, 19 May 2016 10:46:46 -0700
+Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
 
 
@@ -20,11 +20,10 @@ index edd82c1..b30541b 100644
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 new file mode 100644
-index 0000000..03160da
+index 0000000..12c5859
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -0,0 +1,19 @@
-+
+@@ -0,0 +1,18 @@
 +package io.github.waterfallmc.waterfall.conf;
 +
 +import lombok.*;
@@ -43,19 +42,20 @@ index 0000000..03160da
 +        config.load(false); // Load, but no permissions
 +    }
 +}
+\ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8ce4ced..3dceb6e 100644
+index 5b01030..7bb0862 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -23,6 +23,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
+@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 +import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.netty.bootstrap.ServerBootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -98,7 +99,7 @@ public class BungeeCord extends ProxyServer
+@@ -103,7 +104,7 @@ public class BungeeCord extends ProxyServer
       * Configuration.
       */
      @Getter
@@ -120,5 +120,5 @@ index 82ff91a..4ec9782 100644
          if ( permissions.isEmpty() )
          {
 -- 
-2.8.3
+2.7.4 (Apple Git-66)
 

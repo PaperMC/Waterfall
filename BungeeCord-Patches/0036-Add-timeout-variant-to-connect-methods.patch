@@ -1,4 +1,4 @@
-From 91ef80137010aac7c0f3ae98813fe0f82bafff2f Mon Sep 17 00:00:00 2001
+From 6c0093a50b71114399de49ac002b1d0b24fc5e10 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -49,10 +49,10 @@ index 375815c..c49e900 100644
       * Gets the server this player is connected to.
       *
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9a13f5c..fead216 100644
+index 473bdec..7e9bd1e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -259,6 +259,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -251,6 +251,12 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
      {
@@ -65,7 +65,7 @@ index 9a13f5c..fead216 100644
          Preconditions.checkNotNull( info, "info" );
  
          ServerConnectEvent event = new ServerConnectEvent( this, info );
-@@ -327,7 +333,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -319,7 +325,7 @@ public final class UserConnection implements ProxiedPlayer
                      if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
@@ -74,7 +74,7 @@ index 9a13f5c..fead216 100644
                      } else if ( dimensionChange )
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-@@ -342,7 +348,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -334,7 +340,7 @@ public final class UserConnection implements ProxiedPlayer
                  .channel( PipelineUtils.getChannel() )
                  .group( ch.getHandle().eventLoop() )
                  .handler( initializer )
@@ -84,5 +84,5 @@ index 9a13f5c..fead216 100644
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
          if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

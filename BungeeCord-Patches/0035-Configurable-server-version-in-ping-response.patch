@@ -1,4 +1,4 @@
-From 09aa421d98d08da5f10dd916ebd55a0ae078b47c Mon Sep 17 00:00:00 2001
+From d5cff331d038f7297355594818cb90ff8a7fae96 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
@@ -21,10 +21,10 @@ index f04e2bf..a443614 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 114961d..32f7b99 100644
+index c53851b..0f48c6a 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -5,8 +5,11 @@ import lombok.*;
+@@ -4,8 +4,11 @@ import lombok.*;
  
  import java.io.File;
  
@@ -36,7 +36,7 @@ index 114961d..32f7b99 100644
  
  public class WaterfallConfiguration extends Configuration {
  
-@@ -24,6 +27,13 @@ public class WaterfallConfiguration extends Configuration {
+@@ -23,6 +26,13 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean logServerListPing = false;
  
@@ -50,7 +50,7 @@ index 114961d..32f7b99 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -46,6 +56,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -45,6 +55,7 @@ public class WaterfallConfiguration extends Configuration {
          logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
@@ -59,10 +59,10 @@ index 114961d..32f7b99 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 63e1cd9..1d6e535 100644
+index df618d3..910bb02 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -608,7 +608,7 @@ public class BungeeCord extends ProxyServer
+@@ -613,7 +613,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getGameVersion()
      {
@@ -72,5 +72,5 @@ index 63e1cd9..1d6e535 100644
  
      @Override
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

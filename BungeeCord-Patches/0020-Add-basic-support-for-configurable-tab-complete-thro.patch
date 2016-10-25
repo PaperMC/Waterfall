@@ -1,4 +1,4 @@
-From a5ae528bedb519aba7e373c675b257b1a5cff98f Mon Sep 17 00:00:00 2001
+From a3bbfd1ad1fd98f0c26630c14b9f56e6c1593b81 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -23,10 +23,10 @@ index 293ec4e..66d0b8a 100644
 +    int getTabThrottle();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 1fa3ecd..23a5c94 100644
+index 692b83e..c3ae52f 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -17,16 +17,36 @@ public class WaterfallConfiguration extends Configuration {
+@@ -16,16 +16,36 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean metrics = true;
  
@@ -63,8 +63,9 @@ index 1fa3ecd..23a5c94 100644
 +        return tabThrottle;
 +    }
  }
+\ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 88b179d..b30fc3f 100644
+index 8ccc7c5..4669dee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -30,6 +30,8 @@ public class UpstreamBridge extends PacketHandler
@@ -94,5 +95,5 @@ index 88b179d..b30fc3f 100644
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

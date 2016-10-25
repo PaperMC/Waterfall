@@ -1,4 +1,4 @@
-From 7961c01acf03ae869b04fb1e2b410dce9d65d3d7 Mon Sep 17 00:00:00 2001
+From c8f628f712b843459f852d3cbb19fb0a74c99a26 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -25,10 +25,10 @@ index 66d0b8a..5a49050 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 23a5c94..114961d 100644
+index c3ae52f..c53851b 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -17,6 +17,13 @@ public class WaterfallConfiguration extends Configuration {
+@@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean metrics = true;
  
@@ -42,7 +42,7 @@ index 23a5c94..114961d 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -36,6 +43,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -35,6 +42,7 @@ public class WaterfallConfiguration extends Configuration {
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
          metrics = config.getBoolean("metrics", metrics);
@@ -50,7 +50,7 @@ index 23a5c94..114961d 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
      }
-@@ -49,4 +57,9 @@ public class WaterfallConfiguration extends Configuration {
+@@ -48,4 +56,9 @@ public class WaterfallConfiguration extends Configuration {
      public int getTabThrottle() {
          return tabThrottle;
      }
@@ -60,11 +60,12 @@ index 23a5c94..114961d 100644
 +        return logServerListPing;
 +    }
  }
+\ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 11953bb..fc627cb 100644
+index 25329e0..b93e6c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -376,6 +376,6 @@ public class ServerConnector extends PacketHandler
+@@ -375,6 +375,6 @@ public class ServerConnector extends PacketHandler
      @Override
      public String toString()
      {
@@ -85,10 +86,10 @@ index c7e75bf..a8e65fa 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 068374a..177eefa 100644
+index bdcbdb7..d14d893 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -277,19 +277,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -281,19 +281,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
@@ -112,7 +113,7 @@ index 068374a..177eefa 100644
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
-@@ -615,7 +618,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -609,7 +612,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -122,7 +123,7 @@ index 068374a..177eefa 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index b30fc3f..9e912d2 100644
+index 4669dee..417b2f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -211,6 +211,6 @@ public class UpstreamBridge extends PacketHandler
@@ -134,5 +135,5 @@ index b30fc3f..9e912d2 100644
      }
  }
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 

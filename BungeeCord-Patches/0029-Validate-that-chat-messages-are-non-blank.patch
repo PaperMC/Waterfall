@@ -1,12 +1,12 @@
-From 146c739b7c4024cc57897412d61728f6b239f6e1 Mon Sep 17 00:00:00 2001
+From 8ac165b0615288e4bf40a56278e5d66481ca6d2f Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
-Date: Wed, 13 Apr 2016 14:00:40 -0400
+Date: Tue, 25 Oct 2016 12:34:41 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
 
 
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
 new file mode 100644
-index 0000000..940ad80
+index 0000000..d294dda
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
 @@ -0,0 +1,22 @@
@@ -32,8 +32,9 @@ index 0000000..940ad80
 +        return true;
 +    }
 +}
+\ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 61be441..3849446 100644
+index 1abeb63..9dbcfd1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -1,6 +1,7 @@
@@ -41,10 +42,10 @@ index 61be441..3849446 100644
  
  import com.google.common.base.Preconditions;
 +import io.github.waterfallmc.waterfall.StringUtil;
+ import java.util.ArrayList;
+ import java.util.List;
  import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.ServerConnection;
- import net.md_5.bungee.UserConnection;
-@@ -114,6 +115,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -113,6 +114,7 @@ public class UpstreamBridge extends PacketHandler
      public void handle(Chat chat) throws Exception
      {
          Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
@@ -53,5 +54,5 @@ index 61be441..3849446 100644
          ServerConnection server = con.getServer();
  
 -- 
-2.7.4
+2.7.4 (Apple Git-66)
 
