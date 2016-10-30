@@ -1,4 +1,4 @@
-From 5fa5bef562941c371337749fc82958b451a15ba7 Mon Sep 17 00:00:00 2001
+From 575a466a3a0c906bfe52be10890e6fbcbcf2aa7c Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 37460e8..a09f34d 100644
+index 6b77d90..f25b26d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -67,10 +67,10 @@ index 37460e8..a09f34d 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0e621c2..6c64e97 100644
+index d620fbf..780ad9f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -176,8 +176,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -180,8 +180,12 @@ public final class UserConnection implements ProxiedPlayer
  
          forgeClientHandler = new ForgeClientHandler( this );
  
