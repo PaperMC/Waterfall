@@ -1,4 +1,4 @@
-From 3a069cb77d6b3414b201d2152e729f7d87d43227 Mon Sep 17 00:00:00 2001
+From 9f641cadaeec788313843c830cc4c2643b183316 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,17 +75,16 @@ index a37f3ea..5d72a56 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c4d8d81..2a1a719 100644
+index 4768cb4..356cf4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -60,16 +60,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
--        ServerInfo def = bungee.getServerInfo( con.getPendingConnection().getListener().getFallbackServer() );
--        if ( server.getInfo() != def )
 +        // Waterfall start
-+        ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+         ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+-        if ( def != null )
 +        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
 +        if ( event.isCancelled() && event.getCancelServer() != null )
          {
@@ -125,11 +124,15 @@ index c4d8d81..2a1a719 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -458,7 +473,7 @@ public class DownstreamBridge extends PacketHandler
-         {
-             def = null;
-         }
+@@ -454,7 +469,11 @@ public class DownstreamBridge extends PacketHandler
+     public void handle(Kick kick) throws Exception
+     {
+         ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
 -        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED ) );
++        if ( Objects.equal( server.getInfo(), def ) )
++        {
++            def = null;
++        }
 +        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) ); // Waterfall
          if ( event.isCancelled() && event.getCancelServer() != null )
          {
