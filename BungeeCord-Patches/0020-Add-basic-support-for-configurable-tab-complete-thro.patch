@@ -1,4 +1,4 @@
-From a3bbfd1ad1fd98f0c26630c14b9f56e6c1593b81 Mon Sep 17 00:00:00 2001
+From c4ca03543b96e22be0dd9b466f07811abd7f34c1 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -65,10 +65,10 @@ index 692b83e..c3ae52f 100644
  }
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 8ccc7c5..4669dee 100644
+index 92d1da0..654be21 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -30,6 +30,8 @@ public class UpstreamBridge extends PacketHandler
+@@ -31,6 +31,8 @@ public class UpstreamBridge extends PacketHandler
      private final ProxyServer bungee;
      private final UserConnection con;
  
@@ -77,7 +77,7 @@ index 8ccc7c5..4669dee 100644
      public UpstreamBridge(ProxyServer bungee, UserConnection con)
      {
          this.bungee = bungee;
-@@ -126,6 +128,16 @@ public class UpstreamBridge extends PacketHandler
+@@ -128,6 +130,16 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteRequest tabComplete) throws Exception
      {
@@ -95,5 +95,5 @@ index 8ccc7c5..4669dee 100644
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
 -- 
-2.7.4 (Apple Git-66)
+2.10.0
 

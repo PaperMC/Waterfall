@@ -1,4 +1,4 @@
-From 6160bd409a7759a460bddb26dae0dfc36a0680a4 Mon Sep 17 00:00:00 2001
+From 68af736ef6664d9e53c126cc7e43fbc6ec60afa7 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 25 Oct 2016 12:34:41 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
@@ -34,7 +34,7 @@ index 0000000..d294dda
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 417b2f7..3c3fd98 100644
+index 618e76e..9e753d5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -1,6 +1,7 @@
@@ -45,10 +45,10 @@ index 417b2f7..3c3fd98 100644
  import java.util.ArrayList;
  import java.util.List;
  import net.md_5.bungee.BungeeCord;
-@@ -112,6 +113,7 @@ public class UpstreamBridge extends PacketHandler
-     public void handle(Chat chat) throws Exception
+@@ -114,6 +115,7 @@ public class UpstreamBridge extends PacketHandler
      {
-         Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
+         int maxLength = ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_11 ) ? 256 : 100;
+         Preconditions.checkArgument( chat.getMessage().length() <= maxLength, "Chat message too long" ); // Mojang limit, check on updates
 +        Preconditions.checkArgument(!StringUtil.isBlank(chat.getMessage()), "Chat message is empty");
  
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
