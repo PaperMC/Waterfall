@@ -1,4 +1,4 @@
-From a3502173ac3d9da1cfe11f5a28c4bb796d22b55d Mon Sep 17 00:00:00 2001
+From 79ff4204a4d9f17ef850b60b00ef03a729ecfd67 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -6,7 +6,7 @@ Subject: [PATCH] 1.7.x Protocol Patch
 
 diff --git a/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
 new file mode 100644
-index 0000000..3f8c783
+index 0000000..60bf2e0
 --- /dev/null
 +++ b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
 @@ -0,0 +1,90 @@
@@ -27,7 +27,7 @@ index 0000000..3f8c783
 +    }
 +
 +    @Override
-+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void read0(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        switch ( protocolVersion )
 +        {
@@ -47,7 +47,7 @@ index 0000000..3f8c783
 +    }
 +
 +    @Override
-+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    public void write0(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        switch ( protocolVersion )
 +        {
@@ -101,6 +101,72 @@ index 0000000..3f8c783
 +    }
 +}
 \ No newline at end of file
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 10e16d7..04a3403 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -193,6 +193,11 @@ public abstract class DefinedPacket
+         read( buf );
+     }
+ 
++    public void read0(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        read( buf, direction, protocolVersion );
++    }
++
+     public void write(ByteBuf buf)
+     {
+         throw new UnsupportedOperationException( "Packet must implement write method" );
+@@ -203,6 +208,11 @@ public abstract class DefinedPacket
+         write( buf );
+     }
+ 
++    public void write0(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        write( buf, direction, protocolVersion );
++    }
++
+     public abstract void handle(AbstractPacketHandler handler) throws Exception;
+ 
+     @Override
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 17d8444..172e387 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -5,10 +5,11 @@ import io.netty.buffer.ByteBufUtil;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.DecoderException;
+ import io.netty.handler.codec.MessageToMessageDecoder;
+-import java.util.List;
+ import lombok.AllArgsConstructor;
+ import lombok.Setter;
+ 
++import java.util.List;
++
+ @AllArgsConstructor
+ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ {
+@@ -43,7 +44,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             if ( packet != null )
+             {
+                 packetTypeInfo = packet.getClass();
+-                packet.read( in, prot.getDirection(), protocolVersion );
++                packet.read0( in, prot.getDirection(), protocolVersion );
+ 
+                 if ( in.isReadable() )
+                 {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
+index d4b0384..9aac7ca 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
+@@ -21,6 +21,6 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
+     {
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_CLIENT : protocol.TO_SERVER;
+         DefinedPacket.writeVarInt( prot.getId( msg.getClass(), protocolVersion ), out );
+-        msg.write( out, prot.getDirection(), protocolVersion );
++        msg.write0( out, prot.getDirection(), protocolVersion );
+     }
+ }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 index 741166d..4eebd12 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
@@ -411,6 +477,109 @@ index 06676e4..19a8549 100644
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+index d11a9ea..07fc21b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+@@ -1,18 +1,19 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EntityEffect extends DefinedPacket {
++public class EntityEffect extends MultiVersionPacketV17 {
+ 
+     private int entityId;
+     private int effectId;
+@@ -21,6 +22,14 @@ public class EntityEffect extends DefinedPacket {
+     private boolean hideParticles;
+ 
+     @Override
++    protected void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        this.entityId = buf.readInt();
++        this.effectId = buf.readUnsignedByte();
++        this.amplifier = buf.readUnsignedByte();
++        this.duration = buf.readShort();
++    }
++
++    @Override
+     public void read(ByteBuf buf) {
+         this.entityId = readVarInt(buf);
+         this.effectId = buf.readUnsignedByte();
+@@ -30,6 +39,14 @@ public class EntityEffect extends DefinedPacket {
+     }
+ 
+     @Override
++    protected void v17Write(ByteBuf buf) {
++        buf.writeInt(effectId);
++        buf.writeByte(effectId);
++        buf.writeByte(amplifier);
++        buf.writeShort(duration);
++    }
++
++    @Override
+     public void write(ByteBuf buf) {
+         writeVarInt(this.entityId, buf);
+         buf.writeByte(this.effectId);
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+index 7ed2dc3..776cc14 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+@@ -1,18 +1,18 @@
+ package net.md_5.bungee.protocol.packet;
+ 
++import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
+ import io.netty.buffer.ByteBuf;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+-import net.md_5.bungee.protocol.DefinedPacket;
+ 
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
+-public class EntityRemoveEffect extends DefinedPacket {
++public class EntityRemoveEffect extends MultiVersionPacketV17 {
+ 
+     private int entityId;
+     private int effectId;
+@@ -24,8 +24,20 @@ public class EntityRemoveEffect extends DefinedPacket {
+     }
+ 
+     @Override
++    protected void v17Read(ByteBuf buf) {
++        this.entityId = buf.readInt();
++        this.effectId = buf.readUnsignedByte();
++    }
++
++    @Override
+     public void write(ByteBuf buf) {
+-        writeVarInt(this.entityId, buf);
++        writeVarInt(entityId, buf);
++        buf.writeByte(effectId);
++    }
++
++    @Override
++    protected void v17Write(ByteBuf buf) {
++        buf.writeInt(entityId);
+         buf.writeByte(effectId);
+     }
+ 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
 index 0960b7d..253a3ec 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
@@ -1590,5 +1759,5 @@ index daf12f7..e33861a 100644
  
      @Override
 -- 
-2.7.4 (Apple Git-66)
+2.10.2.windows.1
 
