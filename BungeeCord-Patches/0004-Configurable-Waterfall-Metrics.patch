@@ -1,4 +1,4 @@
-From 176eede573861401925dba13a9e76f3fb87a1e85 Mon Sep 17 00:00:00 2001
+From a16ac4f8fcae27f03ffc287a2063bbf6713ea053 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Configurable Waterfall Metrics
@@ -17,38 +17,43 @@ index b30541b..293ec4e 100644
 +     */
 +    boolean isMetrics();
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
-similarity index 96%
-rename from proxy/src/main/java/net/md_5/bungee/Metrics.java
-rename to proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
-index 9523987..ae5a2a9 100644
---- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/Metrics.java
-@@ -1,4 +1,4 @@
--package net.md_5.bungee;
-+package io.github.waterfallmc.waterfall;
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 7bb0862..290fad4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,7 +11,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+-import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import net.md_5.bungee.conf.WaterfallConfiguration;
+ import io.netty.bootstrap.ServerBootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelException;
+@@ -289,7 +289,9 @@ public class BungeeCord extends ProxyServer
+                 }
+             }
+         }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
+-        metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
++        if (config.isMetrics()) {
++            metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
++        }
+     }
  
- import java.io.BufferedReader;
- import java.io.IOException;
-@@ -9,6 +9,8 @@ import java.net.URL;
+     public void startListeners()
+diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/net/md_5/bungee/Metrics.java
+index 9523987..e482e98 100644
+--- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
++++ b/proxy/src/main/java/net/md_5/bungee/Metrics.java
+@@ -9,6 +9,7 @@ import java.net.URL;
  import java.net.URLConnection;
  import java.net.URLEncoder;
  import java.util.TimerTask;
 +
-+import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.ProxyServer;
  
  public class Metrics extends TimerTask
-@@ -29,7 +31,7 @@ public class Metrics extends TimerTask
-     /**
-      * Interval of time to ping (in minutes)
-      */
--    final static int PING_INTERVAL = 10;
-+    public final static int PING_INTERVAL = 10;
-     boolean firstPost = true;
- 
-     @Override
-@@ -71,7 +73,7 @@ public class Metrics extends TimerTask
+@@ -71,7 +72,7 @@ public class Metrics extends TimerTask
          }
  
          // Create the url
@@ -57,10 +62,19 @@ index 9523987..ae5a2a9 100644
  
          // Connect to the website
          URLConnection connection;
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 12c5859..692b83e 100644
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+similarity index 56%
+rename from proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+rename to proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+index f9e277d..38f6330 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+@@ -1,4 +1,4 @@
+-package io.github.waterfallmc.waterfall.conf;
++package net.md_5.bungee.conf;
+ 
+ import lombok.*;
+ 
 @@ -9,10 +9,23 @@ import net.md_5.bungee.conf.YamlConfig;
  
  public class WaterfallConfiguration extends Configuration {
@@ -85,30 +99,6 @@ index 12c5859..692b83e 100644
 +        return metrics;
      }
  }
-\ No newline at end of file
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7bb0862..304a794 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.google.gson.Gson;
- import com.google.gson.GsonBuilder;
- import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-+import io.github.waterfallmc.waterfall.Metrics;
- import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
- import io.netty.bootstrap.ServerBootstrap;
- import io.netty.channel.Channel;
-@@ -289,7 +290,9 @@ public class BungeeCord extends ProxyServer
-                 }
-             }
-         }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
--        metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
-+        if (config.isMetrics()) {
-+            metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
-+        }
-     }
- 
-     public void startListeners()
 -- 
 2.10.0
 
