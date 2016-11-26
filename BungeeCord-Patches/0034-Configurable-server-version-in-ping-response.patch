@@ -1,4 +1,4 @@
-From d10ad2d125b7af681733f793cbae4189e1caa692 Mon Sep 17 00:00:00 2001
+From 167338d235ef25f4c143f6b26348485ef90ea9c6 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
@@ -20,23 +20,10 @@ index f04e2bf..a443614 100644
      // Throttling options
  
      /**
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f04e9c1..7e68902 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -612,7 +612,7 @@ public class BungeeCord extends ProxyServer
-     @Override
-     public String getGameVersion()
-     {
--        return Joiner.on( ", " ).join( ProtocolConstants.SUPPORTED_VERSIONS );
-+        return getConfig().getGameVersion(); // Waterfall
-     }
- 
-     @Override
-diff --git a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-index a85f985..9088182 100644
---- a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 68f2546..5983581 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -4,8 +4,11 @@ import lombok.*;
  
  import java.io.File;
@@ -68,6 +55,19 @@ index a85f985..9088182 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 +        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 239027d..2f8b16f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -612,7 +612,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getGameVersion()
+     {
+-        return Joiner.on( ", " ).join( ProtocolConstants.SUPPORTED_VERSIONS );
++        return getConfig().getGameVersion(); // Waterfall
      }
  
      @Override

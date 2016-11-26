@@ -1,4 +1,4 @@
-From a16ac4f8fcae27f03ffc287a2063bbf6713ea053 Mon Sep 17 00:00:00 2001
+From 4eb927bb9546be184307fdeb39b011e07975c96d Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Configurable Waterfall Metrics
@@ -17,19 +17,38 @@ index b30541b..293ec4e 100644
 +     */
 +    boolean isMetrics();
  }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index f9e277d..056b804 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -9,10 +9,23 @@ import net.md_5.bungee.conf.YamlConfig;
+ 
+ public class WaterfallConfiguration extends Configuration {
+ 
++    /**
++     * If metrics is enabled
++     * <p>
++     * Default is true (enabled)
++     */
++    private boolean metrics = true;
++
+     @Override
+     public void load() {
+         super.load();
+         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         config.load(false); // Load, but no permissions
++        metrics = config.getBoolean("metrics", metrics);
++    }
++
++    @Override
++    public boolean isMetrics() {
++        return metrics;
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7bb0862..290fad4 100644
+index 7bb0862..a7dcc97 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -11,7 +11,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.google.gson.Gson;
- import com.google.gson.GsonBuilder;
- import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
--import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
-+import net.md_5.bungee.conf.WaterfallConfiguration;
- import io.netty.bootstrap.ServerBootstrap;
- import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
 @@ -289,7 +289,9 @@ public class BungeeCord extends ProxyServer
                  }
              }
@@ -62,43 +81,6 @@ index 9523987..e482e98 100644
  
          // Connect to the website
          URLConnection connection;
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-similarity index 56%
-rename from proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-rename to proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-index f9e277d..38f6330 100644
---- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-@@ -1,4 +1,4 @@
--package io.github.waterfallmc.waterfall.conf;
-+package net.md_5.bungee.conf;
- 
- import lombok.*;
- 
-@@ -9,10 +9,23 @@ import net.md_5.bungee.conf.YamlConfig;
- 
- public class WaterfallConfiguration extends Configuration {
- 
-+    /**
-+     * If metrics is enabled
-+     * <p>
-+     * Default is true (enabled)
-+     */
-+    private boolean metrics = true;
-+
-     @Override
-     public void load() {
-         super.load();
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
-         config.load(false); // Load, but no permissions
-+        metrics = config.getBoolean("metrics", metrics);
-+    }
-+
-+    @Override
-+    public boolean isMetrics() {
-+        return metrics;
-     }
- }
 -- 
 2.10.0
 

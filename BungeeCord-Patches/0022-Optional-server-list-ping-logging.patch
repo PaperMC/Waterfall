@@ -1,4 +1,4 @@
-From b6e83ccf0aef5cbaee7a49b90f394460447e15a6 Mon Sep 17 00:00:00 2001
+From bb21405720f79a011d0d0c67cc9ce40d63739ddc Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -24,22 +24,10 @@ index 66d0b8a..5a49050 100644
      // Throttling options
  
      /**
-diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ed057b8..a37f3ea 100644
---- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-+++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -382,6 +382,6 @@ public class ServerConnector extends PacketHandler
-     @Override
-     public String toString()
-     {
--        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
-+        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
-     }
- }
-diff --git a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-index 6cfa96a..a85f985 100644
---- a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index e56d359..68f2546 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean metrics = true;
@@ -71,6 +59,18 @@ index 6cfa96a..a85f985 100644
 +    public boolean isLogServerListPing() {
 +        return logServerListPing;
 +    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index ed057b8..a37f3ea 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -382,6 +382,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
+     }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index c0a5061..4768cb4 100644

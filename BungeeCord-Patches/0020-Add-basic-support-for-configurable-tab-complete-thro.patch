@@ -1,4 +1,4 @@
-From a061441178978766c9aec812946d9cfcd74b56f6 Mon Sep 17 00:00:00 2001
+From d8a4843bb21d6878bf71cc1acff155ffce7d28e8 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -22,10 +22,10 @@ index 293ec4e..66d0b8a 100644
 +     */
 +    int getTabThrottle();
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-index 38f6330..6cfa96a 100644
---- a/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/WaterfallConfiguration.java
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 056b804..e56d359 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -16,16 +16,36 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean metrics = true;
