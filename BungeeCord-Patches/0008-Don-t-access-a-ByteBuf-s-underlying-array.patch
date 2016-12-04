@@ -1,12 +1,9 @@
-From 21d3ffc5849abc92929e2e769cb51e392975cbf7 Mon Sep 17 00:00:00 2001
+From 7c409c20042b2ea819c4b08165d8b4387384981f Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
-Subject: [PATCH] Improve Netty update
+Subject: [PATCH] Don't access a ByteBuf's underlying array
 
-ORIGINAL PATCH - Upgrade to netty 4.1
-
-Don't access a ByteBuf's underlying array with ByteBuf.array()
-  - ByteBuf.array() returns the underlying array storage, and does *not* return a view of the buffer as an array
+It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 index 6dcdece..e67773d 100644
@@ -59,7 +56,7 @@ index 2014b0c..6b77d90 100644
  
              user.setDimension( login.getDimension() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 22f1045..cd680f5 100644
+index c2dd942..c0a5061 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -240,7 +240,7 @@ public class DownstreamBridge extends PacketHandler
@@ -89,5 +86,5 @@ index 7fd2ff7..a70a215 100644
      {
          @Override
 -- 
-2.7.4 (Apple Git-66)
+2.10.0
 
