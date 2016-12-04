@@ -1,4 +1,4 @@
-From 340eedc8b19ec16f1178d048dac9c866cb604616 Mon Sep 17 00:00:00 2001
+From 9ff87b6b5620691cb02d7c1310209d3ead3f9eaf Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 16:38:37 -0400
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 6f782c8..2d5fc48 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 4decbb2..f45737a 100644
+index 8a857ad..741166d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -160,7 +160,7 @@ index 0000000..7ed2dc3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e934ef..3f1b133 100644
+index bbe4f15..9cc7f3f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -2,7 +2,9 @@ package net.md_5.bungee;
@@ -185,7 +185,7 @@ index 7e934ef..3f1b133 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2a1a719..4ce0e12 100644
+index 356cf4f..cb0f08c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -31,6 +31,8 @@ import net.md_5.bungee.netty.PacketHandler;
