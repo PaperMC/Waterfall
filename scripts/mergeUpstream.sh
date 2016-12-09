@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 PS1="$"
 basedir=`pwd`

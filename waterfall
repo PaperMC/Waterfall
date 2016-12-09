@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+case "$1" in
+    "rb" | "rbp" | "rebuild")
+        scripts/rebuildPatches.sh
+    ;;
+    "p" | "patch")
+        scripts/applyPatches.sh
+    ;;
+    "m" | "merge")
+        scrips/mergeUpstream.sh
+    ;;
+    "b" | "build")
+        scripts/build.sh
+    ;;
+    *)
+        echo "WaterfallMC build tool command. This provides a variety of commands to control the WaterfallMC"
+        echo "build. View below for details of the available commands."
+        echo ""
+        echo "Commands:"
+        echo "  * rb, rbp, rebuild | Rebuilds the patches."
+        echo "  * p, patch         | Applies all the patches to BungeeCord."
+        echo "  * m, merge         | Utility to aid in merging upstream"
+        echo "  * b, build         | Builds the project"
+        echo "                     | The bootstrap artifact can be found in Waterfall-Proxy/bootstrap/target/"
+    ;;
+esac
