@@ -1,4 +1,4 @@
-From 8d4ebbcc8999f166b3a9e7174ffb654a56cd3a2d Mon Sep 17 00:00:00 2001
+From af9943d555d07bc98a381d8ca661181b7f7696d0 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,7 +8,7 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 5a49050..f04e2bf 100644
+index 5a49050a..f04e2bf4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -32,9 +32,83 @@ public interface ProxyConfig
@@ -96,7 +96,7 @@ index 5a49050..f04e2bf 100644
       * Does the server authenticate with mojang
       */
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 11c5b68..1c011d0 100644
+index 11c5b685..1c011d08 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -93,9 +93,25 @@ public abstract class ProxyServer
@@ -126,7 +126,7 @@ index 11c5b68..1c011d0 100644
       * Gets the server info of a server.
       *
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
-index 967a1b2..08aa698 100644
+index 967a1b2a..08aa6981 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java
 +++ b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 @@ -44,6 +44,13 @@ public final class Configuration
@@ -144,10 +144,10 @@ index 967a1b2..08aa698 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 60a0cb4..f04e9c1 100644
+index c227396f..f392a281 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -563,10 +563,18 @@ public class BungeeCord extends ProxyServer
+@@ -565,10 +565,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -168,7 +168,7 @@ index 60a0cb4..f04e9c1 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index db9ebbd..4d16fa3 100644
+index db9ebbdd..4d16fa3a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -285,5 +285,5 @@ index db9ebbd..4d16fa3 100644
 +    // Waterfall end
  }
 -- 
-2.10.0
+2.11.0.windows.1
 

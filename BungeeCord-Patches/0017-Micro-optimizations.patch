@@ -1,13 +1,16 @@
-From 81c109310e7da6e5ab30701bed7a68ec409cc504 Mon Sep 17 00:00:00 2001
+From 172b1feaee98c58f898bb3bf5abd7ebaf5f0fcb7 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
 
 - PluginManager.dispatchCommand() avoids regex while splitting commands. Java 7 introduced an optimized String.split() that should be used instead (affects command dispatch).
 - Avoid regex in getLocale() by changing from replaceAll(String, String) to replaceAll(char, char)
+- Don't attempt to format arguments when there are none provided
+- Don't create a data input stream for every plugin message we get from servers
+- Optimise replacing dashes in UUID's
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 71a5a15..520ee31 100644
+index 71a5a158..520ee315 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
@@ -27,8 +30,23 @@ index 71a5a15..520ee31 100644
          // Check for chat that only contains " "
          if ( split.length == 0 )
          {
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index a0f2c55a..ac272720 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -480,7 +480,9 @@ public class BungeeCord extends ProxyServer
+         String translation = "<translation '" + name + "' missing>";
+         try
+         {
+-            translation = MessageFormat.format( customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name ), args );
++            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
++
++            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
+         } catch ( MissingResourceException ex )
+         {
+         }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e10ea44..5b02c5f 100644
+index 721d48a9..812d9379 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -556,7 +556,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -40,6 +58,26 @@ index e10ea44..5b02c5f 100644
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index c0a5061a..ce32f6b1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -222,7 +222,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(PluginMessage pluginMessage) throws Exception
+     {
+-        DataInput in = pluginMessage.getStream();
+         PluginMessageEvent event = new PluginMessageEvent( con.getServer(), con, pluginMessage.getTag(), pluginMessage.getData().clone() );
+ 
+         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
+@@ -249,6 +248,7 @@ public class DownstreamBridge extends PacketHandler
+ 
+         if ( pluginMessage.getTag().equals( "BungeeCord" ) )
+         {
++            DataInput in = pluginMessage.getStream();
+             ByteArrayDataOutput out = ByteStreams.newDataOutput();
+             String subChannel = in.readUTF();
+ 
 -- 
-2.10.2
+2.11.0.windows.1
 
