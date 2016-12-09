@@ -1,4 +1,4 @@
-From 2e226193aef5c311a2538f289bc9c998ea3aeb3e Mon Sep 17 00:00:00 2001
+From 59f7e0021b2116919e0b3b8a2fba1a005a6640b6 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -8,7 +8,7 @@ Manually decode uuids to and from hex.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 new file mode 100644
-index 0000000..ece5f79
+index 00000000..ece5f798
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 @@ -0,0 +1,113 @@
@@ -128,10 +128,10 @@ index 0000000..ece5f79
 \ No newline at end of file
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java
 new file mode 100644
-index 0000000..7258a26
+index 00000000..cc24dd35
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,74 @@
 +package io.github.waterfallmc.waterfall.utils;
 +import java.util.UUID;
 +
@@ -141,6 +141,10 @@ index 0000000..7258a26
 +public class UUIDUtils {
 +    private UUIDUtils() {}
 +
++    public static String undash(String id) {
++        return new StringBuilder( 32 ).append( id, 0, 8 ).append( id, 9, 13 ).append( id, 14, 18 ).append( id, 19, 23 ).append( id, 24, 36 ).toString();
++    }
++
 +    public static String toMojangString(UUID id) {
 +        Preconditions.checkNotNull(id, "Null id");
 +        return Hex.encodeString(toBytes(id));
@@ -149,7 +153,7 @@ index 0000000..7258a26
 +    public static UUID fromString(String s) {
 +        Preconditions.checkNotNull(s, "Null string");
 +        if (s.length() == 36) { // UUID.toString() uuid
-+            s = s.replaceAll("-", "");
++            s = UUIDUtils.undash(s);
 +        } else if (s.length() != 32) {
 +            throw new IllegalArgumentException("Invalid UUID: " + s);
 +        }
@@ -204,7 +208,7 @@ index 0000000..7258a26
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 86a0055..6c9c6d6 100644
+index 86a00555..6c9c6d61 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
 @@ -1,11 +1,15 @@
@@ -240,6 +244,48 @@ index 86a0055..6c9c6d6 100644
 +        return UUIDUtils.fromString(uuid);
      }
  }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+index 27b51849..5320ae0b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+@@ -3,6 +3,7 @@ package net.md_5.bungee.api;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.UUID;
++
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.Getter;
+@@ -75,7 +76,7 @@ public class ServerPing
+ 
+         public String getId()
+         {
+-            return uniqueId.toString().replaceAll( "-", "" );
++            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index d87b03c0..e0b77838 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -12,6 +12,7 @@ import java.util.UUID;
+ import java.util.concurrent.TimeUnit;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
++
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -603,7 +604,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String getUUID()
+     {
+-        return uniqueId.toString().replaceAll( "-", "" );
++        return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
+     }
+ 
+     @Override
 -- 
-2.8.3
+2.11.0.windows.1
 
