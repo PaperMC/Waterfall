@@ -1,0 +1,32 @@
+From 55ff4996e61c50acad85f3e3609c6563e2acc3ee Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Wed, 21 Dec 2016 04:07:26 -0500
+Subject: [PATCH] Security enhancements for EncryptionUtil
+
+Use a constant-time comparison in getSecret() and use SecureRandom for EncryptionRequest.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+index 871e4ad..622a21d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
++++ b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+@@ -27,7 +27,7 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ public class EncryptionUtil
+ {
+ 
+-    private static final Random random = new Random();
++    private static final Random random = new java.security.SecureRandom(); // Waterfall - use SecureRandom
+     public static final KeyPair keys;
+     @Getter
+     private static final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
+@@ -61,7 +61,7 @@ public class EncryptionUtil
+         cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
+         byte[] decrypted = cipher.doFinal( resp.getVerifyToken() );
+ 
+-        if ( !Arrays.equals( request.getVerifyToken(), decrypted ) )
++        if ( !java.security.MessageDigest.isEqual( request.getVerifyToken(), decrypted ) ) // Waterfall - use constant-time comparison
+         {
+             throw new IllegalStateException( "Key pairs do not match!" );
+         }
+-- 
+2.7.4
+
