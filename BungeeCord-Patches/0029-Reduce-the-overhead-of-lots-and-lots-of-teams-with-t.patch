@@ -1,4 +1,4 @@
-From 5eca7dd60b1298b1c5f45fb5991329bb4f634a0b Mon Sep 17 00:00:00 2001
+From 983fddb8db3706b766527f8328ed7556dbb58639 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 25 Apr 2016 23:46:00 -0700
 Subject: [PATCH] Reduce the overhead of lots and lots of teams with the same
@@ -11,13 +11,11 @@ Uses a sorted array to avoid the overhead of the hashset in a team.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
 new file mode 100644
-index 0000000..c62e3d4
+index 0000000..a1b6981
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
-@@ -0,0 +1,176 @@
+@@ -0,0 +1,151 @@
 +package io.github.waterfallmc.waterfall.utils;
-+
-+import lombok.*;
 +
 +import java.util.AbstractSet;
 +import java.util.ArrayList;
@@ -39,13 +37,10 @@ index 0000000..c62e3d4
 + */
 +public class LowMemorySet<T extends Comparable<T>> extends AbstractSet<T> implements Set<T> {
 +    private final List<T> backing;
-+    @Setter
-+    private boolean trimAggressively;
 +
-+    protected LowMemorySet(List<T> list) {
++    private LowMemorySet(List<T> list) {
 +        this.backing = checkNotNull(list, "Null list");
 +        this.sort(); // We have to sort any initial elements
-+        this.trim(true);
 +    }
 +
 +    public static <T extends Comparable<T>> LowMemorySet<T> create() {
@@ -63,15 +58,6 @@ index 0000000..c62e3d4
 +
 +    private void sort() {
 +        backing.sort(null);
-+        this.trim();
-+    }
-+
-+    private void trim() {
-+        trim(false);
-+    }
-+
-+    private void trim(boolean force) {
-+        if (backing instanceof ArrayList && force || trimAggressively) ((ArrayList<T>) backing).trimToSize();
 +    }
 +
 +    @Override
@@ -133,25 +119,18 @@ index 0000000..c62e3d4
 +        int index = indexOf(o);
 +        if (index < 0) return false;
 +        T old = backing.remove(index);
-+        this.trim();
 +        assert old == o;
 +        return old != null;
 +    }
 +
 +    @Override
 +    public boolean removeAll(Collection<?> c) {
-+        int oldSize = this.size();
-+        boolean result = backing.removeIf(c::contains);
-+        this.trim(oldSize - this.size() > 10);
-+        return result;
++        return backing.removeIf(c::contains);
 +    }
 +
 +    @Override
 +    public boolean retainAll(Collection<?> c) {
-+        int oldSize = this.size();
-+        boolean result = backing.removeIf((o) -> !c.contains(o));
-+        this.trim(oldSize - this.size() > 10);
-+        return result;
++        return backing.removeIf((o) -> !c.contains(o));
 +    }
 +
 +    @Override
@@ -165,7 +144,6 @@ index 0000000..c62e3d4
 +    @Override
 +    public void clear() {
 +        backing.clear();
-+        this.trim(true);
 +    }
 +
 +    @Override
@@ -185,10 +163,7 @@ index 0000000..c62e3d4
 +
 +    @Override
 +    public boolean removeIf(Predicate<? super T> filter) {
-+        int oldSize = this.size();
-+        boolean worked = backing.removeIf(filter);
-+        this.trim(this.size() - oldSize > 10);
-+        return worked;
++        return backing.removeIf(filter);
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
@@ -292,5 +267,5 @@ index 0000000..5aa306a
 +
 +}
 -- 
-2.10.0
+2.7.4
 
