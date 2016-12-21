@@ -1,4 +1,4 @@
-From 30ba27e5de5a18b6dada9d3b2591966ef0e3e1a4 Mon Sep 17 00:00:00 2001
+From 51c093da1160167eb42ed2214a8d78ea38c1b2c6 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -49,7 +49,7 @@ index 375815c..c49e900 100644
       * Gets the server this player is connected to.
       *
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a5f0e15..bbe4f15 100644
+index f278a48..b984c0b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -248,6 +248,12 @@ public final class UserConnection implements ProxiedPlayer
@@ -69,8 +69,8 @@ index a5f0e15..bbe4f15 100644
                      if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
--                        connect( def, null, false );
-+                        connect( def, null, false, timeout ); // Waterfall
+-                        connect( def, null, true );
++                        connect( def, null, true, timeout ); // Waterfall
                      } else if ( dimensionChange )
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
@@ -84,5 +84,5 @@ index a5f0e15..bbe4f15 100644
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
          if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
 -- 
-2.10.0
+2.7.4
 
