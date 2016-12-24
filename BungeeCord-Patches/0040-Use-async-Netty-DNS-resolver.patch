@@ -1,4 +1,4 @@
-From bf31dfa1560b2be03d92ec8ecda481ce108d49d1 Mon Sep 17 00:00:00 2001
+From 2a1f5297000df92b5acda072422f68137ae1d2a1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 1220a41..5d105b0 100644
+index 99d4628..180b78d 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -25,6 +25,14 @@
+@@ -31,6 +31,14 @@
              <version>${netty.version}</version>
              <scope>compile</scope>
          </dependency>
