@@ -1,4 +1,4 @@
-From 8fdb71b40367d2cc2d40672ba113cd2b1300753d Mon Sep 17 00:00:00 2001
+From 23d54389dc7a90d7de151de5e959e1615aeb7d27 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -168,10 +168,10 @@ index d4b0384..9aac7ca 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 741166d..4eebd12 100644
+index 2aa6885..789637b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -273,6 +273,8 @@ public enum Protocol
+@@ -274,6 +274,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
@@ -180,7 +180,7 @@ index 741166d..4eebd12 100644
                      ProtocolConstants.MINECRAFT_1_9
              ) );
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
-@@ -310,7 +312,11 @@ public enum Protocol
+@@ -312,7 +314,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -193,8 +193,389 @@ index 741166d..4eebd12 100644
              }
  
              Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors.get( id );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig
+new file mode 100644
+index 0000000..2aa6885
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig
+@@ -0,0 +1,375 @@
++package net.md_5.bungee.protocol;
++
++import com.google.common.base.Preconditions;
++import com.google.common.collect.Iterables;
++import gnu.trove.map.TIntObjectMap;
++import gnu.trove.map.TObjectIntMap;
++import gnu.trove.map.hash.TIntObjectHashMap;
++import gnu.trove.map.hash.TObjectIntHashMap;
++import java.lang.reflect.Constructor;
++import java.util.Arrays;
++import java.util.List;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.protocol.packet.BossBar;
++import net.md_5.bungee.protocol.packet.Chat;
++import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.EncryptionRequest;
++import net.md_5.bungee.protocol.packet.EncryptionResponse;
++import net.md_5.bungee.protocol.packet.EntityEffect;
++import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
++import net.md_5.bungee.protocol.packet.Handshake;
++import net.md_5.bungee.protocol.packet.KeepAlive;
++import net.md_5.bungee.protocol.packet.Kick;
++import net.md_5.bungee.protocol.packet.Login;
++import net.md_5.bungee.protocol.packet.LoginRequest;
++import net.md_5.bungee.protocol.packet.LoginSuccess;
++import net.md_5.bungee.protocol.packet.PingPacket;
++import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
++import net.md_5.bungee.protocol.packet.PlayerListItem;
++import net.md_5.bungee.protocol.packet.PluginMessage;
++import net.md_5.bungee.protocol.packet.Respawn;
++import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
++import net.md_5.bungee.protocol.packet.ScoreboardObjective;
++import net.md_5.bungee.protocol.packet.ScoreboardScore;
++import net.md_5.bungee.protocol.packet.SetCompression;
++import net.md_5.bungee.protocol.packet.StatusRequest;
++import net.md_5.bungee.protocol.packet.StatusResponse;
++import net.md_5.bungee.protocol.packet.TabCompleteRequest;
++import net.md_5.bungee.protocol.packet.TabCompleteResponse;
++import net.md_5.bungee.protocol.packet.Team;
++import net.md_5.bungee.protocol.packet.Title;
++
++public enum Protocol
++{
++
++    // Undef
++    HANDSHAKE
++    {
++
++        {
++            TO_SERVER.registerPacket(
++                    Handshake.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
++            );
++        }
++    },
++    // 0
++    GAME
++    {
++
++        {
++            TO_CLIENT.registerPacket(
++                    KeepAlive.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x1F )
++            );
++            TO_CLIENT.registerPacket(
++                    Login.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x23 )
++            );
++            TO_CLIENT.registerPacket(
++                    Chat.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x0F )
++            );
++            TO_CLIENT.registerPacket(
++                    Respawn.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x07 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x33 )
++            );
++            TO_CLIENT.registerPacket(
++                    BossBar.class,
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
++            );
++            // Waterfall start
++            TO_CLIENT.registerPacket(
++                    EntityEffect.class,
++                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
++                    map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
++                    map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
++                    map(ProtocolConstants.MINECRAFT_1_10, 0x4B)
++
++            );
++            TO_CLIENT.registerPacket(
++                    EntityRemoveEffect.class,
++                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
++                    map(ProtocolConstants.MINECRAFT_1_9, 0x31)
++            );
++            // Waterfall end
++            TO_CLIENT.registerPacket(
++                    PlayerListItem.class, // PlayerInfo
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x38 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x2D )
++            );
++            TO_CLIENT.registerPacket(
++                    TabCompleteResponse.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3A ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x0E )
++            );
++            TO_CLIENT.registerPacket(
++                    ScoreboardObjective.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3B ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x3F )
++            );
++            TO_CLIENT.registerPacket(
++                    ScoreboardScore.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3C ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x42 )
++            );
++            TO_CLIENT.registerPacket(
++                    ScoreboardDisplay.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3D ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x38 )
++            );
++            TO_CLIENT.registerPacket(
++                    Team.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3E ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x41 )
++            );
++            TO_CLIENT.registerPacket(
++                    PluginMessage.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x18 )
++            );
++            TO_CLIENT.registerPacket(
++                    Kick.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x40 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x1A )
++            );
++            TO_CLIENT.registerPacket(
++                    Title.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x45 )
++            );
++            TO_CLIENT.registerPacket(
++                    PlayerListHeaderFooter.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x47 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x48 ),
++                    map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
++                    map( ProtocolConstants.MINECRAFT_1_10, 0x47 ),
++                    map( ProtocolConstants.MINECRAFT_1_11, 0x47 ),
++                    map( ProtocolConstants.MINECRAFT_1_11_1, 0x47 )
++            );
++
++            TO_SERVER.registerPacket(
++                    KeepAlive.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x0B )
++            );
++            TO_SERVER.registerPacket(
++                    Chat.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x02 )
++            );
++            TO_SERVER.registerPacket(
++                    TabCompleteRequest.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x14 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x01 )
++            );
++            TO_SERVER.registerPacket(
++                    ClientSettings.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x15 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x04 )
++            );
++            TO_SERVER.registerPacket(
++                    PluginMessage.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x17 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x09 )
++            );
++        }
++    },
++    // 1
++    STATUS
++    {
++
++        {
++            TO_CLIENT.registerPacket(
++                    StatusResponse.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
++            );
++            TO_CLIENT.registerPacket(
++                    PingPacket.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
++            );
++
++            TO_SERVER.registerPacket(
++                    StatusRequest.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
++            );
++            TO_SERVER.registerPacket(
++                    PingPacket.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
++            );
++        }
++    },
++    //2
++    LOGIN
++    {
++
++        {
++            TO_CLIENT.registerPacket(
++                    Kick.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
++            );
++            TO_CLIENT.registerPacket(
++                    EncryptionRequest.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
++            );
++            TO_CLIENT.registerPacket(
++                    LoginSuccess.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 )
++            );
++            TO_CLIENT.registerPacket(
++                    SetCompression.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x03 )
++            );
++
++            TO_SERVER.registerPacket(
++                    LoginRequest.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
++            );
++            TO_SERVER.registerPacket(
++                    EncryptionResponse.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
++            );
++        }
++    };
++    /*========================================================================*/
++    public static final int MAX_PACKET_ID = 0xFF;
++    /*========================================================================*/
++    public final DirectionData TO_SERVER = new DirectionData(this, ProtocolConstants.Direction.TO_SERVER );
++    public final DirectionData TO_CLIENT = new DirectionData(this, ProtocolConstants.Direction.TO_CLIENT );
++
++    @RequiredArgsConstructor
++    private static class ProtocolData {
++
++        private final int protocolVersion;
++        private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
++        private final TIntObjectMap<Constructor<? extends DefinedPacket>> packetConstructors = new TIntObjectHashMap<>( MAX_PACKET_ID );
++    }
++
++    @RequiredArgsConstructor
++    private static class ProtocolMapping {
++        private final int protocolVersion;
++        private final int packetID;
++    }
++    // Helper method
++    private static ProtocolMapping map(int protocol, int id) {
++        return new ProtocolMapping(protocol, id);
++    }
++
++    @RequiredArgsConstructor
++    public static class DirectionData
++    {
++
++        private final Protocol protocolPhase;
++        private final TIntObjectMap<ProtocolData> protocols = new TIntObjectHashMap<>();
++        {
++            for ( int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS )
++            {
++                protocols.put( protocol, new ProtocolData( protocol ) );
++            }
++        }
++        private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
++        {
++            linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_9
++            ) );
++            linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_9_1,
++                    ProtocolConstants.MINECRAFT_1_9_2,
++                    ProtocolConstants.MINECRAFT_1_9_4,
++                    ProtocolConstants.MINECRAFT_1_10,
++                    ProtocolConstants.MINECRAFT_1_11,
++                    ProtocolConstants.MINECRAFT_1_11_1
++            ) );
++        }
++
++        @Getter
++        private final ProtocolConstants.Direction direction;
++
++        private ProtocolData getProtocolData(int version)
++        {
++            ProtocolData protocol = protocols.get( version );
++            if ( protocol == null && ( protocolPhase != Protocol.GAME ) )
++            {
++                protocol = Iterables.getFirst( protocols.valueCollection(), null );
++            }
++            return protocol;
++        }
++
++        public boolean hasPacket(int i, boolean supportsForge) {
++            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
++        }
++
++        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
++        {
++            ProtocolData protocolData = getProtocolData( version );
++            if (protocolData == null)
++            {
++                throw new BadPacketException( "Unsupported protocol version" );
++            }
++            if ( !hasPacket(id, supportsForge) )
++            {
++                throw new BadPacketException( "Packet with id " + id + " outside of range " );
++            }
++
++            Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors.get( id );
++            try
++            {
++                return ( constructor == null ) ? null : constructor.newInstance();
++            } catch ( ReflectiveOperationException ex )
++            {
++                throw new BadPacketException( "Could not construct packet with id " + id, ex );
++            }
++        }
++
++        protected final void registerPacket(Class<? extends DefinedPacket> packetClass, ProtocolMapping ...mappings)
++        {
++            try
++            {
++                Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
++                for ( ProtocolMapping mapping : mappings )
++                {
++                    ProtocolData data = protocols.get( mapping.protocolVersion );
++                    data.packetMap.put( packetClass, mapping.packetID );
++                    data.packetConstructors.put( mapping.packetID, constructor );
++
++                    List<Integer> links = linkedProtocols.get( mapping.protocolVersion );
++                    if ( links != null )
++                    {
++                        links: for ( int link : links )
++                        {
++                            // Check for manual mappings
++                            for ( ProtocolMapping m : mappings )
++                            {
++                                if ( m == mapping ) continue;
++                                if ( m.protocolVersion == link ) continue links;
++                                List<Integer> innerLinks = linkedProtocols.get( m.protocolVersion );
++                                if ( innerLinks != null && innerLinks.contains( link ) ) continue links;
++                            }
++                            registerPacket( packetClass, map( link, mapping.packetID ) );
++                        }
++                    }
++                }
++            } catch ( NoSuchMethodException ex )
++            {
++                throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
++            }
++        }
++
++        final int getId(Class<? extends DefinedPacket> packet, int version)
++        {
++
++            ProtocolData protocolData = getProtocolData( version );
++            if (protocolData == null)
++            {
++                throw new BadPacketException( "Unsupported protocol version" );
++            }
++            Preconditions.checkArgument( protocolData.packetMap.containsKey( packet ), "Cannot get ID for packet %s in state %s", packet, protocolPhase);
++
++            return protocolData.packetMap.get( packet );
++        }
++    }
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 637262d..e41c9fa 100644
+index af80c95..8ebb044 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -206,9 +587,9 @@ index 637262d..e41c9fa 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -14,12 +16,15 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_10 = 210;
+@@ -15,12 +17,15 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_11 = 315;
+     public static final int MINECRAFT_1_11_1 = 316;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
@@ -222,6 +603,61 @@ index 637262d..e41c9fa 100644
              ProtocolConstants.MINECRAFT_1_8,
              ProtocolConstants.MINECRAFT_1_9,
              ProtocolConstants.MINECRAFT_1_9_1,
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig
+new file mode 100644
+index 0000000..af80c95
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig
+@@ -0,0 +1,49 @@
++package net.md_5.bungee.protocol;
++
++import java.util.Arrays;
++import java.util.List;
++
++public class ProtocolConstants
++{
++
++    public static final int MINECRAFT_1_8 = 47;
++    public static final int MINECRAFT_1_9 = 107;
++    public static final int MINECRAFT_1_9_1 = 108;
++    public static final int MINECRAFT_1_9_2 = 109;
++    public static final int MINECRAFT_1_9_4 = 110;
++    public static final int MINECRAFT_1_10 = 210;
++    public static final int MINECRAFT_1_11 = 315;
++    public static final int MINECRAFT_1_11_1 = 316;
++    public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
++            "1.8.x",
++            "1.9.x",
++            "1.10.x",
++            "1.11.x"
++    );
++    public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
++            ProtocolConstants.MINECRAFT_1_8,
++            ProtocolConstants.MINECRAFT_1_9,
++            ProtocolConstants.MINECRAFT_1_9_1,
++            ProtocolConstants.MINECRAFT_1_9_2,
++            ProtocolConstants.MINECRAFT_1_9_4,
++            ProtocolConstants.MINECRAFT_1_10,
++            ProtocolConstants.MINECRAFT_1_11,
++            ProtocolConstants.MINECRAFT_1_11_1
++    );
++
++    public static final boolean isBeforeOrEq(int before, int other)
++    {
++            return before <= other;
++    }
++
++    public static final boolean isAfterOrEq(int after, int other)
++    {
++            return after >= other;
++    }
++
++    public enum Direction
++    {
++
++        TO_CLIENT, TO_SERVER;
++    }
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 index 6da27fc..65506c2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
@@ -1146,7 +1582,7 @@ index 5d72a56..adcb211 100644
              throw CancelSendSignal.INSTANCE;
          } else
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9cc7f3f..dfff280 100644
+index 3566563..842f5c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -210,6 +210,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -1196,9 +1632,678 @@ index 9cc7f3f..dfff280 100644
      public void setCompressionThreshold(int compressionThreshold)
      {
 +        if ( ProtocolConstants.isBeforeOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) ) return; // Travertine
-         if ( ch.getHandle().isActive() && this.compressionThreshold == -1 )
+         if ( ch.getHandle().isActive() && this.compressionThreshold == -1 && compressionThreshold >= 0 )
          {
              this.compressionThreshold = compressionThreshold;
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java.orig b/proxy/src/main/java/net/md_5/bungee/UserConnection.java.orig
+new file mode 100644
+index 0000000..3566563
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java.orig
+@@ -0,0 +1,647 @@
++package net.md_5.bungee;
++
++import com.google.common.base.Objects;
++import com.google.common.base.Preconditions;
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.ImmutableMap;
++import com.google.common.collect.Multimap;
++import io.netty.bootstrap.Bootstrap;
++import io.netty.channel.Channel;
++import io.netty.channel.ChannelFuture;
++import io.netty.channel.ChannelFutureListener;
++import io.netty.channel.ChannelInitializer;
++import io.netty.channel.ChannelOption;
++import io.netty.util.internal.PlatformDependent;
++import java.net.InetSocketAddress;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.HashSet;
++import java.util.LinkedList;
++import java.util.Locale;
++import java.util.Map;
++import java.util.Queue;
++import java.util.UUID;
++import java.util.logging.Level;
++import lombok.Getter;
++import lombok.NonNull;
++import lombok.RequiredArgsConstructor;
++import lombok.Setter;
++import net.md_5.bungee.api.Callback;
++import net.md_5.bungee.api.ChatMessageType;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.Title;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.PermissionCheckEvent;
++import net.md_5.bungee.api.event.ServerConnectEvent;
++import net.md_5.bungee.api.score.Scoreboard;
++import net.md_5.bungee.chat.ComponentSerializer;
++import net.md_5.bungee.connection.InitialHandler;
++import net.md_5.bungee.entitymap.EntityMap;
++import net.md_5.bungee.forge.ForgeClientHandler;
++import net.md_5.bungee.forge.ForgeConstants;
++import net.md_5.bungee.forge.ForgeServerHandler;
++import net.md_5.bungee.netty.ChannelWrapper;
++import net.md_5.bungee.netty.HandlerBoss;
++import net.md_5.bungee.netty.PipelineUtils;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.MinecraftDecoder;
++import net.md_5.bungee.protocol.MinecraftEncoder;
++import net.md_5.bungee.protocol.PacketWrapper;
++import net.md_5.bungee.protocol.Protocol;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.Chat;
++import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.Kick;
++import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
++import net.md_5.bungee.protocol.packet.PluginMessage;
++import net.md_5.bungee.protocol.packet.Respawn;
++import net.md_5.bungee.protocol.packet.SetCompression;
++import net.md_5.bungee.tab.ServerUnique;
++import net.md_5.bungee.tab.TabList;
++import net.md_5.bungee.util.CaseInsensitiveSet;
++
++@RequiredArgsConstructor
++public final class UserConnection implements ProxiedPlayer
++{
++
++    /*========================================================================*/
++    @NonNull
++    private final ProxyServer bungee;
++    @NonNull
++    @Getter
++    private final ChannelWrapper ch;
++    @Getter
++    @NonNull
++    private final String name;
++    @Getter
++    private final InitialHandler pendingConnection;
++    /*========================================================================*/
++    @Getter
++    @Setter
++    private ServerConnection server;
++    @Getter
++    @Setter
++    private int dimension;
++    @Getter
++    @Setter
++    private boolean dimensionChange = true;
++    @Getter
++    private final Collection<ServerInfo> pendingConnects = new HashSet<>();
++    /*========================================================================*/
++    @Getter
++    @Setter
++    private int sentPingId;
++    @Getter
++    @Setter
++    private long sentPingTime;
++    @Getter
++    @Setter
++    private int ping = 100;
++    @Getter
++    @Setter
++    private ServerInfo reconnectServer;
++    @Getter
++    private TabList tabListHandler;
++    @Getter
++    @Setter
++    private int gamemode;
++    @Getter
++    private int compressionThreshold = -1;
++    // Used for trying multiple servers in order
++    @Setter
++    private Queue<String> serverJoinQueue;
++    /*========================================================================*/
++    private final Collection<String> groups = new CaseInsensitiveSet();
++    private final Collection<String> permissions = new CaseInsensitiveSet();
++    /*========================================================================*/
++    @Getter
++    @Setter
++    private int clientEntityId;
++    @Getter
++    @Setter
++    private int serverEntityId;
++    @Getter
++    private ClientSettings settings;
++    @Getter
++    private final Scoreboard serverSentScoreboard = new Scoreboard();
++    @Getter
++    private final Collection<UUID> sentBossBars = new HashSet<>();
++    // Waterfall start
++    @Getter
++    private final Multimap<Integer, Integer> potions = HashMultimap.create();
++    // Waterfall end
++    /*========================================================================*/
++    @Getter
++    private String displayName;
++    @Getter
++    private EntityMap entityRewrite;
++    private Locale locale;
++    /*========================================================================*/
++    @Getter
++    @Setter
++    private ForgeClientHandler forgeClientHandler;
++    @Getter
++    @Setter
++    private ForgeServerHandler forgeServerHandler;
++    /*========================================================================*/
++    private final Unsafe unsafe = new Unsafe()
++    {
++        @Override
++        public void sendPacket(DefinedPacket packet)
++        {
++            ch.write( packet );
++        }
++    };
++
++    public void init()
++    {
++        this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
++
++        this.displayName = name;
++
++        /*
++        switch ( getPendingConnection().getListener().getTabListType() )
++        {
++            case "GLOBAL":
++                tabListHandler = new Global( this );
++                break;
++            case "SERVER":
++                tabListHandler = new ServerUnique( this );
++                break;
++            default:
++                tabListHandler = new GlobalPing( this );
++                break;
++        }
++         */
++        tabListHandler = new ServerUnique( this );
++
++        Collection<String> g = bungee.getConfigurationAdapter().getGroups( name );
++        g.addAll( bungee.getConfigurationAdapter().getGroups( getUniqueId().toString() ) );
++        for ( String s : g )
++        {
++            addGroups( s );
++        }
++
++        forgeClientHandler = new ForgeClientHandler( this );
++
++        // No-config FML handshake marker.
++        // Set whether the connection has a 1.8 FML marker in the handshake.
++        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
++        {
++            forgeClientHandler.setFmlTokenInHandshake( true );
++        }
++    }
++
++    public void sendPacket(PacketWrapper packet)
++    {
++        ch.write( packet );
++    }
++
++    @Deprecated
++    public boolean isActive()
++    {
++        return !ch.isClosed();
++    }
++
++    @Override
++    public void setDisplayName(String name)
++    {
++        Preconditions.checkNotNull( name, "displayName" );
++        displayName = name;
++    }
++
++    @Override
++    public void connect(ServerInfo target)
++    {
++        connect( target, null );
++    }
++
++    @Override
++    public void connect(ServerInfo target, Callback<Boolean> callback)
++    {
++        connect( target, callback, false );
++    }
++
++    public void connectNow(ServerInfo target)
++    {
++        dimensionChange = true;
++        connect( target );
++    }
++
++    public ServerInfo updateAndGetNextServer(ServerInfo currentTarget)
++    {
++        if ( serverJoinQueue == null )
++        {
++            serverJoinQueue = new LinkedList<>( getPendingConnection().getListener().getServerPriority() );
++        }
++
++        ServerInfo next = null;
++        while ( !serverJoinQueue.isEmpty() )
++        {
++            ServerInfo candidate = ProxyServer.getInstance().getServerInfo( serverJoinQueue.remove() );
++            if ( !Objects.equal( currentTarget, candidate ) )
++            {
++                next = candidate;
++                break;
++            }
++        }
++
++        return next;
++    }
++
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
++    {
++        // Waterfall start
++        connect(info, callback, retry, 5000); // todo: configurable
++    }
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, final int timeout)
++    {
++        // Waterfall end
++        Preconditions.checkNotNull( info, "info" );
++
++        ServerConnectEvent event = new ServerConnectEvent( this, info );
++        if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
++        {
++            if ( callback != null )
++            {
++                callback.done( false, null );
++            }
++
++            if ( getServer() == null && !ch.isClosing() )
++            {
++                throw new IllegalStateException("Cancelled ServerConnectEvent with no server or disconnect.");
++            }
++            return;
++        }
++
++        final BungeeServerInfo target = (BungeeServerInfo) event.getTarget(); // Update in case the event changed target
++
++        if ( getServer() != null && Objects.equal( getServer().getInfo(), target ) )
++        {
++            if ( callback != null )
++            {
++                callback.done( false, null );
++            }
++
++            sendMessage( bungee.getTranslation( "already_connected" ) );
++            return;
++        }
++        if ( pendingConnects.contains( target ) )
++        {
++            if ( callback != null )
++            {
++                callback.done( false, null );
++            }
++
++            sendMessage( bungee.getTranslation( "already_connecting" ) );
++            return;
++        }
++
++        pendingConnects.add( target );
++
++        ChannelInitializer initializer = new ChannelInitializer()
++        {
++            @Override
++            protected void initChannel(Channel ch) throws Exception
++            {
++                PipelineUtils.BASE.initChannel( ch );
++                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
++                ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
++                ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
++            }
++        };
++        ChannelFutureListener listener = new ChannelFutureListener()
++        {
++            @Override
++            @SuppressWarnings("ThrowableResultIgnored")
++            public void operationComplete(ChannelFuture future) throws Exception
++            {
++                if ( callback != null )
++                {
++                    callback.done( future.isSuccess(), future.cause() );
++                }
++
++                if ( !future.isSuccess() )
++                {
++                    future.channel().close();
++                    pendingConnects.remove( target );
++
++                    ServerInfo def = updateAndGetNextServer( target );
++                    if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
++                    {
++                        sendMessage( bungee.getTranslation( "fallback_lobby" ) );
++                        connect( def, null, true, timeout ); // Waterfall
++                    } else if ( dimensionChange )
++                    {
++                        disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
++                    } else
++                    {
++                        sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
++                    }
++                }
++            }
++        };
++        Bootstrap b = new Bootstrap()
++                .channel( PipelineUtils.getChannel() )
++                .group( ch.getHandle().eventLoop() )
++                .handler( initializer )
++                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout ) // Waterfall
++                .remoteAddress( target.getAddress() );
++        // Windows is bugged, multi homed users will just have to live with random connecting IPs
++        if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
++        {
++            b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
++        }
++        b.connect().addListener( listener );
++    }
++
++    @Override
++    public void disconnect(String reason)
++    {
++        disconnect0( TextComponent.fromLegacyText( reason ) );
++    }
++
++    @Override
++    public void disconnect(BaseComponent... reason)
++    {
++        disconnect0( reason );
++    }
++
++    @Override
++    public void disconnect(BaseComponent reason)
++    {
++        disconnect0( reason );
++    }
++
++    public void disconnect0(final BaseComponent... reason)
++    {
++        if ( !ch.isClosing() )
++        {
++            bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
++            {
++                getName(), BaseComponent.toLegacyText( reason )
++            } );
++
++            ch.delayedClose( new Runnable()
++            {
++
++                @Override
++                public void run()
++                {
++                    unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
++                }
++            } );
++
++            if ( server != null )
++            {
++                server.setObsolete( true );
++                server.disconnect( "Quitting" );
++            }
++        }
++    }
++
++    @Override
++    public void chat(String message)
++    {
++        Preconditions.checkState( server != null, "Not connected to server" );
++        server.getCh().write( new Chat( message ) );
++    }
++
++    @Override
++    public void sendMessage(String message)
++    {
++        sendMessage( TextComponent.fromLegacyText( message ) );
++    }
++
++    @Override
++    public void sendMessages(String... messages)
++    {
++        for ( String message : messages )
++        {
++            sendMessage( message );
++        }
++    }
++
++    @Override
++    public void sendMessage(BaseComponent... message)
++    {
++        sendMessage( ChatMessageType.CHAT, message );
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message)
++    {
++        sendMessage( ChatMessageType.CHAT, message );
++    }
++
++    private void sendMessage(ChatMessageType position, String message)
++    {
++        unsafe().sendPacket( new Chat( message, (byte) position.ordinal() ) );
++    }
++
++    @Override
++    public void sendMessage(ChatMessageType position, BaseComponent... message)
++    {
++        // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
++        {
++            sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
++        } else
++        {
++            sendMessage( position, ComponentSerializer.toString( message ) );
++        }
++    }
++
++    @Override
++    public void sendMessage(ChatMessageType position, BaseComponent message)
++    {
++        // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
++        {
++            sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
++        } else
++        {
++            sendMessage( position, ComponentSerializer.toString( message ) );
++        }
++    }
++
++    @Override
++    public void sendData(String channel, byte[] data)
++    {
++        unsafe().sendPacket( new PluginMessage( channel, data, forgeClientHandler.isForgeUser() ) );
++    }
++
++    @Override
++    public InetSocketAddress getAddress()
++    {
++        return (InetSocketAddress) ch.getHandle().remoteAddress();
++    }
++
++    @Override
++    public Collection<String> getGroups()
++    {
++        return Collections.unmodifiableCollection( groups );
++    }
++
++    @Override
++    public void addGroups(String... groups)
++    {
++        for ( String group : groups )
++        {
++            this.groups.add( group );
++            for ( String permission : bungee.getConfigurationAdapter().getPermissions( group ) )
++            {
++                setPermission( permission, true );
++            }
++        }
++    }
++
++    @Override
++    public void removeGroups(String... groups)
++    {
++        for ( String group : groups )
++        {
++            this.groups.remove( group );
++            for ( String permission : bungee.getConfigurationAdapter().getPermissions( group ) )
++            {
++                setPermission( permission, false );
++            }
++        }
++    }
++
++    @Override
++    public boolean hasPermission(String permission)
++    {
++        return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, permissions.contains( permission ) ) ).hasPermission();
++    }
++
++    @Override
++    public void setPermission(String permission, boolean value)
++    {
++        if ( value )
++        {
++            permissions.add( permission );
++        } else
++        {
++            permissions.remove( permission );
++        }
++    }
++
++    @Override
++    public Collection<String> getPermissions()
++    {
++        return Collections.unmodifiableCollection( permissions );
++    }
++
++    @Override
++    public String toString()
++    {
++        return name;
++    }
++
++    @Override
++    public Unsafe unsafe()
++    {
++        return unsafe;
++    }
++
++    @Override
++    public String getUUID()
++    {
++        return getPendingConnection().getUUID();
++    }
++
++    @Override
++    public UUID getUniqueId()
++    {
++        return getPendingConnection().getUniqueId();
++    }
++
++    public void setSettings(ClientSettings settings)
++    {
++        this.settings = settings;
++        this.locale = null;
++    }
++
++    @Override
++    public Locale getLocale()
++    {
++        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replace( '_', '-' ) ) : locale;
++    }
++
++    @Override
++    public boolean isForgeUser()
++    {
++        return forgeClientHandler.isForgeUser();
++    }
++
++    @Override
++    public Map<String, String> getModList()
++    {
++        if ( forgeClientHandler.getClientModList() == null )
++        {
++            // Return an empty map, rather than a null, if the client hasn't got any mods,
++            // or is yet to complete a handshake.
++            return ImmutableMap.of();
++        }
++
++        return ImmutableMap.copyOf( forgeClientHandler.getClientModList() );
++    }
++
++    private static final String EMPTY_TEXT = ComponentSerializer.toString( new TextComponent( "" ) );
++
++    @Override
++    public void setTabHeader(BaseComponent header, BaseComponent footer)
++    {
++        unsafe().sendPacket( new PlayerListHeaderFooter(
++                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
++                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
++        ) );
++    }
++
++    @Override
++    public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
++    {
++        unsafe().sendPacket( new PlayerListHeaderFooter(
++                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
++                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
++        ) );
++    }
++
++    @Override
++    public void resetTabHeader()
++    {
++        // Mojang did not add a way to remove the header / footer completely, we can only set it to empty
++        setTabHeader( (BaseComponent) null, null );
++    }
++
++    @Override
++    public void sendTitle(Title title)
++    {
++        title.send( this );
++    }
++
++    public String getExtraDataInHandshake()
++    {
++        return this.getPendingConnection().getExtraDataInHandshake();
++    }
++
++    public void setCompressionThreshold(int compressionThreshold)
++    {
++        if ( ch.getHandle().isActive() && this.compressionThreshold == -1 && compressionThreshold >= 0 )
++        {
++            this.compressionThreshold = compressionThreshold;
++            unsafe.sendPacket( new SetCompression( compressionThreshold ) );
++            ch.setCompressionThreshold( compressionThreshold );
++        }
++    }
++
++    @Override
++    public boolean isConnected()
++    {
++        return !ch.isClosed();
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java.rej b/proxy/src/main/java/net/md_5/bungee/UserConnection.java.rej
+new file mode 100644
+index 0000000..27d3ef2
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java.rej
+@@ -0,0 +1,10 @@
++--- proxy/src/main/java/net/md_5/bungee/UserConnection.java
+++++ proxy/src/main/java/net/md_5/bungee/UserConnection.java
++@@ -634,6 +637,7 @@ public final class UserConnection implements ProxiedPlayer
++ 
++     public void setCompressionThreshold(int compressionThreshold)
++     {
+++        if ( ProtocolConstants.isBeforeOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) ) return; // Travertine
++         if ( ch.getHandle().isActive() && this.compressionThreshold == -1 )
++         {
++             this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index 30ee7d1..5ac00ae 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
@@ -1348,10 +2453,10 @@ index 9e753d5..daadb09 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index a86b6d5..37d30e9 100644
+index d98a805..c1a5e0b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -25,6 +25,10 @@ public abstract class EntityMap
+@@ -29,6 +29,10 @@ public abstract class EntityMap
      {
          switch ( version )
          {
@@ -1362,6 +2467,227 @@ index a86b6d5..37d30e9 100644
              case ProtocolConstants.MINECRAFT_1_8:
                  return EntityMap_1_8.INSTANCE;
              case ProtocolConstants.MINECRAFT_1_9:
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
+new file mode 100644
+index 0000000..d98a805
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
+@@ -0,0 +1,215 @@
++package net.md_5.bungee.entitymap;
++
++import com.flowpowered.nbt.stream.NBTInputStream;
++import com.google.common.base.Throwables;
++import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufInputStream;
++import java.io.IOException;
++import lombok.AccessLevel;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++/**
++ * Class to rewrite integers within packets.
++ */
++@NoArgsConstructor(access = AccessLevel.PACKAGE)
++public abstract class EntityMap
++{
++
++    private final boolean[] clientboundInts = new boolean[ 256 ];
++    private final boolean[] clientboundVarInts = new boolean[ 256 ];
++
++    private final boolean[] serverboundInts = new boolean[ 256 ];
++    private final boolean[] serverboundVarInts = new boolean[ 256 ];
++
++    // Returns the correct entity map for the protocol version
++    public static EntityMap getEntityMap(int version)
++    {
++        switch ( version )
++        {
++            case ProtocolConstants.MINECRAFT_1_8:
++                return EntityMap_1_8.INSTANCE;
++            case ProtocolConstants.MINECRAFT_1_9:
++            case ProtocolConstants.MINECRAFT_1_9_1:
++            case ProtocolConstants.MINECRAFT_1_9_2:
++                return EntityMap_1_9.INSTANCE;
++            case ProtocolConstants.MINECRAFT_1_9_4:
++                return EntityMap_1_9_4.INSTANCE;
++            case ProtocolConstants.MINECRAFT_1_10:
++                return EntityMap_1_10.INSTANCE;
++            case ProtocolConstants.MINECRAFT_1_11:
++            case ProtocolConstants.MINECRAFT_1_11_1:
++                return EntityMap_1_11.INSTANCE;
++        }
++        throw new RuntimeException( "Version " + version + " has no entity map" );
++    }
++
++    protected void addRewrite(int id, ProtocolConstants.Direction direction, boolean varint)
++    {
++        if ( direction == ProtocolConstants.Direction.TO_CLIENT )
++        {
++            if ( varint )
++            {
++                clientboundVarInts[id] = true;
++            } else
++            {
++                clientboundInts[id] = true;
++            }
++        } else if ( varint )
++        {
++            serverboundVarInts[id] = true;
++        } else
++        {
++            serverboundInts[id] = true;
++        }
++    }
++
++    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
++    {
++        rewrite( packet, oldId, newId, serverboundInts, serverboundVarInts );
++    }
++
++    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
++    {
++        rewrite( packet, oldId, newId, clientboundInts, clientboundVarInts );
++    }
++
++    protected static void rewriteInt(ByteBuf packet, int oldId, int newId, int offset)
++    {
++        int readId = packet.getInt( offset );
++        if ( readId == oldId )
++        {
++            packet.setInt( offset, newId );
++        } else if ( readId == newId )
++        {
++            packet.setInt( offset, oldId );
++        }
++    }
++
++    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
++    protected static void rewriteVarInt(ByteBuf packet, int oldId, int newId, int offset)
++    {
++        // Need to rewrite the packet because VarInts are variable length
++        int readId = DefinedPacket.readVarInt( packet );
++        int readIdLength = packet.readerIndex() - offset;
++        if ( readId == oldId || readId == newId )
++        {
++            ByteBuf data = packet.copy();
++            packet.readerIndex( offset );
++            packet.writerIndex( offset );
++            DefinedPacket.writeVarInt( readId == oldId ? newId : oldId, packet );
++            packet.writeBytes( data );
++            data.release();
++        }
++    }
++
++    protected static void rewriteMetaVarInt(ByteBuf packet, int oldId, int newId, int metaIndex)
++    {
++        int readerIndex = packet.readerIndex();
++
++        short index;
++        while ( ( index = packet.readUnsignedByte() ) != 0xFF )
++        {
++            int type = DefinedPacket.readVarInt( packet );
++
++            switch ( type )
++            {
++                case 0:
++                    packet.skipBytes( 1 ); // byte
++                    break;
++                case 1:
++                    if ( index == metaIndex )
++                    {
++                        int position = packet.readerIndex();
++                        rewriteVarInt( packet, oldId, newId, position );
++                        packet.readerIndex( position );
++                    }
++                    DefinedPacket.readVarInt( packet );
++                    break;
++                case 2:
++                    packet.skipBytes( 4 ); // float
++                    break;
++                case 3:
++                case 4:
++                    DefinedPacket.readString( packet );
++                    break;
++                case 5:
++                    if ( packet.readShort() != -1 )
++                    {
++                        packet.skipBytes( 3 ); // byte, short
++
++                        int position = packet.readerIndex();
++                        if ( packet.readByte() != 0 )
++                        {
++                            packet.readerIndex( position );
++
++                            try
++                            {
++                                new NBTInputStream( new ByteBufInputStream( packet ), false ).readTag();
++                            } catch ( IOException ex )
++                            {
++                                throw Throwables.propagate( ex );
++                            }
++                        }
++                    }
++                    break;
++                case 6:
++                    packet.skipBytes( 1 ); // boolean
++                    break;
++                case 7:
++                    packet.skipBytes( 12 ); // float, float, float
++                    break;
++                case 8:
++                    packet.readLong();
++                    break;
++                case 9:
++                    if ( packet.readBoolean() )
++                    {
++                        packet.skipBytes( 8 ); // long
++                    }
++                    break;
++                case 10:
++                    DefinedPacket.readVarInt( packet );
++                    break;
++                case 11:
++                    if ( packet.readBoolean() )
++                    {
++                        packet.skipBytes( 16 ); // long, long
++                    }
++                    break;
++                case 12:
++                    DefinedPacket.readVarInt( packet );
++                    break;
++                default:
++                    throw new IllegalArgumentException( "Unknown meta type " + type );
++            }
++        }
++
++        packet.readerIndex( readerIndex );
++    }
++
++    // Handles simple packets
++    private static void rewrite(ByteBuf packet, int oldId, int newId, boolean[] ints, boolean[] varints)
++    {
++        int readerIndex = packet.readerIndex();
++        int packetId = DefinedPacket.readVarInt( packet );
++        int packetIdLength = packet.readerIndex() - readerIndex;
++
++        if (packetId < 0 || packetId > ints.length || packetId > varints.length) { // Invalid packet id
++            // Ignore these invalid packets for compatibility reasons
++            packet.readerIndex( readerIndex );
++            return;
++        }
++
++        if ( ints[packetId] )
++        {
++            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
++        } else if ( varints[packetId] )
++        {
++            rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
++        }
++        packet.readerIndex( readerIndex );
++    }
++}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 new file mode 100644
 index 0000000..258ad7f
@@ -1759,5 +3085,5 @@ index daf12f7..e33861a 100644
  
      @Override
 -- 
-2.7.4 (Apple Git-66)
+2.7.4
 
