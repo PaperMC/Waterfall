@@ -1,0 +1,350 @@
+From 12465d12dcc7c280cac13cad6cd1e1a5364689e9 Mon Sep 17 00:00:00 2001
+From: kamcio96 <k.nadworski@icloud.com>
+Date: Sun, 15 Jan 2017 09:51:55 -0700
+Subject: [PATCH] Improve connection closing, fixing the kick delay.
+
+Merges some of SpigotMC/BungeeCord#1706 by @kamcio96.
+
+@kamcio96 claims that these channel closing changes are removing the
+need of delayed kick packets
+@Janmm14 can confirm this (at login state) on a no-latency and
+low-latency connection (<1ms; ~16ms), high-latency connection was not
+tested, but it should work on these too.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+index 8c1260af..517ec77d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+@@ -54,14 +54,7 @@ public class ServerConnection implements Server
+ 
+         if ( !ch.isClosed() )
+         {
+-            ch.getHandle().eventLoop().schedule( new Runnable()
+-            {
+-                @Override
+-                public void run()
+-                {
+-                    ch.getHandle().close();
+-                }
+-            }, 100, TimeUnit.MILLISECONDS );
++            ch.close();
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 35665630..40846936 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -1,10 +1,24 @@
+ package net.md_5.bungee;
+ 
++import lombok.*;
++
++import java.net.InetSocketAddress;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.HashSet;
++import java.util.LinkedList;
++import java.util.Locale;
++import java.util.Map;
++import java.util.Queue;
++import java.util.UUID;
++import java.util.logging.Level;
++
+ import com.google.common.base.Objects;
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Multimap;
++
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFuture;
+@@ -12,20 +26,7 @@ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelInitializer;
+ import io.netty.channel.ChannelOption;
+ import io.netty.util.internal.PlatformDependent;
+-import java.net.InetSocketAddress;
+-import java.util.Collection;
+-import java.util.Collections;
+-import java.util.HashSet;
+-import java.util.LinkedList;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.Queue;
+-import java.util.UUID;
+-import java.util.logging.Level;
+-import lombok.Getter;
+-import lombok.NonNull;
+-import lombok.RequiredArgsConstructor;
+-import lombok.Setter;
++
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.ChatMessageType;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -57,7 +58,6 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+-import net.md_5.bungee.protocol.packet.Respawn;
+ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.tab.ServerUnique;
+ import net.md_5.bungee.tab.TabList;
+@@ -270,7 +270,7 @@ public final class UserConnection implements ProxiedPlayer
+                 callback.done( false, null );
+             }
+ 
+-            if ( getServer() == null && !ch.isClosing() )
++            if ( getServer() == null && !ch.isClosed() )
+             {
+                 throw new IllegalStateException("Cancelled ServerConnectEvent with no server or disconnect.");
+             }
+@@ -378,22 +378,14 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void disconnect0(final BaseComponent... reason)
+     {
+-        if ( !ch.isClosing() )
++        if ( !ch.isClosed() )
+         {
+             bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
+             {
+                 getName(), BaseComponent.toLegacyText( reason )
+             } );
+ 
+-            ch.delayedClose( new Runnable()
+-            {
+-
+-                @Override
+-                public void run()
+-                {
+-                    unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
+-                }
+-            } );
++            ch.close(new Kick(ComponentSerializer.toString(reason)));
+ 
+             if ( server != null )
+             {
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 88bc8255..82dbf1af 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -1,8 +1,7 @@
+ package net.md_5.bungee.connection;
+ 
+-import com.google.common.base.Charsets;
+-import com.google.common.base.Preconditions;
+-import com.google.gson.Gson;
++import lombok.*;
++
+ import java.math.BigInteger;
+ import java.net.InetSocketAddress;
+ import java.net.URLEncoder;
+@@ -12,8 +11,11 @@ import java.util.UUID;
+ import java.util.concurrent.TimeUnit;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
+-import lombok.Getter;
+-import lombok.RequiredArgsConstructor;
++
++import com.google.common.base.Charsets;
++import com.google.common.base.Preconditions;
++import com.google.gson.Gson;
++
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.BungeeServerInfo;
+ import net.md_5.bungee.EncryptionUtil;
+@@ -28,7 +30,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ListenerInfo;
+ import net.md_5.bungee.api.config.ServerInfo;
+-import net.md_5.bungee.api.connection.Connection.Unsafe;
+ import net.md_5.bungee.api.connection.PendingConnection;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.event.LoginEvent;
+@@ -105,13 +106,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public boolean shouldHandle(PacketWrapper packet) throws Exception
+     {
+-        return !ch.isClosing();
++        return !ch.isClosed();
+     }
+ 
++    @RequiredArgsConstructor
++    @Getter
+     private enum State
+     {
++        HANDSHAKE(false), STATUS(false), PING(false), USERNAME(true), ENCRYPT(true), FINISHED(true);
+ 
+-        HANDSHAKE, STATUS, PING, USERNAME, ENCRYPT, FINISHED;
++        private final boolean allowKickPackets;
+     }
+ 
+     @Override
+@@ -140,8 +144,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(LegacyHandshake legacyHandshake) throws Exception
+     {
+         this.legacy = true;
+-        ch.getHandle().writeAndFlush( bungee.getTranslation( "outdated_client" ) );
+-        ch.close();
++        ch.close( bungee.getTranslation( "outdated_client" ) );
+     }
+ 
+     @Override
+@@ -183,8 +186,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                             + '\u00a7' + legacy.getPlayers().getMax();
+                 }
+ 
+-                ch.getHandle().writeAndFlush( kickMessage );
+-                ch.close();
++                ch.close( kickMessage );
+             }
+         };
+ 
+@@ -255,8 +257,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         if (!ACCEPT_INVALID_PACKETS) {
+             Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+         }
+-        unsafe.sendPacket( ping );
+-        disconnect( "" );
++        ch.close( ping );
+     }
+ 
+     @Override
+@@ -543,20 +544,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     }
+ 
+     @Override
+-    public void disconnect(final BaseComponent... reason)
+-    {
+-        ch.delayedClose( new Runnable()
+-        {
+-
+-            @Override
+-            public void run()
+-            {
+-                if ( thisState != State.STATUS && thisState != State.PING && thisState != State.HANDSHAKE ) // Waterfall: Don't kick during handshake
+-                {
+-                    unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
+-                }
+-            }
+-        } );
++    public void disconnect(final BaseComponent... reason) {
++        if (thisState.isAllowKickPackets()) {
++            ch.close(new Kick(ComponentSerializer.toString(reason)));
++        }
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 9e753d58..38d12c53 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -79,6 +79,7 @@ public class UpstreamBridge extends PacketHandler
+             {
+                 player.unsafe().sendPacket( packet );
+             }
++            con.getServer().setObsolete(true);
+             con.getServer().disconnect( "Quitting" );
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index ba8f9404..30188d81 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.netty;
+ 
+ import com.google.common.base.Preconditions;
+ import io.netty.channel.Channel;
++import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelHandler;
+ import io.netty.channel.ChannelHandlerContext;
+ import java.util.concurrent.TimeUnit;
+@@ -17,10 +18,11 @@ public class ChannelWrapper
+ {
+ 
+     private final Channel ch;
+-    @Getter
+     private volatile boolean closed;
+-    @Getter
+-    private volatile boolean closing;
++
++    public boolean isClosed() {
++        return closed || !ch.isActive();
++    }
+ 
+     public ChannelWrapper(ChannelHandlerContext ctx)
+     {
+@@ -41,15 +43,15 @@ public class ChannelWrapper
+ 
+     public void write(Object packet)
+     {
+-        if ( !closed )
++        if ( !isClosed() )
+         {
+             if ( packet instanceof PacketWrapper )
+             {
+                 ( (PacketWrapper) packet ).setReleased( true );
+-                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
++                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);;
+             } else
+             {
+-                ch.write( packet, ch.voidPromise() );
++                ch.write( packet, ch.voidPromise() ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);;
+             }
+             ch.flush();
+         }
+@@ -57,40 +59,24 @@ public class ChannelWrapper
+ 
+     public void close()
+     {
+-        if ( !closed )
++        if ( !isClosed() )
+         {
+-            closed = closing = true;
++            closed = true;
+             ch.flush();
+             ch.close();
+         }
+     }
+ 
+-    public void delayedClose(final Runnable runnable)
++    public void close(final Object packet)
+     {
+-        Preconditions.checkArgument( runnable != null, "runnable" );
+-
+-        if ( !closing )
+-        {
+-            closing = true;
+-
+-            // Minecraft client can take some time to switch protocols.
+-            // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
+-            // Delay 500ms to ensure that the protocol switch (if any) has definitely taken place.
+-            ch.eventLoop().schedule( new Runnable()
+-            {
+-
+-                @Override
+-                public void run()
+-                {
+-                    try
+-                    {
+-                        runnable.run();
+-                    } finally
+-                    {
+-                        ChannelWrapper.this.close();
+-                    }
+-                }
+-            }, 500, TimeUnit.MILLISECONDS );
++        Preconditions.checkArgument( packet != null, "packet" );
++
++        if ( !isClosed() ) {
++            closed = true;
++            ch.writeAndFlush(packet).addListeners(
++                    ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE,
++                    ChannelFutureListener.CLOSE
++            );
+         }
+     }
+ 
+-- 
+2.11.0
+
