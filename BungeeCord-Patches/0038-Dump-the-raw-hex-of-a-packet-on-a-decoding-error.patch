@@ -1,11 +1,11 @@
-From b3db0f96024f1974630abef51a25175b3c975027 Mon Sep 17 00:00:00 2001
+From 5f8c4b7ed6415798499ade8311473717685ac93f Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 4 Aug 2016 19:30:49 -0700
 Subject: [PATCH] Dump the raw hex of a packet on a decoding error
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 447eaae..17d8444 100644
+index 447eaae7..0b780e2e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,7 +1,9 @@
@@ -48,10 +48,10 @@ index 447eaae..17d8444 100644
 +            } else {
 +                packetTypeStr = "unknown";
 +            }
-+            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents " + ByteBufUtil.prettyHexDump(slice));
++            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e);
          } finally
          {
              if ( slice != null )
 -- 
-2.10.0
+2.11.0
 
