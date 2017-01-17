@@ -1,4 +1,4 @@
-From 30c3351f48c0aef697e237a476771268e42e3231 Mon Sep 17 00:00:00 2001
+From 56e3108c0a0c095cb85ad542c0d755de22b29191 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -9,7 +9,7 @@ This avoids spamming the logs with connection notices.
 Server list pings are only logged if the log_server_list_pings config.yml option is true, defaults to false
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 66d0b8a..5a49050 100644
+index 66d0b8a1..5a49050a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -89,6 +89,11 @@ public interface ProxyConfig
@@ -25,7 +25,7 @@ index 66d0b8a..5a49050 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e56d359..68f2546 100644
+index e56d3591..68f25460 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
@@ -61,7 +61,7 @@ index e56d359..68f2546 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ed057b8..a37f3ea 100644
+index ed057b8a..a37f3ea3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -382,6 +382,6 @@ public class ServerConnector extends PacketHandler
@@ -73,7 +73,7 @@ index ed057b8..a37f3ea 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index ce32f6b..470f0be 100644
+index ce32f6b1..470f0bef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -510,6 +510,6 @@ public class DownstreamBridge extends PacketHandler
@@ -85,10 +85,10 @@ index ce32f6b..470f0be 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3c33b5b..90b27c0 100644
+index 0353f954..915b4152 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -281,19 +281,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -280,19 +280,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
@@ -112,7 +112,7 @@ index 3c33b5b..90b27c0 100644
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
-@@ -609,7 +612,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -603,7 +606,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -122,7 +122,7 @@ index 3c33b5b..90b27c0 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 654be21..618e76e 100644
+index 654be214..618e76e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -213,6 +213,6 @@ public class UpstreamBridge extends PacketHandler
@@ -134,5 +134,5 @@ index 654be21..618e76e 100644
      }
  }
 -- 
-2.10.0
+2.11.0
 

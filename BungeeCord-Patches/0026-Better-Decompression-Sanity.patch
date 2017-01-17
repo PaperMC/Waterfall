@@ -1,4 +1,4 @@
-From e909df719847e5263bbd50644914a19cb55fd29e Mon Sep 17 00:00:00 2001
+From f56b491d0446e50c02dfc076242a1e9133f7bd88 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Fri, 18 Mar 2016 10:53:24 -0700
 Subject: [PATCH] Better Decompression Sanity
@@ -6,7 +6,7 @@ Subject: [PATCH] Better Decompression Sanity
 Fixes #40
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-index 21b3ea2..37fe6ac 100644
+index 21b3ea2b..37fe6ac7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 @@ -1,5 +1,7 @@
@@ -45,10 +45,10 @@ index 21b3ea2..37fe6ac 100644
                  out.add( decompressed );
                  decompressed = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 0b0dd73..ba8f940 100644
+index 28a4f176..0107ac03 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -122,7 +122,7 @@ public class ChannelWrapper
+@@ -136,7 +136,7 @@ public class ChannelWrapper
  
          if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
          {
@@ -58,5 +58,5 @@ index 0b0dd73..ba8f940 100644
          if ( compressionThreshold == -1 )
          {
 -- 
-2.10.0
+2.11.0
 

@@ -1,4 +1,4 @@
-From 443adb7224757f0011a64b8e4a644af493d97c97 Mon Sep 17 00:00:00 2001
+From dbda96c0e643167a28b173be02282cd92ab43046 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -8,7 +8,7 @@ Manually decode uuids to and from hex.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 new file mode 100644
-index 0000000..ece5f79
+index 00000000..ece5f798
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 @@ -0,0 +1,113 @@
@@ -128,7 +128,7 @@ index 0000000..ece5f79
 \ No newline at end of file
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java
 new file mode 100644
-index 0000000..cc24dd3
+index 00000000..cc24dd35
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java
 @@ -0,0 +1,74 @@
@@ -208,7 +208,7 @@ index 0000000..cc24dd3
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 86a0055..6c9c6d6 100644
+index 86a00555..6c9c6d61 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
 @@ -1,11 +1,15 @@
@@ -245,7 +245,7 @@ index 86a0055..6c9c6d6 100644
      }
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index 27b5184..8bf17f9 100644
+index 27b51849..8bf17f9c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -75,7 +75,7 @@ public class ServerPing
@@ -258,10 +258,10 @@ index 27b5184..8bf17f9 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d87b03c..3c33b5b 100644
+index 9852a0a0..0353f954 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -603,7 +603,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -597,7 +597,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {
@@ -271,5 +271,5 @@ index d87b03c..3c33b5b 100644
  
      @Override
 -- 
-2.10.0
+2.11.0
 

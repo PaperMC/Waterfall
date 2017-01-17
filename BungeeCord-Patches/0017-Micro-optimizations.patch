@@ -1,4 +1,4 @@
-From 172b1feaee98c58f898bb3bf5abd7ebaf5f0fcb7 Mon Sep 17 00:00:00 2001
+From 4b5a5536a11e57f0153f1b6d4178da506552b5e2 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -31,10 +31,10 @@ index 71a5a158..520ee315 100644
          if ( split.length == 0 )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a0f2c55a..ac272720 100644
+index 71de54ef..745f0428 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -480,7 +480,9 @@ public class BungeeCord extends ProxyServer
+@@ -487,7 +487,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -46,10 +46,10 @@ index a0f2c55a..ac272720 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 721d48a9..812d9379 100644
+index f1ac3a8c..87e9e239 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -556,7 +556,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -548,7 +548,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public Locale getLocale()
      {
@@ -79,5 +79,5 @@ index c0a5061a..ce32f6b1 100644
              String subChannel = in.readUTF();
  
 -- 
-2.11.0.windows.1
+2.11.0
 
