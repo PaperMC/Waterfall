@@ -1,4 +1,4 @@
-From 12465d12dcc7c280cac13cad6cd1e1a5364689e9 Mon Sep 17 00:00:00 2001
+From 0baef4f983c44c464e3fd72bf7828998b3e79605 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Sun, 15 Jan 2017 09:51:55 -0700
 Subject: [PATCH] Improve connection closing, fixing the kick delay.
@@ -12,7 +12,7 @@ low-latency connection (<1ms; ~16ms), high-latency connection was not
 tested, but it should work on these too.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 8c1260af..517ec77d 100644
+index 8c1260a..517ec77 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 @@ -54,14 +54,7 @@ public class ServerConnection implements Server
@@ -32,7 +32,7 @@ index 8c1260af..517ec77d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 35665630..40846936 100644
+index 3566563..4084693 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,10 +1,24 @@
@@ -125,7 +125,7 @@ index 35665630..40846936 100644
              if ( server != null )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 88bc8255..82dbf1af 100644
+index 88bc825..82dbf1a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -1,8 +1,7 @@
@@ -236,7 +236,7 @@ index 88bc8255..82dbf1af 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 9e753d58..38d12c53 100644
+index 9e753d5..38d12c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -79,6 +79,7 @@ public class UpstreamBridge extends PacketHandler
@@ -248,7 +248,7 @@ index 9e753d58..38d12c53 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index ba8f9404..30188d81 100644
+index ba8f940..50f57d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.netty;
@@ -274,7 +274,7 @@ index ba8f9404..30188d81 100644
  
      public ChannelWrapper(ChannelHandlerContext ctx)
      {
-@@ -41,15 +43,15 @@ public class ChannelWrapper
+@@ -41,7 +43,7 @@ public class ChannelWrapper
  
      public void write(Object packet)
      {
@@ -283,16 +283,6 @@ index ba8f9404..30188d81 100644
          {
              if ( packet instanceof PacketWrapper )
              {
-                 ( (PacketWrapper) packet ).setReleased( true );
--                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
-+                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);;
-             } else
-             {
--                ch.write( packet, ch.voidPromise() );
-+                ch.write( packet, ch.voidPromise() ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);;
-             }
-             ch.flush();
-         }
 @@ -57,40 +59,24 @@ public class ChannelWrapper
  
      public void close()
@@ -346,5 +336,5 @@ index ba8f9404..30188d81 100644
      }
  
 -- 
-2.11.0
+2.10.2.windows.1
 
