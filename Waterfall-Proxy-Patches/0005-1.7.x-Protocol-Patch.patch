@@ -1,4 +1,4 @@
-From e870672748a8469d47292302054fd18b79442542 Mon Sep 17 00:00:00 2001
+From 48fe81fe05f85c108e35b1089c1a44bcd2d78c7d Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1427,7 +1427,7 @@ index b4705799..da1066cc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 014ea5f5..d4d02123 100644
+index acc460a3..f91e87c4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -153,6 +153,14 @@ public class BungeeCord extends ProxyServer
@@ -1582,7 +1582,7 @@ index 5d72a567..adcb211f 100644
              throw CancelSendSignal.INSTANCE;
          } else
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 40846936..5f31e9f5 100644
+index e1aa8213..d0aaae1b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -210,6 +210,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -1632,7 +1632,7 @@ index 40846936..5f31e9f5 100644
      public void setCompressionThreshold(int compressionThreshold)
      {
 +        if ( ProtocolConstants.isBeforeOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) ) return; // Travertine
-         if ( ch.getHandle().isActive() && this.compressionThreshold == -1 && compressionThreshold >= 0 )
+         if ( !ch.isClosing() && this.compressionThreshold == -1 && compressionThreshold >= 0 )
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
@@ -1687,21 +1687,24 @@ index 30ee7d16..5ac00aee 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 82dbf1af..7c6460f8 100644
+index fce9ca9d..8b61a6dd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -16,6 +16,10 @@ import com.google.common.base.Charsets;
- import com.google.common.base.Preconditions;
- import com.google.gson.Gson;
- 
+@@ -12,6 +12,13 @@ import java.util.UUID;
+ import java.util.concurrent.TimeUnit;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
++
++import com.google.common.base.Charsets;
++import com.google.common.base.Preconditions;
++import com.google.gson.Gson;
++
 +import com.google.gson.JsonElement;
 +import com.google.gson.JsonObject;
-+import lombok.Getter;
-+import lombok.RequiredArgsConstructor;
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.BungeeServerInfo;
- import net.md_5.bungee.EncryptionUtil;
-@@ -224,8 +228,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -221,8 +228,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -1728,7 +1731,7 @@ index 82dbf1af..7c6460f8 100644
                      }
                  };
  
-@@ -506,7 +526,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -504,7 +527,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
@@ -1767,7 +1770,7 @@ index 3cd5cf69..ff30b61a 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 38d12c53..53290d14 100644
+index 9e753d58..daadb091 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -77,7 +77,12 @@ public class UpstreamBridge extends PacketHandler
@@ -1782,8 +1785,8 @@ index 38d12c53..53290d14 100644
 +                }
 +                // Travertine end
              }
-             con.getServer().setObsolete(true);
              con.getServer().disconnect( "Quitting" );
+         }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index d98a8056..c1a5e0b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
