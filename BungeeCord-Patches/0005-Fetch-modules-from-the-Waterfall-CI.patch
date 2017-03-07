@@ -1,4 +1,4 @@
-From f5b593bf418986576c964147923f5d429affc074 Mon Sep 17 00:00:00 2001
+From 4a3bbce9c7aece2f8f6121dee46c24a94a5eb2de Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
 Subject: [PATCH] Fetch modules from the Waterfall CI
@@ -6,32 +6,33 @@ Subject: [PATCH] Fetch modules from the Waterfall CI
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2536435c..6eb10df7 100644
+index 2536435c..11d9823f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -1,10 +1,11 @@
+@@ -1,12 +1,13 @@
  package net.md_5.bungee.module;
  
 -import com.google.common.io.ByteStreams;
 -import com.google.common.io.Files;
++import lombok.Data;
++import net.md_5.bungee.Util;
++
  import java.io.IOException;
  import java.net.URL;
  import java.net.URLConnection;
+-import lombok.Data;
+-import net.md_5.bungee.Util;
 +import java.nio.file.Files;
 +import java.nio.file.StandardCopyOption;
-+
- import lombok.Data;
- import net.md_5.bungee.Util;
  
-@@ -18,13 +19,18 @@ public class JenkinsModuleSource implements ModuleSource
+ @Data
+ public class JenkinsModuleSource implements ModuleSource
+@@ -18,13 +19,14 @@ public class JenkinsModuleSource implements ModuleSource
          System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
          try
          {
-+<<<<<<< HEAD
-             URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+=======
+-            URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
 +            URL website = new URL( "https://ci.destroystokyo.com/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+>>>>>>> Fetch modules from the Waterfall CI
              URLConnection con = website.openConnection();
              // 15 second timeout at various stages
              con.setConnectTimeout( 15000 );
