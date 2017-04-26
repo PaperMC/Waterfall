@@ -1,14 +1,14 @@
-From a76d79a2bea4d4a3296fde3fa3b484d8ddd1446d Mon Sep 17 00:00:00 2001
+From 1ec9c98ab715ee1884239da6c0e3b4957235ed46 Mon Sep 17 00:00:00 2001
 From: Mystiflow <mystiflow@gmail.com>
 Date: Sun, 14 Feb 2016 15:54:40 +0000
 Subject: [PATCH] Allow the console to tab complete commands
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 12c7cc1..60a0cb4 100644
+index 9d7a25ab..8a4b2283 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -209,6 +209,7 @@ public class BungeeCord extends ProxyServer
+@@ -210,6 +210,7 @@ public class BungeeCord extends ProxyServer
          AnsiConsole.systemInstall();
          consoleReader = new ConsoleReader();
          consoleReader.setExpandEvents( false );
@@ -18,7 +18,7 @@ index 12c7cc1..60a0cb4 100644
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
 new file mode 100644
-index 0000000..455b078
+index 00000000..455b0787
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
 @@ -0,0 +1,72 @@
@@ -95,5 +95,5 @@ index 0000000..455b078
 +    }
 +}
 -- 
-2.10.0
+2.12.0
 

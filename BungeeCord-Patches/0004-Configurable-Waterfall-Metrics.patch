@@ -1,11 +1,11 @@
-From 4eb927bb9546be184307fdeb39b011e07975c96d Mon Sep 17 00:00:00 2001
+From 6ca6da8d88b2bce759145bb60b11ecb045aa1863 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Configurable Waterfall Metrics
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index b30541b..293ec4e 100644
+index b30541be..293ec4e3 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -84,4 +84,8 @@ public interface ProxyConfig
@@ -18,7 +18,7 @@ index b30541b..293ec4e 100644
 +    boolean isMetrics();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index f9e277d..056b804 100644
+index f9e277dc..056b8040 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -9,10 +9,23 @@ import net.md_5.bungee.conf.YamlConfig;
@@ -46,10 +46,10 @@ index f9e277d..056b804 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7bb0862..a7dcc97 100644
+index 7eaf7fb5..1582cf52 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -289,7 +289,9 @@ public class BungeeCord extends ProxyServer
+@@ -290,7 +290,9 @@ public class BungeeCord extends ProxyServer
                  }
              }
          }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
@@ -61,7 +61,7 @@ index 7bb0862..a7dcc97 100644
  
      public void startListeners()
 diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/net/md_5/bungee/Metrics.java
-index 9523987..e482e98 100644
+index 95239878..e482e98c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
 +++ b/proxy/src/main/java/net/md_5/bungee/Metrics.java
 @@ -9,6 +9,7 @@ import java.net.URL;
@@ -82,5 +82,5 @@ index 9523987..e482e98 100644
          // Connect to the website
          URLConnection connection;
 -- 
-2.10.0
+2.12.0
 
