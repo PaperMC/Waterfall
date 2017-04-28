@@ -1,4 +1,4 @@
-From 56e3108c0a0c095cb85ad542c0d755de22b29191 Mon Sep 17 00:00:00 2001
+From 4e7690e8e721f42b83cb94e879540934d885a1cf Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -85,10 +85,10 @@ index ce32f6b1..470f0bef 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0353f954..915b4152 100644
+index 1faab816..7886f518 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -280,19 +280,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -281,19 +281,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
@@ -112,7 +112,7 @@ index 0353f954..915b4152 100644
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
-@@ -603,7 +606,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -605,7 +608,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -134,5 +134,5 @@ index 654be214..618e76e3 100644
      }
  }
 -- 
-2.11.0
+2.12.0
 

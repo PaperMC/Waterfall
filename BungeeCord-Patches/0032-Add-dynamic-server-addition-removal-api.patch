@@ -1,4 +1,4 @@
-From 9cb84743b549d8586a3ce7c762e06b1c8e84df34 Mon Sep 17 00:00:00 2001
+From 135b4d01ad4b618ba569f66bff535e8217785cb1 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -168,7 +168,7 @@ index 8a4b2283..95750d44 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index db9ebbdd..4d16fa3a 100644
+index b3ff1448..669720a6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -195,15 +195,15 @@ index db9ebbdd..4d16fa3a 100644
      /**
       * Set of all servers.
       */
-@@ -61,6 +64,7 @@ public abstract class Configuration implements ProxyConfig
-     private Favicon favicon;
+@@ -62,6 +65,7 @@ public abstract class Configuration implements ProxyConfig
      private int compressionThreshold = 256;
+     private boolean preventProxyConnections;
  
 +    @Synchronized("serversLock") // Waterfall
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -100,7 +104,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -102,7 +106,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -212,7 +212,7 @@ index db9ebbdd..4d16fa3a 100644
              this.servers = new CaseInsensitiveMap<>(newServers);
  
              for ( ServerInfo oldServer : oldServers.values() )
-@@ -158,4 +162,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -160,4 +164,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }
