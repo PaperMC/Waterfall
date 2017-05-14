@@ -1,14 +1,14 @@
-From 8123715386948ff4bf580cd258caeaebccb3f26c Mon Sep 17 00:00:00 2001
+From 0b651d342eec029126a06c1d93bae18f460b67de Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Wed, 6 Apr 2016 23:46:00 -0700
 Subject: [PATCH] Better debug checks
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 9153303..e62a38b 100644
+index 2ca7fec4..5636e67c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -350,7 +350,7 @@ public enum Protocol
+@@ -404,7 +404,7 @@ public enum Protocol
              {
                  throw new BadPacketException( "Unsupported protocol version" );
              }
@@ -18,5 +18,5 @@ index 9153303..e62a38b 100644
              return protocolData.packetMap.get( packet );
          }
 -- 
-2.7.4
+2.12.0
 

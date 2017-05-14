@@ -1,11 +1,11 @@
-From 9ff87b6b5620691cb02d7c1310209d3ead3f9eaf Mon Sep 17 00:00:00 2001
+From 8ba224224c6c0c0701224baea319e6f1e9bd5cd7 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 16:38:37 -0400
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 6f782c8..2d5fc48 100644
+index 6f782c8f..2d5fc487 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -1,6 +1,8 @@
@@ -32,7 +32,7 @@ index 6f782c8..2d5fc48 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 8a857ad..741166d 100644
+index 5636e67c..abc5b535 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -44,9 +44,9 @@ index 8a857ad..741166d 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -81,6 +83,21 @@ public enum Protocol
-                     BossBar.class,
-                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
+@@ -86,6 +88,21 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x0D )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -68,7 +68,7 @@ index 8a857ad..741166d 100644
                      map( ProtocolConstants.MINECRAFT_1_8, 0x38 ),
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 new file mode 100644
-index 0000000..d11a9ea
+index 00000000..d11a9ea9
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 @@ -0,0 +1,45 @@
@@ -119,7 +119,7 @@ index 0000000..d11a9ea
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 new file mode 100644
-index 0000000..7ed2dc3
+index 00000000..7ed2dc3a
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 @@ -0,0 +1,36 @@
@@ -160,7 +160,7 @@ index 0000000..7ed2dc3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index bbe4f15..9cc7f3f 100644
+index 23e03ca2..e1aa8213 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -2,7 +2,9 @@ package net.md_5.bungee;
@@ -185,7 +185,7 @@ index bbe4f15..9cc7f3f 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 356cf4f..cb0f08c 100644
+index 1cdfb995..30ee7d16 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -31,6 +31,8 @@ import net.md_5.bungee.netty.PacketHandler;
@@ -231,7 +231,7 @@ index 356cf4f..cb0f08c 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index 673497e..17e250d 100644
+index 673497e5..17e250d4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 @@ -8,6 +8,8 @@ import lombok.NonNull;
@@ -268,5 +268,5 @@ index 673497e..17e250d 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.10.0
+2.12.0
 

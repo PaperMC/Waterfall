@@ -1,4 +1,4 @@
-From d8d51afa5bfb57f5f353137c850baf7977907613 Mon Sep 17 00:00:00 2001
+From a5b6dce1c9847a01bff890ab2a486efb9813d564 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -9,7 +9,7 @@ Vanilla servers still error on negative/invalid packets.
 Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index e7cb380..447eaae 100644
+index e7cb3803..447eaae7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -16,6 +16,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -37,10 +37,10 @@ index e7cb380..447eaae 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index ac9129c..9153303 100644
+index 57a93c93..2ca7fec4 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -282,14 +282,18 @@ public enum Protocol
+@@ -336,14 +336,18 @@ public enum Protocol
              return protocol;
          }
  
@@ -62,7 +62,7 @@ index ac9129c..9153303 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index f25b26d..ed057b8 100644
+index f25b26d6..ed057b8a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -28,7 +28,9 @@ import net.md_5.bungee.forge.ForgeUtils;
@@ -89,7 +89,7 @@ index f25b26d..ed057b8 100644
  
          ch.write( BungeeCord.getInstance().registerChannels() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a439f79..f278a48 100644
+index 87e9e239..2bd88ac4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -69,6 +69,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -101,10 +101,10 @@ index a439f79..f278a48 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index e103cc0..d98a805 100644
+index 6a794175..ec154429 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -197,6 +197,12 @@ public abstract class EntityMap
+@@ -208,6 +208,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -118,5 +118,5 @@ index e103cc0..d98a805 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.7.4
+2.12.0
 
