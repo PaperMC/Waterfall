@@ -1,4 +1,4 @@
-From a5b6dce1c9847a01bff890ab2a486efb9813d564 Mon Sep 17 00:00:00 2001
+From 413c03afc73fede6e6f1eecf0c020dceaa84ed92 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,20 +37,24 @@ index e7cb3803..447eaae7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 57a93c93..2ca7fec4 100644
+index 57a93c93..0dfc4a31 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -336,14 +336,18 @@ public enum Protocol
+@@ -336,14 +336,23 @@ public enum Protocol
              return protocol;
          }
  
--        public final DefinedPacket createPacket(int id, int version)
 +        public boolean hasPacket(int i, boolean supportsForge) {
 +            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
 +        }
 +
-+        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
+         public final DefinedPacket createPacket(int id, int version)
          {
++            return createPacket(id, version, true);
++        }
++
++        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
++        {
              ProtocolData protocolData = getProtocolData( version );
              if (protocolData == null)
              {
@@ -118,5 +122,5 @@ index 6a794175..ec154429 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.12.0
+2.13.0
 
