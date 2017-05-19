@@ -1,4 +1,4 @@
-From 8faa93de2ad9295f92d53da48e907cfd10aa8f6f Mon Sep 17 00:00:00 2001
+From b0d889f9e4b93671ec5999b6c89b2a39155bf6ae Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 6f782c8f..2d5fc487 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index a7036833..c59006d6 100644
+index a2eeb024..d6d278c9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -46,7 +46,7 @@ index a7036833..c59006d6 100644
  import net.md_5.bungee.protocol.packet.Kick;
 @@ -86,6 +88,22 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
-                     map( ProtocolConstants.MINECRAFT_1_12, 0x0D )
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x0C )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -269,5 +269,5 @@ index 673497e5..17e250d4 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.13.0.windows.1
+2.13.0
 
