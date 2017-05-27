@@ -1,0 +1,786 @@
+From 1814235858fca5ec335ba48e0071e21a688b03c9 Mon Sep 17 00:00:00 2001
+From: Foorack <maxfaxalv@gmail.com>
+Date: Sat, 27 May 2017 12:24:37 +0200
+Subject: [PATCH] Use Log4j for logging Default log file is logs/proxy.log with
+ rollover daily and on startup. Console and file output format is the same.
+
+- All Log4j loggers are asynchronous
+- Supports Loggers created through j.u.l.Logger.getLogger()
+
+Credits goes to zreed!
+https://github.com/zreed/BungeeCord/commit/3c8cba3ce9c7953b73fed7af3d7ef89a2a322353
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginLogger.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginLogger.java
+index b304ec0..0c15c13 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginLogger.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginLogger.java
+@@ -2,23 +2,57 @@ package net.md_5.bungee.api.plugin;
+ 
+ import java.util.logging.LogRecord;
+ import java.util.logging.Logger;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Marker;
++import org.apache.logging.log4j.MarkerManager;
+ 
+ public class PluginLogger extends Logger
+ {
++    private static final Marker markerPlugins = MarkerManager.getMarker( "Plugin" ).setParents( MarkerManager.getMarker( "BungeeCord" ) );
+ 
++    private final org.apache.logging.log4j.Logger logger;
++    private final Marker marker;
+     private final String pluginName;
+ 
+     protected PluginLogger(Plugin plugin)
+     {
+         super( plugin.getClass().getCanonicalName(), null );
+         pluginName = "[" + plugin.getDescription().getName() + "] ";
+-        setParent( plugin.getProxy().getLogger() );
++        logger = LogManager.getLogger( plugin.getClass().getCanonicalName() );
++        marker = MarkerManager.getMarker( plugin.getDescription().getName() ).setParents( markerPlugins );
++        setLevel(java.util.logging.Level.ALL);
+     }
+ 
+     @Override
+     public void log(LogRecord logRecord)
+     {
+-        logRecord.setMessage( pluginName + logRecord.getMessage() );
+-        super.log( logRecord );
++        int lvl = logRecord.getLevel().intValue();
++        Level level;
++
++        if ( lvl == Integer.MAX_VALUE )
++        {
++            level = Level.OFF;
++        } else if ( lvl == Integer.MIN_VALUE )
++        {
++            level = Level.ALL;
++        } else if ( lvl >= 1000 )
++        {
++            level = Level.ERROR;
++        } else if ( lvl >= 900 )
++        {
++            level = Level.WARN;
++        } else if ( lvl >= 800 )
++        {
++            level = Level.INFO;
++        } else if ( lvl >= 500 )
++        {
++            level = Level.DEBUG;
++        } else
++        {
++            level = Level.TRACE;
++        }
++
++        logger.log( level, marker, pluginName + logRecord.getMessage(), logRecord.getThrown() );
+     }
+ }
+diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
+index 90a1c37..d3a634a 100644
+--- a/bootstrap/pom.xml
++++ b/bootstrap/pom.xml
+@@ -37,6 +37,12 @@
+             <version>4.8</version>
+             <scope>compile</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-api</artifactId>
++            <version>${log4j.version}</version>
++            <scope>compile</scope>
++        </dependency>
+     </dependencies>
+ 
+     <build>
+@@ -87,7 +93,17 @@
+                             </excludes>
+                         </filter>
+                     </filters>
++                    <transformers>
++                        <transformer implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
++                    </transformers>
+                 </configuration>
++                <dependencies>
++                    <dependency>
++                        <groupId>com.github.edwgiz</groupId>
++                        <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
++                        <version>2.1</version>
++                    </dependency>
++                </dependencies>
+             </plugin>
+         </plugins>
+     </build>
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 5e1773c..d956095 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -1,22 +1,29 @@
+ package net.md_5.bungee;
+ 
++import java.io.PrintStream;
+ import java.security.Security;
+ import java.text.SimpleDateFormat;
+ import java.util.Arrays;
+ import java.util.Calendar;
+ import java.util.Date;
+ import java.util.concurrent.TimeUnit;
++import jline.console.ConsoleReader;
+ import joptsimple.OptionParser;
+ import joptsimple.OptionSet;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.command.ConsoleCommandSender;
++import net.md_5.bungee.log.BungeeConsoleAppender;
++import net.md_5.bungee.log.LoggingOutputStream;
++import org.apache.logging.log4j.LogManager;
+ 
+ public class BungeeCordLauncher
+ {
+ 
+     public static void main(String[] args) throws Exception
+     {
++        System.setProperty( "java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager" );
++        System.setProperty( "Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector" );
+         Security.setProperty( "networkaddress.cache.ttl", "30" );
+         Security.setProperty( "networkaddress.cache.negative.ttl", "10" );
+ 
+@@ -49,7 +56,24 @@ public class BungeeCordLauncher
+             }
+         }
+ 
+-        BungeeCord bungee = new BungeeCord();
++        // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
++        // When jansi attempts to extract its natives, by default it tries to extract a specific version,
++        // using the loading class's implementation version. Normally this works completely fine,
++        // however when on Windows certain characters such as - and : can trigger special behaviour.
++        // Furthermore this behaviour only occurs in specific combinations due to the parsing done by jansi.
++        // For example test-test works fine, but test-test-test does not! In order to avoid this all together but
++        // still keep our versions the same as they were, we set the override property to the essentially garbage version
++        // BungeeCord. This version is only used when extracting the libraries to their temp folder.
++        System.setProperty( "library.jansi.version", "BungeeCord" );
++
++        ConsoleReader consoleReader = new ConsoleReader();
++        consoleReader.setExpandEvents( false );
++        BungeeConsoleAppender.setConsoleReader( consoleReader );
++
++        System.setErr( new PrintStream( new LoggingOutputStream( LogManager.getLogger( "SYSERR" ), org.apache.logging.log4j.Level.ERROR ), true ) );
++        System.setOut( new PrintStream( new LoggingOutputStream( LogManager.getLogger( "SYSOUT" ), org.apache.logging.log4j.Level.INFO ), true ) );
++
++        BungeeCord bungee = new BungeeCord( consoleReader );
+         ProxyServer.setInstance( bungee );
+         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
+         bungee.start();
+diff --git a/log/pom.xml b/log/pom.xml
+index b54e01a..13992f6 100644
+--- a/log/pom.xml
++++ b/log/pom.xml
+@@ -31,5 +31,23 @@
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-core</artifactId>
++            <version>${log4j.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>com.lmax</groupId>
++            <artifactId>disruptor</artifactId>
++            <version>3.3.6</version>
++            <scope>runtime</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-jul</artifactId>
++            <version>${log4j.version}</version>
++            <scope>runtime</scope>
++        </dependency>
+     </dependencies>
+ </project>
+diff --git a/log/src/main/java/net/md_5/bungee/log/BungeeConsoleAppender.java b/log/src/main/java/net/md_5/bungee/log/BungeeConsoleAppender.java
+new file mode 100644
+index 0000000..65e1ee9
+--- /dev/null
++++ b/log/src/main/java/net/md_5/bungee/log/BungeeConsoleAppender.java
+@@ -0,0 +1,147 @@
++package net.md_5.bungee.log;
++
++import java.io.IOException;
++import java.io.Serializable;
++import java.util.HashMap;
++import java.util.Map;
++import jline.console.ConsoleReader;
++import net.md_5.bungee.api.ChatColor;
++import org.apache.logging.log4j.core.Filter;
++import org.apache.logging.log4j.core.Layout;
++import org.apache.logging.log4j.core.LogEvent;
++import org.apache.logging.log4j.core.appender.AbstractAppender;
++import org.apache.logging.log4j.core.config.plugins.Plugin;
++import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
++import org.apache.logging.log4j.core.config.plugins.PluginElement;
++import org.apache.logging.log4j.core.config.plugins.PluginFactory;
++import org.apache.logging.log4j.core.layout.PatternLayout;
++import org.apache.logging.log4j.core.util.Booleans;
++import org.fusesource.jansi.Ansi;
++
++@Plugin(name = "BungeeConsole", category = "Core", elementType = AbstractAppender.ELEMENT_TYPE, printObject = true)
++public class BungeeConsoleAppender extends AbstractAppender
++{
++
++    private static final String ANSI_RESET = Ansi.ansi().reset().toString();
++    private static final String ERASE_LINE = Ansi.ansi().eraseLine( Ansi.Erase.ALL ).toString() + ConsoleReader.RESET_LINE;
++    private static final Map<String, String> COLOR_REPLACEMENTS = new HashMap<>();
++
++    private static ConsoleReader reader;
++
++    static
++    {
++
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.BLACK, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.GOLD, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).boldOff().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.DARK_GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.LIGHT_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.YELLOW, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.WHITE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).bold().toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.MAGIC, Ansi.ansi().a( Ansi.Attribute.BLINK_SLOW ).toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.BOLD, Ansi.ansi().a( Ansi.Attribute.UNDERLINE_DOUBLE ).toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.STRIKETHROUGH, Ansi.ansi().a( Ansi.Attribute.STRIKETHROUGH_ON ).toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.UNDERLINE, Ansi.ansi().a( Ansi.Attribute.UNDERLINE ).toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.ITALIC, Ansi.ansi().a( Ansi.Attribute.ITALIC ).toString() );
++        COLOR_REPLACEMENTS.put( "(?i)" + ChatColor.RESET, Ansi.ansi().a( Ansi.Attribute.RESET ).toString() );
++
++    }
++
++    protected BungeeConsoleAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout, final boolean ignoreExceptions)
++    {
++        super( name, filter, layout, ignoreExceptions );
++
++    }
++
++    @Override
++    public void append(final LogEvent event)
++    {
++
++        if ( reader == null )
++        {
++            return;
++        }
++
++        String line = colorize( new String( getLayout().toByteArray( event ) ) );
++
++        if ( !line.endsWith( "\n" ) )
++        {
++            line += "\n";
++        }
++
++        try
++        {
++            //reader.getOutput().write( ERASE_LINE + line + ANSI_RESET );
++            reader.print( ERASE_LINE + line + ANSI_RESET );
++
++            reader.drawLine();
++
++            reader.flush();
++
++        } catch ( IOException ex )
++        {
++            // ignore
++        }
++
++    }
++
++    public static void setConsoleReader(final ConsoleReader r)
++    {
++        reader = r;
++    }
++
++    @PluginFactory
++    public static BungeeConsoleAppender createAppender(
++            @PluginElement("Layout") Layout<? extends Serializable> layout,
++            @PluginElement("Filters") final Filter filter,
++            @PluginAttribute("target") final String t,
++            @PluginAttribute("name") final String name,
++            @PluginAttribute("follow") final String follow,
++            @PluginAttribute("ignoreExceptions") final String ignore)
++    {
++
++        if ( name == null )
++        {
++            LOGGER.error( "No name provided for BungeeConsoleAppender" );
++            return null;
++        }
++
++        if ( layout == null )
++        {
++            return new BungeeConsoleAppender( name, filter, PatternLayout.newBuilder().build(), Booleans.parseBoolean( ignore, true ) );
++        } else
++        {
++            return new BungeeConsoleAppender( name, filter, layout, Booleans.parseBoolean( ignore, true ) );
++        }
++
++    }
++
++    private static String colorize(final String message)
++    {
++
++        if ( message.indexOf( ChatColor.COLOR_CHAR ) == -1 )
++        {
++            return message;
++        }
++
++        String result = message;
++
++        for ( Map.Entry<String, String> entry : COLOR_REPLACEMENTS.entrySet() )
++        {
++            result = result.replaceAll( entry.getKey(), entry.getValue() );
++        }
++
++        return result;
++
++    }
++
++}
+diff --git a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java b/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
+deleted file mode 100644
+index 2a2e0ed..0000000
+--- a/log/src/main/java/net/md_5/bungee/log/BungeeLogger.java
++++ /dev/null
+@@ -1,57 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+-import java.io.IOException;
+-import java.util.logging.FileHandler;
+-import java.util.logging.Formatter;
+-import java.util.logging.Level;
+-import java.util.logging.LogRecord;
+-import java.util.logging.Logger;
+-import jline.console.ConsoleReader;
+-
+-public class BungeeLogger extends Logger
+-{
+-
+-    private final Formatter formatter = new ConciseFormatter();
+-    private final LogDispatcher dispatcher = new LogDispatcher( this );
+-
+-    @SuppressWarnings(
+-            {
+-                "CallToPrintStackTrace", "CallToThreadStartDuringObjectConstruction"
+-            })
+-    @SuppressFBWarnings("SC_START_IN_CTOR")
+-    public BungeeLogger(String loggerName, String filePattern, ConsoleReader reader)
+-    {
+-        super( loggerName, null );
+-        setLevel( Level.ALL );
+-
+-        try
+-        {
+-            FileHandler fileHandler = new FileHandler( filePattern, 1 << 23, 8, false );
+-            fileHandler.setFormatter( formatter );
+-            addHandler( fileHandler );
+-
+-            ColouredWriter consoleHandler = new ColouredWriter( reader );
+-            consoleHandler.setLevel( Level.INFO );
+-            consoleHandler.setFormatter( formatter );
+-            addHandler( consoleHandler );
+-        } catch ( IOException ex )
+-        {
+-            System.err.println( "Could not register logger!" );
+-            ex.printStackTrace();
+-        }
+-
+-        dispatcher.start();
+-    }
+-
+-    @Override
+-    public void log(LogRecord record)
+-    {
+-        dispatcher.queue( record );
+-    }
+-
+-    void doLog(LogRecord record)
+-    {
+-        super.log( record );
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java b/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java
+deleted file mode 100644
+index e7650f7..0000000
+--- a/log/src/main/java/net/md_5/bungee/log/ColouredWriter.java
++++ /dev/null
+@@ -1,82 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.io.IOException;
+-import java.util.EnumMap;
+-import java.util.Map;
+-import java.util.logging.Handler;
+-import java.util.logging.LogRecord;
+-import jline.console.ConsoleReader;
+-import net.md_5.bungee.api.ChatColor;
+-import org.fusesource.jansi.Ansi;
+-import org.fusesource.jansi.Ansi.Erase;
+-
+-public class ColouredWriter extends Handler
+-{
+-
+-    private final Map<ChatColor, String> replacements = new EnumMap<>( ChatColor.class );
+-    private final ChatColor[] colors = ChatColor.values();
+-    private final ConsoleReader console;
+-
+-    public ColouredWriter(ConsoleReader console)
+-    {
+-        this.console = console;
+-
+-        replacements.put( ChatColor.BLACK, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).boldOff().toString() );
+-        replacements.put( ChatColor.GOLD, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).boldOff().toString() );
+-        replacements.put( ChatColor.GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).boldOff().toString() );
+-        replacements.put( ChatColor.DARK_GRAY, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLACK ).bold().toString() );
+-        replacements.put( ChatColor.BLUE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.BLUE ).bold().toString() );
+-        replacements.put( ChatColor.GREEN, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.GREEN ).bold().toString() );
+-        replacements.put( ChatColor.AQUA, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.CYAN ).bold().toString() );
+-        replacements.put( ChatColor.RED, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.RED ).bold().toString() );
+-        replacements.put( ChatColor.LIGHT_PURPLE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.MAGENTA ).bold().toString() );
+-        replacements.put( ChatColor.YELLOW, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.YELLOW ).bold().toString() );
+-        replacements.put( ChatColor.WHITE, Ansi.ansi().a( Ansi.Attribute.RESET ).fg( Ansi.Color.WHITE ).bold().toString() );
+-        replacements.put( ChatColor.MAGIC, Ansi.ansi().a( Ansi.Attribute.BLINK_SLOW ).toString() );
+-        replacements.put( ChatColor.BOLD, Ansi.ansi().a( Ansi.Attribute.UNDERLINE_DOUBLE ).toString() );
+-        replacements.put( ChatColor.STRIKETHROUGH, Ansi.ansi().a( Ansi.Attribute.STRIKETHROUGH_ON ).toString() );
+-        replacements.put( ChatColor.UNDERLINE, Ansi.ansi().a( Ansi.Attribute.UNDERLINE ).toString() );
+-        replacements.put( ChatColor.ITALIC, Ansi.ansi().a( Ansi.Attribute.ITALIC ).toString() );
+-        replacements.put( ChatColor.RESET, Ansi.ansi().a( Ansi.Attribute.RESET ).toString() );
+-    }
+-
+-    public void print(String s)
+-    {
+-        for ( ChatColor color : colors )
+-        {
+-            s = s.replaceAll( "(?i)" + color.toString(), replacements.get( color ) );
+-        }
+-        try
+-        {
+-            console.print( Ansi.ansi().eraseLine( Erase.ALL ).toString() + ConsoleReader.RESET_LINE + s + Ansi.ansi().reset().toString() );
+-            console.drawLine();
+-            console.flush();
+-        } catch ( IOException ex )
+-        {
+-        }
+-    }
+-
+-    @Override
+-    public void publish(LogRecord record)
+-    {
+-        if ( isLoggable( record ) )
+-        {
+-            print( getFormatter().format( record ) );
+-        }
+-    }
+-
+-    @Override
+-    public void flush()
+-    {
+-    }
+-
+-    @Override
+-    public void close() throws SecurityException
+-    {
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java b/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java
+deleted file mode 100644
+index 61fdd28..0000000
+--- a/log/src/main/java/net/md_5/bungee/log/ConciseFormatter.java
++++ /dev/null
+@@ -1,37 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.io.PrintWriter;
+-import java.io.StringWriter;
+-import java.text.DateFormat;
+-import java.text.SimpleDateFormat;
+-import java.util.logging.Formatter;
+-import java.util.logging.LogRecord;
+-
+-public class ConciseFormatter extends Formatter
+-{
+-
+-    private final DateFormat date = new SimpleDateFormat( System.getProperty( "net.md_5.bungee.log-date-format", "HH:mm:ss" ) );
+-
+-    @Override
+-    @SuppressWarnings("ThrowableResultIgnored")
+-    public String format(LogRecord record)
+-    {
+-        StringBuilder formatted = new StringBuilder();
+-
+-        formatted.append( date.format( record.getMillis() ) );
+-        formatted.append( " [" );
+-        formatted.append( record.getLevel().getLocalizedName() );
+-        formatted.append( "] " );
+-        formatted.append( formatMessage( record ) );
+-        formatted.append( '\n' );
+-
+-        if ( record.getThrown() != null )
+-        {
+-            StringWriter writer = new StringWriter();
+-            record.getThrown().printStackTrace( new PrintWriter( writer ) );
+-            formatted.append( writer );
+-        }
+-
+-        return formatted.toString();
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+deleted file mode 100644
+index d703d6d..0000000
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ /dev/null
+@@ -1,48 +0,0 @@
+-package net.md_5.bungee.log;
+-
+-import java.util.concurrent.BlockingQueue;
+-import java.util.concurrent.LinkedBlockingQueue;
+-import java.util.logging.LogRecord;
+-
+-public class LogDispatcher extends Thread
+-{
+-
+-    private final BungeeLogger logger;
+-    private final BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<>();
+-
+-    public LogDispatcher(BungeeLogger logger)
+-    {
+-        super( "Waterfall Logger Thread" );
+-        this.logger = logger;
+-    }
+-
+-    @Override
+-    public void run()
+-    {
+-        while ( !isInterrupted() )
+-        {
+-            LogRecord record;
+-            try
+-            {
+-                record = queue.take();
+-            } catch ( InterruptedException ex )
+-            {
+-                continue;
+-            }
+-
+-            logger.doLog( record );
+-        }
+-        for ( LogRecord record : queue )
+-        {
+-            logger.doLog( record );
+-        }
+-    }
+-
+-    public void queue(LogRecord record)
+-    {
+-        if ( !isInterrupted() )
+-        {
+-            queue.add( record );
+-        }
+-    }
+-}
+diff --git a/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java b/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java
+index 2b1ab9c..5921794 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java
++++ b/log/src/main/java/net/md_5/bungee/log/LoggingOutputStream.java
+@@ -3,9 +3,9 @@ package net.md_5.bungee.log;
+ import com.google.common.base.Charsets;
+ import java.io.ByteArrayOutputStream;
+ import java.io.IOException;
+-import java.util.logging.Level;
+-import java.util.logging.Logger;
+ import lombok.RequiredArgsConstructor;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.Logger;
+ 
+ @RequiredArgsConstructor
+ public class LoggingOutputStream extends ByteArrayOutputStream
+@@ -23,7 +23,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream
+         super.reset();
+         if ( !contents.isEmpty() && !contents.equals( separator ) )
+         {
+-            logger.logp( level, "", "", contents );
++            logger.log( level, contents );
+         }
+     }
+ }
+diff --git a/log/src/main/resources/log4j2.xml b/log/src/main/resources/log4j2.xml
+new file mode 100644
+index 0000000..394dbb0
+--- /dev/null
++++ b/log/src/main/resources/log4j2.xml
+@@ -0,0 +1,21 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<Configuration status="WARN">
++    <Appenders>
++        <BungeeConsole name="Console">
++            <PatternLayout pattern="%d{HH:mm:ss} [%level]: %msg%n" />
++        </BungeeConsole>
++        <RollingRandomAccessFile name="File" fileName="logs/proxy.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
++            <PatternLayout pattern="%d{HH:mm:ss} [%level]: %msg%n" />
++            <Policies>
++                <TimeBasedTriggeringPolicy />
++                <OnStartupTriggeringPolicy />
++            </Policies>
++        </RollingRandomAccessFile>
++    </Appenders>
++    <Loggers>
++        <Root level="info">
++            <AppenderRef ref="Console"/>
++            <AppenderRef ref="File"/>
++        </Root>
++    </Loggers>
++</Configuration>
+diff --git a/pom.xml b/pom.xml
+index 2f4dd31..9f1c6d3 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -90,6 +90,7 @@
+ 
+     <properties>
+         <build.number>unknown</build.number>
++        <log4j.version>2.8.2</log4j.version>
+         <netty.version>4.1.9.Final</netty.version>
+         <!-- Require Java 8 -->
+         <maven.compiler.source>1.8</maven.compiler.source>
+@@ -99,6 +100,12 @@
+ 
+     <dependencies>
+         <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-api</artifactId>
++            <version>${log4j.version}</version>
++            <scope>provided</scope>
++        </dependency>
++        <dependency>
+             <groupId>junit</groupId>
+             <artifactId>junit</artifactId>
+             <version>4.12</version>
+diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
+index 446dfe2..15138fa 100644
+--- a/proxy/src/main/java/Test.java
++++ b/proxy/src/main/java/Test.java
+@@ -1,8 +1,14 @@
+ 
++import java.io.PrintStream;
++import jline.console.ConsoleReader;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.command.ConsoleCommandSender;
++import net.md_5.bungee.log.BungeeConsoleAppender;
++import net.md_5.bungee.log.LoggingOutputStream;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
+ 
+ /*
+  * To change this template, choose Tools | Templates
+@@ -17,7 +23,18 @@ public class Test
+ 
+     public static void main(String[] args) throws Exception
+     {
+-        BungeeCord bungee = new BungeeCord();
++        System.setProperty( "java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager" );
++        System.setProperty( "Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector" );
++        System.setProperty( "library.jansi.version", "BungeeCord" );
++
++        ConsoleReader consoleReader = new ConsoleReader();
++        consoleReader.setExpandEvents( false );
++        BungeeConsoleAppender.setConsoleReader( consoleReader );
++
++        System.setErr( new PrintStream( new LoggingOutputStream( LogManager.getLogger( "SYSERR" ), Level.ERROR ), true ) );
++        System.setOut( new PrintStream( new LoggingOutputStream( LogManager.getLogger( "SYSOUT" ), Level.INFO ), true ) );
++
++        BungeeCord bungee = new BungeeCord( consoleReader );
+         ProxyServer.setInstance( bungee );
+         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
+         bungee.start();
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 59d55fc..1def736 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -23,7 +23,6 @@ import io.netty.util.ResourceLeakDetector;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.text.MessageFormat;
+ import java.util.ArrayList;
+@@ -77,8 +76,6 @@ import net.md_5.bungee.compress.CompressFactory;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+-import net.md_5.bungee.log.BungeeLogger;
+-import net.md_5.bungee.log.LoggingOutputStream;
+ import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+@@ -88,7 +85,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+-import org.fusesource.jansi.AnsiConsole;
+ 
+ /**
+  * Main BungeeCord proxy class.
+@@ -176,7 +172,7 @@ public class BungeeCord extends ProxyServer
+     }
+ 
+     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
+-    public BungeeCord() throws IOException
++    public BungeeCord(final ConsoleReader reader) throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+         Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
+@@ -197,24 +193,9 @@ public class BungeeCord extends ProxyServer
+             }
+         }
+ 
+-        // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
+-        // When jansi attempts to extract its natives, by default it tries to extract a specific version,
+-        // using the loading class's implementation version. Normally this works completely fine,
+-        // however when on Windows certain characters such as - and : can trigger special behaviour.
+-        // Furthermore this behaviour only occurs in specific combinations due to the parsing done by jansi.
+-        // For example test-test works fine, but test-test-test does not! In order to avoid this all together but
+-        // still keep our versions the same as they were, we set the override property to the essentially garbage version
+-        // BungeeCord. This version is only used when extracting the libraries to their temp folder.
+-        System.setProperty( "library.jansi.version", "BungeeCord" );
+-
+-        AnsiConsole.systemInstall();
+-        consoleReader = new ConsoleReader();
+-        consoleReader.setExpandEvents( false );
+-        consoleReader.addCompleter( new ConsoleCommandCompleter( this ) );
+-
+-        logger = new BungeeLogger( "BungeeCord", System.getProperty("bungee.log-file", "proxy.log"), consoleReader );
+-        System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
+-        System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
++        consoleReader = reader;
++
++        logger = Logger.getLogger("BungeeCord");
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+-- 
+2.9.3
+
