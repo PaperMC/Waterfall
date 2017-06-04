@@ -1,0 +1,22 @@
+From 774f350799113a20f054482fde2216420b47f57a Mon Sep 17 00:00:00 2001
+From: caoli5288 <caoli5288@gmail.com>
+Date: Wed, 24 Aug 2016 05:40:15 +0800
+Subject: [PATCH] Do not prevent bungee-bungee connection
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 4177ef5..f5f2deb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -250,8 +250,6 @@ public class DownstreamBridge extends PacketHandler
+             String serverBrand = DefinedPacket.readString( brand );
+             brand.release();
+ 
+-            Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
+-
+             brand = ByteBufAllocator.DEFAULT.heapBuffer();
+             DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
+             pluginMessage.setData( brand );
+-- 
+2.7.4
+
