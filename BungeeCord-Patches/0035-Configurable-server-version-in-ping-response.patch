@@ -1,4 +1,4 @@
-From 4e1eef7d9dc4eb9441c30a7f35e9aa4d5425b52e Mon Sep 17 00:00:00 2001
+From 342db8c2606533eeee5b8ed5b33d486b8ab8dba3 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
@@ -59,18 +59,18 @@ index 68f25460..59835815 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 95750d44..59d55fc0 100644
+index 3d0288f3..59d55fc0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -614,7 +614,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getGameVersion()
      {
--        return Joiner.on( ", " ).join( ProtocolConstants.SUPPORTED_VERSIONS );
+-        return ProtocolConstants.SUPPORTED_VERSIONS.get( 0 ) + "-" + ProtocolConstants.SUPPORTED_VERSIONS.get( ProtocolConstants.SUPPORTED_VERSIONS.size() - 1 );
 +        return getConfig().getGameVersion(); // Waterfall
      }
  
      @Override
 -- 
-2.12.0
+2.13.0
 
