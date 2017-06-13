@@ -1,4 +1,4 @@
-From 9bdd23815479c84e201933fa5b8c3e470f49b51f Mon Sep 17 00:00:00 2001
+From 4f004565d0f177e29c88199116d10935903d314b Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -170,10 +170,10 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index a568701a..2124957c 100644
+index 18c99076..daad7dd1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -325,6 +325,8 @@ public enum Protocol
+@@ -326,6 +326,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
@@ -182,7 +182,7 @@ index a568701a..2124957c 100644
                      ProtocolConstants.MINECRAFT_1_9,
                      ProtocolConstants.MINECRAFT_1_12
              ) );
-@@ -371,7 +373,11 @@ public enum Protocol
+@@ -372,7 +374,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -577,7 +577,7 @@ index 00000000..2aa68858
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 743556c7..57ba116d 100644
+index 8a53f1d2..86fc6294 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -591,7 +591,7 @@ index 743556c7..57ba116d 100644
      public static final int MINECRAFT_1_9_1 = 108;
 @@ -16,6 +18,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_11_1 = 316;
-     public static final int MINECRAFT_1_12 = 329;
+     public static final int MINECRAFT_1_12 = 335;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
@@ -1590,7 +1590,7 @@ index 5d72a567..adcb211f 100644
              throw CancelSendSignal.INSTANCE;
          } else
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e1aa8213..d0aaae1b 100644
+index 20f4288d..f1af8df8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -210,6 +210,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -1604,18 +1604,18 @@ index e1aa8213..d0aaae1b 100644
 @@ -438,7 +439,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent... message)
      {
-         // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
--        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
-+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() == ProtocolConstants.MINECRAFT_1_8 ) // Travertine
+         // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
+-        if ( position == ChatMessageType.ACTION_BAR )
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
 @@ -451,7 +452,7 @@ public final class UserConnection implements ProxiedPlayer
      public void sendMessage(ChatMessageType position, BaseComponent message)
      {
-         // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
--        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
-+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() == ProtocolConstants.MINECRAFT_1_8 ) // Travertine
+         // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
+-        if ( position == ChatMessageType.ACTION_BAR )
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
@@ -2426,5 +2426,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.12.2
+2.13.1
 

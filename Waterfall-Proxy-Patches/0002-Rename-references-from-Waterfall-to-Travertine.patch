@@ -1,4 +1,4 @@
-From 18fe1c11ebe044b7413a2d7fb4ee8e47b5ef59a3 Mon Sep 17 00:00:00 2001
+From 758096a69ac055ab9f1d0e42183f81334dd880da Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -18,16 +18,16 @@ index a4516ed9..1f63a2c2 100644
              return;
          }
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 5e1773c3..4a5df13f 100644
+index ce1dd7a3..7768654c 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -42,7 +42,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
-                 System.err.println( "*** Warning, this build is outdated ***" );
--                System.err.println( "*** Please download a new build from https://ci.aquifermc.org/job/Waterfall/ ***" );
-+                System.err.println( "*** Please download a new build from https://ci.aquifermc.org/job/Travertine/ ***" );
-                 System.err.println( "*** You will get NO support regarding this build ***" );
+                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
+-                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
++                System.err.println( "*** Please check for a new build from https://ci.aquifermc.org/job/Travertine/ ***" );
+                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 @@ -51,7 +51,7 @@ public class BungeeCordLauncher
@@ -127,5 +127,5 @@ index 4ec97825..25e97812 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.12.2
+2.13.1
 
