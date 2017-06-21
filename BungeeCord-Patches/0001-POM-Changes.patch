@@ -1,4 +1,4 @@
-From b7d1c8e5251a99a7758990a7e3297826c553c9fe Mon Sep 17 00:00:00 2001
+From cc7e0c242fc8e3d42c575e38cfd52052946d0262 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 10:33:31 -0700
 Subject: [PATCH] POM Changes
@@ -66,7 +66,7 @@ index 96a46738..2a3c5eae 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 8149db1e..90a1c378 100644
+index 9c02b389..f1b3a071 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,19 @@
@@ -94,8 +94,8 @@ index 8149db1e..90a1c378 100644
 +    <description>Java 1.6 loader for Waterfall</description>
  
      <properties>
-         <maven.compiler.source>1.6</maven.compiler.source>
-@@ -26,8 +26,8 @@
+         <maven.deploy.skip>true</maven.deploy.skip>
+@@ -27,8 +27,8 @@
  
      <dependencies>
          <dependency>
@@ -106,7 +106,7 @@ index 8149db1e..90a1c378 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -40,7 +40,7 @@
+@@ -41,7 +41,7 @@
      </dependencies>
  
      <build>
@@ -114,8 +114,8 @@ index 8149db1e..90a1c378 100644
 +        <finalName>Waterfall</finalName>
          <plugins>
              <plugin>
-                 <!-- Don't deploy proxy to maven repo, only APIs -->
-@@ -57,7 +57,7 @@
+                 <groupId>org.apache.maven.plugins</groupId>
+@@ -50,7 +50,7 @@
                  <configuration>
                      <archive>
                          <manifestEntries>
@@ -392,7 +392,7 @@ index daf146dc..e00697fe 100644
      <packaging>jar</packaging>
  
 diff --git a/module/pom.xml b/module/pom.xml
-index 20728c67..a4d581ec 100644
+index aff2c070..2b827bb0 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,19 @@
@@ -421,12 +421,13 @@ index 20728c67..a4d581ec 100644
  
      <modules>
          <module>cmd-alert</module>
-@@ -28,13 +28,13 @@
+@@ -28,14 +28,14 @@
      </modules>
  
      <properties>
 -        <module.author>SpigotMC</module.author>
 +        <module.author>WaterfallMC</module.author>
+         <maven.deploy.skip>true</maven.deploy.skip>
      </properties>
  
      <dependencies>
@@ -492,7 +493,7 @@ index 082f0908..8b045e3b 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index b35347ce..88f939df 100644
+index 5a03519e..144e3f14 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,23 +4,24 @@
@@ -724,7 +725,7 @@ index bf4b399a..9a4b6529 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 48c13305..1cd7afe0 100644
+index 3b36612c..85b9df7d 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -750,8 +751,8 @@ index 48c13305..1cd7afe0 100644
 +    <name>Waterfall-Proxy</name>
      <description>Proxy component of the Elastic Portal Suite</description>
  
-     <dependencies>
-@@ -45,32 +45,32 @@
+     <properties>
+@@ -49,32 +49,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
