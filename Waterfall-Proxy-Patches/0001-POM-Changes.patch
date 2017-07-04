@@ -5,7 +5,7 @@ Subject: [PATCH] POM Changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 2a3c5eae..0e6adea2 100644
+index 2a3c5ea..0e6adea 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -5,41 +5,41 @@
@@ -58,7 +58,7 @@ index 2a3c5eae..0e6adea2 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 90a1c378..e6f7daf1 100644
+index f1b3a07..d9790f2 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -5,18 +5,18 @@
@@ -83,8 +83,8 @@ index 90a1c378..e6f7daf1 100644
 +    <description>Java 1.6 loader for Travertine</description>
  
      <properties>
-         <maven.compiler.source>1.6</maven.compiler.source>
-@@ -27,7 +27,7 @@
+         <maven.deploy.skip>true</maven.deploy.skip>
+@@ -28,7 +28,7 @@
      <dependencies>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -93,7 +93,7 @@ index 90a1c378..e6f7daf1 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -40,7 +40,7 @@
+@@ -41,7 +41,7 @@
      </dependencies>
  
      <build>
@@ -101,9 +101,9 @@ index 90a1c378..e6f7daf1 100644
 +        <finalName>Travertine</finalName>
          <plugins>
              <plugin>
-                 <!-- Don't deploy proxy to maven repo, only APIs -->
+                 <groupId>org.apache.maven.plugins</groupId>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 2d99a884..084c64e0 100644
+index a908c13..4db1189 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -5,18 +5,18 @@
@@ -130,7 +130,7 @@ index 2d99a884..084c64e0 100644
      <properties>
          <!-- Require Java 8, not Java 6 -->
 diff --git a/config/pom.xml b/config/pom.xml
-index fc49babe..ced2ac5a 100644
+index d314634..5558823 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -5,18 +5,18 @@
@@ -157,7 +157,7 @@ index fc49babe..ced2ac5a 100644
      <dependencies>
          <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index a387b2c0..551a8151 100644
+index a387b2c..551a815 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -5,16 +5,16 @@
@@ -182,7 +182,7 @@ index a387b2c0..551a8151 100644
 +    <description>Generic java event dispatching API intended for use with Travertine.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index b54e01a0..18c356f0 100644
+index b54e01a..18c356f 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -5,18 +5,18 @@
@@ -218,7 +218,7 @@ index b54e01a0..18c356f0 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
-index 2d81204b..1c65ba41 100644
+index 2d81204..1c65ba4 100644
 --- a/module/cmd-alert/pom.xml
 +++ b/module/cmd-alert/pom.xml
 @@ -5,13 +5,13 @@
@@ -238,7 +238,7 @@ index 2d81204b..1c65ba41 100644
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
-index f22790a3..feceb6b3 100644
+index f22790a..feceb6b 100644
 --- a/module/cmd-find/pom.xml
 +++ b/module/cmd-find/pom.xml
 @@ -5,13 +5,13 @@
@@ -258,7 +258,7 @@ index f22790a3..feceb6b3 100644
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
-index 0e693f11..65ef4aa2 100644
+index 0e693f1..65ef4aa 100644
 --- a/module/cmd-list/pom.xml
 +++ b/module/cmd-list/pom.xml
 @@ -5,13 +5,13 @@
@@ -278,7 +278,7 @@ index 0e693f11..65ef4aa2 100644
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
-index ba6de230..09a11b18 100644
+index ba6de23..09a11b1 100644
 --- a/module/cmd-send/pom.xml
 +++ b/module/cmd-send/pom.xml
 @@ -5,13 +5,13 @@
@@ -298,7 +298,7 @@ index ba6de230..09a11b18 100644
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
-index e00697fe..dbcb9a12 100644
+index e00697f..dbcb9a1 100644
 --- a/module/cmd-server/pom.xml
 +++ b/module/cmd-server/pom.xml
 @@ -5,13 +5,13 @@
@@ -318,7 +318,7 @@ index e00697fe..dbcb9a12 100644
      <packaging>jar</packaging>
  
 diff --git a/module/pom.xml b/module/pom.xml
-index a4d581ec..44012d53 100644
+index 2b827bb..1c80e5c 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -5,18 +5,18 @@
@@ -344,14 +344,7 @@ index a4d581ec..44012d53 100644
  
      <modules>
          <module>cmd-alert</module>
-@@ -28,13 +28,13 @@
-     </modules>
- 
-     <properties>
--        <module.author>WaterfallMC</module.author>
-+        <module.author>TravertineMC</module.author>
-     </properties>
- 
+@@ -35,7 +35,7 @@
      <dependencies>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -361,7 +354,7 @@ index a4d581ec..44012d53 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
-index 091ea8cf..feea2195 100644
+index 091ea8c..feea219 100644
 --- a/module/reconnect-yaml/pom.xml
 +++ b/module/reconnect-yaml/pom.xml
 @@ -5,13 +5,13 @@
@@ -381,7 +374,7 @@ index 091ea8cf..feea2195 100644
      <packaging>jar</packaging>
  
 diff --git a/native/pom.xml b/native/pom.xml
-index 8b045e3b..172c128f 100644
+index 8b045e3..172c128 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -5,18 +5,18 @@
@@ -408,10 +401,10 @@ index 8b045e3b..172c128f 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 2f4dd31b..690c25aa 100644
+index 144e3f1..1be232a 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -5,23 +5,23 @@
+@@ -5,19 +5,19 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
@@ -432,16 +425,10 @@ index 2f4dd31b..690c25aa 100644
 -    <url>https://github.com/WaterfallMC/Waterfall</url>
 +    <name>Travertine-Parent</name>
 +    <description>Parent project for all Travertine modules.</description>
-+    <url>https://github.com/TravertineMC/Travertine</url>
++    <url>https://github.com/WaterfallMC/Travertine</url>
      <inceptionYear>2015</inceptionYear>
      <organization>
--        <name>WaterfallMC</name>
--        <url>https://github.com/WaterfallMC</url>
-+        <name>TravertineMC</name>
-+        <url>https://github.com/TravertineMC</url>
-     </organization>
-     <licenses>
-         <license>
+         <name>WaterfallMC</name>
 @@ -64,17 +64,17 @@
      </modules>
  
@@ -449,14 +436,14 @@ index 2f4dd31b..690c25aa 100644
 -        <connection>scm:git:git@github.com:com:WaterfallMC/Waterfall.git</connection>
 -        <developerConnection>scm:git:git@github.com:WaterfallMC/Waterfall.git</developerConnection>
 -        <url>git@github.com:WaterfallMC/Waterfall.git</url>
-+        <connection>scm:git:git@github.com:com:TravertineMC/Travertine.git</connection>
-+        <developerConnection>scm:git:git@github.com:TravertineMC/Travertine.git</developerConnection>
-+        <url>git@github.com:TravertineMC/Travertine.git</url>
++        <connection>scm:git:git@github.com:com:WaterfallMC/Travertine.git</connection>
++        <developerConnection>scm:git:git@github.com:WaterfallMC/Travertine.git</developerConnection>
++        <url>git@github.com:WaterfallMC/Travertine.git</url>
      </scm>
      <issueManagement>
          <system>GitHub</system>
 -        <url>https://github.com/WaterfallMC/Waterfall/issues</url>
-+        <url>https://github.com/TravertineMC/Travertine/issues</url>
++        <url>https://github.com/WaterfallMC/Travertine/issues</url>
      </issueManagement>
      <ciManagement>
          <system>jenkins</system>
@@ -466,7 +453,7 @@ index 2f4dd31b..690c25aa 100644
  
      <distributionManagement>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 9a4b6529..b6db889c 100644
+index 9a4b652..b6db889 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -5,23 +5,23 @@
@@ -499,7 +486,7 @@ index 9a4b6529..b6db889c 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 5cf35841..de5f0675 100644
+index ae6ee15..74b9035 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -5,17 +5,17 @@
@@ -522,8 +509,25 @@ index 5cf35841..de5f0675 100644
 +    <name>Travertine-Proxy</name>
      <description>Proxy component of the Elastic Portal Suite</description>
  
-     <dependencies>
-@@ -54,31 +54,31 @@
+     <properties>
+@@ -41,14 +41,14 @@
+             <version>${netty.version}</version>
+             <scope>compile</scope>
+         </dependency>
+-        <!-- Waterfall Start - add Netty DNS resolver -->
++        <!-- Travertine Start - add Netty DNS resolver -->
+         <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-resolver-dns</artifactId>
+             <version>${netty.version}</version>
+             <scope>compile</scope>
+         </dependency>
+-        <!-- Waterfall End -->
++        <!-- Travertine End -->
+         <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-handler</artifactId>
+@@ -64,31 +64,31 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -561,7 +565,7 @@ index 5cf35841..de5f0675 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/query/pom.xml b/query/pom.xml
-index 4b3613fa..b0afcc59 100644
+index 4b3613f..b0afcc5 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -5,18 +5,18 @@
@@ -597,5 +601,5 @@ index 4b3613fa..b0afcc59 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.12.2
+2.7.4 (Apple Git-66)
 
