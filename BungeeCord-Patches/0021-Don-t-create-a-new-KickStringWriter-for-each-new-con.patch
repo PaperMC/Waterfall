@@ -1,4 +1,4 @@
-From 140b09bb77d5b6a404e0207aa876f21662ca1639 Mon Sep 17 00:00:00 2001
+From d87d823880803c530b1ec8783527ce20fb7590eb Mon Sep 17 00:00:00 2001
 From: Harry <me@harry5573.uk>
 Date: Tue, 26 Jan 2016 01:01:57 +0000
 Subject: [PATCH] Don't create a new KickStringWriter for each new connection.
@@ -21,19 +21,19 @@ index eda9571..e5275c7 100644
  {
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 5ba31a4..f6a10e7 100644
+index 67624b3..503adfd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -52,7 +52,7 @@ public class PipelineUtils
+@@ -55,7 +55,7 @@ public class PipelineUtils
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
 -            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, new KickStringWriter() );
 +            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, PipelineUtils.KICK_STRING_WRITER );
-             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), ch.attr( LISTENER ).get() ) );
-         }
-     };
-@@ -68,6 +68,7 @@ public class PipelineUtils
+             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
+ 
+             if ( listener.isProxyProtocol() )
+@@ -76,6 +76,7 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";

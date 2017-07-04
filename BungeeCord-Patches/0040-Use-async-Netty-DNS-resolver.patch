@@ -1,4 +1,4 @@
-From 4e5f8b6986efb9ca27fb5662c63869d82dfaf601 Mon Sep 17 00:00:00 2001
+From c0d6188b4987814068db056085aa50db72efc1e3 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 85b9df7d..90dd3fa4 100644
+index 98656fe..ae6ee15 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -35,6 +35,14 @@
+@@ -41,6 +41,14 @@
              <version>${netty.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -25,7 +25,7 @@ index 85b9df7d..90dd3fa4 100644
              <groupId>io.netty</groupId>
              <artifactId>netty-handler</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 2feb4d66..3db36399 100644
+index 2feb4d6..3db3639 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -27,7 +27,11 @@ public class HttpClient
@@ -94,10 +94,10 @@ index 2feb4d66..3db36399 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f6a10e77..ddf598ef 100644
+index 503adfd..ad47dbb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -103,7 +103,7 @@ public class PipelineUtils
+@@ -111,7 +111,7 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
@@ -107,5 +107,5 @@ index f6a10e77..ddf598ef 100644
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
      }
 -- 
-2.13.0
+2.7.4 (Apple Git-66)
 

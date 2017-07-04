@@ -1,4 +1,4 @@
-From 5f631f797f46a5f9d327f3f8f593dbfc84cdf936 Mon Sep 17 00:00:00 2001
+From 1685165446a90c7171c880b78c92760c3007d8a5 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,7 +8,7 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index eb3f9973..9d7a25ab 100644
+index 93dd74e..1073f8f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -110,7 +110,7 @@ public class BungeeCord extends ProxyServer
@@ -30,7 +30,7 @@ index eb3f9973..9d7a25ab 100644
  
          File moduleDirectory = new File( "modules" );
          moduleManager.load( this, moduleDirectory );
-@@ -319,7 +320,7 @@ public class BungeeCord extends ProxyServer
+@@ -324,7 +325,7 @@ public class BungeeCord extends ProxyServer
                      .childOption( ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 1024 * 1024 * 1 )
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
@@ -39,7 +39,7 @@ index eb3f9973..9d7a25ab 100644
                      .localAddress( info.getHost() )
                      .bind().addListener( listener );
  
-@@ -340,7 +341,7 @@ public class BungeeCord extends ProxyServer
+@@ -345,7 +346,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -48,7 +48,7 @@ index eb3f9973..9d7a25ab 100644
              }
          }
      }
-@@ -403,12 +404,14 @@ public class BungeeCord extends ProxyServer
+@@ -408,12 +409,14 @@ public class BungeeCord extends ProxyServer
                  }
  
                  getLogger().info( "Closing IO threads" );
@@ -70,7 +70,7 @@ index eb3f9973..9d7a25ab 100644
  
                  if ( reconnectHandler != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index bc56d4f3..efcba311 100644
+index bc56d4f..efcba31 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -145,7 +145,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -83,5 +83,5 @@ index bc56d4f3..efcba311 100644
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
                  .remoteAddress( getAddress() )
 -- 
-2.12.0
+2.7.4 (Apple Git-66)
 

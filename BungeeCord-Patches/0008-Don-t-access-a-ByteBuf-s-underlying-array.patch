@@ -1,4 +1,4 @@
-From 7c409c20042b2ea819c4b08165d8b4387384981f Mon Sep 17 00:00:00 2001
+From 8c4ac3ae1dcfd693fd27f148c01ca7efbba9876a Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -69,10 +69,10 @@ index c2dd942..c0a5061 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 7fd2ff7..a70a215 100644
+index f239c7d..384d958 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -40,9 +40,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -41,9 +41,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  public class PipelineUtils
  {
  
@@ -86,5 +86,5 @@ index 7fd2ff7..a70a215 100644
      {
          @Override
 -- 
-2.10.0
+2.7.4 (Apple Git-66)
 
