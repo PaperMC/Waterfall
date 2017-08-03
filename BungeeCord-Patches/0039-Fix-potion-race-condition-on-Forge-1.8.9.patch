@@ -1,4 +1,4 @@
-From 7b94bf37323209f817606573449e0c52ed04f7e9 Mon Sep 17 00:00:00 2001
+From 116b5b27ce7b9f44acde7bbc4291b52c22aae800 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 6f782c8f..2d5fc487 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index a2eeb024..18c99076 100644
+index 34260bd3..62635c5b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -44,7 +44,7 @@ index a2eeb024..18c99076 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -86,6 +88,22 @@ public enum Protocol
+@@ -87,6 +89,24 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C )
              );
@@ -55,13 +55,15 @@ index a2eeb024..18c99076 100644
 +                    map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
 +                    map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
 +                    map(ProtocolConstants.MINECRAFT_1_10, 0x4B),
-+                    map(ProtocolConstants.MINECRAFT_1_12, 0x4E)
++                    map(ProtocolConstants.MINECRAFT_1_12, 0x4E),
++                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x4F)
 +            );
 +            TO_CLIENT.registerPacket(
 +                    EntityRemoveEffect.class,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
 +                    map(ProtocolConstants.MINECRAFT_1_9, 0x31),
-+                    map(ProtocolConstants.MINECRAFT_1_12, 0x32)
++                    map(ProtocolConstants.MINECRAFT_1_12, 0x32),
++                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x33)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
@@ -161,7 +163,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 23e03ca2..e1aa8213 100644
+index 8a15f59c..5831514e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -2,7 +2,9 @@ package net.md_5.bungee;
@@ -269,5 +271,5 @@ index 673497e5..17e250d4 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.13.0.windows.1
+2.13.0
 
