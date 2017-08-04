@@ -1,4 +1,4 @@
-From 94262394783a847ac69092a99336359f25a073cb Mon Sep 17 00:00:00 2001
+From c41a2ef38bd0f0d82d9d6ca78e721cd0cd28ea67 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -61,10 +61,10 @@ index e56d3591..68f25460 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ed057b8a..a37f3ea3 100644
+index dc5b82e2..f8532dc2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -382,6 +382,6 @@ public class ServerConnector extends PacketHandler
+@@ -388,6 +388,6 @@ public class ServerConnector extends PacketHandler
      @Override
      public String toString()
      {
@@ -73,10 +73,10 @@ index ed057b8a..a37f3ea3 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index ce32f6b1..470f0bef 100644
+index dc780634..e48ebc0f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -510,6 +510,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -511,6 +511,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
@@ -85,7 +85,7 @@ index ce32f6b1..470f0bef 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 616e9ee8..497384c4 100644
+index 289fdf67..ded09742 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -282,19 +282,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -134,5 +134,5 @@ index 654be214..618e76e3 100644
      }
  }
 -- 
-2.12.0
+2.13.4
 

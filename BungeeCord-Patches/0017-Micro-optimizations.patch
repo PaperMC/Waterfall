@@ -1,4 +1,4 @@
-From 24ac547d72897b6331246870ae473629fd2ed25c Mon Sep 17 00:00:00 2001
+From fe6f72f9e06cf8662a4b27fc9ffa6369c1aa7ad5 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -10,7 +10,7 @@ Subject: [PATCH] Micro-optimizations
 - Optimise replacing dashes in UUID's
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 71a5a15..520ee31 100644
+index 71a5a158..520ee315 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
@@ -31,7 +31,7 @@ index 71a5a15..520ee31 100644
          if ( split.length == 0 )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 34e3c3e..93dd74e 100644
+index 34e3c3e3..93dd74ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -493,7 +493,9 @@ public class BungeeCord extends ProxyServer
@@ -46,7 +46,7 @@ index 34e3c3e..93dd74e 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f28e718..a70ac2c 100644
+index f28e7182..a70ac2c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -548,7 +548,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -59,10 +59,10 @@ index f28e718..a70ac2c 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c0a5061..ce32f6b 100644
+index 4299bc7a..dc780634 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -222,7 +222,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -223,7 +223,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -70,7 +70,7 @@ index c0a5061..ce32f6b 100644
          PluginMessageEvent event = new PluginMessageEvent( con.getServer(), con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -249,6 +248,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -250,6 +249,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -79,5 +79,5 @@ index c0a5061..ce32f6b 100644
              String subChannel = in.readUTF();
  
 -- 
-2.7.4 (Apple Git-66)
+2.13.4
 

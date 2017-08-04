@@ -1,4 +1,4 @@
-From 575a466a3a0c906bfe52be10890e6fbcbcf2aa7c Mon Sep 17 00:00:00 2001
+From c7982cae7484dd1fd4288ad0076c3ca9c6be5c79 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6b77d90..f25b26d 100644
+index fcb3dc0d..e0235212 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -23,7 +23,7 @@ index 6b77d90..f25b26d 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -90,15 +91,39 @@ public class ServerConnector extends PacketHandler
+@@ -92,15 +93,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + user.getAddress().getHostString() + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -67,7 +67,7 @@ index 6b77d90..f25b26d 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d620fbf..780ad9f 100644
+index c45f8412..f28e7182 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -180,8 +180,12 @@ public final class UserConnection implements ProxiedPlayer
@@ -85,7 +85,7 @@ index d620fbf..780ad9f 100644
  
      public void sendPacket(PacketWrapper packet)
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java
-index 6dca204..f5253b8 100644
+index 6dca2048..f5253b89 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java
 @@ -14,6 +14,10 @@ public class ForgeConstants
@@ -100,5 +100,5 @@ index 6dca204..f5253b8 100644
       * The FML 1.8 handshake token.
       */
 -- 
-2.7.4 (Apple Git-66)
+2.13.4
 
