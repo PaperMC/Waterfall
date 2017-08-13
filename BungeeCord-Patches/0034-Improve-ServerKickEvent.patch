@@ -1,4 +1,4 @@
-From 348778a0921761d2b7f02f8869cca9cea097d3dd Mon Sep 17 00:00:00 2001
+From d3dccce243eced81e3a907f92df37ea5d1ceebe2 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,10 +75,18 @@ index f8532dc2..c447524e 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c2e751be..62d982a4 100644
+index c2e751be..0d8ae30f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -59,16 +59,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.google.common.io.ByteArrayDataOutput;
+ import com.google.common.io.ByteStreams;
+ import java.io.DataInput;
++import java.util.Objects; // Waterfall
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ import io.netty.buffer.Unpooled;
+@@ -59,16 +60,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -103,7 +111,7 @@ index c2e751be..62d982a4 100644
      }
  
      @Override
-@@ -83,7 +86,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -83,7 +87,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -124,12 +132,12 @@ index c2e751be..62d982a4 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -454,7 +469,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -454,7 +470,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
 -        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED ) );
-+        if ( Objects.equal( server.getInfo(), def ) )
++        if ( Objects.equals( server.getInfo(), def ) )
 +        {
 +            def = null;
 +        }

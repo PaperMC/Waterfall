@@ -1,23 +1,23 @@
-From 636977900f68dd634ed201865e83c1543f265f79 Mon Sep 17 00:00:00 2001
+From 8c1a507e084cbf9b0bd023b8a736554406eaa2e5 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
 
 
 diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-index 453d375..1a2ffd0 100644
+index 0837c672..7d1ee8e7 100644
 --- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 +++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.api.chat;
- import net.md_5.bungee.api.chat.TranslatableComponent;
  import org.junit.Test;
+ import static org.junit.Assert.assertEquals;
  
 +import java.util.List;
 +
- import static org.junit.Assert.assertEquals;
- 
  public class TranslatableComponentTest
-@@ -15,4 +17,25 @@ public class TranslatableComponentTest
+ {
+ 
+@@ -13,4 +15,25 @@ public class TranslatableComponentTest
          assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
          assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
      }
@@ -44,10 +44,10 @@ index 453d375..1a2ffd0 100644
 +    }
  }
 diff --git a/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java b/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
-index 004a2b7..f34eb3d 100644
+index c844dab5..8952cbf8 100644
 --- a/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
 +++ b/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
-@@ -123,6 +123,26 @@ public class ComponentsTest
+@@ -140,6 +140,26 @@ public class ComponentsTest
          Assert.assertEquals( eventRetention[1].getClickEvent(), testClickEvent );
      }
  
@@ -75,5 +75,5 @@ index 004a2b7..f34eb3d 100644
      public void testLoopSimple()
      {
 -- 
-2.8.3
+2.13.4
 
