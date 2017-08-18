@@ -1,11 +1,11 @@
-From d87d823880803c530b1ec8783527ce20fb7590eb Mon Sep 17 00:00:00 2001
+From 113e835fa24c514385912985cc24cc5b3eca5ed9 Mon Sep 17 00:00:00 2001
 From: Harry <me@harry5573.uk>
 Date: Tue, 26 Jan 2016 01:01:57 +0000
 Subject: [PATCH] Don't create a new KickStringWriter for each new connection.
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/KickStringWriter.java b/protocol/src/main/java/net/md_5/bungee/protocol/KickStringWriter.java
-index eda9571..e5275c7 100644
+index eda9571e..e5275c76 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/KickStringWriter.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/KickStringWriter.java
 @@ -1,9 +1,11 @@
@@ -21,10 +21,10 @@ index eda9571..e5275c7 100644
  {
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 67624b3..503adfd 100644
+index 5eeab8b5..81927f7f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -55,7 +55,7 @@ public class PipelineUtils
+@@ -56,7 +56,7 @@ public class PipelineUtils
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
@@ -33,7 +33,7 @@ index 67624b3..503adfd 100644
              ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
  
              if ( listener.isProxyProtocol() )
-@@ -76,6 +76,7 @@ public class PipelineUtils
+@@ -77,6 +77,7 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";
@@ -42,5 +42,5 @@ index 67624b3..503adfd 100644
      private static boolean epoll;
  
 -- 
-2.7.4 (Apple Git-66)
+2.14.1
 

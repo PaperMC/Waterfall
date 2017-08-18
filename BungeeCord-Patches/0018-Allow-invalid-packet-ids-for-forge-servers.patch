@@ -1,4 +1,4 @@
-From 322a8e05f4993315d83912370aba80ccdb6d0338 Mon Sep 17 00:00:00 2001
+From 9df293758781b8339407ae80df62e0f091821188 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -49,12 +49,12 @@ index 61e2b42d..c92a922a 100644
 +        }
 +
          public final DefinedPacket createPacket(int id, int version)
-         {
++        {
 +            return createPacket(id, version, true);
 +        }
 +
 +        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
-+        {
+         {
              ProtocolData protocolData = getProtocolData( version );
              if (protocolData == null)
              {
@@ -122,5 +122,5 @@ index 3e0ec0d5..a6d9310f 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.13.4
+2.14.1
 
