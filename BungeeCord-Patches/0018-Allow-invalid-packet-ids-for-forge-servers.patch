@@ -1,4 +1,4 @@
-From 9df293758781b8339407ae80df62e0f091821188 Mon Sep 17 00:00:00 2001
+From 061e26b5c385d34e39b848275ee1b25a6a025033 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -66,7 +66,7 @@ index 61e2b42d..c92a922a 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e0235212..dc5b82e2 100644
+index 61c53b30..b29ee7c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -29,7 +29,9 @@ import net.md_5.bungee.forge.ForgeUtils;
@@ -79,7 +79,7 @@ index e0235212..dc5b82e2 100644
  import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -183,6 +185,12 @@ public class ServerConnector extends PacketHandler
+@@ -184,6 +186,12 @@ public class ServerConnector extends PacketHandler
  
          ServerConnection server = new ServerConnection( ch, target );
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );

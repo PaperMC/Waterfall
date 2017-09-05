@@ -1,4 +1,4 @@
-From 7079e38721fbfbd4821c240c44fd958038146041 Mon Sep 17 00:00:00 2001
+From efe1e7fd8d05933f94e21c8be493f41a6a8d0025 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -43,10 +43,10 @@ index 6dcdece5..e67773d9 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 111ee8b4..fcb3dc0d 100644
+index 6c31f15f..4a96a601 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -199,7 +199,7 @@ public class ServerConnector extends PacketHandler
+@@ -200,7 +200,7 @@ public class ServerConnector extends PacketHandler
  
              ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -69,7 +69,7 @@ index 4049e815..1010f361 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 5f4020cc..9d6a1013 100644
+index 551ae1e1..be9685b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -42,9 +42,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
