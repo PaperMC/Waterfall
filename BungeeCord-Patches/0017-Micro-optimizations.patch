@@ -1,4 +1,4 @@
-From 49dc09c6b0f40d42941d1f1b190353bbb503275b Mon Sep 17 00:00:00 2001
+From 86cf116e41ffadfd0946248948aaf0f37908034e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -46,10 +46,10 @@ index 36af60a9..a3a16d23 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index eb6b8ea9..b3e352c1 100644
+index 74c5a089..28e79933 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -549,7 +549,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -546,7 +546,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public Locale getLocale()
      {
@@ -59,7 +59,7 @@ index eb6b8ea9..b3e352c1 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1010f361..2a2b9d8c 100644
+index a92b806c..19fd3b3b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -222,7 +222,6 @@ public class DownstreamBridge extends PacketHandler
@@ -79,5 +79,5 @@ index 1010f361..2a2b9d8c 100644
              String subChannel = in.readUTF();
  
 -- 
-2.13.4
+2.14.1
 

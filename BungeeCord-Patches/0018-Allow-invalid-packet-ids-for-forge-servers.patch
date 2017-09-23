@@ -1,4 +1,4 @@
-From 061e26b5c385d34e39b848275ee1b25a6a025033 Mon Sep 17 00:00:00 2001
+From 2ae557c53e38fa8a3089a8e4bd1e2d8d1d6efacc Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index e7cb3803..447eaae7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 61e2b42d..c92a922a 100644
+index f06aa95a..8e142323 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -352,14 +352,23 @@ public enum Protocol
+@@ -355,14 +355,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -93,7 +93,7 @@ index 61c53b30..b29ee7c5 100644
  
          ch.write( BungeeCord.getInstance().registerChannels() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b3e352c1..4c9f09ea 100644
+index 28e79933..ccb6b6ca 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -70,6 +70,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -105,10 +105,10 @@ index b3e352c1..4c9f09ea 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 3e0ec0d5..a6d9310f 100644
+index 847a3eca..27ee21f2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -210,6 +210,12 @@ public abstract class EntityMap
+@@ -211,6 +211,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
