@@ -1,0 +1,529 @@
+From 51290fa75163f0f8ddcb508aa0b0aa20ffb00db1 Mon Sep 17 00:00:00 2001
+From: Minecrell <dev@minecrell.net>
+Date: Fri, 22 Sep 2017 12:46:47 +0200
+Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
+ console
+
+
+diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
+index 7bc2dff7..6e8dd81e 100644
+--- a/bootstrap/pom.xml
++++ b/bootstrap/pom.xml
+@@ -80,7 +80,17 @@
+                             </excludes>
+                         </filter>
+                     </filters>
++                    <transformers>
++                        <transformer implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
++                    </transformers>
+                 </configuration>
++                <dependencies>
++                    <dependency>
++                        <groupId>com.github.edwgiz</groupId>
++                        <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
++                        <version>2.8.1</version>
++                    </dependency>
++                </dependencies>
+             </plugin>
+         </plugins>
+     </build>
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index ce1dd7a3..3d09b86a 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -56,6 +56,9 @@ public class BungeeCordLauncher
+ 
+         if ( !options.has( "noconsole" ) )
+         {
++            // Waterfall start - Use TerminalConsoleAppender
++            io.github.waterfallmc.waterfall.WaterfallConsole.readCommands();
++            /*
+             String line;
+             while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
+             {
+@@ -64,6 +67,8 @@ public class BungeeCordLauncher
+                     bungee.getConsole().sendMessage( ChatColor.RED + "Command not found" );
+                 }
+             }
++            */
++            // Waterfall end
+         }
+     }
+ }
+diff --git a/log4j/pom.xml b/log4j/pom.xml
+new file mode 100644
+index 00000000..78045e1d
+--- /dev/null
++++ b/log4j/pom.xml
+@@ -0,0 +1,64 @@
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <parent>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-parent</artifactId>
++        <version>1.12-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
++    </parent>
++
++    <groupId>io.github.waterfallmc</groupId>
++    <artifactId>waterfall-log4j</artifactId>
++    <version>1.12-SNAPSHOT</version>
++    <packaging>jar</packaging>
++
++    <name>Waterfall-Log</name>
++    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++
++    <dependencies>
++        <!-- Log4j -->
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-core</artifactId>
++            <version>2.9.1</version>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-iostreams</artifactId>
++            <version>2.9.1</version>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-jul</artifactId>
++            <version>2.9.1</version>
++        </dependency>
++        <dependency>
++            <groupId>com.lmax</groupId>
++            <artifactId>disruptor</artifactId>
++            <version>3.3.6</version>
++            <scope>runtime</scope>
++        </dependency>
++
++        <!-- Console improvements -->
++        <dependency>
++            <groupId>net.minecrell</groupId>
++            <artifactId>terminalconsoleappender</artifactId>
++            <version>1.0.0</version>
++        </dependency>
++        <dependency>
++            <groupId>net.java.dev.jna</groupId>
++            <artifactId>jna</artifactId>
++            <version>4.4.0</version>
++            <scope>runtime</scope>
++        </dependency>
++
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-chat</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++    </dependencies>
++</project>
+diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
+new file mode 100644
+index 00000000..d5a1955b
+--- /dev/null
++++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
+@@ -0,0 +1,55 @@
++package io.github.waterfallmc.waterfall.log4j;
++
++import com.google.common.base.Strings;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.apache.logging.log4j.jul.LevelTranslator;
++import org.apache.logging.log4j.message.MessageFormatMessage;
++
++import java.util.Map;
++import java.util.MissingResourceException;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.logging.Handler;
++import java.util.logging.LogRecord;
++
++/**
++ * A {@link Handler} that forwards all log messages to the Log4J logger.
++ *
++ * <p>We don't use Log4J's custom JUL LogManager currently, because it breaks
++ * adding custom handlers to JUL loggers. Some plugins may depend on that
++ * functionality...</p>
++ */
++class Log4JLogHandler extends Handler {
++
++    private final Map<String, Logger> cache = new ConcurrentHashMap<>();
++
++    @Override
++    public void publish(LogRecord record) {
++        Logger logger = cache.computeIfAbsent(Strings.nullToEmpty(record.getLoggerName()), LogManager::getLogger);
++
++        String message = record.getMessage();
++        if (record.getResourceBundle() != null) {
++            try {
++                message = record.getResourceBundle().getString(message);
++            } catch (MissingResourceException ignored) {
++            }
++        }
++
++        final Level level = LevelTranslator.toLevel(record.getLevel());
++        if (record.getParameters() != null && record.getParameters().length > 0) {
++            logger.log(level, new MessageFormatMessage(message, record.getParameters()), record.getThrown());
++        } else {
++            logger.log(level, message, record.getThrown());
++        }
++    }
++
++    @Override
++    public void flush() {
++    }
++
++    @Override
++    public void close() {
++    }
++
++}
+diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
+new file mode 100644
+index 00000000..a0f7ed01
+--- /dev/null
++++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
+@@ -0,0 +1,33 @@
++package io.github.waterfallmc.waterfall.log4j;
++
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.io.IoBuilder;
++import java.util.logging.Handler;
++import java.util.logging.Logger;
++
++public final class WaterfallLogger {
++
++    private WaterfallLogger() {
++    }
++
++    public static Logger create() {
++        org.apache.logging.log4j.Logger redirect = LogManager.getRootLogger();
++        System.setOut(IoBuilder.forLogger(redirect).setLevel(Level.INFO).buildPrintStream());
++        System.setErr(IoBuilder.forLogger(redirect).setLevel(Level.ERROR).buildPrintStream());
++
++        Logger root = Logger.getLogger("");
++        root.setUseParentHandlers(false);
++
++        // Remove existing handlers
++        for (Handler handler : root.getHandlers()) {
++            root.removeHandler(handler);
++        }
++
++        // Setup forward log handler
++        root.addHandler(new Log4JLogHandler());
++
++        return Logger.getLogger("BungeeCord");
++    }
++
++}
+diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
+new file mode 100644
+index 00000000..d4a81199
+--- /dev/null
++++ b/log4j/src/main/resources/log4j2.xml
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<Configuration status="warn">
++    <Appenders>
++        <TerminalConsole name="TerminalConsole">
++            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
++        </TerminalConsole>
++        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
++            <Policies>
++                <TimeBasedTriggeringPolicy />
++                <OnStartupTriggeringPolicy />
++            </Policies>
++        </RollingRandomAccessFile>
++    </Appenders>
++
++    <Loggers>
++        <AsyncRoot level="info">
++            <AppenderRef ref="TerminalConsole" />
++            <AppenderRef ref="File" />
++        </AsyncRoot>
++    </Loggers>
++</Configuration>
+diff --git a/pom.xml b/pom.xml
+index ecc35560..576944c3 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -56,6 +56,7 @@
+         <module>config</module>
+         <module>event</module>
+         <module>log</module>
++        <module>log4j</module>
+         <module>module</module>
+         <module>protocol</module>
+         <module>proxy</module>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 1a5d036d..78326e6c 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -70,7 +70,7 @@
+         </dependency>
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-log</artifactId>
++            <artifactId>waterfall-log4j</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
+index 446dfe2f..7e7841a3 100644
+--- a/proxy/src/main/java/Test.java
++++ b/proxy/src/main/java/Test.java
+@@ -22,6 +22,9 @@ public class Test
+         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
+         bungee.start();
+ 
++        // Waterfall start - Use TerminalConsoleAppender
++        io.github.waterfallmc.waterfall.WaterfallConsole.readCommands();
++        /*
+         while ( bungee.isRunning )
+         {
+             String line = bungee.getConsoleReader().readLine( ">" );
+@@ -32,6 +35,7 @@ public class Test
+                     bungee.getConsole().sendMessage( ChatColor.RED + "Command not found" );
+                 }
+             }
+-        }
++        }*/
++        // Waterfall end
+     }
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/WaterfallConsole.java
+new file mode 100644
+index 00000000..ed33462e
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/WaterfallConsole.java
+@@ -0,0 +1,95 @@
++package io.github.waterfallmc.waterfall;
++
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.ConsoleCommandCompleter;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.ProxyServer;
++import net.minecrell.terminalconsole.TerminalConsoleAppender;
++import org.jline.reader.EndOfFileException;
++import org.jline.reader.LineReader;
++import org.jline.reader.LineReaderBuilder;
++import org.jline.reader.UserInterruptException;
++import org.jline.terminal.Terminal;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.InputStreamReader;
++import java.util.concurrent.Executor;
++import java.util.concurrent.Executors;
++
++public final class WaterfallConsole {
++
++    private static final Executor executor = Executors.newSingleThreadExecutor(
++            new ThreadFactoryBuilder().setNameFormat( "Console Command Thread #%d" ).build());
++
++    public static void readCommands() throws IOException {
++        Terminal terminal = TerminalConsoleAppender.getTerminal();
++        if (terminal != null) {
++            readCommands(terminal);
++        } else {
++            readCommands(System.in);
++        }
++    }
++
++    private static void runCommand(String input) {
++        final String command = input.trim();
++        if (command.isEmpty()) {
++            return;
++        }
++
++        executor.execute(() -> {
++            ProxyServer proxy = ProxyServer.getInstance();
++            if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
++                proxy.getConsole().sendMessage(ChatColor.RED + "Command not found");
++            }
++        });
++    }
++
++    private static void readCommands(Terminal terminal) throws IOException {
++        final BungeeCord bungee = BungeeCord.getInstance();
++        final LineReader reader = LineReaderBuilder.builder()
++                .appName(ProxyServer.getInstance().getName())
++                .terminal(terminal)
++                .completer(new ConsoleCommandCompleter(bungee))
++                .build();
++
++        reader.unsetOpt(LineReader.Option.INSERT_TAB);
++
++        TerminalConsoleAppender.setReader(reader);
++
++        try {
++            String line;
++            while (bungee.isRunning) {
++                try {
++                    line = reader.readLine("> ");
++                } catch (EndOfFileException ignored) {
++                    // Continue reading after EOT
++                    continue;
++                }
++
++                if (line == null) {
++                    break;
++                }
++
++                runCommand(line);
++            }
++        } catch (UserInterruptException e) {
++            ProxyServer.getInstance().stop();
++        } finally {
++            TerminalConsoleAppender.setReader(null);
++        }
++    }
++
++    private static void readCommands(InputStream in) throws IOException {
++        final BungeeCord bungee = BungeeCord.getInstance();
++        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
++            String line;
++            while (bungee.isRunning && (line = reader.readLine()) != null) {
++                runCommand(line);
++            }
++        }
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 5e9484b7..b5d81439 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+ import java.util.logging.Handler;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+-import jline.console.ConsoleReader;
+ import lombok.Getter;
+ import lombok.Setter;
+ import lombok.Synchronized;
+@@ -77,8 +76,6 @@ import net.md_5.bungee.compress.CompressFactory;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+-import net.md_5.bungee.log.BungeeLogger;
+-import net.md_5.bungee.log.LoggingOutputStream;
+ import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+@@ -88,7 +85,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+-import org.fusesource.jansi.AnsiConsole;
+ 
+ /**
+  * Main BungeeCord proxy class.
+@@ -144,8 +140,12 @@ public class BungeeCord extends ProxyServer
+     private final File pluginsFolder = new File( "plugins" );
+     @Getter
+     private final BungeeScheduler scheduler = new BungeeScheduler();
++    // Waterfall start - Remove ConsoleReader for JLine 3 update
++    /*
+     @Getter
+     private final ConsoleReader consoleReader;
++    */
++    // Waterfall end
+     @Getter
+     private final Logger logger;
+     public final Gson gson = new GsonBuilder()
+@@ -197,6 +197,8 @@ public class BungeeCord extends ProxyServer
+             }
+         }
+ 
++        // Waterfall start - Use TerminalConsoleAppender and Log4J
++        /*
+         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
+         // When jansi attempts to extract its natives, by default it tries to extract a specific version,
+         // using the loading class's implementation version. Normally this works completely fine,
+@@ -215,6 +217,9 @@ public class BungeeCord extends ProxyServer
+         logger = new BungeeLogger( "BungeeCord", System.getProperty("bungee.log-file", "proxy.log"), consoleReader );
+         System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
+         System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
++        */
++        logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
++        // Waterfall end
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
+index 455b0787..9b57fc48 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
++++ b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
+@@ -2,7 +2,7 @@ package net.md_5.bungee;
+ 
+ import com.google.common.collect.Iterables;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+-import jline.console.completer.Completer;
++import org.jline.reader.Completer;  // Waterfall - Update to JLine 3
+ import net.md_5.bungee.api.ProxyServer;
+ 
+ import java.util.ArrayList;
+@@ -28,8 +28,9 @@ public class ConsoleCommandCompleter implements Completer
+     }
+ 
+     @Override
+-    public int complete( String buffer, int cursor, List<CharSequence> candidates )
++    public void complete( org.jline.reader.LineReader reader, org.jline.reader.ParsedLine line, List<org.jline.reader.Candidate> candidates ) // Waterfall
+     {
++        final String buffer = line.line(); // Waterfall
+         Future<Iterable<String>> future = executor.submit( new Callable<Iterable<String>>()
+         {
+             @Override
+@@ -44,6 +45,11 @@ public class ConsoleCommandCompleter implements Completer
+         try
+         {
+             Iterable<String> offers = future.get();
++            // Waterfall start - Update to JLine 3
++            for (String completion : offers) {
++                candidates.add(new org.jline.reader.Candidate(completion));
++            }
++            /*
+             if ( offers == null )
+             {
+                 return cursor;
+@@ -59,6 +65,8 @@ public class ConsoleCommandCompleter implements Completer
+             {
+                 return cursor - ( buffer.length() - lastSpace - 1 );
+             }
++            */
++            // Waterfall end
+         } catch ( ExecutionException ex )
+         {
+             proxy.getLogger().log( Level.WARNING, "Unhandled exception when tab completing", ex );
+@@ -67,6 +75,6 @@ public class ConsoleCommandCompleter implements Completer
+             Thread.currentThread().interrupt();
+         }
+ 
+-        return cursor;
++        //return cursor; // Waterfall
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+index 901fc5a3..8bb88bd4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+@@ -42,7 +42,7 @@ public class ModuleManager
+         ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
+         if ( bungeeVersion == null )
+         {
+-            System.out.println( "Couldn't detect bungee version. Custom build?" );
++            proxy.getLogger().warning( "Couldn't detect bungee version. Custom build?" ); // Waterfall - Use logger
+             return;
+         }
+ 
+-- 
+2.14.1
+
