@@ -1,4 +1,4 @@
-From 525fdfdfc386c3fb335f162ad1c665bd8406669d Mon Sep 17 00:00:00 2001
+From 0497395a9022b1969c5a7b22514e147091a85311 Mon Sep 17 00:00:00 2001
 From: minecrafter <unknown@unknown>
 Date: Sun, 3 Jul 2016 04:03:21 -0400
 Subject: [PATCH] Proxy query event
@@ -6,7 +6,7 @@ Subject: [PATCH] Proxy query event
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java b/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java
 new file mode 100644
-index 0000000..1e33cd1
+index 00000000..1e33cd19
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java
 @@ -0,0 +1,62 @@
@@ -74,7 +74,7 @@ index 0000000..1e33cd1
 +}
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyQueryEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyQueryEvent.java
 new file mode 100644
-index 0000000..220d59f
+index 00000000..220d59f0
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyQueryEvent.java
 @@ -0,0 +1,28 @@
@@ -107,7 +107,7 @@ index 0000000..220d59f
 +    private QueryResult result;
 +}
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 614dd94..8d28867 100644
+index 79d6886a..a72cfd92 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee.query;
@@ -214,5 +214,5 @@ index 614dd94..8d28867 100644
              } else
              {
 -- 
-2.10.0
+2.14.1
 

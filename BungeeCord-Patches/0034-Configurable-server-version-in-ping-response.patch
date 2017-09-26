@@ -1,11 +1,11 @@
-From d22587da29905588035c8bd58a039b49ed7dc049 Mon Sep 17 00:00:00 2001
+From 11d3fad8b239a4cc4535dfa7bf58127f99effcef Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index f04e2bf..a443614 100644
+index f04e2bf4..a4436141 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -168,6 +168,11 @@ public interface ProxyConfig
@@ -21,7 +21,7 @@ index f04e2bf..a443614 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 68f2546..5983581 100644
+index 68f25460..59835815 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -4,8 +4,11 @@ import lombok.*;
@@ -59,10 +59,10 @@ index 68f2546..5983581 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a446b09..60f3925 100644
+index cb9a58fc..f23288f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -619,7 +619,7 @@ public class BungeeCord extends ProxyServer
+@@ -618,7 +618,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getGameVersion()
      {
@@ -72,5 +72,5 @@ index a446b09..60f3925 100644
  
      @Override
 -- 
-2.7.4 (Apple Git-66)
+2.14.1
 
