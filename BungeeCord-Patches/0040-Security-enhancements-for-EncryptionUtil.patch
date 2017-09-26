@@ -1,4 +1,4 @@
-From 55ff4996e61c50acad85f3e3609c6563e2acc3ee Mon Sep 17 00:00:00 2001
+From 31b6661d262db0de374de7b35bef7d83913ad8e8 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 04:07:26 -0500
 Subject: [PATCH] Security enhancements for EncryptionUtil
@@ -6,7 +6,7 @@ Subject: [PATCH] Security enhancements for EncryptionUtil
 Use a constant-time comparison in getSecret() and use SecureRandom for EncryptionRequest.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
-index 871e4ad..622a21d 100644
+index 871e4ad0..622a21da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
 +++ b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
 @@ -27,7 +27,7 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -28,5 +28,5 @@ index 871e4ad..622a21d 100644
              throw new IllegalStateException( "Key pairs do not match!" );
          }
 -- 
-2.7.4
+2.14.1
 
