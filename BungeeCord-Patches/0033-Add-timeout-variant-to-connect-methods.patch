@@ -1,0 +1,88 @@
+From e82a5e7adcf939a04b385a41da4b5e3cb0abfa6b Mon Sep 17 00:00:00 2001
+From: Ichbinjoe <joe@ibj.io>
+Date: Sat, 16 Jul 2016 20:44:01 -0400
+Subject: [PATCH] Add timeout variant to connect methods
+
+Also added more connect methods to ProxiedPlayer, in addition to the new method
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 16cfff8b..98754bdf 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -98,6 +98,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      */
+     void connect(ServerInfo target, Callback<Boolean> callback);
+ 
++    // Waterfall start
++    /**
++     * Connects / transfers this user to the specified connection, gracefully
++     * closing the current one. Depending on the implementation, this method
++     * might return before the user has been connected.
++     *
++     * @param target the new server to connect to
++     * @param callback the method called when the connection is complete, or
++     * when an exception is encountered. The boolean parameter denotes success
++     * or failure.
++     * @param retry whether to retry the connection if the initial connection
++     *              fails.
++     */
++    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry);
++
++    /**
++     * Connects / transfers this user to the specified connection, gracefully
++     * closing the current one. Depending on the implementation, this method
++     * might return before the user has been connected.
++     *
++     * @param target the new server to connect to
++     * @param callback the method called when the connection is complete, or
++     * when an exception is encountered. The boolean parameter denotes success
++     * or failure.
++     * @param retry whether to retry the connection if the initial connection
++     *              fails.
++     * @param timeout timeout in milliseconds of the connection created to the
++     *                target server
++     */
++    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, int timeout);
++    // Waterfall end
++
+     /**
+      * Gets the server this player is connected to.
+      *
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index ccb6b6ca..055a886d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -246,6 +246,12 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
+     {
++        // Waterfall start
++        connect(info, callback, retry, 5000); // todo: configurable
++    }
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, final int timeout)
++    {
++        // Waterfall end
+         Preconditions.checkNotNull( info, "info" );
+ 
+         ServerConnectEvent event = new ServerConnectEvent( this, info );
+@@ -319,7 +325,7 @@ public final class UserConnection implements ProxiedPlayer
+                     if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
+                     {
+                         sendMessage( bungee.getTranslation( "fallback_lobby" ) );
+-                        connect( def, null, true );
++                        connect( def, null, true, timeout ); // Waterfall
+                     } else if ( dimensionChange )
+                     {
+                         disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
+@@ -334,7 +340,7 @@ public final class UserConnection implements ProxiedPlayer
+                 .channel( PipelineUtils.getChannel() )
+                 .group( ch.getHandle().eventLoop() )
+                 .handler( initializer )
+-                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
++                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout ) // Waterfall
+                 .remoteAddress( target.getAddress() );
+         // Windows is bugged, multi homed users will just have to live with random connecting IPs
+         if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
+-- 
+2.14.1
+
