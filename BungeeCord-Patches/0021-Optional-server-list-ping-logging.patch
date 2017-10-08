@@ -1,0 +1,138 @@
+From 46db972c5d1f48f5e444612d75cf519523ef11ff Mon Sep 17 00:00:00 2001
+From: Janmm14 <computerjanimaus@yahoo.de>
+Date: Sat, 12 Dec 2015 23:43:30 +0100
+Subject: [PATCH] Optional server list ping logging.
+
+Add IPs to the log where user names are shown.
+
+This avoids spamming the logs with connection notices.
+Server list pings are only logged if the log_server_list_pings config.yml option is true, defaults to false
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 66d0b8a1..5a49050a 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -89,6 +89,11 @@ public interface ProxyConfig
+      */
+     boolean isMetrics();
+ 
++    /**
++     * Whether we log server list pings
++     */
++    boolean isLogServerListPing();
++
+     // Throttling options
+ 
+     /**
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index e56d3591..68f25460 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean metrics = true;
+ 
++    /**
++     * Whether we log server list pings
++     * <p>
++     * Default is false (don't log)
++     */
++    private boolean logServerListPing = false;
++
+     /*
+      * Throttling options
+      * Helps prevent players from overloading the servers behind us
+@@ -35,6 +42,7 @@ public class WaterfallConfiguration extends Configuration {
+         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         config.load(false); // Load, but no permissions
+         metrics = config.getBoolean("metrics", metrics);
++        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+     }
+@@ -48,4 +56,9 @@ public class WaterfallConfiguration extends Configuration {
+     public int getTabThrottle() {
+         return tabThrottle;
+     }
++
++    @Override
++    public boolean isLogServerListPing() {
++        return logServerListPing;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index b29ee7c5..79e88cc5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -389,6 +389,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 19fd3b3b..dcd6924d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -510,6 +510,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
++        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 2f0cd28d..7ab4d042 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -281,19 +281,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         }
+ 
+         this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
+-        bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+ 
+         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
+ 
+         switch ( handshake.getRequestedProtocol() )
+         {
+             case 1:
++                if (BungeeCord.getInstance().getConfig().isLogServerListPing()) {
++                    bungee.getLogger().log( Level.INFO, "{0} is pinging", this );
++                }
+                 // Ping
+                 thisState = State.STATUS;
+                 ch.setProtocol( Protocol.STATUS );
+                 break;
+             case 2:
+                 // Login
++                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                 thisState = State.USERNAME;
+                 ch.setProtocol( Protocol.LOGIN );
+ 
+@@ -606,7 +609,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String toString()
+     {
+-        return "[" + ( ( getName() != null ) ? getName() : getAddress() ) + "] <-> InitialHandler";
++        return "[" + getAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 5f5f00ca..4665f821 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -233,6 +233,6 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getName() + "] -> UpstreamBridge";
++        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
+     }
+ }
+-- 
+2.14.1
+
