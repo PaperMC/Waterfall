@@ -1,9 +1,10 @@
-From 2af626ec06c4cac9323f5701e63f8002f664c195 Mon Sep 17 00:00:00 2001
+From 97e3515b113cdc9dbd767ee506dede54cb7240ac Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 10:33:31 -0700
 Subject: [PATCH] POM Changes
 
-Require Java 8
+- Require Java 8
+- Deploy to destroystokyo mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
 index 96a46738..2a3c5eae 100644
@@ -493,7 +494,7 @@ index 082f0908..8b045e3b 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 714d421d..ecc35560 100644
+index 714d421d..8ab84091 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,23 +4,24 @@
@@ -577,12 +578,12 @@ index 714d421d..ecc35560 100644
  
 +    <distributionManagement>
 +        <repository>
-+            <id>ellune-releases</id>
-+            <url>https://repo.ellune.net/content/repositories/releases/</url>
++            <id>destroystokyo-releases</id>
++            <url>https://repo.destroystokyo.com/repository/maven-releases/</url>
 +        </repository>
 +        <snapshotRepository>
-+            <id>ellune-snapshots</id>
-+            <url>https://repo.ellune.net/content/repositories/snapshots/</url>
++            <id>destroystokyo-snapshots</id>
++            <url>https://repo.destroystokyo.com/repository/maven-snapshots/</url>
 +        </snapshotRepository>
 +    </distributionManagement>
 +
