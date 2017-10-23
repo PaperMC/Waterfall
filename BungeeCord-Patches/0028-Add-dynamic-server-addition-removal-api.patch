@@ -1,4 +1,4 @@
-From ecdbe7b96aa259fd833a4801fe05562f66004b72 Mon Sep 17 00:00:00 2001
+From 8056f447e7f0ac8bc9f660a2b1e34918d5c6f750 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -143,6 +143,19 @@ index 967a1b2a..08aa6981 100644
      private Configuration getSectionFor(String path)
      {
          int index = path.indexOf( SEPARATOR );
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+index 36da83e2..c9ca6874 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+@@ -78,7 +78,7 @@ public class CommandServer extends Command implements TabExecutor
+     @Override
+     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
+     {
+-        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServers().values(), new Predicate<ServerInfo>()
++        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
+         {
+             private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase();
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 9ce19d9a..69e5dc33 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
