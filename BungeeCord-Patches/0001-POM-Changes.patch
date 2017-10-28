@@ -1,4 +1,4 @@
-From 97e3515b113cdc9dbd767ee506dede54cb7240ac Mon Sep 17 00:00:00 2001
+From 40e8d009682f0b5b23430f50f501e8f85669b2b1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 10:33:31 -0700
 Subject: [PATCH] POM Changes
@@ -494,24 +494,22 @@ index 082f0908..8b045e3b 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 714d421d..8ab84091 100644
+index fbbe6717..8ab84091 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -4,23 +4,24 @@
+@@ -3,18 +3,25 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
  
-     <parent>
--        <groupId>org.sonatype.oss</groupId>
--        <artifactId>oss-parent</artifactId>
--        <version>9</version>
+-    <groupId>net.md-5</groupId>
+-    <artifactId>bungeecord-parent</artifactId>
++    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-super</artifactId>
 +        <version>dev-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
-     </parent>
- 
--    <groupId>net.md-5</groupId>
--    <artifactId>bungeecord-parent</artifactId>
++    </parent>
++
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-parent</artifactId>
      <version>1.12-SNAPSHOT</version>
@@ -533,7 +531,7 @@ index 714d421d..8ab84091 100644
      </organization>
      <licenses>
          <license>
-@@ -32,7 +33,19 @@
+@@ -26,7 +33,19 @@
  
      <developers>
          <developer>
@@ -554,7 +552,7 @@ index 714d421d..8ab84091 100644
          </developer>
      </developers>
  
-@@ -51,24 +64,36 @@
+@@ -45,31 +64,36 @@
      </modules>
  
      <scm>
@@ -576,17 +574,19 @@ index 714d421d..8ab84091 100644
 +        <url>https://ci.aquifermc.org/job/Waterfall/</url>
      </ciManagement>
  
-+    <distributionManagement>
+     <distributionManagement>
 +        <repository>
 +            <id>destroystokyo-releases</id>
 +            <url>https://repo.destroystokyo.com/repository/maven-releases/</url>
 +        </repository>
-+        <snapshotRepository>
+         <snapshotRepository>
+-            <id>sonatype-nexus-snapshots</id>
+-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 +            <id>destroystokyo-snapshots</id>
 +            <url>https://repo.destroystokyo.com/repository/maven-snapshots/</url>
-+        </snapshotRepository>
-+    </distributionManagement>
-+
+         </snapshotRepository>
+     </distributionManagement>
+ 
      <properties>
          <build.number>unknown</build.number>
          <netty.version>4.1.15.Final</netty.version>
@@ -598,14 +598,15 @@ index 714d421d..8ab84091 100644
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
      </properties>
  
-@@ -117,31 +142,14 @@
+@@ -118,24 +142,13 @@
                      </execution>
                  </executions>
              </plugin>
--            <plugin>
++            <!-- OSS Parent 9 uses 2.7, 2.10+ is broken anyway -->
+             <plugin>
 -                <groupId>org.codehaus.mojo</groupId>
 -                <artifactId>animal-sniffer-maven-plugin</artifactId>
--                <version>1.15</version>
+-                <version>1.16</version>
 -                <executions>
 -                    <execution>
 -                        <phase>process-classes</phase>
@@ -614,26 +615,20 @@ index 714d421d..8ab84091 100644
 -                        </goals>
 -                    </execution>
 -                </executions>
--                <configuration>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-javadoc-plugin</artifactId>
++                <version>2.7</version>
+                 <configuration>
 -                    <signature>
 -                        <groupId>org.codehaus.mojo.signature</groupId>
 -                        <artifactId>java17</artifactId>
 -                        <version>1.0</version>
 -                    </signature>
--                </configuration>
--            </plugin>
-             <!-- OSS Parent 9 uses 2.7, 2.10+ is broken anyway -->
-             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-javadoc-plugin</artifactId>
-                 <version>2.7</version>
-+                <configuration>
 +                    <additionalparam>-Xdoclint:none</additionalparam>
-+                </configuration>
+                 </configuration>
              </plugin>
          </plugins>
-         <pluginManagement>
-@@ -176,4 +184,49 @@
+@@ -171,4 +184,49 @@
              </plugins>
          </pluginManagement>
      </build>

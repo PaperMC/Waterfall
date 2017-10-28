@@ -1,4 +1,4 @@
-From f29ff52488dfaa77e80afb8e7544500edb6d48d2 Mon Sep 17 00:00:00 2001
+From b82d1273ed42f5c59a0fa7428521f551a9b7ca81 Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -28,10 +28,10 @@ index 7bc2dff7..6e8dd81e 100644
          </plugins>
      </build>
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index ce1dd7a3..af4c024e 100644
+index 2efe7211..3e719f6e 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -56,6 +56,9 @@ public class BungeeCordLauncher
+@@ -57,6 +57,9 @@ public class BungeeCordLauncher
  
          if ( !options.has( "noconsole" ) )
          {
@@ -41,8 +41,8 @@ index ce1dd7a3..af4c024e 100644
              String line;
              while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
              {
-@@ -64,6 +67,8 @@ public class BungeeCordLauncher
-                     bungee.getConsole().sendMessage( ChatColor.RED + "Command not found" );
+@@ -65,6 +68,8 @@ public class BungeeCordLauncher
+                     bungee.getConsole().sendMessage( new ComponentBuilder( "Command not found" ).color( ChatColor.RED ).create() );
                  }
              }
 +            */
@@ -456,7 +456,7 @@ index b822f95b..da2904b0 100644
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-index 901fc5a3..8bb88bd4 100644
+index 10366c88..8c5cc949 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 @@ -42,7 +42,7 @@ public class ModuleManager

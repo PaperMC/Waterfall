@@ -1,4 +1,4 @@
-From 8056f447e7f0ac8bc9f660a2b1e34918d5c6f750 Mon Sep 17 00:00:00 2001
+From e917f0bdcc43a2177e76d4c1d10fffcb7f59c50e Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -144,10 +144,10 @@ index 967a1b2a..08aa6981 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 36da83e2..c9ca6874 100644
+index b3ff750f..43d11cf2 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-@@ -78,7 +78,7 @@ public class CommandServer extends Command implements TabExecutor
+@@ -83,7 +83,7 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {

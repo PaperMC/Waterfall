@@ -1,14 +1,14 @@
-From 152307e7f87fab326ac5c0d6658d3818c5395884 Mon Sep 17 00:00:00 2001
+From 518de0fcb50890c308f081520d29cef9ce3b436c Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
 
 
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 3c1bbe9..8766e04 100644
+index b6b2ceef..11526c9c 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -42,7 +42,7 @@ public class BungeeCordLauncher
+@@ -43,7 +43,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Warning, this build is outdated ***" );
@@ -17,7 +17,7 @@ index 3c1bbe9..8766e04 100644
                  System.err.println( "*** You will get NO support regarding this build ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -51,7 +51,7 @@ public class BungeeCordLauncher
+@@ -52,7 +52,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
@@ -27,7 +27,7 @@ index 3c1bbe9..8766e04 100644
  
          if ( !options.has( "noconsole" ) )
 diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
-index f1ccd4f..d703d6d 100644
+index f1ccd4f6..d703d6d2 100644
 --- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
 +++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
 @@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
@@ -40,7 +40,7 @@ index f1ccd4f..d703d6d 100644
      }
  
 diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
-index 9d51608..446dfe2 100644
+index 9d51608d..446dfe2f 100644
 --- a/proxy/src/main/java/Test.java
 +++ b/proxy/src/main/java/Test.java
 @@ -19,7 +19,7 @@ public class Test
@@ -53,7 +53,7 @@ index 9d51608..446dfe2 100644
  
          while ( bungee.isRunning )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0d11201..de2158c 100644
+index b4c8bcfc..510841c7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -178,7 +178,7 @@ public class BungeeCord extends ProxyServer
@@ -75,7 +75,7 @@ index 0d11201..de2158c 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index b079879..b26035c 100644
+index b0798791..b26035cf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -16,6 +16,6 @@ public class CommandBungee extends Command
@@ -87,7 +87,7 @@ index b079879..b26035c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index cbbe03c..4a49241 100644
+index cbbe03c7..4a492414 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -22,7 +22,7 @@ public class CommandReload extends Command
@@ -101,10 +101,10 @@ index cbbe03c..4a49241 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 8d79b5a..754ae9a 100644
+index 408312fd..95590b6d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -200,7 +200,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -207,7 +207,7 @@ public class YamlConfig implements ConfigurationAdapter
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );
@@ -114,5 +114,5 @@ index 8d79b5a..754ae9a 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.7.4 (Apple Git-66)
+2.14.1
 
