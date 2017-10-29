@@ -1,4 +1,4 @@
-From 758096a69ac055ab9f1d0e42183f81334dd880da Mon Sep 17 00:00:00 2001
+From 365bf135380ccbfd7f26755a5d8bb2349998c58e Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -18,10 +18,10 @@ index a4516ed9..1f63a2c2 100644
              return;
          }
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index ce1dd7a3..7768654c 100644
+index 3e719f6e..510b7354 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -42,7 +42,7 @@ public class BungeeCordLauncher
+@@ -43,7 +43,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Hey! This build is potentially outdated :( ***" );
@@ -30,7 +30,7 @@ index ce1dd7a3..7768654c 100644
                  System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -51,7 +51,7 @@ public class BungeeCordLauncher
+@@ -52,7 +52,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
@@ -53,7 +53,7 @@ index d703d6d2..d8dcdc1e 100644
      }
  
 diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
-index 446dfe2f..f068a388 100644
+index c3cb5aaa..750217b1 100644
 --- a/proxy/src/main/java/Test.java
 +++ b/proxy/src/main/java/Test.java
 @@ -19,7 +19,7 @@ public class Test
@@ -64,9 +64,9 @@ index 446dfe2f..f068a388 100644
 +        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
          bungee.start();
  
-         while ( bungee.isRunning )
+         // Waterfall start - Use TerminalConsoleAppender
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 59d55fc0..b59a5d8f 100644
+index da2904b0..c849b848 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -179,7 +179,7 @@ public class BungeeCord extends ProxyServer
@@ -78,7 +78,7 @@ index 59d55fc0..b59a5d8f 100644
  
          try
          {
-@@ -477,7 +477,7 @@ public class BungeeCord extends ProxyServer
+@@ -486,7 +486,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -114,10 +114,10 @@ index 4a492414..55267f40 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 4ec97825..25e97812 100644
+index 1019c307..ff2c0725 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -211,7 +211,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -218,7 +218,7 @@ public class YamlConfig implements ConfigurationAdapter
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );
@@ -127,5 +127,5 @@ index 4ec97825..25e97812 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.13.1
+2.14.2
 
