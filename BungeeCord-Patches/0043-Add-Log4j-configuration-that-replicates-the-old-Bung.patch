@@ -1,4 +1,4 @@
-From ceb1ccc36d326e4d61145332324858013475e9cd Mon Sep 17 00:00:00 2001
+From 11629f33a3756606d47546784605aa3a7ae7fb41 Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Sun, 24 Sep 2017 12:06:49 +0200
 Subject: [PATCH] Add Log4j configuration that replicates the old BungeeCord
@@ -8,7 +8,7 @@ Can be enabled using -Dlog4j.configurationFile=log4j2-bungee.xml.
 
 diff --git a/log4j/src/main/resources/log4j2-bungee.xml b/log4j/src/main/resources/log4j2-bungee.xml
 new file mode 100644
-index 00000000..38befc0a
+index 00000000..bf132953
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2-bungee.xml
 @@ -0,0 +1,34 @@
@@ -18,17 +18,17 @@ index 00000000..38befc0a
 +    <Appenders>
 +        <TerminalConsole name="TerminalConsole">
 +            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level]: [%logger] %minecraftFormatting{%msg}%n%xEx}">
++                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}%n%ex}">
 +                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level]: %minecraftFormatting{%msg}%n%xEx}" />
++                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}%n%ex}" />
 +                </LoggerNamePatternSelector>
 +            </PatternLayout>
 +        </TerminalConsole>
 +        <RollingRandomAccessFile name="File" fileName="proxy.log.0" filePattern="proxy.log.%i" immediateFlush="false">
 +            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level]: [%logger] %minecraftFormatting{%msg}{strip}%n">
++                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}{strip}%n%ex">
 +                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level]: %minecraftFormatting{%msg}{strip}%n" />
++                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}{strip}%n%ex" />
 +                </LoggerNamePatternSelector>
 +            </PatternLayout>
 +            <Policies>
@@ -47,5 +47,5 @@ index 00000000..38befc0a
 +    </Loggers>
 +</Configuration>
 -- 
-2.14.1
+2.14.3
 
