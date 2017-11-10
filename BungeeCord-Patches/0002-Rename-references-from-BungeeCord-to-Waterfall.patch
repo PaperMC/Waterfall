@@ -1,4 +1,4 @@
-From 518de0fcb50890c308f081520d29cef9ce3b436c Mon Sep 17 00:00:00 2001
+From b8244a39704c2a4b777cdd982083daeade84bbb1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -53,7 +53,7 @@ index 9d51608d..446dfe2f 100644
  
          while ( bungee.isRunning )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b4c8bcfc..510841c7 100644
+index 43c8862f..95b7c060 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -178,7 +178,7 @@ public class BungeeCord extends ProxyServer
@@ -65,7 +65,7 @@ index b4c8bcfc..510841c7 100644
  
          System.setSecurityManager( new BungeeSecurityManager() );
  
-@@ -475,7 +475,7 @@ public class BungeeCord extends ProxyServer
+@@ -468,7 +468,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -87,10 +87,10 @@ index b0798791..b26035cf 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index cbbe03c7..4a492414 100644
+index 771ef5dc..f5c028dd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-@@ -22,7 +22,7 @@ public class CommandReload extends Command
+@@ -23,7 +23,7 @@ public class CommandReload extends Command
          BungeeCord.getInstance().startListeners();
          BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
  
@@ -114,5 +114,5 @@ index 408312fd..95590b6d 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.14.1
+2.14.3
 

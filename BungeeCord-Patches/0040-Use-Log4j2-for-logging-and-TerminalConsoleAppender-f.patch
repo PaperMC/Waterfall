@@ -1,4 +1,4 @@
-From b82d1273ed42f5c59a0fa7428521f551a9b7ca81 Mon Sep 17 00:00:00 2001
+From b091ce13789be1c1f5ef60c814bfd7221044ad49 Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -395,7 +395,7 @@ index 00000000..a8a94749
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b822f95b..da2904b0 100644
+index b67de209..0cba0076 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -436,16 +436,16 @@ index b822f95b..da2904b0 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -197,6 +197,8 @@ public class BungeeCord extends ProxyServer
-             }
+@@ -190,6 +190,8 @@ public class BungeeCord extends ProxyServer
          }
+         reloadMessages();
  
 +        // Waterfall start - Use TerminalConsoleAppender and Log4J
 +        /*
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
          // using the loading class's implementation version. Normally this works completely fine,
-@@ -214,6 +216,9 @@ public class BungeeCord extends ProxyServer
+@@ -207,6 +209,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
@@ -469,5 +469,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.14.1
+2.14.3
 

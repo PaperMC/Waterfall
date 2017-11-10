@@ -1,4 +1,4 @@
-From e917f0bdcc43a2177e76d4c1d10fffcb7f59c50e Mon Sep 17 00:00:00 2001
+From deb0bcb1efc19636ac2be9f2a785abcfa20a7a83 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -157,10 +157,10 @@ index b3ff750f..43d11cf2 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase();
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9ce19d9a..69e5dc33 100644
+index 264554f5..a7502730 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -569,10 +569,18 @@ public class BungeeCord extends ProxyServer
+@@ -577,10 +577,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -298,5 +298,5 @@ index d131c02c..a755121a 100644
 +    // Waterfall end
  }
 -- 
-2.14.1
+2.14.3
 
