@@ -1,4 +1,4 @@
-From 199c5347f3d8ee7a56f86e0cdbb76d845bede1a6 Mon Sep 17 00:00:00 2001
+From 83a86a46fbdd858c96d2ffd434d415cae2f04621 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -46,10 +46,10 @@ index 82c3ec14..6b40faaa 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 74c5a089..28e79933 100644
+index 37479be3..d1ec66c1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -546,7 +546,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -532,7 +532,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public Locale getLocale()
      {
@@ -59,7 +59,7 @@ index 74c5a089..28e79933 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a92b806c..19fd3b3b 100644
+index 95b547b3..5829dda9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -222,7 +222,6 @@ public class DownstreamBridge extends PacketHandler
@@ -67,7 +67,7 @@ index a92b806c..19fd3b3b 100644
      public void handle(PluginMessage pluginMessage) throws Exception
      {
 -        DataInput in = pluginMessage.getStream();
-         PluginMessageEvent event = new PluginMessageEvent( con.getServer(), con, pluginMessage.getTag(), pluginMessage.getData().clone() );
+         PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
 @@ -249,6 +248,7 @@ public class DownstreamBridge extends PacketHandler
