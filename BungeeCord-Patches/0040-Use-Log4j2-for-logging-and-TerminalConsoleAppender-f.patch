@@ -1,4 +1,4 @@
-From 2ec3795f6c430ff2c933b566b224d17b5657bb2b Mon Sep 17 00:00:00 2001
+From 27e23e906fd1a377fb74fe8797664333eddcf16c Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -395,7 +395,7 @@ index 00000000..a8a94749
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c84389cd..c71b7c4d 100644
+index c84389cd..08699416 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -406,7 +406,13 @@ index c84389cd..c71b7c4d 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -78,8 +77,6 @@ import net.md_5.bungee.compress.CompressFactory;
+@@ -72,14 +71,11 @@ import net.md_5.bungee.command.CommandEnd;
+ import net.md_5.bungee.command.CommandIP;
+ import net.md_5.bungee.command.CommandPerms;
+ import net.md_5.bungee.command.CommandReload;
+-import net.md_5.bungee.command.ConsoleCommandCompleter;
+ import net.md_5.bungee.command.ConsoleCommandSender;
+ import net.md_5.bungee.compress.CompressFactory;
  import net.md_5.bungee.conf.Configuration;
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.forge.ForgeConstants;
@@ -415,7 +421,7 @@ index c84389cd..c71b7c4d 100644
  import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
-@@ -89,7 +86,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -89,7 +85,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -423,7 +429,7 @@ index c84389cd..c71b7c4d 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -145,8 +141,12 @@ public class BungeeCord extends ProxyServer
+@@ -145,8 +140,12 @@ public class BungeeCord extends ProxyServer
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
@@ -436,7 +442,7 @@ index c84389cd..c71b7c4d 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -191,6 +191,8 @@ public class BungeeCord extends ProxyServer
+@@ -191,6 +190,8 @@ public class BungeeCord extends ProxyServer
          }
          reloadMessages();
  
@@ -445,7 +451,7 @@ index c84389cd..c71b7c4d 100644
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
          // using the loading class's implementation version. Normally this works completely fine,
-@@ -209,6 +211,9 @@ public class BungeeCord extends ProxyServer
+@@ -209,6 +210,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
@@ -455,6 +461,37 @@ index c84389cd..c71b7c4d 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
+deleted file mode 100644
+index bd52d880..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
++++ /dev/null
+@@ -1,25 +0,0 @@
+-package net.md_5.bungee.command;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-import jline.console.completer.Completer;
+-import lombok.RequiredArgsConstructor;
+-import net.md_5.bungee.api.ProxyServer;
+-
+-@RequiredArgsConstructor
+-public class ConsoleCommandCompleter implements Completer
+-{
+-
+-    private final ProxyServer proxy;
+-
+-    @Override
+-    public int complete(String buffer, int cursor, List<CharSequence> candidates)
+-    {
+-        List<String> suggestions = new ArrayList<>();
+-        proxy.getPluginManager().dispatchCommand( proxy.getConsole(), buffer, suggestions );
+-        candidates.addAll( suggestions );
+-
+-        int lastSpace = buffer.lastIndexOf( ' ' );
+-        return ( lastSpace == -1 ) ? cursor - buffer.length() : cursor - ( buffer.length() - lastSpace - 1 );
+-    }
+-}
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 index 10366c88..8c5cc949 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java

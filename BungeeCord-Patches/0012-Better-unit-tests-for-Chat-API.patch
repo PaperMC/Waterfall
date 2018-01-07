@@ -1,39 +1,17 @@
-From 6faee71d0df54f06ac032590ffc4c98bc65dabde Mon Sep 17 00:00:00 2001
+From e2fcb32f71ba30705a7b4ee18b4d72986ddde9a1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
 
 
 diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-index 0837c672..7d1ee8e7 100644
+index 0837c672..38147e2a 100644
 --- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 +++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-@@ -3,6 +3,8 @@ package net.md_5.bungee.api.chat;
- import org.junit.Test;
- import static org.junit.Assert.assertEquals;
- 
-+import java.util.List;
-+
- public class TranslatableComponentTest
- {
- 
-@@ -13,4 +15,25 @@ public class TranslatableComponentTest
+@@ -13,4 +13,12 @@ public class TranslatableComponentTest
          assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
          assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
      }
-+
-+    @Test
-+    public void testDuplicateNullWithDoesntThrowException() {
-+        TranslatableComponent component = new TranslatableComponent("Test") {
-+            @Override
-+            public List<BaseComponent> getExtra() {
-+                return null;
-+            }
-+        };
-+
-+        TranslatableComponent copy = new TranslatableComponent(component);
-+        // The fact that we don't throw an exception means it's working as intended.
-+    }
 +
 +    @Test
 +    public void testEscapedPercentInPlainText()
