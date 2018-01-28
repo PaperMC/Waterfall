@@ -1,31 +1,14 @@
-From e2fcb32f71ba30705a7b4ee18b4d72986ddde9a1 Mon Sep 17 00:00:00 2001
+From 857e3805f85d667bd0a28beb0eec81fa41c0a38e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
 
 
-diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-index 0837c672..38147e2a 100644
---- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-+++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-@@ -13,4 +13,12 @@ public class TranslatableComponentTest
-         assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
-         assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
-     }
-+
-+    @Test
-+    public void testEscapedPercentInPlainText()
-+    {
-+        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
-+        assertEquals( "Test string with % sign", testComponent.toPlainText() );
-+        assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
-+    }
- }
-diff --git a/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java b/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
-index 3d9396d3..c1afa6da 100644
---- a/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
-+++ b/proxy/src/test/java/net/md_5/bungee/chat/ComponentsTest.java
-@@ -149,6 +149,26 @@ public class ComponentsTest
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+index 43420f2b..42d724eb 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+@@ -144,6 +144,26 @@ public class ComponentsTest
          Assert.assertEquals( eventRetention[1].getClickEvent(), testClickEvent );
      }
  
@@ -52,6 +35,23 @@ index 3d9396d3..c1afa6da 100644
      @Test(expected = IllegalArgumentException.class)
      public void testLoopSimple()
      {
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+index 0837c672..38147e2a 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+@@ -13,4 +13,12 @@ public class TranslatableComponentTest
+         assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
+         assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
+     }
++
++    @Test
++    public void testEscapedPercentInPlainText()
++    {
++        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
++        assertEquals( "Test string with % sign", testComponent.toPlainText() );
++        assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
++    }
+ }
 -- 
-2.14.3
+2.16.1
 

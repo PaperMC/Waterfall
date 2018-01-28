@@ -1,4 +1,4 @@
-From fbb85275392056b77e760a8e0936c02d0252a620 Mon Sep 17 00:00:00 2001
+From 4911849bf46ae1005c2c9efbf0de31ef2a6869d0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index e7cb3803..447eaae7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index f06aa95a..8e142323 100644
+index cd065631..3f6b1766 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -355,14 +355,23 @@ public enum Protocol
+@@ -360,14 +360,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -56,7 +56,7 @@ index f06aa95a..8e142323 100644
 +        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
          {
              ProtocolData protocolData = getProtocolData( version );
-             if (protocolData == null)
+             if ( protocolData == null )
              {
                  throw new BadPacketException( "Unsupported protocol version" );
              }
@@ -93,7 +93,7 @@ index 61c53b30..b29ee7c5 100644
  
          ch.write( BungeeCord.getInstance().registerChannels() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 28e79933..ccb6b6ca 100644
+index d1ec66c1..158dfb18 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -70,6 +70,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -122,5 +122,5 @@ index 847a3eca..27ee21f2 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.14.1
+2.16.1
 
