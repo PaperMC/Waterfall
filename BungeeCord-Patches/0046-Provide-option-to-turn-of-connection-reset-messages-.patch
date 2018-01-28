@@ -1,0 +1,91 @@
+From 8d89a3929172f23b27988c4b03e87f8fe3333fec Mon Sep 17 00:00:00 2001
+From: Foorack <maxfaxalv@gmail.com>
+Date: Fri, 19 Jan 2018 23:29:44 +0100
+Subject: [PATCH] Provide option to turn of connection reset messages from
+ ServerInfo#ping
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 43519ce1..af2a4a52 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -168,6 +168,11 @@ public interface ProxyConfig
+      */
+     boolean isLogServerListPing();
+ 
++    /**
++     * Whether we log backend server pings
++     */
++    boolean isLogBackendServerPing();
++
+     /**
+      * The supported versions
+      */
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 7dc3c2d9..98a99ae8 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -26,6 +26,13 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean logServerListPing = false;
+ 
++    /**
++     * Whether we log backend server pings (errors)
++     * <p>
++     * Default is true (log)
++     */
++    private boolean logBackendServerPing = true;
++
+     /**
+      * The supported versions displayed to the client
+      * <p>Default is a comma seperated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
+@@ -60,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
+         config.load(false); // Load, but no permissions
+         metrics = config.getBoolean("metrics", metrics);
+         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
++        logBackendServerPing = config.getBoolean( "log_backend_server_ping", logBackendServerPing );
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+         gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
+@@ -80,4 +88,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isLogServerListPing() {
+         return logServerListPing;
+     }
++
++    @Override
++    public boolean isLogBackendServerPing() {
++        return logBackendServerPing;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index bf8ec29f..7ed289ee 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -9,6 +9,7 @@ import io.netty.handler.timeout.ReadTimeoutException;
+ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.util.logging.Level;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.connection.CancelSendSignal;
+ import net.md_5.bungee.connection.InitialHandler;
+@@ -139,10 +140,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                 } );
+             } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - {1}: {2}", new Object[]
++                if ( !( handler instanceof PingHandler ) || BungeeCord.getInstance().getConfig().isLogBackendServerPing() )
+                 {
+-                    handler, cause.getClass().getSimpleName(), cause.getMessage()
+-                } );
++                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - {1}: {2}", new Object[]
++                    {
++                        handler, cause.getClass().getSimpleName(), cause.getMessage()
++                    } );
++                }
+             } else
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.SEVERE, handler + " - encountered exception", cause );
+-- 
+2.14.1
+
