@@ -1,4 +1,4 @@
-From bc76609524f570537f4ad3b05e6f03b9063134e5 Mon Sep 17 00:00:00 2001
+From 95583734939e83341760d4b794d416138b9a57f8 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -167,10 +167,10 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index fb2fea87..795896fa 100644
+index 97aacd00..120bfed1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -341,6 +341,8 @@ public enum Protocol
+@@ -346,6 +346,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
@@ -179,7 +179,7 @@ index fb2fea87..795896fa 100644
                      ProtocolConstants.MINECRAFT_1_9,
                      ProtocolConstants.MINECRAFT_1_12
              ) );
-@@ -393,7 +395,11 @@ public enum Protocol
+@@ -398,7 +400,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -1433,7 +1433,7 @@ index b4705799..da1066cc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f9fddf07..e5d491f6 100644
+index ec4a5532..8a3b3297 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -154,6 +154,14 @@ public class BungeeCord extends ProxyServer
@@ -1693,7 +1693,7 @@ index 201b6c3e..d2feeb1b 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9e501c00..cc27726a 100644
+index c7a4bd2a..3faabcd6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -13,6 +13,13 @@ import java.util.UUID;
@@ -2384,5 +2384,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.15.1
+2.16.1
 
