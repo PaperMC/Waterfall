@@ -1,4 +1,4 @@
-# Travertine <a href="https://ci.getwaterfall.xyz/project.html?projectId=Travertine"><img src="https://ci.getwaterfall.xyz/app/rest/builds/buildType:Travertine_Build,branch:master/statusIcon"/></a>
+# Travertine <a href="https://ci.destroystokyo.com/job/Travertine/"><img src="https://ci.destroystokyo.com/job/Paper/badge/icon"/></a>
 
 Travertine is Waterfall with additional protocols. Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
 
@@ -19,6 +19,18 @@ Travertine has a goal of adding additional protocol versions.
 Travertine was forked because of the fact that Waterfall intends to only support protocol versions supported by upstream BungeeCord. 
 
 Travertine will track upstream Waterfall and merge changes as needed.
+
+## How to (Server Admins)
+
+Download a copy of of Travertine.jar from our buildserver here: [Travertine](https://ci.destroystokyo.com/job/Travertine)
+
+Travertine requires **java 8** or above.
+
+## How To (Compiling from source)
+
+To compile Travertine, you need JDK8, git, bash, maven, and an internet connection.
+
+Clone this repo, run `./build.sh` from *bash*, get jar from `Travertine-Proxy/bootstrap/target`
 
 ## Join us
 
