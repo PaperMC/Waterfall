@@ -1,0 +1,77 @@
+From d8b5c0e6f8a30d61669ae4cd7bd4a675d6bfe1a9 Mon Sep 17 00:00:00 2001
+From: Gabriele C <sgdc3.mail@gmail.com>
+Date: Thu, 8 Feb 2018 19:10:52 +0100
+Subject: [PATCH] Make InitialHandler connections logging optional (disabled by
+ default)
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 43519ce1..2631d6bb 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -168,6 +168,11 @@ public interface ProxyConfig
+      */
+     boolean isLogServerListPing();
+ 
++    /**
++     * Whether we log InitialHandler connections
++     */
++    boolean isLogInitialHandlerConnections();
++
+     /**
+      * The supported versions
+      */
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 7dc3c2d9..6dc58ca2 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -26,6 +26,13 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean logServerListPing = false;
+ 
++    /**
++     * Whether we log InitialHandler connections
++     * <p>
++     * Default is false (don't log)
++     */
++    private boolean logInitialHandlerConnections = false;
++
+     /**
+      * The supported versions displayed to the client
+      * <p>Default is a comma seperated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
+@@ -60,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
+         config.load(false); // Load, but no permissions
+         metrics = config.getBoolean("metrics", metrics);
+         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
++        logServerListPing = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+         gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
+@@ -80,4 +88,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isLogServerListPing() {
+         return logServerListPing;
+     }
++
++    @Override
++    public boolean isLogInitialHandlerConnections() {
++        return logInitialHandlerConnections;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index c7a4bd2a..10f6001b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -300,7 +300,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 break;
+             case 2:
+                 // Login
+-                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
++                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections()) {
++                    bungee.getLogger().log( Level.INFO, "{0} has connected", this );
++                }
+                 thisState = State.USERNAME;
+                 ch.setProtocol( Protocol.LOGIN );
+ 
+-- 
+2.14.1.windows.1
+
