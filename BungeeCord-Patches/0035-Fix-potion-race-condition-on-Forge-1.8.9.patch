@@ -1,4 +1,4 @@
-From 383d5fbd50068ab7f5c76cb2f52ba827a44dd395 Mon Sep 17 00:00:00 2001
+From bc0316ea4c7f910c13c24922686f5631555ad4bb Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 6f782c8f..2d5fc487 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 7ff5411b..fb2fea87 100644
+index a568d472..97aacd00 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -163,7 +163,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 055a886d..af393836 100644
+index eee311df..520b42c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -2,7 +2,9 @@ package net.md_5.bungee;
@@ -176,7 +176,7 @@ index 055a886d..af393836 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -126,6 +128,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -188,7 +188,7 @@ index 055a886d..af393836 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index de905b83..92fe918b 100644
+index 9b21b05d..201b6c3e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -31,6 +31,8 @@ import net.md_5.bungee.netty.PacketHandler;
@@ -271,5 +271,5 @@ index 673497e5..17e250d4 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.14.1
+2.16.1
 

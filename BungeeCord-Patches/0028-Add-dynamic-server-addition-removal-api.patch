@@ -1,4 +1,4 @@
-From 5e5fd31270af1cc6ef58f58f65688637a3d37a1d Mon Sep 17 00:00:00 2001
+From 0a3a3e40c649e188cf4aa5ff1d1fbcc028df9ab5 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -126,7 +126,7 @@ index 11c5b685..1c011d08 100644
       * Gets the server info of a server.
       *
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
-index 967a1b2a..08aa6981 100644
+index 262b29c8..d7ed3e11 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java
 +++ b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 @@ -44,6 +44,13 @@ public final class Configuration
@@ -157,10 +157,10 @@ index b3ff750f..43d11cf2 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase();
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0903dc5f..1807b67a 100644
+index 40f28a12..f14821b4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -579,10 +579,18 @@ public class BungeeCord extends ProxyServer
+@@ -588,10 +588,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -298,5 +298,5 @@ index d131c02c..a755121a 100644
 +    // Waterfall end
  }
 -- 
-2.14.3
+2.16.1
 
