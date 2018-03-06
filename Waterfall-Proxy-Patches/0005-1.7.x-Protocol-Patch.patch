@@ -1,4 +1,4 @@
-From 95583734939e83341760d4b794d416138b9a57f8 Mon Sep 17 00:00:00 2001
+From 0d1abfeb77d6ec3b0e8b122ea70b3c4ad0e34165 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1433,11 +1433,11 @@ index b4705799..da1066cc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ec4a5532..8a3b3297 100644
+index 64aaf998..981f99bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -154,6 +154,14 @@ public class BungeeCord extends ProxyServer
-             .registerTypeAdapter( TranslatableComponent.class, new TranslatableComponentSerializer() )
+@@ -163,6 +163,14 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( SelectorComponent.class, new SelectorComponentSerializer() )
              .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer() )
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
 +    // Travertine start
@@ -1588,10 +1588,10 @@ index 38361c2b..ab96ec15 100644
              throw CancelSendSignal.INSTANCE;
          } else
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ef21f8c8..e1405131 100644
+index 520b42c8..33cab841 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -194,6 +194,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -195,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1599,41 +1599,41 @@ index ef21f8c8..e1405131 100644
          displayName = name;
      }
  
-@@ -422,7 +423,7 @@ public final class UserConnection implements ProxiedPlayer
-     public void sendMessage(ChatMessageType position, BaseComponent... message)
-     {
+@@ -426,7 +427,7 @@ public final class UserConnection implements ProxiedPlayer
+         message = ChatComponentTransformer.getInstance().transform( this, message );
+ 
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
 -        if ( position == ChatMessageType.ACTION_BAR )
 +        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -435,7 +436,7 @@ public final class UserConnection implements ProxiedPlayer
-     public void sendMessage(ChatMessageType position, BaseComponent message)
-     {
+@@ -441,7 +442,7 @@ public final class UserConnection implements ProxiedPlayer
+         message = ChatComponentTransformer.getInstance().transform( this, message )[0];
+ 
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
 -        if ( position == ChatMessageType.ACTION_BAR )
 +        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -616,6 +617,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -620,6 +621,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
 +        if ( ProtocolConstants.isBeforeOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) ) return; // Travertine
-         unsafe().sendPacket( new PlayerListHeaderFooter(
-                 ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
-                 ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
-@@ -625,6 +627,7 @@ public final class UserConnection implements ProxiedPlayer
+         header = ChatComponentTransformer.getInstance().transform( this, header )[0];
+         footer = ChatComponentTransformer.getInstance().transform( this, footer )[0];
+ 
+@@ -632,6 +634,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
 +        if ( ProtocolConstants.isBeforeOrEq( pendingConnection.getVersion(), ProtocolConstants.MINECRAFT_1_7_6 ) ) return; // Travertine
-         unsafe().sendPacket( new PlayerListHeaderFooter(
-                 ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
-                 ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
-@@ -651,6 +654,7 @@ public final class UserConnection implements ProxiedPlayer
+         header = ChatComponentTransformer.getInstance().transform( this, header );
+         footer = ChatComponentTransformer.getInstance().transform( this, footer );
+ 
+@@ -661,6 +664,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1693,7 +1693,7 @@ index 201b6c3e..d2feeb1b 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c7a4bd2a..3faabcd6 100644
+index 10f6001b..b05542a4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -13,6 +13,13 @@ import java.util.UUID;
@@ -1737,7 +1737,7 @@ index c7a4bd2a..3faabcd6 100644
                      }
                  };
  
-@@ -507,7 +530,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -509,7 +532,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
@@ -2384,5 +2384,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.16.1
+2.16.2
 
