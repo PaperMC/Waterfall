@@ -1,4 +1,4 @@
-From 4f2868a5e5839988b6a17d3204966c9863fb703e Mon Sep 17 00:00:00 2001
+From dd1d2c326ff05dd227612b43a7dc72f7cafd47bd Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -62,10 +62,10 @@ index 0e1ef5c4..ee63732d 100644
      @Deprecated
      public String getKickReason()
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 79e88cc5..38361c2b 100644
+index 972c70ec..1213c206 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -314,7 +314,7 @@ public class ServerConnector extends PacketHandler
+@@ -315,7 +315,7 @@ public class ServerConnector extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = user.updateAndGetNextServer( target );
@@ -75,7 +75,7 @@ index 79e88cc5..38361c2b 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index dcd6924d..de905b83 100644
+index 085a4e60..c6da6c47 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -86,7 +86,7 @@ index dcd6924d..de905b83 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
-@@ -59,16 +60,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -60,16 +61,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -97,10 +97,10 @@ index dcd6924d..de905b83 100644
 +        if ( event.isCancelled() && event.getCancelServer() != null )
          {
              server.setObsolete( true );
--            con.connectNow( def );
+-            con.connectNow( def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
 -            con.sendMessage( bungee.getTranslation( "server_went_down" ) );
 -        } else
-+            con.connectNow( event.getCancelServer() );
++            con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
 +        }
 +        else
          {
@@ -111,7 +111,7 @@ index dcd6924d..de905b83 100644
      }
  
      @Override
-@@ -83,7 +87,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -84,7 +88,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -132,7 +132,7 @@ index dcd6924d..de905b83 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -454,7 +470,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -455,7 +471,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -144,7 +144,7 @@ index dcd6924d..de905b83 100644
 +        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) ); // Waterfall
          if ( event.isCancelled() && event.getCancelServer() != null )
          {
-             con.connectNow( event.getCancelServer() );
+             con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.14.1
+2.16.3
 

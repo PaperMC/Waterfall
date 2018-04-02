@@ -1,4 +1,4 @@
-From 1424553c4cbf124a575ada58158b2bbdd6342572 Mon Sep 17 00:00:00 2001
+From 3a79961d7efefc19ce12e3f3e5a2f3be4d8eb1be Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 4a96a601..61c53b30 100644
+index 8194dbde..6c367c73 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -23,7 +23,7 @@ index 4a96a601..61c53b30 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -93,15 +94,39 @@ public class ServerConnector extends PacketHandler
+@@ -94,15 +95,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + user.getAddress().getHostString() + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -60,14 +60,14 @@ index 4a96a601..61c53b30 100644
              copiedHandshake.setHost( newHost );
          } else if ( !user.getExtraDataInHandshake().isEmpty() )
          {
--            // Only restore the extra data if IP forwarding is off. 
+-            // Only restore the extra data if IP forwarding is off.
 -            // TODO: Add support for this data with IP forwarding.
 +            // Restore the extra data
              copiedHandshake.setHost( copiedHandshake.getHost() + user.getExtraDataInHandshake() );
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 67adfef9..48f2aa8e 100644
+index dfa4b71b..2daaf999 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -165,8 +165,12 @@ public final class UserConnection implements ProxiedPlayer
@@ -100,5 +100,5 @@ index 6dca2048..f5253b89 100644
       * The FML 1.8 handshake token.
       */
 -- 
-2.16.1
+2.16.3
 

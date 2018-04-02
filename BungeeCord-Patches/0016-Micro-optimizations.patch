@@ -1,4 +1,4 @@
-From c001ff289470f54a0c30524af6df8c6be00c62fc Mon Sep 17 00:00:00 2001
+From a4545c85d6b55640f54d6a1ba6f511bb1cae477b Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 18:05:33 -0600
 Subject: [PATCH] Micro-optimizations
@@ -46,10 +46,10 @@ index 507db01f..fde98e27 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 48f2aa8e..d9810c63 100644
+index 2daaf999..bc1227a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -538,7 +538,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -561,7 +561,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public Locale getLocale()
      {
@@ -59,10 +59,10 @@ index 48f2aa8e..d9810c63 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 95b547b3..5829dda9 100644
+index 9ea61319..565e6b0e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -222,7 +222,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -223,7 +223,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -70,7 +70,7 @@ index 95b547b3..5829dda9 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -249,6 +248,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -250,6 +249,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -79,5 +79,5 @@ index 95b547b3..5829dda9 100644
              String subChannel = in.readUTF();
  
 -- 
-2.16.1
+2.16.3
 
