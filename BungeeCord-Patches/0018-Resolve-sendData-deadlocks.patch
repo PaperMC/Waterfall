@@ -1,11 +1,11 @@
-From dbd8dc11b91da5743cca7945485b3e76cacdeb55 Mon Sep 17 00:00:00 2001
+From 2c34f23a707a2209a1c67f64bfab950448acc9a0 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Fri, 12 Feb 2016 23:55:53 -0500
 Subject: [PATCH] Resolve sendData() deadlocks
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 1dd0aeba..bc56d4f3 100644
+index 89c8f48f..9756c09c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -101,19 +101,22 @@ public class BungeeServerInfo implements ServerInfo
@@ -43,5 +43,5 @@ index 1dd0aeba..bc56d4f3 100644
  
      @Override
 -- 
-2.14.1
+2.16.1
 
