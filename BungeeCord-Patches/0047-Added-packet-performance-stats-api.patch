@@ -1,0 +1,532 @@
+From 89c67b56dc5a5613216120aaa67ad38192bb60c5 Mon Sep 17 00:00:00 2001
+From: Narimm <benjicharlton@gmail.com>
+Date: Tue, 24 Apr 2018 15:38:39 +1000
+Subject: [PATCH] Added packet performance stats api
+
+* Allows you to see a breakdown of network traffic
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/PerformanceStatistics.java b/api/src/main/java/net/md_5/bungee/api/PerformanceStatistics.java
+new file mode 100644
+index 00000000..295dbe52
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/PerformanceStatistics.java
+@@ -0,0 +1,52 @@
++package net.md_5.bungee.api;
++
++import java.net.SocketAddress;
++import java.util.List;
++import java.util.UUID;
++
++import net.md_5.bungee.api.config.ServerInfo;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import lombok.ToString;
++
++@RequiredArgsConstructor
++@Getter
++@ToString
++public class PerformanceStatistics {
++	private final List<UpstreamStatistics> upstreamStats;
++	private final List<DownstreamStatistics> downstreamStats;
++	
++	@RequiredArgsConstructor
++	@ToString
++	@Getter
++	public static class UpstreamStatistics {
++		private final SocketAddress address;
++		private final UUID userId;
++		
++		private final List<PacketInfo> packets;
++	}
++	
++	@RequiredArgsConstructor
++	@ToString
++	@Getter
++	public static class DownstreamStatistics {
++		private final SocketAddress address;
++		private final ServerInfo serverId;
++		
++		private final List<PacketInfo> packets;
++	}
++	
++	@RequiredArgsConstructor
++	@ToString
++	@Getter
++	public static class PacketInfo {
++		private final int protocol;
++		private final int id;
++		
++		private final int inboundCount;
++		private final long inboundSize;
++		
++		private final int outboundCount;
++		private final long outboundSize;
++	}
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/PerformanceTracker.java b/api/src/main/java/net/md_5/bungee/api/PerformanceTracker.java
+new file mode 100644
+index 00000000..a974ccce
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/PerformanceTracker.java
+@@ -0,0 +1,10 @@
++package net.md_5.bungee.api;
++
++public interface PerformanceTracker {
++	public boolean isEnabled();
++	public void setEnabled(boolean enabled);
++	
++	public PerformanceStatistics getStatistics();
++	public PerformanceStatistics getAndResetStatistics();
++	public void resetStatistics();
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 1c011d08..fcd6d96a 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -319,5 +319,11 @@ public abstract class ProxyServer
+      * @see Title
+      */
+     public abstract Title createTitle();
++    
++    /**
++     * Gets the performance tracker which can track network usage
++     * @return The performance tracker
++     */
++    public abstract PerformanceTracker getPerformanceTracker();
+ 
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 0b780e2e..1a65ef6f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -7,6 +7,7 @@ import io.netty.handler.codec.DecoderException;
+ import io.netty.handler.codec.MessageToMessageDecoder;
+ import java.util.List;
+ import lombok.AllArgsConstructor;
++import lombok.Getter;
+ import lombok.Setter;
+ 
+ @AllArgsConstructor
+@@ -14,6 +15,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ {
+ 
+     @Setter
++    @Getter
+     private Protocol protocol;
+     private final boolean server;
+     @Setter
+@@ -38,7 +40,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         {
+             int packetId = DefinedPacket.readVarInt( in );
+             packetTypeInfo = packetId;
+-
++            PacketTracker.monitorDecodePacket(ctx, packetId, in.readableBytes(), server);
+             DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+             if ( packet != null )
+             {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/OutboundPacketMonitor.java b/protocol/src/main/java/net/md_5/bungee/protocol/OutboundPacketMonitor.java
+new file mode 100644
+index 00000000..1adeea48
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/OutboundPacketMonitor.java
+@@ -0,0 +1,26 @@
++package net.md_5.bungee.protocol;
++
++import lombok.AllArgsConstructor;
++import io.netty.buffer.ByteBuf;
++import io.netty.channel.ChannelHandlerContext;
++import io.netty.handler.codec.MessageToByteEncoder;
++
++@AllArgsConstructor
++public class OutboundPacketMonitor extends MessageToByteEncoder<ByteBuf>
++{
++	private boolean server;
++	
++	@Override
++	protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception
++	{
++		msg.markReaderIndex();
++    	int packetId = DefinedPacket.readVarInt(msg);
++    	msg.resetReaderIndex();
++    	
++    	PacketTracker.monitorEncodePacket(ctx, packetId, msg.readableBytes(), server);
++    	
++    	// Pass it on
++    	out.writeBytes(msg);
++	}
++
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/PacketRecorder.java b/protocol/src/main/java/net/md_5/bungee/protocol/PacketRecorder.java
+new file mode 100644
+index 00000000..d9c952bd
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/PacketRecorder.java
+@@ -0,0 +1,8 @@
++package net.md_5.bungee.protocol;
++
++import io.netty.channel.ChannelHandlerContext;
++
++public interface PacketRecorder {
++	public void monitorUpstreamPacket(ChannelHandlerContext ctx, int packetId, long size, boolean in);
++	public void monitorDownstreamPacket(ChannelHandlerContext ctx, int packetId, long size, boolean in);
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/PacketTracker.java b/protocol/src/main/java/net/md_5/bungee/protocol/PacketTracker.java
+new file mode 100644
+index 00000000..b4d451b0
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/PacketTracker.java
+@@ -0,0 +1,27 @@
++package net.md_5.bungee.protocol;
++
++import io.netty.channel.ChannelHandlerContext;
++
++public class PacketTracker {
++	private static PacketRecorder recorder;
++	
++	public static void setRecorder(PacketRecorder packetRecorder) {
++		recorder = packetRecorder;
++	}
++	
++	public static void monitorDecodePacket(ChannelHandlerContext ctx, int packetId, long size, boolean server) {
++		if (server) {
++			recorder.monitorUpstreamPacket(ctx, packetId, size, true);
++		} else {
++			recorder.monitorDownstreamPacket(ctx, packetId, size, true);
++		}
++	}
++	
++	public static void monitorEncodePacket(ChannelHandlerContext ctx, int packetId, long size, boolean server) {
++		if (server) {
++			recorder.monitorUpstreamPacket(ctx, packetId, size, false);
++		} else {
++			recorder.monitorDownstreamPacket(ctx, packetId, size, false);
++		}
++	}
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 953f9085..a07765f7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -84,6 +84,7 @@ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
++import net.md_5.bungee.perfmon.PerformanceMonitor;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.Chat;
+@@ -167,6 +168,8 @@ public class BungeeCord extends ProxyServer
+     private ConnectionThrottle connectionThrottle;
+     private final ModuleManager moduleManager = new ModuleManager();
+ 
++    @Getter
++    private PerformanceMonitor performanceTracker = new PerformanceMonitor();
+     
+     {
+         // TODO: Proper fallback when we interface the manager
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index ef12a019..635fc62a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -50,6 +50,7 @@ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
++import net.md_5.bungee.protocol.OutboundPacketMonitor;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -322,6 +323,7 @@ public final class UserConnection implements ProxiedPlayer
+                 PipelineUtils.BASE.initChannel( ch );
+                 ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
+                 ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
++                ch.pipeline().addBefore( PipelineUtils.PACKET_ENCODER, PipelineUtils.OUTBOUND_MONITOR, new OutboundPacketMonitor( false ));
+                 ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
+             }
+         };
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+index 3cd5cf69..39810712 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.connection;
+ 
+ import com.google.gson.Gson;
++
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -13,6 +14,7 @@ import net.md_5.bungee.netty.PacketHandler;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
++import net.md_5.bungee.protocol.OutboundPacketMonitor;
+ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.packet.Handshake;
+ import net.md_5.bungee.protocol.packet.StatusRequest;
+@@ -35,6 +37,7 @@ public class PingHandler extends PacketHandler
+ 
+         channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion() ) );
+         channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, encoder );
++        channel.getHandle().pipeline().addBefore( PipelineUtils.PACKET_ENCODER, PipelineUtils.OUTBOUND_MONITOR, new OutboundPacketMonitor(false));
+ 
+         channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 4882b8ed..2fc5dd62 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -134,7 +134,7 @@ public class ChannelWrapper
+     {
+         if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold != -1 )
+         {
+-            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
++            addBefore( PipelineUtils.OUTBOUND_MONITOR, "compress", new PacketCompressor() );
+         }
+         if ( compressionThreshold != -1 )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 3af6a1db..a9031b9f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -35,6 +35,7 @@ import net.md_5.bungee.protocol.KickStringWriter;
+ import net.md_5.bungee.protocol.LegacyDecoder;
+ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
++import net.md_5.bungee.protocol.OutboundPacketMonitor;
+ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.Varint21FrameDecoder;
+ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -56,6 +57,8 @@ public class PipelineUtils
+             ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
+             ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
+             ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
++            ch.pipeline().addBefore( PACKET_ENCODER, OUTBOUND_MONITOR, new OutboundPacketMonitor(true));
++    
+             ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, PipelineUtils.KICK_STRING_WRITER );
+             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
+ 
+@@ -77,6 +80,8 @@ public class PipelineUtils
+     public static final String FRAME_PREPENDER = "frame-prepender";
+     public static final String LEGACY_DECODER = "legacy-decoder";
+     public static final String LEGACY_KICKER = "legacy-kick";
++    public static final String OUTBOUND_MONITOR = "outbound-monitor";
++    
+     private static final KickStringWriter KICK_STRING_WRITER = new KickStringWriter();
+ 
+     private static boolean epoll;
+diff --git a/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceEntry.java b/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceEntry.java
+new file mode 100644
+index 00000000..d8f109cc
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceEntry.java
+@@ -0,0 +1,55 @@
++package net.md_5.bungee.perfmon;
++
++import java.net.SocketAddress;
++import java.util.List;
++
++import com.google.common.collect.Lists;
++
++import net.md_5.bungee.api.PerformanceStatistics.PacketInfo;
++import net.md_5.bungee.protocol.Protocol;
++import lombok.Getter;
++
++class PerformanceEntry {
++	@Getter
++	private final SocketAddress sourceAddress;
++	
++	private int[][] inboundPacketCounts;
++	private long[][] inboundPacketSizes;
++	
++	private int[][] outboundPacketCounts;
++	private long[][] outboundPacketSizes;
++	
++	public PerformanceEntry(SocketAddress source) {
++		this.sourceAddress = source;
++		
++		inboundPacketCounts = new int[Protocol.values().length][Protocol.MAX_PACKET_ID+1];
++		inboundPacketSizes = new long[Protocol.values().length][Protocol.MAX_PACKET_ID+1];
++		outboundPacketCounts = new int[Protocol.values().length][Protocol.MAX_PACKET_ID+1];
++		outboundPacketSizes = new long[Protocol.values().length][Protocol.MAX_PACKET_ID+1];
++	}
++	
++	public void addInboundPacket(Protocol protocol, int id, long size) {
++		inboundPacketCounts[protocol.ordinal()][id]++;
++		inboundPacketSizes[protocol.ordinal()][id] += size;
++	}
++	
++	public void addOutboundPacket(Protocol protocol, int id, long size) {
++		outboundPacketCounts[protocol.ordinal()][id]++;
++		outboundPacketSizes[protocol.ordinal()][id] += size;
++	}
++	
++	public List<PacketInfo> toPacketInfo() {
++		List<PacketInfo> list = Lists.newArrayListWithCapacity((Protocol.MAX_PACKET_ID+1) * Protocol.values().length);
++		
++		for (int p = 0; p < Protocol.values().length; ++p) {
++			for (int i = 0; i < inboundPacketCounts[p].length; ++i) {
++				if (inboundPacketCounts[p][i] != 0 || outboundPacketCounts[p][i] != 0) {
++					PacketInfo info = new PacketInfo(p, i, inboundPacketCounts[p][i], inboundPacketSizes[p][i], outboundPacketCounts[p][i], outboundPacketSizes[p][i]);
++					list.add(info);
++				}
++			}
++		}
++		
++		return list;
++	}
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceMonitor.java b/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceMonitor.java
+new file mode 100644
+index 00000000..f8329bec
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/perfmon/PerformanceMonitor.java
+@@ -0,0 +1,145 @@
++package net.md_5.bungee.perfmon;
++
++import io.netty.channel.ChannelHandlerContext;
++
++import java.net.InetSocketAddress;
++import java.net.SocketAddress;
++import java.util.List;
++import java.util.Map;
++import java.util.Map.Entry;
++
++import com.google.common.collect.Lists;
++import com.google.common.collect.Maps;
++
++import net.md_5.bungee.api.PerformanceStatistics;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.PerformanceStatistics.DownstreamStatistics;
++import net.md_5.bungee.api.PerformanceStatistics.PacketInfo;
++import net.md_5.bungee.api.PerformanceStatistics.UpstreamStatistics;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.PerformanceTracker;
++import net.md_5.bungee.protocol.MinecraftDecoder;
++import net.md_5.bungee.protocol.PacketRecorder;
++import net.md_5.bungee.protocol.PacketTracker;
++import net.md_5.bungee.protocol.Protocol;
++import lombok.Getter;
++import lombok.Setter;
++
++public class PerformanceMonitor implements PerformanceTracker, PacketRecorder {
++	@Getter
++	@Setter
++	private boolean enabled;
++	
++	private Object lock = new Object();
++	
++	private Map<SocketAddress, PerformanceEntry> upstreamPackets;
++	private Map<SocketAddress, PerformanceEntry> downstreamPackets;
++	
++	public PerformanceMonitor() {
++		upstreamPackets = Maps.newHashMap();
++		downstreamPackets = Maps.newHashMap();
++		
++		PacketTracker.setRecorder(this);
++	}
++	
++	private PerformanceEntry getEntry(Map<SocketAddress, PerformanceEntry> map, SocketAddress address) {
++		PerformanceEntry entry = map.get(address);
++		if (entry == null) {
++			entry = new PerformanceEntry(address);
++			map.put(address, entry);
++		}
++		
++		return entry;
++	}
++	
++	@Override
++	public void monitorUpstreamPacket(ChannelHandlerContext ctx, int packetId, long size, boolean in) {
++		if (!enabled)
++			return;
++		
++		Protocol protocol = ctx.pipeline().get( MinecraftDecoder.class ).getProtocol();
++		
++		synchronized(lock) {
++			PerformanceEntry entry = getEntry(upstreamPackets, ctx.channel().remoteAddress());
++			if (in) {
++				entry.addInboundPacket(protocol, packetId, size);
++			} else {
++				entry.addOutboundPacket(protocol, packetId, size);
++			}
++		}
++	}
++	
++	@Override
++	public void monitorDownstreamPacket(ChannelHandlerContext ctx, int packetId, long size, boolean in) {
++		if (!enabled)
++			return;
++		
++		Protocol protocol = ctx.pipeline().get( MinecraftDecoder.class ).getProtocol();
++		
++		synchronized(lock) {
++			PerformanceEntry entry = getEntry(downstreamPackets, ctx.channel().remoteAddress());
++			if (in) {
++				entry.addInboundPacket(protocol, packetId, size);
++			} else {
++				entry.addOutboundPacket(protocol, packetId, size);
++			}
++		}
++	}
++	
++	@Override
++	public PerformanceStatistics getStatistics() {
++		synchronized(lock) {
++			// For resolving users
++			Map<InetSocketAddress, ProxiedPlayer> userMap = Maps.newHashMap();
++			for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
++				userMap.put(player.getAddress(), player);
++			}
++			
++			// Compile upstream results
++			List<UpstreamStatistics> upstreamStats = Lists.newArrayList();
++			
++			for (Entry<SocketAddress, PerformanceEntry> entry : upstreamPackets.entrySet()) {
++				ProxiedPlayer player = userMap.get((InetSocketAddress)entry.getKey());
++				
++				List<PacketInfo> packets = entry.getValue().toPacketInfo();
++				upstreamStats.add(new UpstreamStatistics(entry.getKey(), (player != null ? player.getUniqueId() : null), packets));
++			}
++			
++			// For resolving servers
++			Map<InetSocketAddress, ServerInfo> serverMap = Maps.newHashMap();
++			for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
++				serverMap.put(server.getAddress(), server);
++			}
++			
++			// Compile downstream results
++			List<DownstreamStatistics> downstreamStats = Lists.newArrayList();
++			
++			for (Entry<SocketAddress, PerformanceEntry> entry : downstreamPackets.entrySet()) {
++				ServerInfo server = serverMap.get((InetSocketAddress)entry.getKey());
++				
++				List<PacketInfo> packets = entry.getValue().toPacketInfo();
++				downstreamStats.add(new DownstreamStatistics(entry.getKey(), server, packets));
++			}
++			
++			return new PerformanceStatistics(upstreamStats, downstreamStats);
++		}
++	}
++	
++	@Override
++	public PerformanceStatistics getAndResetStatistics() {
++		synchronized(lock) {
++			PerformanceStatistics stats = getStatistics();
++			resetStatistics();
++			return stats;
++		}
++	}
++	
++	@Override
++	public void resetStatistics() {
++		synchronized(lock) {
++			upstreamPackets.clear();
++			downstreamPackets.clear();
++		}
++	}
++}
+-- 
+2.17.0.windows.1
+
