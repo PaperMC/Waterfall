@@ -1,4 +1,4 @@
-From 54a03d0d14c69cdc40bbf9e07a75643f0725864a Mon Sep 17 00:00:00 2001
+From 78de63081a1d3dcfbac9376d4f4e143200b387af Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,7 +8,7 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fde98e27..40f28a12 100644
+index eff7a89c..adb15d5b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -117,7 +117,7 @@ public class BungeeCord extends ProxyServer
@@ -30,7 +30,7 @@ index fde98e27..40f28a12 100644
  
          File moduleDirectory = new File( "modules" );
          moduleManager.load( this, moduleDirectory );
-@@ -328,7 +329,7 @@ public class BungeeCord extends ProxyServer
+@@ -333,7 +334,7 @@ public class BungeeCord extends ProxyServer
                      .childOption( ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 1024 * 1024 * 1 )
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
@@ -39,7 +39,7 @@ index fde98e27..40f28a12 100644
                      .localAddress( info.getHost() )
                      .bind().addListener( listener );
  
-@@ -349,7 +350,7 @@ public class BungeeCord extends ProxyServer
+@@ -354,7 +355,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -48,7 +48,7 @@ index fde98e27..40f28a12 100644
              }
          }
      }
-@@ -440,12 +441,14 @@ public class BungeeCord extends ProxyServer
+@@ -445,12 +446,14 @@ public class BungeeCord extends ProxyServer
                  }
  
                  getLogger().info( "Closing IO threads" );
@@ -83,5 +83,5 @@ index 9756c09c..648cd273 100644
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
                  .remoteAddress( getAddress() )
 -- 
-2.16.1
+2.17.0.windows.1
 
