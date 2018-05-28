@@ -1,4 +1,4 @@
-From da1be2161a2c3c701996135871c9a53080c4c66b Mon Sep 17 00:00:00 2001
+From 58fd8c6129c3d7a113d43f5afec755f6dee0d334 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -234,10 +234,10 @@ index c6da6c47..1edb9439 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index 673497e5..17e250d4 100644
+index 0d683856..c1272da3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-@@ -8,6 +8,8 @@ import lombok.NonNull;
+@@ -9,6 +9,8 @@ import lombok.NonNull;
  import lombok.RequiredArgsConstructor;
  import lombok.Setter;
  import net.md_5.bungee.UserConnection;
@@ -246,7 +246,7 @@ index 673497e5..17e250d4 100644
  import net.md_5.bungee.protocol.packet.PluginMessage;
  
  /**
-@@ -90,9 +92,23 @@ public class ForgeClientHandler
+@@ -92,9 +94,23 @@ public class ForgeClientHandler
      public void resetHandshake()
      {
          state = ForgeClientHandshakeState.HELLO;
@@ -271,5 +271,5 @@ index 673497e5..17e250d4 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.16.3
+2.17.0.windows.1
 
