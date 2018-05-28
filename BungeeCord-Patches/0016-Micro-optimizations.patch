@@ -1,6 +1,6 @@
-From 3a4e54f376d30d7f9cd187e5da62ee80d9dfb5dc Mon Sep 17 00:00:00 2001
+From 24dd867b9a796cd9fe22f66fdf2ae6215727ab66 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
-Date: Thu, 19 May 2016 18:05:33 -0600
+Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
 
 - PluginManager.dispatchCommand() avoids regex while splitting commands. Java 7 introduced an optimized String.split() that should be used instead (affects command dispatch).
@@ -31,10 +31,10 @@ index 71a5a158..520ee315 100644
          if ( split.length == 0 )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 507db01f..fde98e27 100644
+index fb751232..eff7a89c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -512,7 +512,9 @@ public class BungeeCord extends ProxyServer
+@@ -517,7 +517,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -79,5 +79,5 @@ index 9ea61319..565e6b0e 100644
              String subChannel = in.readUTF();
  
 -- 
-2.16.1
+2.17.0.windows.1
 

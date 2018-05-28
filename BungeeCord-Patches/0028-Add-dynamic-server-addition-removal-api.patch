@@ -1,4 +1,4 @@
-From a575b61861d16924305e4f832be476a936f0c186 Mon Sep 17 00:00:00 2001
+From 985a9137271f3307588d1272278749fca0494e50 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -157,10 +157,10 @@ index 416c54e3..920b9b36 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase();
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 40f28a12..f14821b4 100644
+index adb15d5b..dc652415 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -588,10 +588,18 @@ public class BungeeCord extends ProxyServer
+@@ -593,10 +593,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -181,7 +181,7 @@ index 40f28a12..f14821b4 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index d131c02c..a755121a 100644
+index 3a73a870..d3f0b2d8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -208,15 +208,15 @@ index d131c02c..a755121a 100644
      /**
       * Set of all servers.
       */
-@@ -62,6 +65,7 @@ public abstract class Configuration implements ProxyConfig
-     private int compressionThreshold = 256;
+@@ -63,6 +66,7 @@ public abstract class Configuration implements ProxyConfig
      private boolean preventProxyConnections;
+     private boolean forgeSupport;
  
 +    @Synchronized("serversLock") // Waterfall
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -102,7 +106,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -104,7 +108,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -225,7 +225,7 @@ index d131c02c..a755121a 100644
              this.servers = new CaseInsensitiveMap<>(newServers);
  
              for ( ServerInfo oldServer : oldServers.values() )
-@@ -160,4 +164,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -162,4 +166,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }
@@ -298,5 +298,5 @@ index d131c02c..a755121a 100644
 +    // Waterfall end
  }
 -- 
-2.16.3
+2.17.0.windows.1
 
