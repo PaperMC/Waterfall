@@ -1,4 +1,4 @@
-From 3b34c306a45463bf5937e92e80b2e41b66ed4dcf Mon Sep 17 00:00:00 2001
+From c9b2c26c44671f3ea151373594e412c61191e39b Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1125,7 +1125,7 @@ index 9983ef2e..ae5dad52 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index e67773d9..97cef3c4 100644
+index 756f7c2f..91ff3d03 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -2,8 +2,8 @@ package net.md_5.bungee.protocol.packet;
@@ -1433,7 +1433,7 @@ index b4705799..da1066cc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 64aaf998..981f99bd 100644
+index c62bc9ba..cb0bc3ef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -163,6 +163,14 @@ public class BungeeCord extends ProxyServer
@@ -1527,7 +1527,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1213c206..3addef8e 100644
+index 9c6fa440..bca1d162 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee;
@@ -1572,10 +1572,17 @@ index 1213c206..3addef8e 100644
  
              user.setDimension( login.getDimension() );
          } else
-@@ -377,6 +390,14 @@ public class ServerConnector extends PacketHandler
-         {
-             this.handshakeHandler.handle( pluginMessage );
+@@ -384,9 +397,26 @@ public class ServerConnector extends PacketHandler
+             }
+         }
  
+-        // We have to forward these to the user, especially with Forge as stuff might break
+-        // This includes any REGISTER messages we intercepted earlier.
+-        user.unsafe().sendPacket( pluginMessage );
++        if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )
++        {
++            this.handshakeHandler.handle( pluginMessage );
++
 +            // Travertine start
 +            if ( user.getForgeClientHandler().checkUserOutdated() )
 +            {
@@ -1584,9 +1591,17 @@ index 1213c206..3addef8e 100644
 +            }
 +            // Travertine end
 +
-             // We send the message as part of the handler, so don't send it here.
-             throw CancelSendSignal.INSTANCE;
-         } else
++            // We send the message as part of the handler, so don't send it here.
++            throw CancelSendSignal.INSTANCE;
++        } else
++        {
++            // We have to forward these to the user, especially with Forge as stuff might break
++            // This includes any REGISTER messages we intercepted earlier.
++            user.unsafe().sendPacket( pluginMessage );
++        }
+     }
+ 
+     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index ef12a019..4a1c3638 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -1776,7 +1791,7 @@ index 3cd5cf69..ff30b61a 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index b2513e93..a7fd0e78 100644
+index 09b1de2b..08a6eac3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -79,7 +79,12 @@ public class UpstreamBridge extends PacketHandler
@@ -2206,10 +2221,10 @@ index 00000000..6755fe84
 +}
 +// Travertine end
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index 17e250d4..bcc6a4f6 100644
+index c1272da3..45af7ea4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-@@ -7,6 +7,7 @@ import lombok.Getter;
+@@ -8,6 +8,7 @@ import lombok.Getter;
  import lombok.NonNull;
  import lombok.RequiredArgsConstructor;
  import lombok.Setter;
@@ -2217,7 +2232,7 @@ index 17e250d4..bcc6a4f6 100644
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
-@@ -22,6 +23,12 @@ public class ForgeClientHandler
+@@ -23,6 +24,12 @@ public class ForgeClientHandler
      @NonNull
      private final UserConnection con;
  
@@ -2230,7 +2245,7 @@ index 17e250d4..bcc6a4f6 100644
      /**
       * The users' mod list.
       */
-@@ -171,4 +178,22 @@ public class ForgeClientHandler
+@@ -173,4 +180,22 @@ public class ForgeClientHandler
      {
          return fmlTokenInHandshake || clientModList != null;
      }
@@ -2384,5 +2399,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.16.3
+2.17.1
 
