@@ -1,4 +1,4 @@
-From c9b2c26c44671f3ea151373594e412c61191e39b Mon Sep 17 00:00:00 2001
+From 87f901329e7a7fdb15fd1a125152bb77fff7aaeb Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1527,7 +1527,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9c6fa440..bca1d162 100644
+index 9c6fa440..87ee1b0a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee;
@@ -1572,33 +1572,31 @@ index 9c6fa440..bca1d162 100644
  
              user.setDimension( login.getDimension() );
          } else
-@@ -384,9 +397,26 @@ public class ServerConnector extends PacketHandler
-             }
-         }
+@@ -379,14 +392,23 @@ public class ServerConnector extends PacketHandler
+             {
+                 this.handshakeHandler.handle( pluginMessage );
  
--        // We have to forward these to the user, especially with Forge as stuff might break
--        // This includes any REGISTER messages we intercepted earlier.
--        user.unsafe().sendPacket( pluginMessage );
-+        if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )
-+        {
-+            this.handshakeHandler.handle( pluginMessage );
++                // Travertine start
++                if ( user.getForgeClientHandler().checkUserOutdated() )
++                {
++                    ch.close();
++                    user.getPendingConnects().remove(target);
++                }
++                // Travertine end
 +
-+            // Travertine start
-+            if ( user.getForgeClientHandler().checkUserOutdated() )
-+            {
-+                ch.close();
-+                user.getPendingConnects().remove(target);
-+            }
-+            // Travertine end
-+
-+            // We send the message as part of the handler, so don't send it here.
-+            throw CancelSendSignal.INSTANCE;
-+        } else
+                 // We send the message as part of the handler, so don't send it here.
+                 throw CancelSendSignal.INSTANCE;
+             }
++        }else
 +        {
 +            // We have to forward these to the user, especially with Forge as stuff might break
 +            // This includes any REGISTER messages we intercepted earlier.
 +            user.unsafe().sendPacket( pluginMessage );
-+        }
+         }
+-
+-        // We have to forward these to the user, especially with Forge as stuff might break
+-        // This includes any REGISTER messages we intercepted earlier.
+-        user.unsafe().sendPacket( pluginMessage );
      }
  
      @Override
