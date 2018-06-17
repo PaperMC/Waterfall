@@ -1,17 +1,17 @@
 From: Tim Zimmermann <tim.zimmermann@server24-7.eu>
-Date: Sun, 17 May 2018 13:35:55 +0200
+Date: Sun, 17 May 2018 15:44:57 +0200
 Subject: [PATCH] Enable IPv6 Support
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 77873239..5ca4fe8a 100644
+index 07e46026..3a0f9550 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -249,7 +249,6 @@ public class BungeeCord extends ProxyServer
+@@ -252,7 +252,7 @@ public class BungeeCord extends ProxyServer
      @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
      public void start() throws Exception
      {
 -        System.setProperty( "java.net.preferIPv4Stack", "true" ); // Minecraft does not support IPv6
++        //System.setProperty( "java.net.preferIPv4Stack", "true" ); Commented out this line to enable IPv6 support
          System.setProperty( "io.netty.selectorAutoRebuildThreshold", "0" ); // Seems to cause Bungee to stop accepting connections
          if ( System.getProperty( "io.netty.leakDetectionLevel" ) == null )
          {
-
