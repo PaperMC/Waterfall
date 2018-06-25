@@ -1,4 +1,4 @@
-From bf6eabd5788f7eb3323671a14145b160d80fc8ce Mon Sep 17 00:00:00 2001
+From 74f56e5352407993754cacb27f81948908e5fba3 Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -249,7 +249,7 @@ index 00000000..d4a81199
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index c3cd07bf..b11f8a86 100644
+index 2a1b0d82..87ad1500 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -261,7 +261,7 @@ index c3cd07bf..b11f8a86 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index dd8eab30..61886884 100644
+index 1c22043b..e34e3b54 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
@@ -297,7 +297,7 @@ index 446dfe2f..c3cb5aaa 100644
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 new file mode 100644
-index 00000000..a8a94749
+index 00000000..6cfe283a
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 @@ -0,0 +1,93 @@
@@ -355,7 +355,7 @@ index 00000000..a8a94749
 +                .appName(ProxyServer.getInstance().getName())
 +                .terminal(terminal)
 +                .build();
-+
++        reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
 +        reader.unsetOpt(LineReader.Option.INSERT_TAB);
 +
 +        TerminalConsoleAppender.setReader(reader);
@@ -395,7 +395,7 @@ index 00000000..a8a94749
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 064a7672..953f9085 100644
+index 788e6687..bba7a0e7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -506,5 +506,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.16.1
+2.18.0
 
