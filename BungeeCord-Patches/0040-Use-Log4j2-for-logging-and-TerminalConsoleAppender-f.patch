@@ -1,5 +1,5 @@
-From 86114fe2b34ce641430a7bbd18e6acb99b46101f Mon Sep 17 00:00:00 2001
-From: Minecrell <dev@minecrell.net>
+From 5b28001ff643ac29ecd7f73d19689019a326c81d Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
  console
@@ -28,7 +28,7 @@ index ee76507c..e7bc7a5d 100644
          </plugins>
      </build>
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 2efe7211..3e719f6e 100644
+index 2efe7211..f5270655 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -57,6 +57,9 @@ public class BungeeCordLauncher
@@ -36,7 +36,7 @@ index 2efe7211..3e719f6e 100644
          if ( !options.has( "noconsole" ) )
          {
 +            // Waterfall start - Use TerminalConsoleAppender
-+            io.github.waterfallmc.waterfall.console.WaterfallConsole.readCommands();
++            new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
 +            /*
              String line;
              while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
@@ -52,10 +52,10 @@ index 2efe7211..3e719f6e 100644
  }
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..e49c948f
+index 00000000..36fceb93
 --- /dev/null
 +++ b/log4j/pom.xml
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,48 @@
 +<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 +         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 +    <modelVersion>4.0.0</modelVersion>
@@ -75,48 +75,32 @@ index 00000000..e49c948f
 +    <name>Waterfall-Log</name>
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
++    <properties>
++        <log4j2.version>2.11.0</log4j2.version>
++    </properties>
++
 +    <dependencies>
 +        <!-- Log4j -->
 +        <dependency>
 +            <groupId>org.apache.logging.log4j</groupId>
 +            <artifactId>log4j-core</artifactId>
-+            <version>2.9.1</version>
++            <version>${log4j2.version}</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.apache.logging.log4j</groupId>
 +            <artifactId>log4j-iostreams</artifactId>
-+            <version>2.9.1</version>
++            <version>${log4j2.version}</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.apache.logging.log4j</groupId>
 +            <artifactId>log4j-jul</artifactId>
-+            <version>2.9.1</version>
++            <version>${log4j2.version}</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>com.lmax</groupId>
 +            <artifactId>disruptor</artifactId>
-+            <version>3.3.6</version>
++            <version>3.4.2</version>
 +            <scope>runtime</scope>
-+        </dependency>
-+
-+        <!-- Console improvements -->
-+        <dependency>
-+            <groupId>net.minecrell</groupId>
-+            <artifactId>terminalconsoleappender</artifactId>
-+            <version>1.0.0</version>
-+        </dependency>
-+        <dependency>
-+            <groupId>net.java.dev.jna</groupId>
-+            <artifactId>jna</artifactId>
-+            <version>4.4.0</version>
-+            <scope>runtime</scope>
-+        </dependency>
-+
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>waterfall-chat</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
 +        </dependency>
 +    </dependencies>
 +</project>
@@ -261,7 +245,7 @@ index 79493df2..0183bf9c 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 03708968..bb15d274 100644
+index 03708968..9f1b066e 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
@@ -273,8 +257,29 @@ index 03708968..bb15d274 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+@@ -98,6 +98,20 @@
+             <version>5.1.46</version>
+             <scope>runtime</scope>
+         </dependency>
++
++        <!-- Waterfall start - Console improvements -->
++        <dependency>
++            <groupId>net.minecrell</groupId>
++            <artifactId>terminalconsoleappender</artifactId>
++            <version>1.1.0</version>
++        </dependency>
++        <dependency>
++            <groupId>net.java.dev.jna</groupId>
++            <artifactId>jna</artifactId>
++            <version>4.5.2</version>
++            <scope>runtime</scope>
++        </dependency>
++        <!-- Waterfall end -->
+     </dependencies>
+ 
+     <build>
 diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
-index 446dfe2f..c3cb5aaa 100644
+index 446dfe2f..f036efcd 100644
 --- a/proxy/src/main/java/Test.java
 +++ b/proxy/src/main/java/Test.java
 @@ -22,6 +22,9 @@ public class Test
@@ -282,7 +287,7 @@ index 446dfe2f..c3cb5aaa 100644
          bungee.start();
  
 +        // Waterfall start - Use TerminalConsoleAppender
-+        io.github.waterfallmc.waterfall.console.WaterfallConsole.readCommands();
++        new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
 +        /*
          while ( bungee.isRunning )
          {
@@ -297,100 +302,46 @@ index 446dfe2f..c3cb5aaa 100644
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 new file mode 100644
-index 00000000..6cfe283a
+index 00000000..765d24bc
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,39 @@
 +package io.github.waterfallmc.waterfall.console;
 +
-+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 +import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.ProxyServer;
-+import net.minecrell.terminalconsole.TerminalConsoleAppender;
-+import org.jline.reader.EndOfFileException;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.minecrell.terminalconsole.SimpleTerminalConsole;
 +import org.jline.reader.LineReader;
 +import org.jline.reader.LineReaderBuilder;
-+import org.jline.reader.UserInterruptException;
-+import org.jline.terminal.Terminal;
 +
-+import java.io.BufferedReader;
-+import java.io.IOException;
-+import java.io.InputStream;
-+import java.io.InputStreamReader;
-+import java.util.concurrent.Executor;
-+import java.util.concurrent.Executors;
++public final class WaterfallConsole extends SimpleTerminalConsole {
 +
-+public final class WaterfallConsole {
++    @Override
++    protected LineReader buildReader(LineReaderBuilder builder) {
++        ProxyServer proxy = ProxyServer.getInstance();
++        return super.buildReader(builder
++                .appName(proxy.getName())
++        );
++    }
 +
-+    private static final Executor executor = Executors.newSingleThreadExecutor(
-+            new ThreadFactoryBuilder().setNameFormat( "Console Command Thread #%d" ).build());
++    @Override
++    protected boolean isRunning() {
++        return BungeeCord.getInstance().isRunning;
++    }
 +
-+    public static void readCommands() throws IOException {
-+        Terminal terminal = TerminalConsoleAppender.getTerminal();
-+        if (terminal != null) {
-+            readCommands(terminal);
-+        } else {
-+            readCommands(System.in);
++    @Override
++    protected void runCommand(String command) {
++        ProxyServer proxy = ProxyServer.getInstance();
++        if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
++            proxy.getConsole().sendMessage(new ComponentBuilder("Command not found").color(ChatColor.RED).create());
 +        }
 +    }
 +
-+    private static void runCommand(String input) {
-+        final String command = input.trim();
-+        if (command.isEmpty()) {
-+            return;
-+        }
-+
-+        executor.execute(() -> {
-+            ProxyServer proxy = ProxyServer.getInstance();
-+            if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
-+                proxy.getConsole().sendMessage(ChatColor.RED + "Command not found");
-+            }
-+        });
-+    }
-+
-+    private static void readCommands(Terminal terminal) throws IOException {
-+        final BungeeCord bungee = BungeeCord.getInstance();
-+        final LineReader reader = LineReaderBuilder.builder()
-+                .appName(ProxyServer.getInstance().getName())
-+                .terminal(terminal)
-+                .build();
-+        reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
-+        reader.unsetOpt(LineReader.Option.INSERT_TAB);
-+
-+        TerminalConsoleAppender.setReader(reader);
-+
-+        try {
-+            String line;
-+            while (bungee.isRunning) {
-+                try {
-+                    line = reader.readLine("> ");
-+                } catch (EndOfFileException ignored) {
-+                    // Continue reading after EOT
-+                    continue;
-+                }
-+
-+                if (line == null) {
-+                    break;
-+                }
-+
-+                runCommand(line);
-+            }
-+        } catch (UserInterruptException e) {
-+            ProxyServer.getInstance().stop();
-+        } finally {
-+            TerminalConsoleAppender.setReader(null);
-+        }
-+    }
-+
-+    private static void readCommands(InputStream in) throws IOException {
-+        final BungeeCord bungee = BungeeCord.getInstance();
-+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-+            String line;
-+            while (bungee.isRunning && (line = reader.readLine()) != null) {
-+                runCommand(line);
-+            }
-+        }
++    @Override
++    protected void shutdown() {
++        ProxyServer.getInstance().stop();
 +    }
 +
 +}

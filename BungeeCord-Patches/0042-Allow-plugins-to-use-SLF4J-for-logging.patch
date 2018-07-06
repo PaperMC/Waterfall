@@ -1,11 +1,11 @@
-From 8d7700a5ef39cf148965e355adafccd27a02900a Mon Sep 17 00:00:00 2001
-From: Minecrell <dev@minecrell.net>
+From b77cc41ce6d472939205d2795e04769ae01d94fc Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 2a3c5eae..25d870d1 100644
+index 48bd8a54..0e46cbbe 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -43,5 +43,12 @@
@@ -39,21 +39,22 @@ index e85b4914..2e5ae4fb 100644
       * Called when the plugin has just been loaded. Most of the proxy will not
       * be initialized, so only use it for registering
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 78045e1d..d078cd68 100644
+index 36fceb93..a085a39c 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
-@@ -34,6 +34,11 @@
+@@ -38,6 +38,12 @@
              <artifactId>log4j-jul</artifactId>
-             <version>2.9.1</version>
+             <version>${log4j2.version}</version>
          </dependency>
 +        <dependency>
 +            <groupId>org.apache.logging.log4j</groupId>
 +            <artifactId>log4j-slf4j-impl</artifactId>
-+            <version>2.9.1</version>
++            <version>${log4j2.version}</version>
++            <scope>runtime</scope>
 +        </dependency>
          <dependency>
              <groupId>com.lmax</groupId>
              <artifactId>disruptor</artifactId>
 -- 
-2.14.1
+2.18.0
 

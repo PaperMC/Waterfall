@@ -1,5 +1,5 @@
-From 4f89985a92b0dc63f3a7467b77c421b69d52aff8 Mon Sep 17 00:00:00 2001
-From: Minecrell <dev@minecrell.net>
+From 056c5b8f8853c5e0471fa0f88b5fe18c58cd9345 Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
 Date: Tue, 26 Sep 2017 18:59:37 +0200
 Subject: [PATCH] Add console command completion
 
@@ -90,17 +90,17 @@ index 00000000..bfcb6e9f
 +
 +}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
-index 6cfe283a..31967d7d 100644
+index 765d24bc..6cec0b5a 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
-@@ -51,6 +51,7 @@ public final class WaterfallConsole {
-         final LineReader reader = LineReaderBuilder.builder()
-                 .appName(ProxyServer.getInstance().getName())
-                 .terminal(terminal)
-+                .completer(new ConsoleCommandCompleter(bungee))
-                 .build();
-         reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
-         reader.unsetOpt(LineReader.Option.INSERT_TAB);
+@@ -15,6 +15,7 @@ public final class WaterfallConsole extends SimpleTerminalConsole {
+         ProxyServer proxy = ProxyServer.getInstance();
+         return super.buildReader(builder
+                 .appName(proxy.getName())
++                .completer(new ConsoleCommandCompleter(proxy))
+         );
+     }
+ 
 -- 
 2.18.0
 
