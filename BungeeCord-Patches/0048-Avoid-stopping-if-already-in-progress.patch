@@ -1,0 +1,26 @@
+From 26db2fb70aef93e407e58be44bca22e691ba44d1 Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
+Date: Fri, 6 Jul 2018 23:15:21 +0200
+Subject: [PATCH] Avoid stopping if already in progress
+
+Currently it is possible to stop the proxy multiple times, causing
+the shutdown routines to be called twice. This doesn't make any
+sense and may even cause problems with some plugins.
+
+Cancel early if stopping is already in progress to avoid this.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d5b3bd3d..ae7297f5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -386,6 +386,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public void stop(final String reason)
+     {
++        if (!this.isRunning) return; // Waterfall - Avoid stopping if already in progress
+         new Thread( "Shutdown Thread" )
+         {
+             @Override
+-- 
+2.18.0
+
