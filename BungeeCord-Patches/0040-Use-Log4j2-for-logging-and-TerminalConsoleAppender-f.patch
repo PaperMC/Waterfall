@@ -1,4 +1,4 @@
-From 74f56e5352407993754cacb27f81948908e5fba3 Mon Sep 17 00:00:00 2001
+From 838c64762f41da5e8e81fe8cb973edc24a19b2db Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -395,7 +395,7 @@ index 00000000..6cfe283a
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 788e6687..bba7a0e7 100644
+index 6ddb2cb7..22ebfe44 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -442,7 +442,7 @@ index 788e6687..bba7a0e7 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -200,6 +199,8 @@ public class BungeeCord extends ProxyServer
+@@ -194,6 +193,8 @@ public class BungeeCord extends ProxyServer
          }
          reloadMessages();
  
@@ -451,7 +451,7 @@ index 788e6687..bba7a0e7 100644
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
          // using the loading class's implementation version. Normally this works completely fine,
-@@ -218,6 +219,9 @@ public class BungeeCord extends ProxyServer
+@@ -212,6 +213,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
@@ -459,8 +459,8 @@ index 788e6687..bba7a0e7 100644
 +        logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
 +        // Waterfall end
  
-         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-         {
+         pluginManager = new PluginManager( this );
+         getPluginManager().registerCommand( null, new CommandReload() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
 deleted file mode 100644
 index bd52d880..00000000
@@ -506,5 +506,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.18.0
+2.16.1
 

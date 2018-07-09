@@ -1,4 +1,4 @@
-From 7320250bed10e66cd09a696a6c6f482bee2f5160 Mon Sep 17 00:00:00 2001
+From 9553db26ff87855c70317e4ca59f4d5213fb13ae Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -10,7 +10,7 @@ Subject: [PATCH] Micro-optimizations
 - Optimise replacing dashes in UUID's
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 71a5a158..520ee315 100644
+index 096538a7..54a65155 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
@@ -31,10 +31,10 @@ index 71a5a158..520ee315 100644
          if ( split.length == 0 )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bb162e0f..09652575 100644
+index b9cf1ee2..fcdc8967 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -516,7 +516,9 @@ public class BungeeCord extends ProxyServer
+@@ -521,7 +521,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -79,5 +79,5 @@ index 9ea61319..565e6b0e 100644
              String subChannel = in.readUTF();
  
 -- 
-2.17.1
+2.16.1
 
