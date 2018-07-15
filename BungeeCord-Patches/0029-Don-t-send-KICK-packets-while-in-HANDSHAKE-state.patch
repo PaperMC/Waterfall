@@ -1,14 +1,14 @@
-From 02f89ab7ae7b288cc0fbd2494b7a7bfb90330ce6 Mon Sep 17 00:00:00 2001
+From 74d52d182c77622b4c017eae70d3cc729254f095 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:36:10 -0600
 Subject: [PATCH] Don't send KICK packets while in HANDSHAKE state
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ba3d5204..14929879 100644
+index 933a8388..65e57062 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -267,7 +267,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -278,7 +278,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
  
@@ -17,7 +17,7 @@ index ba3d5204..14929879 100644
          // with Bungee's IP forwarding, so we detect it, and remove it from the host string, for now.
          // We know FML appends \00FML\00. However, we need to also consider that other systems might
          // add their own data to the end of the string. So, we just take everything from the \0 character
-@@ -548,7 +548,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -565,7 +565,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void disconnect(final BaseComponent... reason)
      {
@@ -27,5 +27,5 @@ index ba3d5204..14929879 100644
              ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
          } else
 -- 
-2.16.3
+2.15.1.windows.2
 

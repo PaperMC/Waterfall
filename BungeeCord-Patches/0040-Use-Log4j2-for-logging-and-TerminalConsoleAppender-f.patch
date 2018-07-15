@@ -1,4 +1,4 @@
-From 838c64762f41da5e8e81fe8cb973edc24a19b2db Mon Sep 17 00:00:00 2001
+From 86114fe2b34ce641430a7bbd18e6acb99b46101f Mon Sep 17 00:00:00 2001
 From: Minecrell <dev@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 7bc2dff7..6e8dd81e 100644
+index ee76507c..e7bc7a5d 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -80,7 +80,17 @@
@@ -52,7 +52,7 @@ index 2efe7211..3e719f6e 100644
  }
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..78045e1d
+index 00000000..e49c948f
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,64 @@
@@ -63,13 +63,13 @@ index 00000000..78045e1d
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.12-SNAPSHOT</version>
++        <version>1.13-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.12-SNAPSHOT</version>
++    <version>1.13-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log</name>
@@ -249,7 +249,7 @@ index 00000000..d4a81199
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 2a1b0d82..87ad1500 100644
+index 79493df2..0183bf9c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -261,7 +261,7 @@ index 2a1b0d82..87ad1500 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 1c22043b..e34e3b54 100644
+index 03708968..bb15d274 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
@@ -395,7 +395,7 @@ index 00000000..6cfe283a
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6ddb2cb7..22ebfe44 100644
+index 09d53fea..47d4c585 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -506,5 +506,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.16.1
+2.18.0
 
