@@ -1,4 +1,4 @@
-From 62da2c1697d08e1e68415ac453a0391c0a58e6f8 Mon Sep 17 00:00:00 2001
+From 2c0151ec567571dbd5b34c554bf18d9b88fe796d Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -9,7 +9,7 @@ Vanilla servers still error on negative/invalid packets.
 Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index e7cb3803..447eaae7 100644
+index ea44573d..5b32effe 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -16,6 +16,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -37,10 +37,10 @@ index e7cb3803..447eaae7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index cd065631..3f6b1766 100644
+index 76c2bea0..96d3c99e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -360,14 +360,23 @@ public enum Protocol
+@@ -397,14 +397,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -66,20 +66,20 @@ index cd065631..3f6b1766 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6c367c73..6df62b22 100644
+index ee8cdff2..44821171 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -30,7 +30,9 @@ import net.md_5.bungee.forge.ForgeUtils;
+@@ -31,7 +31,9 @@ import net.md_5.bungee.forge.ForgeUtils;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.HandlerBoss;
  import net.md_5.bungee.netty.PacketHandler;
 +import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
 +import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
- import net.md_5.bungee.protocol.packet.EncryptionRequest;
- import net.md_5.bungee.protocol.packet.Handshake;
-@@ -185,6 +187,12 @@ public class ServerConnector extends PacketHandler
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -198,6 +200,12 @@ public class ServerConnector extends PacketHandler
  
          ServerConnection server = new ServerConnection( ch, target );
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
@@ -91,7 +91,7 @@ index 6c367c73..6df62b22 100644
 +
          bungee.getPluginManager().callEvent( event );
  
-         ch.write( BungeeCord.getInstance().registerChannels() );
+         ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index bc1227a5..61502ea8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -105,10 +105,10 @@ index bc1227a5..61502ea8 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 847a3eca..27ee21f2 100644
+index cae566f5..bad9773b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -211,6 +211,12 @@ public abstract class EntityMap
+@@ -264,6 +264,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -122,5 +122,5 @@ index 847a3eca..27ee21f2 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.16.1
+2.15.1.windows.2
 
