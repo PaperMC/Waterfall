@@ -1,4 +1,4 @@
-From 9553db26ff87855c70317e4ca59f4d5213fb13ae Mon Sep 17 00:00:00 2001
+From 3f1783a2c23871117ecd7bebbc719a791f2f6b27 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -31,10 +31,10 @@ index 096538a7..54a65155 100644
          if ( split.length == 0 )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b9cf1ee2..fcdc8967 100644
+index cfc3991f..ae8fd627 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -521,7 +521,9 @@ public class BungeeCord extends ProxyServer
+@@ -520,7 +520,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -59,10 +59,10 @@ index 2daaf999..bc1227a5 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9ea61319..565e6b0e 100644
+index 51c78e2e..23417849 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -223,7 +223,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -224,7 +224,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -70,7 +70,7 @@ index 9ea61319..565e6b0e 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -250,6 +249,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -251,6 +250,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -79,5 +79,5 @@ index 9ea61319..565e6b0e 100644
              String subChannel = in.readUTF();
  
 -- 
-2.16.1
+2.15.1.windows.2
 
