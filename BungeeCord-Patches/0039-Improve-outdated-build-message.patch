@@ -1,0 +1,26 @@
+From f1874ae942e3360895f48572822e1ff19dbec56f Mon Sep 17 00:00:00 2001
+From: Jamie Mansfield <dev@jamierocks.uk>
+Date: Sat, 10 Jun 2017 20:56:02 +0100
+Subject: [PATCH] Improve outdated build message
+
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 11526c9c..2efe7211 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -42,9 +42,9 @@ public class BungeeCordLauncher
+             deadline.add( Calendar.WEEK_OF_YEAR, -4 );
+             if ( buildDate.before( deadline.getTime() ) )
+             {
+-                System.err.println( "*** Warning, this build is outdated ***" );
+-                System.err.println( "*** Please download a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
+-                System.err.println( "*** You will get NO support regarding this build ***" );
++                System.err.println( "*** Hey! This build is potentially outdated :( ***" );
++                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
++                System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
+                 System.err.println( "*** Server will start in 10 seconds ***" );
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
+             }
+-- 
+2.18.0
+

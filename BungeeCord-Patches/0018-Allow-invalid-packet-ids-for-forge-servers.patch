@@ -1,0 +1,126 @@
+From dd2af3af4926e0c273f5554ac74970ad9df08c2b Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Thu, 19 May 2016 17:09:22 -0600
+Subject: [PATCH] Allow invalid packet ids for forge servers
+
+Some forge mods (COFH) use negative packet ids instead of plugin channels for 'reasons'.
+Vanilla servers still error on negative/invalid packets.
+
+Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index ea44573d..5b32effe 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -16,6 +16,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+     private final boolean server;
+     @Setter
+     private int protocolVersion;
++    @Setter
++    private boolean supportsForge = false;
++
++    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
++        this.protocol = protocol;
++        this.server = server;
++        this.protocolVersion = protocolVersion;
++    }
+ 
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+@@ -27,7 +35,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         {
+             int packetId = DefinedPacket.readVarInt( in );
+ 
+-            DefinedPacket packet = prot.createPacket( packetId, protocolVersion );
++            DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+             if ( packet != null )
+             {
+                 packet.read( in, prot.getDirection(), protocolVersion );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 76c2bea0..96d3c99e 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -397,14 +397,23 @@ public enum Protocol
+             return protocol;
+         }
+ 
++        public boolean hasPacket(int i, boolean supportsForge) {
++            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
++        }
++
+         public final DefinedPacket createPacket(int id, int version)
++        {
++            return createPacket(id, version, true);
++        }
++
++        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
+         {
+             ProtocolData protocolData = getProtocolData( version );
+             if ( protocolData == null )
+             {
+                 throw new BadPacketException( "Unsupported protocol version" );
+             }
+-            if ( id > MAX_PACKET_ID )
++            if ( !hasPacket(id, supportsForge) )
+             {
+                 throw new BadPacketException( "Packet with id " + id + " outside of range " );
+             }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index ee8cdff2..44821171 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -31,7 +31,9 @@ import net.md_5.bungee.forge.ForgeUtils;
+ import net.md_5.bungee.netty.ChannelWrapper;
+ import net.md_5.bungee.netty.HandlerBoss;
+ import net.md_5.bungee.netty.PacketHandler;
++import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -198,6 +200,12 @@ public class ServerConnector extends PacketHandler
+ 
+         ServerConnection server = new ServerConnection( ch, target );
+         ServerConnectedEvent event = new ServerConnectedEvent( user, server );
++
++        if (server.isForgeServer() && user.isForgeUser()) {
++            ((MinecraftDecoder) server.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
++            ((MinecraftDecoder) user.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
++        }
++
+         bungee.getPluginManager().callEvent( event );
+ 
+         ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index bc1227a5..61502ea8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -71,6 +71,7 @@ public final class UserConnection implements ProxiedPlayer
+     @NonNull
+     private final ProxyServer bungee;
+     @NonNull
++    @Getter
+     private final ChannelWrapper ch;
+     @Getter
+     @NonNull
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index cae566f5..bad9773b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -264,6 +264,12 @@ public abstract class EntityMap
+         int packetId = DefinedPacket.readVarInt( packet );
+         int packetIdLength = packet.readerIndex() - readerIndex;
+ 
++        if (packetId < 0 || packetId > ints.length || packetId > varints.length) { // Invalid packet id
++            // Ignore these invalid packets for compatibility reasons
++            packet.readerIndex( readerIndex );
++            return;
++        }
++
+         if ( ints[packetId] )
+         {
+             rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
+-- 
+2.18.0
+

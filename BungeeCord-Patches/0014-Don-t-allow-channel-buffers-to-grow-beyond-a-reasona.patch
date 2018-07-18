@@ -1,0 +1,22 @@
+From 07e5461a783493e3a46d1d1ea50a59d81cfde264 Mon Sep 17 00:00:00 2001
+From: Iceee <andrew@optic.tv>
+Date: Mon, 6 Jul 2015 18:59:29 -0500
+Subject: [PATCH] Don't allow channel buffers to grow beyond a reasonable limit
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 8a4f747c..cfc3991f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -328,6 +328,8 @@ public class BungeeCord extends ProxyServer
+             new ServerBootstrap()
+                     .channel( PipelineUtils.getServerChannel() )
+                     .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
++                    .childOption( ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1024 * 1024 * 10 )
++                    .childOption( ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 1024 * 1024 * 1 )
+                     .childAttr( PipelineUtils.LISTENER, info )
+                     .childHandler( PipelineUtils.SERVER_CHILD )
+                     .group( eventLoops )
+-- 
+2.18.0
+
