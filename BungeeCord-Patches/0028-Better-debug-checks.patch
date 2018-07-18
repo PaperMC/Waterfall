@@ -1,0 +1,22 @@
+From 4f9ac24b7795f778c4f0d6c2a975e46d07b52a35 Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Wed, 6 Apr 2016 23:46:00 -0700
+Subject: [PATCH] Better debug checks
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 96d3c99e..da53ff0f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -470,7 +470,7 @@ public enum Protocol
+             {
+                 throw new BadPacketException( "Unsupported protocol version" );
+             }
+-            Preconditions.checkArgument( protocolData.packetMap.containsKey( packet ), "Cannot get ID for packet " + packet );
++            Preconditions.checkArgument( protocolData.packetMap.containsKey( packet ), "Cannot get ID for packet %s in state %s", packet, protocolPhase);
+ 
+             return protocolData.packetMap.get( packet );
+         }
+-- 
+2.18.0
+
