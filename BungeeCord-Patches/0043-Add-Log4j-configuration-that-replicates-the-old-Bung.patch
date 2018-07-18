@@ -1,4 +1,4 @@
-From 11629f33a3756606d47546784605aa3a7ae7fb41 Mon Sep 17 00:00:00 2001
+From ca65f501ae9962731c785cba7d7b3b1357f8df4e Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Sun, 24 Sep 2017 12:06:49 +0200
 Subject: [PATCH] Add Log4j configuration that replicates the old BungeeCord
@@ -8,7 +8,7 @@ Can be enabled using -Dlog4j.configurationFile=log4j2-bungee.xml.
 
 diff --git a/log4j/src/main/resources/log4j2-bungee.xml b/log4j/src/main/resources/log4j2-bungee.xml
 new file mode 100644
-index 00000000..bf132953
+index 00000000..6e9c09c5
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2-bungee.xml
 @@ -0,0 +1,34 @@
@@ -40,10 +40,10 @@ index 00000000..bf132953
 +    </Appenders>
 +
 +    <Loggers>
-+        <AsyncRoot level="info">
++        <Root level="info">
 +            <AppenderRef ref="TerminalConsole" />
 +            <AppenderRef ref="File" />
-+        </AsyncRoot>
++        </Root>
 +    </Loggers>
 +</Configuration>
 -- 

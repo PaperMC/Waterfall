@@ -1,4 +1,4 @@
-From 5b28001ff643ac29ecd7f73d19689019a326c81d Mon Sep 17 00:00:00 2001
+From 5872d7cacee483a8c84ffc319c1ffcf7d5bfc037 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -204,9 +204,16 @@ index 00000000..a0f7ed01
 +    }
 +
 +}
+diff --git a/log4j/src/main/resources/log4j2.component.properties b/log4j/src/main/resources/log4j2.component.properties
+new file mode 100644
+index 00000000..6ed08f31
+--- /dev/null
++++ b/log4j/src/main/resources/log4j2.component.properties
+@@ -0,0 +1 @@
++log4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 new file mode 100644
-index 00000000..d4a81199
+index 00000000..93ce3b14
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -0,0 +1,22 @@
@@ -226,10 +233,10 @@ index 00000000..d4a81199
 +    </Appenders>
 +
 +    <Loggers>
-+        <AsyncRoot level="info">
++        <Root level="info">
 +            <AppenderRef ref="TerminalConsole" />
 +            <AppenderRef ref="File" />
-+        </AsyncRoot>
++        </Root>
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
