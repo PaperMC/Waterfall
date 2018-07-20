@@ -1,4 +1,4 @@
-From 59c2ac94212b06ce965ebe967ed6c389fa1895f4 Mon Sep 17 00:00:00 2001
+From bcb50a65f02e87abccf39b2cdb1c4ae072307838 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -32,7 +32,7 @@ index 93f324e2..0e81b43c 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index da53ff0f..82e9a1d6 100644
+index 18081eab..a8ac332a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
