@@ -1,4 +1,4 @@
-From 9c0293a309e204e93ec5e41702ff5bab4f59f53d Mon Sep 17 00:00:00 2001
+From 33be1b5b17833e2a218557cb5d1916df6f5ee357 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1646,20 +1646,19 @@ index ef12a019..4a1c3638 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 287a42bd..43617375 100644
+index 287a42bd..7eb40136 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -144,8 +144,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -144,7 +144,7 @@ public class DownstreamBridge extends PacketHandler
          switch ( objective.getAction() )
          {
              case 0:
 -                serverScoreboard.addObjective( new Objective( objective.getName(), objective.getValue(), objective.getType().toString() ) );
--                break;
 +                serverScoreboard.addObjective( new Objective( objective.getName(), objective.getValue(), objective.getType() != null ? objective.getType().toString() : null) ); // Travertine - 1.7 protocol support
+                 break;
              case 1:
                  serverScoreboard.removeObjective( objective.getName() );
-                 break;
-@@ -154,7 +153,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -154,7 +154,7 @@ public class DownstreamBridge extends PacketHandler
                  if ( oldObjective != null )
                  {
                      oldObjective.setValue( objective.getValue() );
@@ -1668,7 +1667,7 @@ index 287a42bd..43617375 100644
                  }
                  break;
              default:
-@@ -251,16 +250,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -251,16 +251,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
