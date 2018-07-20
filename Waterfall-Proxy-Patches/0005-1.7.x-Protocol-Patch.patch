@@ -1,4 +1,4 @@
-From 87f901329e7a7fdb15fd1a125152bb77fff7aaeb Mon Sep 17 00:00:00 2001
+From b91bff82ac6a3902a3f8a27987da26d926cd2aa5 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -129,7 +129,7 @@ index 10e16d79..04a34033 100644
  
      @Override
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 0b780e2e..a38d8019 100644
+index 9e9ea49c..75b0f8a9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -5,10 +5,11 @@ import io.netty.buffer.ByteBufUtil;
@@ -167,19 +167,19 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 97aacd00..120bfed1 100644
+index a8ac332a..6fd624ae 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -346,6 +346,8 @@ public enum Protocol
+@@ -384,6 +384,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
 +                    ProtocolConstants.MINECRAFT_1_7_2,
 +                    ProtocolConstants.MINECRAFT_1_7_6,
                      ProtocolConstants.MINECRAFT_1_9,
-                     ProtocolConstants.MINECRAFT_1_12
-             ) );
-@@ -398,7 +400,11 @@ public enum Protocol
+                     ProtocolConstants.MINECRAFT_1_12,
+                     ProtocolConstants.MINECRAFT_1_13
+@@ -437,7 +439,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -574,7 +574,7 @@ index 00000000..2aa68858
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index a9398eef..aa801b87 100644
+index 673da608..80438990 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -586,16 +586,16 @@ index a9398eef..aa801b87 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -18,6 +20,7 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_12_1 = 338;
+@@ -19,6 +21,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_12_2 = 340;
+     public static final int MINECRAFT_1_13 = 389;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
              "1.9.x",
              "1.10.x",
-@@ -25,6 +28,8 @@ public class ProtocolConstants
-             "1.12.x"
+@@ -27,6 +30,8 @@ public class ProtocolConstants
+             "1.13.x"
      );
      public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
 +            ProtocolConstants.MINECRAFT_1_7_2,
@@ -1125,11 +1125,11 @@ index 9983ef2e..ae5dad52 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 756f7c2f..91ff3d03 100644
+index 04644236..029618cf 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -2,8 +2,8 @@ package net.md_5.bungee.protocol.packet;
- 
+@@ -3,8 +3,8 @@ package net.md_5.bungee.protocol.packet;
+ import com.google.common.base.Function;
  import com.google.common.base.Preconditions;
  import com.google.common.base.Predicate;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
@@ -1138,7 +1138,7 @@ index 756f7c2f..91ff3d03 100644
  import io.netty.buffer.ByteBuf;
  import java.io.ByteArrayInputStream;
  import java.io.DataInput;
-@@ -19,7 +19,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -21,7 +21,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -1146,8 +1146,8 @@ index 756f7c2f..91ff3d03 100644
 +public class PluginMessage extends MultiVersionPacketV17
  {
  
-     public static final Predicate<PluginMessage> SHOULD_RELAY = new Predicate<PluginMessage>()
-@@ -52,6 +52,15 @@ public class PluginMessage extends DefinedPacket
+     public static final Function<String, String> MODERNISE = new Function<String, String>()
+@@ -79,6 +79,15 @@ public class PluginMessage extends DefinedPacket
       */
      private boolean allowExtendedPacket = false;
  
@@ -1163,7 +1163,7 @@ index 756f7c2f..91ff3d03 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -62,6 +71,15 @@ public class PluginMessage extends DefinedPacket
+@@ -89,6 +98,15 @@ public class PluginMessage extends DefinedPacket
          buf.readBytes( data );
      }
  
@@ -1180,7 +1180,7 @@ index 756f7c2f..91ff3d03 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index ef9b8cf6..43af3189 100644
+index 6279d9f3..6c238edf 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -1,6 +1,6 @@
@@ -1189,9 +1189,9 @@ index ef9b8cf6..43af3189 100644
 -import net.md_5.bungee.protocol.DefinedPacket;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
+ import java.util.Locale;
  import lombok.AllArgsConstructor;
- import lombok.Data;
-@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -14,7 +14,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -1200,7 +1200,7 @@ index ef9b8cf6..43af3189 100644
  {
  
      private String name;
-@@ -24,6 +24,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -25,6 +25,16 @@ public class ScoreboardObjective extends DefinedPacket
       */
      private byte action;
  
@@ -1217,7 +1217,7 @@ index ef9b8cf6..43af3189 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -36,6 +46,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -43,6 +53,16 @@ public class ScoreboardObjective extends DefinedPacket
          }
      }
  
@@ -1298,7 +1298,7 @@ index 6f0de535..b967f89f 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-index e3bcbc33..7634ebfd 100644
+index f9eaa7ce..e174ac0b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 @@ -1,6 +1,6 @@
@@ -1307,21 +1307,21 @@ index e3bcbc33..7634ebfd 100644
 -import net.md_5.bungee.protocol.DefinedPacket;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
- import lombok.AllArgsConstructor;
  import lombok.Data;
-@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ import lombok.EqualsAndHashCode;
+@@ -11,7 +11,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @Data
  @NoArgsConstructor
- @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
 -public class TabCompleteRequest extends DefinedPacket
 +public class TabCompleteRequest extends MultiVersionPacketV17
  {
  
-     private String cursor;
-@@ -21,6 +21,14 @@ public class TabCompleteRequest extends DefinedPacket
-     private boolean hasPositon;
-     private long position;
- 
+     private int transactionId;
+@@ -33,6 +33,13 @@ public class TabCompleteRequest extends DefinedPacket
+         this.hasPositon = hasPosition;
+         this.position = position;
+     }
 +    // Travertine start
 +    @Override
 +    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
@@ -1329,11 +1329,10 @@ index e3bcbc33..7634ebfd 100644
 +        cursor = readString( buf );
 +    }
 +    // Travertine end
-+
+ 
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
-@@ -36,6 +44,14 @@ public class TabCompleteRequest extends DefinedPacket
+@@ -57,6 +64,14 @@ public class TabCompleteRequest extends DefinedPacket
          }
      }
  
@@ -1349,7 +1348,7 @@ index e3bcbc33..7634ebfd 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index b4705799..da1066cc 100644
+index f93508d9..74d6c0db 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,6 +1,6 @@
@@ -1401,7 +1400,7 @@ index b4705799..da1066cc 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -68,6 +93,30 @@ public class Team extends DefinedPacket
+@@ -76,6 +101,30 @@ public class Team extends DefinedPacket
          }
      }
  
@@ -1433,7 +1432,7 @@ index b4705799..da1066cc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c62bc9ba..cb0bc3ef 100644
+index 83b7d8ba..57afcbbe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -163,6 +163,14 @@ public class BungeeCord extends ProxyServer
@@ -1527,7 +1526,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9c6fa440..87ee1b0a 100644
+index 0937c39d..94c8f142 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee;
@@ -1539,21 +1538,13 @@ index 9c6fa440..87ee1b0a 100644
  import java.util.Arrays;
  import java.util.Queue;
  import java.util.Set;
-@@ -34,6 +36,7 @@ import net.md_5.bungee.netty.PipelineUtils;
- import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.Protocol;
-+import net.md_5.bungee.protocol.ProtocolConstants;
- import net.md_5.bungee.protocol.packet.EncryptionRequest;
- import net.md_5.bungee.protocol.packet.Handshake;
- import net.md_5.bungee.protocol.packet.Kick;
-@@ -232,10 +235,20 @@ public class ServerConnector extends PacketHandler
+@@ -245,10 +247,20 @@ public class ServerConnector extends PacketHandler
  
              user.unsafe().sendPacket( modLogin );
  
 -            ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
 -            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
--            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+-            user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
 -            brand.release();
 +            // Travertine start
 +            String brandString = bungee.getName() + " (" + bungee.getVersion() + ")";
@@ -1565,14 +1556,14 @@ index 9c6fa440..87ee1b0a 100644
 +            {
 +                ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
 +                DefinedPacket.writeString(brandString, brand);
-+                user.unsafe().sendPacket(new PluginMessage("MC|Brand", brand, handshakeHandler.isServerForge()));
++                user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
 +                brand.release();
 +            }
 +            // Travertine end
  
              user.setDimension( login.getDimension() );
          } else
-@@ -379,14 +392,23 @@ public class ServerConnector extends PacketHandler
+@@ -392,14 +404,23 @@ public class ServerConnector extends PacketHandler
              {
                  this.handshakeHandler.handle( pluginMessage );
  
@@ -1655,20 +1646,12 @@ index ef12a019..4a1c3638 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1edb9439..5e847718 100644
+index 287a42bd..89eb3ba4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -31,6 +31,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
- import net.md_5.bungee.netty.PacketHandler;
- import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.PacketWrapper;
-+import net.md_5.bungee.protocol.ProtocolConstants;
- import net.md_5.bungee.protocol.packet.BossBar;
- import net.md_5.bungee.protocol.packet.EntityEffect;
- import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
-@@ -250,16 +251,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -251,16 +251,28 @@ public class DownstreamBridge extends PacketHandler
  
-         if ( pluginMessage.getTag().equals( "MC|Brand" ) )
+         if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
 -            ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
 -            String serverBrand = DefinedPacket.readString( brand );
@@ -1706,7 +1689,7 @@ index 1edb9439..5e847718 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1accd61d..9916c2b3 100644
+index c6e109c5..adcdd31c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -13,6 +13,13 @@ import java.util.UUID;
@@ -1723,7 +1706,7 @@ index 1accd61d..9916c2b3 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -223,8 +230,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -234,8 +241,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -1750,7 +1733,7 @@ index 1accd61d..9916c2b3 100644
                      }
                  };
  
-@@ -510,7 +533,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -521,7 +544,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
@@ -1768,18 +1751,18 @@ index 1accd61d..9916c2b3 100644
  
                              ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 3cd5cf69..ff30b61a 100644
+index 76f496ce..eab2523d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-@@ -14,6 +14,7 @@ import net.md_5.bungee.netty.PipelineUtils;
- import net.md_5.bungee.protocol.MinecraftDecoder;
+@@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
  import net.md_5.bungee.protocol.MinecraftEncoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
 +import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.StatusRequest;
  import net.md_5.bungee.protocol.packet.StatusResponse;
-@@ -52,7 +53,7 @@ public class PingHandler extends PacketHandler
+@@ -63,7 +64,7 @@ public class PingHandler extends PacketHandler
      @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
      public void handle(StatusResponse statusResponse) throws Exception
      {
@@ -1789,7 +1772,7 @@ index 3cd5cf69..ff30b61a 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 09b1de2b..08a6eac3 100644
+index 719ad409..a5c798f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -79,7 +79,12 @@ public class UpstreamBridge extends PacketHandler
@@ -1807,7 +1790,7 @@ index 09b1de2b..08a6eac3 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 27ee21f2..64649c7c 100644
+index bad9773b..45716724 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -29,6 +29,10 @@ public abstract class EntityMap
@@ -2397,5 +2380,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.17.1
+2.18.0
 
