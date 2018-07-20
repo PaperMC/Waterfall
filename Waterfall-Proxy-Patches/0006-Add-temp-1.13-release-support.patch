@@ -1,4 +1,4 @@
-From 1d3be20bca21b81ea3552c80e680fb9a71c6b6f8 Mon Sep 17 00:00:00 2001
+From 2c2ada407ef6e402318ccd308384210059266f92 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 20 Jul 2018 03:54:51 +0100
 Subject: [PATCH] Add temp 1.13 release support
@@ -6,7 +6,7 @@ Subject: [PATCH] Add temp 1.13 release support
 To be dropped when upstream releases final support for 1.13
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 6fd624ae..69074fe1 100644
+index 6fd624ae..7e3e4a40 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -267,42 +267,50 @@ public enum Protocol
@@ -73,8 +73,8 @@ index 6fd624ae..69074fe1 100644
                      ProtocolConstants.MINECRAFT_1_12_2
              ) );
 +            // Travertine start - 1.13
-+            linkedProtocols.put (ProtocolConstants.MINECRAFT_1_13_R, Arrays.asList(
-+                    ProtocolConstants.MINECRAFT_1_13
++            linkedProtocols.put (ProtocolConstants.MINECRAFT_1_13, Arrays.asList(
++                    ProtocolConstants.MINECRAFT_1_13_R
 +            ));
 +            // Travertine end - 1.13
          }
