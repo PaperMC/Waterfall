@@ -1,4 +1,4 @@
-From c2a02e4a3c6b76b529f4de6bdf8a381892579ef2 Mon Sep 17 00:00:00 2001
+From d92c7b5c3f6050b061fe55dcc82eb7e048bea38e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 21 Jul 2018 17:14:39 +0100
 Subject: [PATCH] 1.13 protocol support
@@ -114,7 +114,7 @@ index 6279d9f3..edcc59a1 100644
              }
          }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..6688b287 100644
+index f93508d9..bb4f699b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,5 +1,7 @@
@@ -131,7 +131,7 @@ index f93508d9..6688b287 100644
          {
 -            displayName = readString( buf );
 +            // Waterfall start - 1.13
-+            if (protocolVersion <= ProtocolConstants.MINECRAFT_1_13) {
++            if (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) {
 +                String displayNameJson = readString(buf);
 +                displayName = TextComponent.toLegacyText(ComponentSerializer.parse(displayNameJson));
 +            } else {
@@ -162,7 +162,7 @@ index f93508d9..6688b287 100644
          {
 -            writeString( displayName, buf );
 +            // Waterfall start - 1.13
-+            if (protocolVersion <= ProtocolConstants.MINECRAFT_1_13) {
++            if (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) {
 +                String displayNameJson = ComponentSerializer.toString(TextComponent.fromLegacyText(displayName));
 +                writeString( displayNameJson, buf );
 +            } else {
