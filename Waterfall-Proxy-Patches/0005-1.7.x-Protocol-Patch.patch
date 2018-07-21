@@ -1,4 +1,4 @@
-From 87e63f220acbb75c3420d9f6ab377f5b76083950 Mon Sep 17 00:00:00 2001
+From bf98694b3459a3e4e2bee9f28981cf5663240e13 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -192,387 +192,6 @@ index a248c7db..b5a829d9 100644
              }
  
              Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig
-new file mode 100644
-index 00000000..2aa68858
---- /dev/null
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java.orig
-@@ -0,0 +1,375 @@
-+package net.md_5.bungee.protocol;
-+
-+import com.google.common.base.Preconditions;
-+import com.google.common.collect.Iterables;
-+import gnu.trove.map.TIntObjectMap;
-+import gnu.trove.map.TObjectIntMap;
-+import gnu.trove.map.hash.TIntObjectHashMap;
-+import gnu.trove.map.hash.TObjectIntHashMap;
-+import java.lang.reflect.Constructor;
-+import java.util.Arrays;
-+import java.util.List;
-+import lombok.Getter;
-+import lombok.RequiredArgsConstructor;
-+import net.md_5.bungee.protocol.packet.BossBar;
-+import net.md_5.bungee.protocol.packet.Chat;
-+import net.md_5.bungee.protocol.packet.ClientSettings;
-+import net.md_5.bungee.protocol.packet.EncryptionRequest;
-+import net.md_5.bungee.protocol.packet.EncryptionResponse;
-+import net.md_5.bungee.protocol.packet.EntityEffect;
-+import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
-+import net.md_5.bungee.protocol.packet.Handshake;
-+import net.md_5.bungee.protocol.packet.KeepAlive;
-+import net.md_5.bungee.protocol.packet.Kick;
-+import net.md_5.bungee.protocol.packet.Login;
-+import net.md_5.bungee.protocol.packet.LoginRequest;
-+import net.md_5.bungee.protocol.packet.LoginSuccess;
-+import net.md_5.bungee.protocol.packet.PingPacket;
-+import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-+import net.md_5.bungee.protocol.packet.PlayerListItem;
-+import net.md_5.bungee.protocol.packet.PluginMessage;
-+import net.md_5.bungee.protocol.packet.Respawn;
-+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-+import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-+import net.md_5.bungee.protocol.packet.ScoreboardScore;
-+import net.md_5.bungee.protocol.packet.SetCompression;
-+import net.md_5.bungee.protocol.packet.StatusRequest;
-+import net.md_5.bungee.protocol.packet.StatusResponse;
-+import net.md_5.bungee.protocol.packet.TabCompleteRequest;
-+import net.md_5.bungee.protocol.packet.TabCompleteResponse;
-+import net.md_5.bungee.protocol.packet.Team;
-+import net.md_5.bungee.protocol.packet.Title;
-+
-+public enum Protocol
-+{
-+
-+    // Undef
-+    HANDSHAKE
-+    {
-+
-+        {
-+            TO_SERVER.registerPacket(
-+                    Handshake.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
-+            );
-+        }
-+    },
-+    // 0
-+    GAME
-+    {
-+
-+        {
-+            TO_CLIENT.registerPacket(
-+                    KeepAlive.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x1F )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Login.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x23 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Chat.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x0F )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Respawn.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x07 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x33 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    BossBar.class,
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
-+            );
-+            // Waterfall start
-+            TO_CLIENT.registerPacket(
-+                    EntityEffect.class,
-+                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
-+                    map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
-+                    map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
-+                    map(ProtocolConstants.MINECRAFT_1_10, 0x4B)
-+
-+            );
-+            TO_CLIENT.registerPacket(
-+                    EntityRemoveEffect.class,
-+                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
-+                    map(ProtocolConstants.MINECRAFT_1_9, 0x31)
-+            );
-+            // Waterfall end
-+            TO_CLIENT.registerPacket(
-+                    PlayerListItem.class, // PlayerInfo
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x38 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x2D )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    TabCompleteResponse.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3A ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x0E )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    ScoreboardObjective.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3B ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x3F )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    ScoreboardScore.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3C ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x42 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    ScoreboardDisplay.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3D ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x38 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Team.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3E ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x41 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    PluginMessage.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x18 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Kick.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x40 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x1A )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    Title.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x45 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    PlayerListHeaderFooter.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x47 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x48 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
-+                    map( ProtocolConstants.MINECRAFT_1_10, 0x47 ),
-+                    map( ProtocolConstants.MINECRAFT_1_11, 0x47 ),
-+                    map( ProtocolConstants.MINECRAFT_1_11_1, 0x47 )
-+            );
-+
-+            TO_SERVER.registerPacket(
-+                    KeepAlive.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x0B )
-+            );
-+            TO_SERVER.registerPacket(
-+                    Chat.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x02 )
-+            );
-+            TO_SERVER.registerPacket(
-+                    TabCompleteRequest.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x14 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x01 )
-+            );
-+            TO_SERVER.registerPacket(
-+                    ClientSettings.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x15 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x04 )
-+            );
-+            TO_SERVER.registerPacket(
-+                    PluginMessage.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x17 ),
-+                    map( ProtocolConstants.MINECRAFT_1_9, 0x09 )
-+            );
-+        }
-+    },
-+    // 1
-+    STATUS
-+    {
-+
-+        {
-+            TO_CLIENT.registerPacket(
-+                    StatusResponse.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    PingPacket.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
-+            );
-+
-+            TO_SERVER.registerPacket(
-+                    StatusRequest.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
-+            );
-+            TO_SERVER.registerPacket(
-+                    PingPacket.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
-+            );
-+        }
-+    },
-+    //2
-+    LOGIN
-+    {
-+
-+        {
-+            TO_CLIENT.registerPacket(
-+                    Kick.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    EncryptionRequest.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    LoginSuccess.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 )
-+            );
-+            TO_CLIENT.registerPacket(
-+                    SetCompression.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x03 )
-+            );
-+
-+            TO_SERVER.registerPacket(
-+                    LoginRequest.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
-+            );
-+            TO_SERVER.registerPacket(
-+                    EncryptionResponse.class,
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
-+            );
-+        }
-+    };
-+    /*========================================================================*/
-+    public static final int MAX_PACKET_ID = 0xFF;
-+    /*========================================================================*/
-+    public final DirectionData TO_SERVER = new DirectionData(this, ProtocolConstants.Direction.TO_SERVER );
-+    public final DirectionData TO_CLIENT = new DirectionData(this, ProtocolConstants.Direction.TO_CLIENT );
-+
-+    @RequiredArgsConstructor
-+    private static class ProtocolData {
-+
-+        private final int protocolVersion;
-+        private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
-+        private final TIntObjectMap<Constructor<? extends DefinedPacket>> packetConstructors = new TIntObjectHashMap<>( MAX_PACKET_ID );
-+    }
-+
-+    @RequiredArgsConstructor
-+    private static class ProtocolMapping {
-+        private final int protocolVersion;
-+        private final int packetID;
-+    }
-+    // Helper method
-+    private static ProtocolMapping map(int protocol, int id) {
-+        return new ProtocolMapping(protocol, id);
-+    }
-+
-+    @RequiredArgsConstructor
-+    public static class DirectionData
-+    {
-+
-+        private final Protocol protocolPhase;
-+        private final TIntObjectMap<ProtocolData> protocols = new TIntObjectHashMap<>();
-+        {
-+            for ( int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS )
-+            {
-+                protocols.put( protocol, new ProtocolData( protocol ) );
-+            }
-+        }
-+        private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
-+        {
-+            linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
-+                    ProtocolConstants.MINECRAFT_1_9
-+            ) );
-+            linkedProtocols.put( ProtocolConstants.MINECRAFT_1_9, Arrays.asList(
-+                    ProtocolConstants.MINECRAFT_1_9_1,
-+                    ProtocolConstants.MINECRAFT_1_9_2,
-+                    ProtocolConstants.MINECRAFT_1_9_4,
-+                    ProtocolConstants.MINECRAFT_1_10,
-+                    ProtocolConstants.MINECRAFT_1_11,
-+                    ProtocolConstants.MINECRAFT_1_11_1
-+            ) );
-+        }
-+
-+        @Getter
-+        private final ProtocolConstants.Direction direction;
-+
-+        private ProtocolData getProtocolData(int version)
-+        {
-+            ProtocolData protocol = protocols.get( version );
-+            if ( protocol == null && ( protocolPhase != Protocol.GAME ) )
-+            {
-+                protocol = Iterables.getFirst( protocols.valueCollection(), null );
-+            }
-+            return protocol;
-+        }
-+
-+        public boolean hasPacket(int i, boolean supportsForge) {
-+            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
-+        }
-+
-+        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
-+        {
-+            ProtocolData protocolData = getProtocolData( version );
-+            if (protocolData == null)
-+            {
-+                throw new BadPacketException( "Unsupported protocol version" );
-+            }
-+            if ( !hasPacket(id, supportsForge) )
-+            {
-+                throw new BadPacketException( "Packet with id " + id + " outside of range " );
-+            }
-+
-+            Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors.get( id );
-+            try
-+            {
-+                return ( constructor == null ) ? null : constructor.newInstance();
-+            } catch ( ReflectiveOperationException ex )
-+            {
-+                throw new BadPacketException( "Could not construct packet with id " + id, ex );
-+            }
-+        }
-+
-+        protected final void registerPacket(Class<? extends DefinedPacket> packetClass, ProtocolMapping ...mappings)
-+        {
-+            try
-+            {
-+                Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
-+                for ( ProtocolMapping mapping : mappings )
-+                {
-+                    ProtocolData data = protocols.get( mapping.protocolVersion );
-+                    data.packetMap.put( packetClass, mapping.packetID );
-+                    data.packetConstructors.put( mapping.packetID, constructor );
-+
-+                    List<Integer> links = linkedProtocols.get( mapping.protocolVersion );
-+                    if ( links != null )
-+                    {
-+                        links: for ( int link : links )
-+                        {
-+                            // Check for manual mappings
-+                            for ( ProtocolMapping m : mappings )
-+                            {
-+                                if ( m == mapping ) continue;
-+                                if ( m.protocolVersion == link ) continue links;
-+                                List<Integer> innerLinks = linkedProtocols.get( m.protocolVersion );
-+                                if ( innerLinks != null && innerLinks.contains( link ) ) continue links;
-+                            }
-+                            registerPacket( packetClass, map( link, mapping.packetID ) );
-+                        }
-+                    }
-+                }
-+            } catch ( NoSuchMethodException ex )
-+            {
-+                throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
-+            }
-+        }
-+
-+        final int getId(Class<? extends DefinedPacket> packet, int version)
-+        {
-+
-+            ProtocolData protocolData = getProtocolData( version );
-+            if (protocolData == null)
-+            {
-+                throw new BadPacketException( "Unsupported protocol version" );
-+            }
-+            Preconditions.checkArgument( protocolData.packetMap.containsKey( packet ), "Cannot get ID for packet %s in state %s", packet, protocolPhase);
-+
-+            return protocolData.packetMap.get( packet );
-+        }
-+    }
-+}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 index c23b1947..b461e94e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
@@ -603,61 +222,6 @@ index c23b1947..b461e94e 100644
              ProtocolConstants.MINECRAFT_1_8,
              ProtocolConstants.MINECRAFT_1_9,
              ProtocolConstants.MINECRAFT_1_9_1,
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig
-new file mode 100644
-index 00000000..af80c95e
---- /dev/null
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java.orig
-@@ -0,0 +1,49 @@
-+package net.md_5.bungee.protocol;
-+
-+import java.util.Arrays;
-+import java.util.List;
-+
-+public class ProtocolConstants
-+{
-+
-+    public static final int MINECRAFT_1_8 = 47;
-+    public static final int MINECRAFT_1_9 = 107;
-+    public static final int MINECRAFT_1_9_1 = 108;
-+    public static final int MINECRAFT_1_9_2 = 109;
-+    public static final int MINECRAFT_1_9_4 = 110;
-+    public static final int MINECRAFT_1_10 = 210;
-+    public static final int MINECRAFT_1_11 = 315;
-+    public static final int MINECRAFT_1_11_1 = 316;
-+    public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
-+            "1.8.x",
-+            "1.9.x",
-+            "1.10.x",
-+            "1.11.x"
-+    );
-+    public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
-+            ProtocolConstants.MINECRAFT_1_8,
-+            ProtocolConstants.MINECRAFT_1_9,
-+            ProtocolConstants.MINECRAFT_1_9_1,
-+            ProtocolConstants.MINECRAFT_1_9_2,
-+            ProtocolConstants.MINECRAFT_1_9_4,
-+            ProtocolConstants.MINECRAFT_1_10,
-+            ProtocolConstants.MINECRAFT_1_11,
-+            ProtocolConstants.MINECRAFT_1_11_1
-+    );
-+
-+    public static final boolean isBeforeOrEq(int before, int other)
-+    {
-+            return before <= other;
-+    }
-+
-+    public static final boolean isAfterOrEq(int after, int other)
-+    {
-+            return after >= other;
-+    }
-+
-+    public enum Direction
-+    {
-+
-+        TO_CLIENT, TO_SERVER;
-+    }
-+}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 index 29e54dba..1f9e64dc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
@@ -1180,18 +744,18 @@ index 04644236..029618cf 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 6279d9f3..6c238edf 100644
+index edcc59a1..5c3a0bfb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-@@ -1,6 +1,6 @@
- package net.md_5.bungee.protocol.packet;
- 
--import net.md_5.bungee.protocol.DefinedPacket;
+@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+ import net.md_5.bungee.api.chat.TextComponent; // Waterfall - 1.13
+ import net.md_5.bungee.chat.ComponentSerializer; // Waterfall - 1.13
+ import net.md_5.bungee.protocol.DefinedPacket;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
  import java.util.Locale;
  import lombok.AllArgsConstructor;
-@@ -14,7 +14,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -16,7 +17,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -1200,7 +764,7 @@ index 6279d9f3..6c238edf 100644
  {
  
      private String name;
-@@ -25,6 +25,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -27,6 +28,16 @@ public class ScoreboardObjective extends DefinedPacket
       */
      private byte action;
  
@@ -1217,7 +781,7 @@ index 6279d9f3..6c238edf 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -43,6 +53,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -48,6 +59,16 @@ public class ScoreboardObjective extends DefinedPacket
          }
      }
  
@@ -1348,18 +912,18 @@ index f9eaa7ce..e174ac0b 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..74d6c0db 100644
+index 4c6f15d9..3b6b15d8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-@@ -1,6 +1,6 @@
- package net.md_5.bungee.protocol.packet;
- 
--import net.md_5.bungee.protocol.DefinedPacket;
+@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.protocol.DefinedPacket;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
  import lombok.AllArgsConstructor;
  import lombok.Data;
-@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -15,7 +16,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -1368,7 +932,7 @@ index f93508d9..74d6c0db 100644
  {
  
      private String name;
-@@ -39,6 +39,31 @@ public class Team extends DefinedPacket
+@@ -41,6 +42,31 @@ public class Team extends DefinedPacket
          this.mode = 1;
      }
  
@@ -1400,7 +964,7 @@ index f93508d9..74d6c0db 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -76,6 +101,30 @@ public class Team extends DefinedPacket
+@@ -82,6 +108,30 @@ public class Team extends DefinedPacket
          }
      }
  
