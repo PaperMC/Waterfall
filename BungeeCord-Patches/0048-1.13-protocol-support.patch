@@ -1,4 +1,4 @@
-From d92c7b5c3f6050b061fe55dcc82eb7e048bea38e Mon Sep 17 00:00:00 2001
+From c99bbab386d19267a2b6b23d9d380006845b9745 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 21 Jul 2018 17:14:39 +0100
 Subject: [PATCH] 1.13 protocol support
@@ -73,46 +73,57 @@ index bba6cb2d..b2dc9423 100644
              "1.8.x",
              "1.9.x",
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 6279d9f3..edcc59a1 100644
+index 6279d9f3..b0dcf0ac 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,8 @@
  package net.md_5.bungee.protocol.packet;
  
++import net.md_5.bungee.api.chat.BaseComponent;
 +import net.md_5.bungee.api.chat.TextComponent; // Waterfall - 1.13
 +import net.md_5.bungee.chat.ComponentSerializer; // Waterfall - 1.13
  import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
  import java.util.Locale;
-@@ -35,9 +37,12 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -28,8 +31,16 @@ public class ScoreboardObjective extends DefinedPacket
+     @Override
+     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+-        name = readString( buf );
++
++        if (protocolVersion <= ProtocolConstants.MINECRAFT_1_13) {
++            String jsonName = readString(buf);
++            name = TextComponent.toLegacyText(ComponentSerializer.parse(jsonName));
++        }else {
++            name = readString( buf );
++        }
++
+         action = buf.readByte();
++
+         if ( action == 0 || action == 2 )
+         {
              value = readString( buf );
-             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
-             {
-+                String valueJson = readString( buf ); // Waterfall - 1.13
-+                value = TextComponent.toLegacyText(ComponentSerializer.parse(valueJson)); // Waterfall - 1.13
-                 type = HealthDisplay.values()[readVarInt( buf )];
-             } else
-             {
-+                value = readString( buf ); // Waterfall - 1.13
-                 type = HealthDisplay.fromString( readString( buf ) );
-             }
-         }
-@@ -50,12 +55,14 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -46,11 +57,18 @@ public class ScoreboardObjective extends DefinedPacket
+     @Override
+     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+-        writeString( name, buf );
++        // Waterfall start - 1.13
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
++        {
++            String nameJson = ComponentSerializer.toString(TextComponent.fromLegacyText(name)); // Waterfall - 1.13
++            writeString( nameJson, buf );
++        } else
++        {
++            writeString( name, buf );
++        }
          buf.writeByte( action );
          if ( action == 0 || action == 2 )
          {
 -            writeString( value, buf );
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
-+                String valueJson = ComponentSerializer.toString(TextComponent.fromLegacyText(value)); // Waterfall - 1.13
-+                writeString( valueJson, buf ); // Waterfall - 1.13
                  writeVarInt( type.ordinal(), buf );
-             } else
-             {
-+                writeString( value, buf ); // Waterfall - 1.13
-                 writeString( type.toString(), buf );
-             }
-         }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 index f93508d9..bb4f699b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
