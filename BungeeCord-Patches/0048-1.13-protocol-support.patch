@@ -1,4 +1,4 @@
-From 154cd2101ae0e8d48b7e1ff1878ab43242d48ace Mon Sep 17 00:00:00 2001
+From c2a02e4a3c6b76b529f4de6bdf8a381892579ef2 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 21 Jul 2018 17:14:39 +0100
 Subject: [PATCH] 1.13 protocol support
@@ -114,7 +114,7 @@ index 6279d9f3..edcc59a1 100644
              }
          }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..4c6f15d9 100644
+index f93508d9..6688b287 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,5 +1,7 @@
@@ -125,7 +125,23 @@ index f93508d9..4c6f15d9 100644
  import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
  import lombok.AllArgsConstructor;
-@@ -61,8 +63,12 @@ public class Team extends DefinedPacket
+@@ -46,7 +48,14 @@ public class Team extends DefinedPacket
+         mode = buf.readByte();
+         if ( mode == 0 || mode == 2 )
+         {
+-            displayName = readString( buf );
++            // Waterfall start - 1.13
++            if (protocolVersion <= ProtocolConstants.MINECRAFT_1_13) {
++                String displayNameJson = readString(buf);
++                displayName = TextComponent.toLegacyText(ComponentSerializer.parse(displayNameJson));
++            } else {
++                displayName = readString( buf );
++            }
++            // Waterfall end
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
+             {
+                 prefix = readString( buf );
+@@ -61,8 +70,12 @@ public class Team extends DefinedPacket
              color = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? readVarInt( buf ) : buf.readByte();
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
@@ -140,7 +156,23 @@ index f93508d9..4c6f15d9 100644
              }
          }
          if ( mode == 0 || mode == 3 || mode == 4 )
-@@ -98,9 +104,14 @@ public class Team extends DefinedPacket
+@@ -83,7 +96,14 @@ public class Team extends DefinedPacket
+         buf.writeByte( mode );
+         if ( mode == 0 || mode == 2 )
+         {
+-            writeString( displayName, buf );
++            // Waterfall start - 1.13
++            if (protocolVersion <= ProtocolConstants.MINECRAFT_1_13) {
++                String displayNameJson = ComponentSerializer.toString(TextComponent.fromLegacyText(displayName));
++                writeString( displayNameJson, buf );
++            } else {
++                writeString( displayName, buf );
++            }
++            // Waterfall end - 1.13
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
+             {
+                 writeString( prefix, buf );
+@@ -98,9 +118,14 @@ public class Team extends DefinedPacket
  
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
