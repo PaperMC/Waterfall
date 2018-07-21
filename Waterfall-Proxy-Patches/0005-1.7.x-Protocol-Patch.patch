@@ -1,4 +1,4 @@
-From f4d9338e64be970795cff14a838818105db1480b Mon Sep 17 00:00:00 2001
+From 38ccb7ba65faf44527e3060b7a961ba0984dc576 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -744,10 +744,10 @@ index 04644236..029618cf 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index edcc59a1..5c3a0bfb 100644
+index b0dcf0ac..86d86313 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent; // Waterfall - 1.13
  import net.md_5.bungee.chat.ComponentSerializer; // Waterfall - 1.13
  import net.md_5.bungee.protocol.DefinedPacket;
@@ -755,7 +755,7 @@ index edcc59a1..5c3a0bfb 100644
  import io.netty.buffer.ByteBuf;
  import java.util.Locale;
  import lombok.AllArgsConstructor;
-@@ -16,7 +17,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -17,7 +18,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -764,7 +764,7 @@ index edcc59a1..5c3a0bfb 100644
  {
  
      private String name;
-@@ -27,6 +28,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -28,6 +29,16 @@ public class ScoreboardObjective extends DefinedPacket
       */
      private byte action;
  
@@ -781,7 +781,7 @@ index edcc59a1..5c3a0bfb 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -48,6 +59,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -54,6 +65,16 @@ public class ScoreboardObjective extends DefinedPacket
          }
      }
  
