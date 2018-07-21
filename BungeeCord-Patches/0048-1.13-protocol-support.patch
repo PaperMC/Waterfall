@@ -1,0 +1,77 @@
+From 1c6a8a78d2269b815bfc4b54cacea7f3f2054be8 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sat, 21 Jul 2018 17:14:39 +0100
+Subject: [PATCH] 1.13 protocol support
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index a8ac332a..a248c7db 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -267,42 +267,36 @@ public enum Protocol
+         {
+             TO_CLIENT.registerPacket(
+                     LoginPayloadRequest.class,
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x00 )
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x04 )
+             );
+             TO_CLIENT.registerPacket(
+                     Kick.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x01 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_CLIENT.registerPacket(
+                     EncryptionRequest.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x02 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+             TO_CLIENT.registerPacket(
+                     LoginSuccess.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x03 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x02 )
+             );
+             TO_CLIENT.registerPacket(
+                     SetCompression.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x03 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x04 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x03 )
+             );
+ 
+             TO_SERVER.registerPacket(
+                     LoginPayloadResponse.class,
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x00 )
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x02 )
+             );
+             TO_SERVER.registerPacket(
+                     LoginRequest.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x01 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_SERVER.registerPacket(
+                     EncryptionResponse.class,
+-                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
+-                    map( ProtocolConstants.MINECRAFT_1_13, 0x02 )
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+         }
+     };
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index bba6cb2d..b2dc9423 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -17,7 +17,7 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_12 = 335;
+     public static final int MINECRAFT_1_12_1 = 338;
+     public static final int MINECRAFT_1_12_2 = 340;
+-    public static final int MINECRAFT_1_13 = 389;
++    public static final int MINECRAFT_1_13 = 393;
+     public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
+             "1.8.x",
+             "1.9.x",
+-- 
+2.18.0
+
