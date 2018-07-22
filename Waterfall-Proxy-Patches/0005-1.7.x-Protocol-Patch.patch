@@ -1,4 +1,4 @@
-From d7d6cbf959fdfbb4e94a339f8cd33667e20233a7 Mon Sep 17 00:00:00 2001
+From bfaa55806c50a048ebaa502c2d2be6502a302871 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -101,10 +101,10 @@ index 00000000..90064112
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 10e16d79..04a34033 100644
+index f902301e..05cb6cb5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -193,6 +193,11 @@ public abstract class DefinedPacket
+@@ -205,6 +205,11 @@ public abstract class DefinedPacket
          read( buf );
      }
  
@@ -116,7 +116,7 @@ index 10e16d79..04a34033 100644
      public void write(ByteBuf buf)
      {
          throw new UnsupportedOperationException( "Packet must implement write method" );
-@@ -203,6 +208,11 @@ public abstract class DefinedPacket
+@@ -215,6 +220,11 @@ public abstract class DefinedPacket
          write( buf );
      }
  
@@ -167,7 +167,7 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index a248c7db..b5a829d9 100644
+index 8e40682c..eba86548 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -378,6 +378,8 @@ public enum Protocol
@@ -744,7 +744,7 @@ index 04644236..029618cf 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index f1ad722d..5a0f58b0 100644
+index 9f9c76fc..b7863ddf 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -781,7 +781,7 @@ index f1ad722d..5a0f58b0 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -50,6 +61,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -49,6 +60,16 @@ public class ScoreboardObjective extends DefinedPacket
          }
      }
  
@@ -912,10 +912,10 @@ index f9eaa7ce..e174ac0b 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index 19d0d2d9..53042403 100644
+index 8be62c7b..180f5146 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent; // Waterfall
  import net.md_5.bungee.chat.ComponentSerializer; // Waterfall
  import net.md_5.bungee.protocol.DefinedPacket;
@@ -923,7 +923,7 @@ index 19d0d2d9..53042403 100644
  import io.netty.buffer.ByteBuf;
  import lombok.AllArgsConstructor;
  import lombok.Data;
-@@ -15,7 +16,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -16,7 +17,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  @NoArgsConstructor
  @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
@@ -932,7 +932,7 @@ index 19d0d2d9..53042403 100644
  {
  
      private String name;
-@@ -41,6 +42,31 @@ public class Team extends DefinedPacket
+@@ -42,6 +43,31 @@ public class Team extends DefinedPacket
          this.mode = 1;
      }
  
@@ -964,7 +964,7 @@ index 19d0d2d9..53042403 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -89,6 +115,30 @@ public class Team extends DefinedPacket
+@@ -87,6 +113,30 @@ public class Team extends DefinedPacket
          }
      }
  
