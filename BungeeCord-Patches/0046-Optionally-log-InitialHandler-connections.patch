@@ -1,4 +1,4 @@
-From 2cfa87ce594755647688295f317aa7c622ccd376 Mon Sep 17 00:00:00 2001
+From ed00bc1b36619e56d2df86e68f37be022f79e849 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
@@ -8,36 +8,36 @@ diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/ma
 index 43519ce1..2631d6bb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -168,6 +168,11 @@ public interface ProxyConfig
-      */
+@@ -169,6 +169,11 @@ public interface ProxyConfig
      boolean isLogServerListPing();
  
-+    /**
+     /**
 +     * Whether we log InitialHandler connections
 +     */
 +    boolean isLogInitialHandlerConnections();
 +
-     /**
++    /**
       * The supported versions
       */
+     String getGameVersion();
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 index 7dc3c2d9..5ba15771 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -26,6 +26,13 @@ public class WaterfallConfiguration extends Configuration {
-      */
+@@ -27,6 +27,13 @@ public class WaterfallConfiguration extends Configuration {
      private boolean logServerListPing = false;
  
-+    /**
+     /**
 +     * Whether we log InitialHandler connections
 +     * <p>
 +     * Default is true
 +     */
 +    private boolean logInitialHandlerConnections = true;
 +
-     /**
++    /**
       * The supported versions displayed to the client
       * <p>Default is a comma seperated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
+      */
 @@ -60,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
          config.load(false); // Load, but no permissions
          metrics = config.getBoolean("metrics", metrics);
@@ -72,5 +72,5 @@ index 2347654c..c6e109c5 100644
                  ch.setProtocol( Protocol.LOGIN );
  
 -- 
-2.18.0
+2.13.2.windows.1
 
