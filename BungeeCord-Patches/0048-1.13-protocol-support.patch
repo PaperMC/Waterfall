@@ -1,11 +1,41 @@
-From 5017fe3f6491b212ab9563fa6c2fa38b12a38c15 Mon Sep 17 00:00:00 2001
+From 863fcf8d7cec3dcfcc29ad8f755c1e18fda232f9 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 21 Jul 2018 17:14:39 +0100
 Subject: [PATCH] 1.13 protocol support
 
 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 10e16d79..f902301e 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -5,6 +5,9 @@ import io.netty.buffer.ByteBuf;
+ import java.util.ArrayList;
+ import java.util.List;
+ import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.api.chat.BaseComponent; // Waterfall - 1.13
++import net.md_5.bungee.api.chat.TextComponent; // Waterfall - 1.13
++import net.md_5.bungee.chat.ComponentSerializer; // Waterfall - 1.13
+ 
+ import java.util.UUID;
+ 
+@@ -183,6 +186,15 @@ public abstract class DefinedPacket
+         return new UUID( input.readLong(), input.readLong() );
+     }
+ 
++    // Waterfall start - 1.13
++    public static String readComponentAsString(ByteBuf buf)
++    {
++        String json = readString(buf);
++        BaseComponent[] components = ComponentSerializer.parse(json);
++        return components[0] == null ? json : TextComponent.toLegacyText(components);
++    }
++    // Waterfall end - 1.13
++
+     public void read(ByteBuf buf)
+     {
+         throw new UnsupportedOperationException( "Packet must implement read method" );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 6279d9f3..f1ad722d 100644
+index 6279d9f3..9f9c76fc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -1,5 +1,8 @@
@@ -17,7 +47,7 @@ index 6279d9f3..f1ad722d 100644
  import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
  import java.util.Locale;
-@@ -32,12 +35,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -32,12 +35,15 @@ public class ScoreboardObjective extends DefinedPacket
          action = buf.readByte();
          if ( action == 0 || action == 2 )
          {
@@ -25,8 +55,7 @@ index 6279d9f3..f1ad722d 100644
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
 +                // Waterfall start - 1.13
-+                String jsonName = readString(buf);
-+                name = TextComponent.toLegacyText(ComponentSerializer.parse(jsonName));
++                value = readComponentAsString(buf);
                  type = HealthDisplay.values()[readVarInt( buf )];
              } else
              {
@@ -35,7 +64,7 @@ index 6279d9f3..f1ad722d 100644
                  type = HealthDisplay.fromString( readString( buf ) );
              }
          }
-@@ -50,12 +57,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -50,12 +56,16 @@ public class ScoreboardObjective extends DefinedPacket
          buf.writeByte( action );
          if ( action == 0 || action == 2 )
          {
@@ -54,7 +83,7 @@ index 6279d9f3..f1ad722d 100644
              }
          }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..1b748c37 100644
+index f93508d9..8be62c7b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,5 +1,8 @@
@@ -127,19 +156,6 @@ index f93508d9..1b748c37 100644
              } else
              {
                  buf.writeByte( color );
-@@ -121,4 +144,12 @@ public class Team extends DefinedPacket
-     {
-         handler.handle( this );
-     }
-+
-+    // Waterfall start - 1.13
-+    public static String readComponentAsString(ByteBuf buf)
-+    {
-+        BaseComponent[] components = ComponentSerializer.parse(readString(buf));
-+        return components[0] == null ? "" : TextComponent.toLegacyText(components);
-+    }
-+    // Waterfall end - 1.13
- }
 -- 
 2.13.2.windows.1
 
