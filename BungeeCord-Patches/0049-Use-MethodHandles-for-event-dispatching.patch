@@ -1,0 +1,78 @@
+From 78be93295c6c4f079e8746c4b896a30003be46fc Mon Sep 17 00:00:00 2001
+From: Jamie Mansfield <dev@jamierocks.uk>
+Date: Sun, 22 Jul 2018 18:10:53 +0100
+Subject: [PATCH] Use MethodHandles for event dispatching
+
+MethodHandles are faster than reflection, and improve exceptions (the exceptions are not through proxies).
+
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+index 5b5d4201..d1acf748 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+@@ -1,5 +1,7 @@
+ package net.md_5.bungee.event;
+ 
++import java.lang.invoke.MethodHandles;
++import java.lang.invoke.WrongMethodTypeException;
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+ import java.text.MessageFormat;
+@@ -44,13 +46,10 @@ public class EventBus
+                 try
+                 {
+                     method.invoke( event );
+-                } catch ( IllegalAccessException ex )
+-                {
+-                    throw new Error( "Method became inaccessible: " + event, ex );
+-                } catch ( IllegalArgumentException ex )
++                } catch ( WrongMethodTypeException | ClassCastException ex )
+                 {
+                     throw new Error( "Method rejected target/argument: " + event, ex );
+-                } catch ( InvocationTargetException ex )
++                } catch ( Throwable ex )
+                 {
+                     logger.log( Level.WARNING, MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() ), ex.getCause() );
+                 }
+@@ -186,8 +185,13 @@ public class EventBus
+                     {
+                         for ( Method method : listenerHandlers.getValue() )
+                         {
+-                            EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
+-                            handlersList.add( ehm );
++                            try {
++                                EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), MethodHandles.lookup().unreflect(method) );
++                                handlersList.add( ehm );
++                            }
++                            catch (final IllegalAccessException ex) {
++                                logger.log( Level.WARNING, "Method became inaccessible, unable to register!", ex );
++                            }
+                         }
+                     }
+                 }
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+index ad19c020..eadcc183 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+@@ -1,5 +1,7 @@
+ package net.md_5.bungee.event;
+ 
++import java.lang.invoke.MethodHandle;
++import java.lang.invoke.WrongMethodTypeException;
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+ import lombok.AllArgsConstructor;
+@@ -12,9 +14,9 @@ public class EventHandlerMethod
+     @Getter
+     private final Object listener;
+     @Getter
+-    private final Method method;
++    private final MethodHandle method;
+ 
+-    public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
++    public void invoke(Object event) throws Throwable
+     {
+         method.invoke( listener, event );
+     }
+-- 
+2.18.0
+
