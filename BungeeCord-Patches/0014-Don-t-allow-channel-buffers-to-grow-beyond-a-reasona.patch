@@ -1,14 +1,14 @@
-From 07e5461a783493e3a46d1d1ea50a59d81cfde264 Mon Sep 17 00:00:00 2001
+From fe70e9d094374aec9039f82b7cbb4871473b121f Mon Sep 17 00:00:00 2001
 From: Iceee <andrew@optic.tv>
 Date: Mon, 6 Jul 2015 18:59:29 -0500
 Subject: [PATCH] Don't allow channel buffers to grow beyond a reasonable limit
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8a4f747c..cfc3991f 100644
+index 4a13910e..9f11f0a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -328,6 +328,8 @@ public class BungeeCord extends ProxyServer
+@@ -326,6 +326,8 @@ public class BungeeCord extends ProxyServer
              new ServerBootstrap()
                      .channel( PipelineUtils.getServerChannel() )
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!

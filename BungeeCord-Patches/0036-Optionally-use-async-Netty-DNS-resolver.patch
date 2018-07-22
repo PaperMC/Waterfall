@@ -1,4 +1,4 @@
-From b1095694b758fd1453d0e1ca679f219a25544987 Mon Sep 17 00:00:00 2001
+From d36da51f0de2a4f34dce13c5a57731c66ab1b40f Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index a4436141..43519ce1 100644
+index d3411929..6187d6f0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -173,6 +173,11 @@ public interface ProxyConfig
+@@ -168,6 +168,11 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
@@ -41,31 +41,42 @@ index 841f014e..2efeaa9e 100644
              <groupId>io.netty</groupId>
              <artifactId>netty-handler</artifactId>
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 59835815..7dc3c2d9 100644
+index 15274156..5c92768a 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -33,6 +33,13 @@ public class WaterfallConfiguration extends Configuration {
-     @Getter
+@@ -22,6 +22,12 @@ public class WaterfallConfiguration extends Configuration {
+      */
      private String gameVersion;
  
 +    /**
 +     * Whether we use Netty's async DNS resolver for the HttpClient.
 +     * <p>Default is true (use Netty's async DNS resolver)</p>
 +     */
-+    @Getter
 +    private boolean useNettyDnsResolver = true;
 +
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -56,6 +63,7 @@ public class WaterfallConfiguration extends Configuration {
-         // Throttling options
-         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+@@ -42,6 +48,7 @@ public class WaterfallConfiguration extends Configuration {
+         config.load(false); // Load, but no permissions
+         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
 +        useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+     }
+@@ -56,6 +63,11 @@ public class WaterfallConfiguration extends Configuration {
+         return gameVersion;
      }
  
++    @Override
++    public boolean isUseNettyDnsResolver() {
++        return useNettyDnsResolver;
++    }
++
      @Override
+     public int getTabThrottle() {
+         return tabThrottle;
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 index 2feb4d66..b265bb43 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java

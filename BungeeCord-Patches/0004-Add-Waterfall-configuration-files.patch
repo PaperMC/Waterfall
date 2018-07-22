@@ -1,4 +1,4 @@
-From 65dbbad1432589ac589cc7bbe64260a2c5443d19 Mon Sep 17 00:00:00 2001
+From b1daa760c06c5e706ae3bc34a67b2f646ed6b047 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -20,18 +20,16 @@ index edd82c1e..b30541be 100644
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 new file mode 100644
-index 00000000..f9e277dc
+index 00000000..741ebfde
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,17 @@
 +package io.github.waterfallmc.waterfall.conf;
-+
-+import lombok.*;
-+
-+import java.io.File;
 +
 +import net.md_5.bungee.conf.Configuration;
 +import net.md_5.bungee.conf.YamlConfig;
++
++import java.io.File;
 +
 +public class WaterfallConfiguration extends Configuration {
 +
@@ -41,6 +39,7 @@ index 00000000..f9e277dc
 +        YamlConfig config = new YamlConfig(new File("waterfall.yml"));
 +        config.load(false); // Load, but no permissions
 +    }
++
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 71f30980..084bc11e 100644
@@ -98,18 +97,18 @@ index 95590b6d..1019c307 100644
          DumperOptions options = new DumperOptions();
          options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
          yaml = new Yaml( options );
-@@ -55,6 +60,11 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -54,6 +59,11 @@ public class YamlConfig implements ConfigurationAdapter
+ 
      @Override
      public void load()
-     {
++    {
 +        load(true);
 +    }
 +
 +    public void load(boolean doPermissions)
-+    {
+     {
          try
          {
-             file.createNewFile();
 @@ -82,6 +92,7 @@ public class YamlConfig implements ConfigurationAdapter
              throw new RuntimeException( "Could not load configuration!", ex );
          }
@@ -119,5 +118,5 @@ index 95590b6d..1019c307 100644
          if ( permissions.isEmpty() )
          {
 -- 
-2.13.2.windows.1
+2.18.0
 

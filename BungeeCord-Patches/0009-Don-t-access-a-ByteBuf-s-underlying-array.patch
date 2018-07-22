@@ -1,4 +1,4 @@
-From 2231ab609209a89a4bf6de54dd056c7a03023144 Mon Sep 17 00:00:00 2001
+From fe62110e228d96e03bb71aafdf33d365c5c658d0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -56,7 +56,7 @@ index d81cda98..29245c94 100644
  
              user.setDimension( login.getDimension() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 842425bb..51c78e2e 100644
+index 8f6f5c0f..03794435 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -242,7 +242,7 @@ public class DownstreamBridge extends PacketHandler

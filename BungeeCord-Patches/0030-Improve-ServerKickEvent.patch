@@ -1,4 +1,4 @@
-From a3f0e2092f693b692659a90b30c7e39bdeee692a Mon Sep 17 00:00:00 2001
+From 9659a1dbc694174a96732c6a3e46ff7507f7e343 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -44,12 +44,12 @@ index 0e1ef5c4..ee63732d 100644
 +    // Waterfall start
 +    @Deprecated
      public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state)
-     {
++    {
 +        this( player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN );
 +    }
 +
 +    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause)
-+    {
+     {
          this.player = player;
          this.kickedFrom = kickedFrom;
          this.kickReasonComponent = kickReasonComponent;
@@ -75,7 +75,7 @@ index 47904de1..0937c39d 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index b5a4a929..921605ab 100644
+index 34ca5554..53c2a5cd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -132,7 +132,7 @@ index b5a4a929..921605ab 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -456,7 +472,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -467,7 +483,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -146,5 +146,5 @@ index b5a4a929..921605ab 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.13.2.windows.1
+2.18.0
 

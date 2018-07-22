@@ -1,4 +1,4 @@
-From 733b1ebe4e400014e1f72c90ba40399a4bd95b45 Mon Sep 17 00:00:00 2001
+From 3016f993123866d4713b124ed8ed261192ef7188 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -9,12 +9,12 @@ This avoids spamming the logs with connection notices.
 Server list pings are only logged if the log_server_list_pings config.yml option is true, defaults to false
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 66d0b8a1..5a49050a 100644
+index 3750dc59..7fd5c8e5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -89,6 +89,11 @@ public interface ProxyConfig
-      */
-     boolean isMetrics();
+@@ -84,6 +84,11 @@ public interface ProxyConfig
+     // Waterfall Options
+     //
  
 +    /**
 +     * Whether we log server list pings
@@ -25,12 +25,12 @@ index 66d0b8a1..5a49050a 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e56d3591..68f25460 100644
+index 0abb4075..93f47511 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
-      */
-     private boolean metrics = true;
+@@ -7,6 +7,13 @@ import java.io.File;
+ 
+ public class WaterfallConfiguration extends Configuration {
  
 +    /**
 +     * Whether we log server list pings
@@ -42,24 +42,23 @@ index e56d3591..68f25460 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -35,6 +42,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -25,10 +32,16 @@ public class WaterfallConfiguration extends Configuration {
+         super.load();
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
-         metrics = config.getBoolean("metrics", metrics);
 +        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
      }
-@@ -48,4 +56,9 @@ public class WaterfallConfiguration extends Configuration {
-     public int getTabThrottle() {
-         return tabThrottle;
-     }
-+
+ 
 +    @Override
 +    public boolean isLogServerListPing() {
 +        return logServerListPing;
 +    }
- }
++
+     @Override
+     public int getTabThrottle() {
+         return tabThrottle;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 44821171..47904de1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
@@ -73,10 +72,10 @@ index 44821171..47904de1 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 23417849..b5a4a929 100644
+index a130f581..34ca5554 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -518,6 +518,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -529,6 +529,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {

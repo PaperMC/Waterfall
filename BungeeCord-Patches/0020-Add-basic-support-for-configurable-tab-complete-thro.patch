@@ -1,18 +1,17 @@
-From c3cca595f8c86af85843ed663940153613687325 Mon Sep 17 00:00:00 2001
+From 1b9854df997c47a99ce7dd05f5023f132629d0d2 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 293ec4e3..66d0b8a1 100644
+index b30541be..3750dc59 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -88,4 +88,13 @@ public interface ProxyConfig
-      * If metrics is enabled
-      */
-     boolean isMetrics();
-+
+@@ -84,4 +84,12 @@ public interface ProxyConfig
+     // Waterfall Options
+     //
+ 
 +    // Throttling options
 +
 +    /**
@@ -23,12 +22,12 @@ index 293ec4e3..66d0b8a1 100644
 +    int getTabThrottle();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 056b8040..e56d3591 100644
+index 741ebfde..0abb4075 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -16,16 +16,36 @@ public class WaterfallConfiguration extends Configuration {
-      */
-     private boolean metrics = true;
+@@ -7,11 +7,31 @@ import java.io.File;
+ 
+ public class WaterfallConfiguration extends Configuration {
  
 +    /*
 +     * Throttling options
@@ -48,20 +47,15 @@ index 056b8040..e56d3591 100644
          super.load();
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
-         metrics = config.getBoolean("metrics", metrics);
 +        // Throttling options
 +        tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
-     }
- 
-     @Override
-     public boolean isMetrics() {
-         return metrics;
-     }
++    }
 +
 +    @Override
 +    public int getTabThrottle() {
 +        return tabThrottle;
-+    }
+     }
+ 
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 index 99933dc8..af1c7deb 100644
