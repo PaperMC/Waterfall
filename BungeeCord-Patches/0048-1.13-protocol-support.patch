@@ -1,4 +1,4 @@
-From 5b1a96af91f4337f5c724daa15ed0351f23ff3b8 Mon Sep 17 00:00:00 2001
+From 5017fe3f6491b212ab9563fa6c2fa38b12a38c15 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 21 Jul 2018 17:14:39 +0100
 Subject: [PATCH] 1.13 protocol support
@@ -54,26 +54,26 @@ index 6279d9f3..f1ad722d 100644
              }
          }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..19d0d2d9 100644
+index f93508d9..1b748c37 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,8 @@
  package net.md_5.bungee.protocol.packet;
  
++import net.md_5.bungee.api.chat.BaseComponent;
 +import net.md_5.bungee.api.chat.TextComponent; // Waterfall
 +import net.md_5.bungee.chat.ComponentSerializer; // Waterfall
  import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
  import lombok.AllArgsConstructor;
-@@ -46,7 +48,14 @@ public class Team extends DefinedPacket
+@@ -46,7 +49,13 @@ public class Team extends DefinedPacket
          mode = buf.readByte();
          if ( mode == 0 || mode == 2 )
          {
 -            displayName = readString( buf );
 +            // Waterfall start - 1.13
 +            if (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) {
-+                String displayNameJson = readString(buf);
-+                displayName = TextComponent.toLegacyText(ComponentSerializer.parse(displayNameJson));
++                displayName = readComponentAsString( buf );
 +            } else {
 +                displayName = readString( buf );
 +            }
@@ -81,22 +81,20 @@ index f93508d9..19d0d2d9 100644
              if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
              {
                  prefix = readString( buf );
-@@ -61,8 +70,12 @@ public class Team extends DefinedPacket
+@@ -61,8 +70,10 @@ public class Team extends DefinedPacket
              color = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? readVarInt( buf ) : buf.readByte();
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
 -                prefix = readString( buf );
 -                suffix = readString( buf );
 +                // Waterfall start - 1.13
-+                String prefixJson = readString( buf );
-+                String suffixJson = readString( buf );
-+                prefix = TextComponent.toLegacyText(ComponentSerializer.parse(prefixJson));
-+                suffix = TextComponent.toLegacyText(ComponentSerializer.parse(suffixJson));
++                prefix = readComponentAsString( buf );
++                suffix = readComponentAsString( buf );
 +                // Waterfall end
              }
          }
          if ( mode == 0 || mode == 3 || mode == 4 )
-@@ -83,7 +96,14 @@ public class Team extends DefinedPacket
+@@ -83,7 +94,14 @@ public class Team extends DefinedPacket
          buf.writeByte( mode );
          if ( mode == 0 || mode == 2 )
          {
@@ -112,7 +110,7 @@ index f93508d9..19d0d2d9 100644
              if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
              {
                  writeString( prefix, buf );
-@@ -98,9 +118,14 @@ public class Team extends DefinedPacket
+@@ -98,9 +116,14 @@ public class Team extends DefinedPacket
  
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
              {
@@ -129,6 +127,19 @@ index f93508d9..19d0d2d9 100644
              } else
              {
                  buf.writeByte( color );
+@@ -121,4 +144,12 @@ public class Team extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    // Waterfall start - 1.13
++    public static String readComponentAsString(ByteBuf buf)
++    {
++        BaseComponent[] components = ComponentSerializer.parse(readString(buf));
++        return components[0] == null ? "" : TextComponent.toLegacyText(components);
++    }
++    // Waterfall end - 1.13
+ }
 -- 
-2.18.0
+2.13.2.windows.1
 

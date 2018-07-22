@@ -1,4 +1,4 @@
-From 66c8d398c18f4d5c5ecfb84d2b40ae12b2071114 Mon Sep 17 00:00:00 2001
+From 65dbbad1432589ac589cc7bbe64260a2c5443d19 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -98,18 +98,18 @@ index 95590b6d..1019c307 100644
          DumperOptions options = new DumperOptions();
          options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
          yaml = new Yaml( options );
-@@ -54,6 +59,11 @@ public class YamlConfig implements ConfigurationAdapter
- 
+@@ -55,6 +60,11 @@ public class YamlConfig implements ConfigurationAdapter
      @Override
      public void load()
-+    {
+     {
 +        load(true);
 +    }
 +
 +    public void load(boolean doPermissions)
-     {
++    {
          try
          {
+             file.createNewFile();
 @@ -82,6 +92,7 @@ public class YamlConfig implements ConfigurationAdapter
              throw new RuntimeException( "Could not load configuration!", ex );
          }
@@ -119,5 +119,5 @@ index 95590b6d..1019c307 100644
          if ( permissions.isEmpty() )
          {
 -- 
-2.18.0
+2.13.2.windows.1
 
