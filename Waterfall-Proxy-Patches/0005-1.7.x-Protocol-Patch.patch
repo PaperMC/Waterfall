@@ -1,4 +1,4 @@
-From 38ccb7ba65faf44527e3060b7a961ba0984dc576 Mon Sep 17 00:00:00 2001
+From d7d6cbf959fdfbb4e94a339f8cd33667e20233a7 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -744,7 +744,7 @@ index 04644236..029618cf 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index b0dcf0ac..86d86313 100644
+index f1ad722d..5a0f58b0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -781,7 +781,7 @@ index b0dcf0ac..86d86313 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -54,6 +65,16 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -50,6 +61,16 @@ public class ScoreboardObjective extends DefinedPacket
          }
      }
  
@@ -912,12 +912,12 @@ index f9eaa7ce..e174ac0b 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index bb4f699b..d91515e6 100644
+index 19d0d2d9..53042403 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
- import net.md_5.bungee.api.chat.TextComponent;
- import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.api.chat.TextComponent; // Waterfall
+ import net.md_5.bungee.chat.ComponentSerializer; // Waterfall
  import net.md_5.bungee.protocol.DefinedPacket;
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
