@@ -5,13 +5,13 @@ case "$1" in
         scripts/rebuildPatches.sh
     ;;
     "p" | "patch")
-        scripts/applyPatches.sh
+        scripts/build.sh
     ;;
     "m" | "up" | "merge")
         scripts/mergeUpstream.sh
     ;;
     "b" | "build")
-        scripts/build.sh
+        scripts/build.sh --jar
     ;;
     "e" | "edit")
         scripts/edit.sh
