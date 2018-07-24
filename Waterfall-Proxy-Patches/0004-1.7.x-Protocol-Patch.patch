@@ -1,4 +1,4 @@
-From 5a1d579596bf1069486adbb40cff383104f85583 Mon Sep 17 00:00:00 2001
+From c286d8e680f6b226bdf48950534239b5398d82e2 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1090,7 +1090,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 0937c39d..94c8f142 100644
+index 0937c39d..28d63f52 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee;
@@ -1127,6 +1127,15 @@ index 0937c39d..94c8f142 100644
  
              user.setDimension( login.getDimension() );
          } else
+@@ -259,7 +271,7 @@ public class ServerConnector extends PacketHandler
+             Scoreboard serverScoreboard = user.getServerSentScoreboard();
+             for ( Objective objective : serverScoreboard.getObjectives() )
+             {
+-                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
++                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), objective.getType() == null ? null : ScoreboardObjective.HealthDisplay.fromString(objective.getType()), (byte) 1 ) ); // Travertine - 1.7
+             }
+             for ( Score score : serverScoreboard.getScores() )
+             {
 @@ -392,14 +404,23 @@ public class ServerConnector extends PacketHandler
              {
                  this.handshakeHandler.handle( pluginMessage );
