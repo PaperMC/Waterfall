@@ -1,0 +1,187 @@
+From 5db53f11d295361545471702cd0ad8d887d0432c Mon Sep 17 00:00:00 2001
+From: Leymooo <mikimouse100@mail.ru>
+Date: Fri, 27 Jul 2018 22:21:37 +0300
+Subject: [PATCH] 1.13 scoreboard api support
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+index 0b7cf3b4..776723e2 100644
+--- a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
++++ b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+@@ -17,10 +17,12 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
+ 
+ import java.lang.reflect.Type;
+ import java.util.HashSet;
++import lombok.Getter; // Waterfall - 1.13
+ 
+ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ {
+-
++    
++    @Getter // Waterfall - 1.13
+     private final static JsonParser JSON_PARSER = new JsonParser();
+     private final static Gson gson = new GsonBuilder().
+             registerTypeAdapter( BaseComponent.class, new ComponentSerializer() ).
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 10e16d79..a2720425 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -1,12 +1,16 @@
+ package net.md_5.bungee.protocol;
+ 
+ import com.google.common.base.Charsets;
++import com.google.gson.JsonSyntaxException; // Waterfall - 1.13
+ import io.netty.buffer.ByteBuf;
+ import java.util.ArrayList;
+ import java.util.List;
+ import lombok.RequiredArgsConstructor;
+ 
+ import java.util.UUID;
++import net.md_5.bungee.api.chat.BaseComponent; // Waterfall - 1.13
++import net.md_5.bungee.api.chat.TextComponent; // Waterfall - 1.13
++import net.md_5.bungee.chat.ComponentSerializer; // Waterfall - 1.13
+ 
+ @RequiredArgsConstructor
+ public abstract class DefinedPacket
+@@ -38,6 +42,28 @@ public abstract class DefinedPacket
+         return new String( b, Charsets.UTF_8 );
+     }
+ 
++    // Waterfall - 1.13 start
++    public static void writeStringAsChatComponent(String s, ByteBuf buf)
++    {
++        try
++        {
++            if ( !ComponentSerializer.getJSON_PARSER().parse( s ).isJsonPrimitive() )
++            {
++                writeString( s, buf );  //Its a valid json string
++                return;
++            }
++        } catch ( JsonSyntaxException ex ) {}
++        writeString( ComponentSerializer.toString( TextComponent.fromLegacyText( s ) ), buf );
++    }
++
++    public static String readChatComponentAsString(ByteBuf buf)
++    {
++        String json = readString( buf );
++        BaseComponent[] components = ComponentSerializer.parse( json );
++        return ( components.length == 0 || components[0] == null ) ? json : TextComponent.toLegacyText( components );
++    }
++    // Waterfall - 1.13 end
++
+     public static void writeArray(byte[] b, ByteBuf buf)
+     {
+         if ( b.length > Short.MAX_VALUE )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+index 6279d9f3..9ba81cd0 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+@@ -25,6 +25,17 @@ public class ScoreboardObjective extends DefinedPacket
+      */
+     private byte action;
+ 
++    //Waterfall - 1.13 start - support for non updated plugins
++    @Deprecated
++    public ScoreboardObjective(String name, String value, String type, byte action)
++    {
++        this.name = name;
++        this.value = value;
++        this.type = HealthDisplay.fromString( type );
++        this.action = action;
++    }
++    //Waterfall - 1.13 end
++
+     @Override
+     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+@@ -32,12 +43,13 @@ public class ScoreboardObjective extends DefinedPacket
+         action = buf.readByte();
+         if ( action == 0 || action == 2 )
+         {
+-            value = readString( buf );
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
+             {
++                value = readChatComponentAsString( buf ); // Waterfall - 1.13
+                 type = HealthDisplay.values()[readVarInt( buf )];
+             } else
+             {
++                value = readString( buf ); // Waterfall - 1.13
+                 type = HealthDisplay.fromString( readString( buf ) );
+             }
+         }
+@@ -50,12 +62,13 @@ public class ScoreboardObjective extends DefinedPacket
+         buf.writeByte( action );
+         if ( action == 0 || action == 2 )
+         {
+-            writeString( value, buf );
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
+             {
++                writeStringAsChatComponent( value, buf ); // Waterfall - 1.13
+                 writeVarInt( type.ordinal(), buf );
+             } else
+             {
++                writeString( value, buf ); // Waterfall - 1.13
+                 writeString( type.toString(), buf );
+             }
+         }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+index f93508d9..1b77d5f4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+@@ -46,11 +46,14 @@ public class Team extends DefinedPacket
+         mode = buf.readByte();
+         if ( mode == 0 || mode == 2 )
+         {
+-            displayName = readString( buf );
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
+             {
++                displayName = readString( buf ); // Waterfall - 1.13
+                 prefix = readString( buf );
+                 suffix = readString( buf );
++            } else
++            {
++                displayName = readChatComponentAsString( buf ); // Waterfall - 1.13
+             }
+             friendlyFire = buf.readByte();
+             nameTagVisibility = readString( buf );
+@@ -61,8 +64,8 @@ public class Team extends DefinedPacket
+             color = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? readVarInt( buf ) : buf.readByte();
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
+             {
+-                prefix = readString( buf );
+-                suffix = readString( buf );
++                prefix = readChatComponentAsString( buf ); // Waterfall - 1.13
++                suffix = readChatComponentAsString( buf ); // Waterfall - 1.13
+             }
+         }
+         if ( mode == 0 || mode == 3 || mode == 4 )
+@@ -83,11 +86,14 @@ public class Team extends DefinedPacket
+         buf.writeByte( mode );
+         if ( mode == 0 || mode == 2 )
+         {
+-            writeString( displayName, buf );
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
+             {
++                writeString( displayName, buf ); // Waterfall - 1.13
+                 writeString( prefix, buf );
+                 writeString( suffix, buf );
++            } else
++            {
++                writeStringAsChatComponent( displayName, buf ); // Waterfall - 1.13
+             }
+             buf.writeByte( friendlyFire );
+             writeString( nameTagVisibility, buf );
+@@ -99,8 +105,8 @@ public class Team extends DefinedPacket
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
+             {
+                 writeVarInt( color, buf );
+-                writeString( prefix, buf );
+-                writeString( suffix, buf );
++                writeStringAsChatComponent( prefix, buf ); // Waterfall - 1.13
++                writeStringAsChatComponent( suffix, buf ); // Waterfall - 1.13
+             } else
+             {
+                 buf.writeByte( color );
+-- 
+2.17.1.windows.2
+
