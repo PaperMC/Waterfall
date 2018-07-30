@@ -1,4 +1,4 @@
-From 889411e2ea36b2edcb33869e480258701b9be30c Mon Sep 17 00:00:00 2001
+From 29bee8a700e22921c0fba12ca832966b943920fb Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -6,7 +6,7 @@ Subject: [PATCH] 1.7.x Protocol Patch
 
 diff --git a/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
 new file mode 100644
-index 00000000..90064112
+index 000000000..90064112e
 --- /dev/null
 +++ b/protocol/src/main/java/io/github/waterfallmc/travertine/protocol/MultiVersionPacketV17.java
 @@ -0,0 +1,90 @@
@@ -101,7 +101,7 @@ index 00000000..90064112
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 10e16d79..04a34033 100644
+index 10e16d794..04a34033f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -193,6 +193,11 @@ public abstract class DefinedPacket
@@ -129,7 +129,7 @@ index 10e16d79..04a34033 100644
  
      @Override
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 9e9ea49c..75b0f8a9 100644
+index 9e9ea49cc..75b0f8a96 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -5,10 +5,11 @@ import io.netty.buffer.ByteBufUtil;
@@ -155,7 +155,7 @@ index 9e9ea49c..75b0f8a9 100644
                  if ( in.isReadable() )
                  {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
-index d4b03843..9aac7ca9 100644
+index d4b038434..9aac7ca9f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 @@ -21,6 +21,6 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
@@ -167,7 +167,7 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 8e40682c..eba86548 100644
+index 8e40682c0..eba86548a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -378,6 +378,8 @@ public enum Protocol
@@ -193,7 +193,7 @@ index 8e40682c..eba86548 100644
  
              Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index c23b1947..b461e94e 100644
+index c23b19478..b461e94e3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -223,7 +223,7 @@ index c23b1947..b461e94e 100644
              ProtocolConstants.MINECRAFT_1_9,
              ProtocolConstants.MINECRAFT_1_9_1,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index 29e54dba..1f9e64dc 100644
+index 29e54dba0..1f9e64dc9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -7,10 +7,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
@@ -257,7 +257,7 @@ index 29e54dba..1f9e64dc 100644
  
                  if ( in.readableBytes() < length )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index 95ad39b7..1f78125a 100644
+index 95ad39b76..1f78125ae 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -1,6 +1,6 @@
@@ -308,7 +308,7 @@ index 95ad39b7..1f78125a 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-index 5c79727c..431b2eb8 100644
+index 5c79727ca..431b2eb8e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
 @@ -1,5 +1,6 @@
@@ -368,7 +368,7 @@ index 5c79727c..431b2eb8 100644
      public void handle(AbstractPacketHandler handler) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
-index a29524ca..8d9f4ccb 100644
+index a29524ca8..8d9f4ccb3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 @@ -1,25 +1,35 @@
@@ -427,7 +427,7 @@ index a29524ca..8d9f4ccb 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-index 06676e42..19a85492 100644
+index 06676e428..19a854928 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
 @@ -1,6 +1,6 @@
@@ -478,7 +478,7 @@ index 06676e42..19a85492 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
-index d11a9ea9..07fc21b6 100644
+index d11a9ea9d..07fc21b65 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 @@ -1,18 +1,19 @@
@@ -534,7 +534,7 @@ index d11a9ea9..07fc21b6 100644
      public void write(ByteBuf buf) {
          writeVarInt(this.entityId, buf);
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
-index 7ed2dc3a..9f8d56fc 100644
+index 7ed2dc3ab..9f8d56fc7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 @@ -1,18 +1,18 @@
@@ -587,7 +587,7 @@ index 7ed2dc3a..9f8d56fc 100644
 +    }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
-index 9df9ef56..56e6e522 100644
+index 9df9ef567..56e6e5228 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
 @@ -1,6 +1,6 @@
@@ -634,7 +634,7 @@ index 9df9ef56..56e6e522 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
-index 9983ef2e..ae5dad52 100644
+index 9983ef2e4..ae5dad52f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
 @@ -1,5 +1,6 @@
@@ -689,7 +689,7 @@ index 9983ef2e..ae5dad52 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 0e06b49d..ac7451dc 100644
+index 0e06b49dc..ac7451dce 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -3,8 +3,8 @@ package net.md_5.bungee.protocol.packet;
@@ -744,7 +744,7 @@ index 0e06b49d..ac7451dc 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 6279d9f3..b4a66baf 100644
+index 6279d9f35..b4a66baf2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -1,6 +1,7 @@
@@ -799,7 +799,7 @@ index 6279d9f3..b4a66baf 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
-index 6f0de535..b967f89f 100644
+index 6f0de535d..b967f89f1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
 @@ -1,6 +1,6 @@
@@ -862,7 +862,7 @@ index 6f0de535..b967f89f 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-index f9eaa7ce..e174ac0b 100644
+index f9eaa7ce8..e174ac0b2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 @@ -1,6 +1,6 @@
@@ -912,7 +912,7 @@ index f9eaa7ce..e174ac0b 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index f93508d9..13af5112 100644
+index f93508d90..13af5112c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,6 +1,7 @@
@@ -996,7 +996,7 @@ index f93508d9..13af5112 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bea13ea8..22622c56 100644
+index bea13ea81..22622c56b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -163,6 +163,14 @@ public class BungeeCord extends ProxyServer
@@ -1015,7 +1015,7 @@ index bea13ea8..22622c56 100644
      private ConnectionThrottle connectionThrottle;
      private final ModuleManager moduleManager = new ModuleManager();
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java b/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
-index 494213db..1d89acf5 100644
+index 494213db8..1d89acf5b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeTitle.java
 @@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -1035,7 +1035,7 @@ index 494213db..1d89acf5 100644
          sendPacket( player, reset );
          sendPacket( player, times );
 diff --git a/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java b/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
-index 491cf1a1..299a216c 100644
+index 491cf1a16..299a216cd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
 +++ b/proxy/src/main/java/net/md_5/bungee/PlayerInfoSerializer.java
 @@ -10,17 +10,32 @@ import com.google.gson.JsonSerializer;
@@ -1090,7 +1090,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 0937c39d..28d63f52 100644
+index 0937c39d4..28d63f522 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee;
@@ -1165,10 +1165,10 @@ index 0937c39d..28d63f52 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ef12a019..4a1c3638 100644
+index 032ffcbef..30475b359 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -195,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -196,6 +196,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1176,7 +1176,7 @@ index ef12a019..4a1c3638 100644
          displayName = name;
      }
  
-@@ -453,7 +454,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -478,7 +479,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message );
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1185,7 +1185,7 @@ index ef12a019..4a1c3638 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -468,7 +469,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -493,7 +494,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message )[0];
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1194,7 +1194,7 @@ index ef12a019..4a1c3638 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -647,6 +648,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -672,6 +673,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1202,7 +1202,7 @@ index ef12a019..4a1c3638 100644
          header = ChatComponentTransformer.getInstance().transform( this, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, footer )[0];
  
-@@ -659,6 +661,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -684,6 +686,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1210,7 +1210,7 @@ index ef12a019..4a1c3638 100644
          header = ChatComponentTransformer.getInstance().transform( this, header );
          footer = ChatComponentTransformer.getInstance().transform( this, footer );
  
-@@ -688,6 +691,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -713,6 +716,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1219,7 +1219,7 @@ index ef12a019..4a1c3638 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 76dc13aa..242efd91 100644
+index 76dc13aa7..242efd91a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -144,7 +144,7 @@ public class DownstreamBridge extends PacketHandler
@@ -1280,7 +1280,7 @@ index 76dc13aa..242efd91 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c6e109c5..adcdd31c 100644
+index c6e109c53..adcdd31cc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -13,6 +13,13 @@ import java.util.UUID;
@@ -1342,7 +1342,7 @@ index c6e109c5..adcdd31c 100644
  
                              ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 76f496ce..eab2523d 100644
+index 76f496ce2..eab2523db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -1363,7 +1363,7 @@ index 76f496ce..eab2523d 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7129f5e7..6440db3a 100644
+index 7129f5e7e..6440db3a6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -79,7 +79,12 @@ public class UpstreamBridge extends PacketHandler
@@ -1381,7 +1381,7 @@ index 7129f5e7..6440db3a 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 4df06119..b1d2714c 100644
+index 4df061191..b1d2714ca 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -29,6 +29,10 @@ public abstract class EntityMap
@@ -1397,7 +1397,7 @@ index 4df06119..b1d2714c 100644
              case ProtocolConstants.MINECRAFT_1_9:
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
 new file mode 100644
-index 00000000..d98a8056
+index 000000000..d98a8056a
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
 @@ -0,0 +1,215 @@
@@ -1618,7 +1618,7 @@ index 00000000..d98a8056
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 new file mode 100644
-index 00000000..65c1a9ec
+index 000000000..65c1a9ec8
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 @@ -0,0 +1,102 @@
@@ -1726,7 +1726,7 @@ index 00000000..65c1a9ec
 +// Travertine end
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 new file mode 100644
-index 00000000..6755fe84
+index 000000000..6755fe845
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 @@ -0,0 +1,62 @@
@@ -1793,7 +1793,7 @@ index 00000000..6755fe84
 +}
 +// Travertine end
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index c1272da3..45af7ea4 100644
+index c1272da38..45af7ea40 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 @@ -8,6 +8,7 @@ import lombok.Getter;
@@ -1841,7 +1841,7 @@ index c1272da3..45af7ea4 100644
 +
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
-index 5e02f8c8..e3c1b9b9 100644
+index 5e02f8c8a..e3c1b9b95 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandshakeState.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.forge;
@@ -1876,7 +1876,7 @@ index 5e02f8c8..e3c1b9b9 100644
  
                  return WAITINGSERVERDATA;
 diff --git a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
-index daf12f74..e33861ab 100644
+index daf12f74e..e33861abb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
 +++ b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
 @@ -4,12 +4,14 @@ import java.util.Collection;
