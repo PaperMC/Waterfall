@@ -1,4 +1,4 @@
-From c372943d2fdcb9c5f8249a3b3fe1aa3efd1660fa Mon Sep 17 00:00:00 2001
+From cad7dfdf4773c337177db00ab88db0812e57ad8f Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -165,7 +165,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8344a9b6..ef12a019 100644
+index d1d3142e..032ffcbe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -2,7 +2,9 @@ package net.md_5.bungee;
@@ -178,7 +178,7 @@ index 8344a9b6..ef12a019 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -126,6 +128,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -127,6 +129,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -190,7 +190,7 @@ index 8344a9b6..ef12a019 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 53c2a5cd..6f847e1d 100644
+index 4743af1d..76dc13aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -33,6 +33,8 @@ import net.md_5.bungee.protocol.DefinedPacket;

@@ -1,4 +1,4 @@
-From 830983d461fddced10587104347dba06924068f3 Mon Sep 17 00:00:00 2001
+From e14ce3444e616e79875282865164065680a5e13c Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -6,10 +6,10 @@ Subject: [PATCH] Add timeout variant to connect methods
 Also added more connect methods to ProxiedPlayer, in addition to the new method
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 333d3972..454a7229 100644
+index e3e999b0..de09cd54 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -110,6 +110,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -111,6 +111,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback);
  
@@ -48,7 +48,7 @@ index 333d3972..454a7229 100644
      /**
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
-@@ -123,6 +155,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -124,6 +156,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
  
@@ -72,13 +72,13 @@ index 333d3972..454a7229 100644
 +    // Waterfall end
 +
      /**
-      * Gets the server this player is connected to.
-      *
+      * Connects / transfers this user to the specified connection, gracefully
+      * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 61502ea8..8344a9b6 100644
+index 6146cb44..d1d3142e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -256,6 +256,16 @@ public final class UserConnection implements ProxiedPlayer
+@@ -257,9 +257,20 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
@@ -94,25 +94,20 @@ index 61502ea8..8344a9b6 100644
 +        // Waterfall end
          Preconditions.checkNotNull( info, "info" );
  
-         ServerConnectEvent event = new ServerConnectEvent( this, info, reason );
-@@ -329,7 +339,7 @@ public final class UserConnection implements ProxiedPlayer
-                     if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
+         ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info );
++        builder.connectTimeout(timeout); // Waterfall
+         if ( callback != null )
+         {
+             // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
+@@ -353,7 +364,7 @@ public final class UserConnection implements ProxiedPlayer
+                     if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
 -                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK );
-+                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, timeout ); // Waterfall
++                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
                      } else if ( dimensionChange )
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-@@ -344,7 +354,7 @@ public final class UserConnection implements ProxiedPlayer
-                 .channel( PipelineUtils.getChannel() )
-                 .group( ch.getHandle().eventLoop() )
-                 .handler( initializer )
--                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
-+                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout ) // Waterfall
-                 .remoteAddress( target.getAddress() );
-         // Windows is bugged, multi homed users will just have to live with random connecting IPs
-         if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
 -- 
 2.18.0
 
