@@ -1,4 +1,4 @@
-From 9f9dac11d97f547151023d30b371db781bfd4a5c Mon Sep 17 00:00:00 2001
+From 175e2662ba072e6437a8056498668c4cbb4f964c Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -106,10 +106,10 @@ index 00000000..36fceb93
 +</project>
 diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
 new file mode 100644
-index 00000000..d5a1955b
+index 00000000..63f66d3c
 --- /dev/null
 +++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,59 @@
 +package io.github.waterfallmc.waterfall.log4j;
 +
 +import com.google.common.base.Strings;
@@ -138,6 +138,10 @@ index 00000000..d5a1955b
 +
 +    @Override
 +    public void publish(LogRecord record) {
++        if (!isLoggable(record)) {
++            return;
++        }
++
 +        Logger logger = cache.computeIfAbsent(Strings.nullToEmpty(record.getLoggerName()), LogManager::getLogger);
 +
 +        String message = record.getMessage();
@@ -167,10 +171,10 @@ index 00000000..d5a1955b
 +}
 diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
 new file mode 100644
-index 00000000..a0f7ed01
+index 00000000..e046897a
 --- /dev/null
 +++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,34 @@
 +package io.github.waterfallmc.waterfall.log4j;
 +
 +import org.apache.logging.log4j.Level;
@@ -198,6 +202,7 @@ index 00000000..a0f7ed01
 +        }
 +
 +        // Setup forward log handler
++        root.setLevel(java.util.logging.Level.ALL); // Log4j will handle filtering the log
 +        root.addHandler(new Log4JLogHandler());
 +
 +        return Logger.getLogger("BungeeCord");
@@ -353,7 +358,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 09d53fea..47d4c585 100644
+index 84c7903b..ada8325a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
