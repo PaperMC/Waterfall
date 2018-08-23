@@ -1,4 +1,4 @@
-From a10c8ea62831bcd1ccf74d324add28807cf99dbf Mon Sep 17 00:00:00 2001
+From 4376131d2acf771b016130d36a21103e9e9a31c9 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index ea44573d..5b32effe 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 9509f8ee..60de276e 100644
+index 06390751..93e81266 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -391,14 +391,23 @@ public enum Protocol
+@@ -394,14 +394,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -105,10 +105,10 @@ index 99cd19a1..6146cb44 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index c65a8481..4df06119 100644
+index d1eebbf0..2843b94e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -267,6 +267,12 @@ public abstract class EntityMap
+@@ -268,6 +268,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
