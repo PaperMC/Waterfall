@@ -1,11 +1,11 @@
-From 5b753c311625da73afc78534c0c3da77dc489fe4 Mon Sep 17 00:00:00 2001
+From 702d71d9703ab3075982346a7aff2e083e9149dd Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:36:10 -0600
 Subject: [PATCH] Don't send KICK packets while in HANDSHAKE state
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 933a8388..65e57062 100644
+index 6a570025..d35391ff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -278,7 +278,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -17,7 +17,7 @@ index 933a8388..65e57062 100644
          // with Bungee's IP forwarding, so we detect it, and remove it from the host string, for now.
          // We know FML appends \00FML\00. However, we need to also consider that other systems might
          // add their own data to the end of the string. So, we just take everything from the \0 character
-@@ -565,7 +565,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -568,7 +568,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void disconnect(final BaseComponent... reason)
      {

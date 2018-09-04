@@ -1,4 +1,4 @@
-From 3016f993123866d4713b124ed8ed261192ef7188 Mon Sep 17 00:00:00 2001
+From 9053bea57b15c9f581d3e89cf4b877ae0e30e585 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -72,7 +72,7 @@ index 44821171..47904de1 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a130f581..34ca5554 100644
+index 30f8a7df..ce8da75d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -529,6 +529,6 @@ public class DownstreamBridge extends PacketHandler
@@ -84,14 +84,17 @@ index a130f581..34ca5554 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d1e9d556..59053de2 100644
+index 0e8041f8..52811180 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -293,19 +293,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -293,16 +293,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
--        bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+-        if ( bungee.getConfig().isLogPings() )
+-        {
+-            bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+-        }
  
          bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
  
@@ -104,14 +107,7 @@ index d1e9d556..59053de2 100644
                  // Ping
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
-                 break;
-             case 2:
-                 // Login
-+                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
-                 thisState = State.USERNAME;
-                 ch.setProtocol( Protocol.LOGIN );
- 
-@@ -624,7 +627,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -631,7 +630,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -121,7 +117,7 @@ index d1e9d556..59053de2 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index af1c7deb..81f09a80 100644
+index f08f464a..20b3975a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -246,6 +246,6 @@ public class UpstreamBridge extends PacketHandler

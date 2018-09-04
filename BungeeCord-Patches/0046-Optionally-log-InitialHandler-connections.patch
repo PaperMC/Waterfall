@@ -1,4 +1,4 @@
-From 2d00fa974c95d7e2cffaebfe40f937b41883f5c7 Mon Sep 17 00:00:00 2001
+From 284e166e11ab0cea910311f98042c8a32c3f6705 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
@@ -59,20 +59,18 @@ index 5c92768a..090c550b 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2347654c..c6e109c5 100644
+index 52d97ec6..cdd1c919 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -312,7 +312,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -312,7 +312,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
--                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
-+                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections()) {
-+                    bungee.getLogger().log( Level.INFO, "{0} has connected", this );
-+                }
-                 thisState = State.USERNAME;
-                 ch.setProtocol( Protocol.LOGIN );
- 
+-                if ( !bungee.getConfig().isLogPings() )
++                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                 }
 -- 
 2.18.0
 
