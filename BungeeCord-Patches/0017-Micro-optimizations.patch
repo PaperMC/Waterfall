@@ -1,4 +1,4 @@
-From a8818d5dcc92a302c72c4cc7dfd99c0289013a22 Mon Sep 17 00:00:00 2001
+From 977c4a0f8cddfad7fd46b2c08c0f82bc6d442cb1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -45,19 +45,6 @@ index 9f11f0a2..c8d1d225 100644
          } catch ( MissingResourceException ex )
          {
          }
-diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 5fd5ce80..99cd19a1 100644
---- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-+++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -585,7 +585,7 @@ public final class UserConnection implements ProxiedPlayer
-     @Override
-     public Locale getLocale()
-     {
--        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replaceAll( "_", "-" ) ) : locale;
-+        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replace( '_', '-' ) ) : locale;
-     }
- 
-     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index d4c58098..30f8a7df 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java

@@ -1,4 +1,4 @@
-From ed0c6a80f6c16fa5ff25a0ab1bc0812b74995af9 Mon Sep 17 00:00:00 2001
+From 6c9a2c2cbbba3df1c0b01721e2d92581c26744c4 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -245,27 +245,27 @@ index 86a00555..6c9c6d61 100644
      }
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index 27b51849..8bf17f9c 100644
+index 2f707ba6..8bf17f9c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -75,7 +75,7 @@ public class ServerPing
  
          public String getId()
          {
--            return uniqueId.toString().replaceAll( "-", "" );
+-            return uniqueId.toString().replace( "-", "" );
 +            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
          }
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index a6bd3720..0e8041f8 100644
+index d4fadcf6..0e8041f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -625,7 +625,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {
--        return uniqueId.toString().replaceAll( "-", "" );
+-        return uniqueId.toString().replace( "-", "" );
 +        return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
      }
  
