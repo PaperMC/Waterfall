@@ -1,0 +1,85 @@
+From 8e7821954fb8a610f11eaf9c80f67d318ab4081e Mon Sep 17 00:00:00 2001
+From: Troy Frew <fuzzy_bot@arenaga.me>
+Date: Wed, 29 Jun 2016 13:56:57 -0500
+Subject: [PATCH] Configurable server version in ping response
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index dcd46f4a..d3411929 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -163,6 +163,11 @@ public interface ProxyConfig
+      */
+     boolean isLogServerListPing();
+ 
++    /**
++     * The supported versions
++     */
++    String getGameVersion();
++
+     // Throttling options
+ 
+     /**
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 93f47511..15274156 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,7 +1,9 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
++import com.google.common.base.Joiner;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.io.File;
+ 
+@@ -14,6 +16,12 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean logServerListPing = false;
+ 
++    /**
++     * The supported versions displayed to the client
++     * <p>Default is a comma separated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
++     */
++    private String gameVersion;
++
+     /*
+      * Throttling options
+      * Helps prevent players from overloading the servers behind us
+@@ -33,6 +41,7 @@ public class WaterfallConfiguration extends Configuration {
+         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         config.load(false); // Load, but no permissions
+         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
++        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
+         // Throttling options
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+     }
+@@ -42,6 +51,11 @@ public class WaterfallConfiguration extends Configuration {
+         return logServerListPing;
+     }
+ 
++    @Override
++    public String getGameVersion() {
++        return gameVersion;
++    }
++
+     @Override
+     public int getTabThrottle() {
+         return tabThrottle;
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 07eeea16..595b7375 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -646,7 +646,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getGameVersion()
+     {
+-        return ProtocolConstants.SUPPORTED_VERSIONS.get( 0 ) + "-" + ProtocolConstants.SUPPORTED_VERSIONS.get( ProtocolConstants.SUPPORTED_VERSIONS.size() - 1 );
++        return getConfig().getGameVersion(); // Waterfall
+     }
+ 
+     @Override
+-- 
+2.19.0
+
