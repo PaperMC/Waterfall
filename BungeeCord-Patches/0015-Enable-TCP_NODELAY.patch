@@ -1,4 +1,4 @@
-From fbed7db1bba999269cd489496076d862a0513cba Mon Sep 17 00:00:00 2001
+From d3c6dfe50626400638941023153187a4b993b019 Mon Sep 17 00:00:00 2001
 From: Harry <me@harry5573.uk>
 Date: Sun, 24 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Enable TCP_NODELAY.
@@ -6,10 +6,10 @@ Subject: [PATCH] Enable TCP_NODELAY.
 This is enabled by default on CraftBukkit/Spigot >= 1.8 and may help with network performance.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index be9685b9..b0bbc1d7 100644
+index 09486b4a..41330ec2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -133,6 +133,7 @@ public class PipelineUtils
+@@ -134,6 +134,7 @@ public class PipelineUtils
              {
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }

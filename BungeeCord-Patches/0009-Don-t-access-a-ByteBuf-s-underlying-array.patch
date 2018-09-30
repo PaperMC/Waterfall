@@ -1,4 +1,4 @@
-From fe62110e228d96e03bb71aafdf33d365c5c658d0 Mon Sep 17 00:00:00 2001
+From e7e565face505edda19fc4f24b19b51f648b9e65 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -6,7 +6,7 @@ Subject: [PATCH] Don't access a ByteBuf's underlying array
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 8d4eacbc..04644236 100644
+index a71cc710..0e06b49d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
@@ -56,7 +56,7 @@ index d81cda98..29245c94 100644
  
              user.setDimension( login.getDimension() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8f6f5c0f..03794435 100644
+index 22a5ac05..d4c58098 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -242,7 +242,7 @@ public class DownstreamBridge extends PacketHandler
@@ -69,7 +69,7 @@ index 8f6f5c0f..03794435 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 551ae1e1..be9685b9 100644
+index ffee7062..09486b4a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -42,9 +42,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
@@ -86,5 +86,5 @@ index 551ae1e1..be9685b9 100644
      {
          @Override
 -- 
-2.18.0
+2.19.0
 

@@ -20,7 +20,7 @@ Waterfall will still track upstream BungeeCord and merge changes as needed.
 
 ## How To (Server Admins)
 
-Download a copy of Waterfall.jar from our buildserver here: [Waterfall](https://ci.destroystokyo.com/job/Waterfall/)
+Download a copy of Waterfall.jar from our buildserver here: [Waterfall](https://papermc.io/ci/job/Waterfall/)
 
 Waterfall requires **Java 8** or above.
 
