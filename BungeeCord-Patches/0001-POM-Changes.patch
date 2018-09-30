@@ -1,10 +1,10 @@
-From f797540b3d020cdef9d2597a63b62820b5a95f8d Mon Sep 17 00:00:00 2001
+From 7aabe3afd7361973f69bd229ee7334f2d53dd3fb Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
 
 - Require Java 8
-- Deploy to destroystokyo mvn repo
+- Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
 index 5432a6eb..48bd8a54 100644
@@ -487,7 +487,7 @@ index 15c0ada2..7073b404 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 9cad53d8..79493df2 100644
+index 9cad53d8..81c7165c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -559,24 +559,24 @@ index 9cad53d8..79493df2 100644
      <issueManagement>
          <system>GitHub</system>
 -        <url>https://github.com/SpigotMC/BungeeCord/issues</url>
-+        <url>https://github.com/WaterfallMC/Waterfall/issues</url>
++        <url>https://github.com/PaperMC/Waterfall/issues</url>
      </issueManagement>
      <ciManagement>
          <system>jenkins</system>
 -        <url>http://ci.md-5.net/job/BungeeCord</url>
-+        <url>https://ci.aquifermc.org/job/Waterfall/</url>
++        <url>https://papermc.io/ci/job/Waterfall/</url>
      </ciManagement>
  
      <distributionManagement>
 +        <repository>
-+            <id>destroystokyo-releases</id>
-+            <url>https://destroystokyo.com/repo/repository/maven-releases/</url>
++            <id>papermc-releases</id>
++            <url>https://papermc.io/repo/repository/maven-releases/</url>
 +        </repository>
          <snapshotRepository>
 -            <id>sonatype-nexus-snapshots</id>
 -            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-+            <id>destroystokyo-snapshots</id>
-+            <url>https://destroystokyo.com/repo/repository/maven-snapshots/</url>
++            <id>papermc-snapshots</id>
++            <url>https://papermc.io/repo/repository/maven-snapshots/</url>
          </snapshotRepository>
      </distributionManagement>
  
@@ -821,5 +821,5 @@ index fdd44b20..4ae682ee 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.18.0
+2.19.0
 
