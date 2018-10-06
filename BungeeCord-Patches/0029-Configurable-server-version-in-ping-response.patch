@@ -1,11 +1,11 @@
-From d6793fa77ac0f2c27a92d2445f9066c1d340be94 Mon Sep 17 00:00:00 2001
+From 97f51be47197095ec5d0b23d01ab5912597a0ed7 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index dcd46f4a..d3411929 100644
+index 78519227..34d7e2cb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -163,6 +163,11 @@ public interface ProxyConfig
@@ -21,7 +21,7 @@ index dcd46f4a..d3411929 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 93f47511..15274156 100644
+index a5db82b8..e55c28d8 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -1,7 +1,9 @@
@@ -47,15 +47,15 @@ index 93f47511..15274156 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -33,6 +41,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -34,6 +42,7 @@ public class WaterfallConfiguration extends Configuration {
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
          logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
 +        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
-     }
-@@ -42,6 +51,11 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+@@ -44,6 +53,11 @@ public class WaterfallConfiguration extends Configuration {
          return logServerListPing;
      }
  

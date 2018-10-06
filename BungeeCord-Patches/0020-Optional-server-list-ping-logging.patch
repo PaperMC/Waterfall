@@ -1,4 +1,4 @@
-From acc40b9ef7853831675e73f4aee176ea7e856bda Mon Sep 17 00:00:00 2001
+From f54312b02382629575ad5dbc2fb00fe4f89b4604 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -9,7 +9,7 @@ This avoids spamming the logs with connection notices.
 Server list pings are only logged if the log_server_list_pings config.yml option is true, defaults to false
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 3750dc59..7fd5c8e5 100644
+index 08d2a870..72f35bd6 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -84,6 +84,11 @@ public interface ProxyConfig
@@ -25,7 +25,7 @@ index 3750dc59..7fd5c8e5 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 0abb4075..93f47511 100644
+index 91743f01..a5db82b8 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -7,6 +7,13 @@ import java.io.File;
@@ -42,13 +42,14 @@ index 0abb4075..93f47511 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -25,10 +32,16 @@ public class WaterfallConfiguration extends Configuration {
+@@ -26,11 +33,17 @@ public class WaterfallConfiguration extends Configuration {
          super.load();
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
 +        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
      }
  
 +    @Override
@@ -117,10 +118,10 @@ index 0e8041f8..cd240460 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index f08f464a..20b3975a 100644
+index 8c4f999c..78b39fef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -246,6 +246,6 @@ public class UpstreamBridge extends PacketHandler
+@@ -250,6 +250,6 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public String toString()
      {

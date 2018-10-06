@@ -1,4 +1,4 @@
-From 2772e4b241a3cec4e8df622f1f56bcd2c9a0fc93 Mon Sep 17 00:00:00 2001
+From 97b134ad0ba83da9fc5539f873b5dbbeaa013400 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,7 +6,7 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d3411929..6187d6f0 100644
+index 34d7e2cb..47d4ab36 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -168,6 +168,11 @@ public interface ProxyConfig
@@ -41,7 +41,7 @@ index 841f014e..2efeaa9e 100644
              <groupId>io.netty</groupId>
              <artifactId>netty-handler</artifactId>
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 15274156..5c92768a 100644
+index e55c28d8..b7e3dad0 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -22,6 +22,12 @@ public class WaterfallConfiguration extends Configuration {
@@ -57,15 +57,15 @@ index 15274156..5c92768a 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -42,6 +48,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -43,6 +49,7 @@ public class WaterfallConfiguration extends Configuration {
          config.load(false); // Load, but no permissions
          logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
 +        useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
-     }
-@@ -56,6 +63,11 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+@@ -58,6 +65,11 @@ public class WaterfallConfiguration extends Configuration {
          return gameVersion;
      }
  
