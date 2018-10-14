@@ -1,4 +1,4 @@
-From 46d6749139a3fc13ea8885581ffdb02d59ab57a8 Mon Sep 17 00:00:00 2001
+From 6754ff868200176601a4d21ccf6a252e6a53c421 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 08:56:43 -0500
 Subject: [PATCH] POM Changes
@@ -614,6 +614,19 @@ index df84d6f1..f25ee27e 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+index e1cf0010..5637d4de 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
+@@ -18,7 +18,7 @@ public class JenkinsModuleSource implements ModuleSource
+         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
+         try
+         {
+-            URL website = new URL( "https://ci.destroystokyo.com/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
++            URL website = new URL( "https://ci.destroystokyo.com/job/Travertine/" + version.getBuild() + "/artifact/Travertine-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
+             URLConnection con = website.openConnection();
+             // 15 second timeout at various stages
+             con.setConnectTimeout( 15000 );
 diff --git a/query/pom.xml b/query/pom.xml
 index 4ae682ee..c8f62a78 100644
 --- a/query/pom.xml
@@ -651,5 +664,5 @@ index 4ae682ee..c8f62a78 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.19.0
+2.19.1
 

@@ -1,4 +1,4 @@
-From da6d958944a6e7dc3225f95a616ca7eca1aac911 Mon Sep 17 00:00:00 2001
+From bfa18231fb8272f226a2f3c10b6542189770101b Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -223,7 +223,7 @@ index ab949b4d..9091f6c1 100644
              ProtocolConstants.MINECRAFT_1_9,
              ProtocolConstants.MINECRAFT_1_9_1,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index 29e54dba..1f9e64dc 100644
+index 880a3dc7..bf8e3423 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -7,10 +7,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
@@ -237,11 +237,11 @@ index 29e54dba..1f9e64dc 100644
  
 +    private AtomicLong lastEmptyPacket = new AtomicLong(0); // Travertine
      private static boolean DIRECT_WARNING;
- 
-     @Override
-@@ -33,7 +35,15 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+     // Waterfall start
+     private boolean allowEmptyPackets;
+@@ -40,7 +42,15 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                  int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
-                 if ( length == 0 )
+                 if ( length == 0 && !allowEmptyPackets) // Waterfall
                  {
 -                    throw new CorruptedFrameException( "Empty Packet!" );
 +                    // Travertine start - vanilla 1.7 client sometimes sends empty packets.
@@ -996,7 +996,7 @@ index f93508d9..13af5112 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bea13ea8..22622c56 100644
+index e9368f0e..46848491 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -163,6 +163,14 @@ public class BungeeCord extends ProxyServer
@@ -1280,7 +1280,7 @@ index 76dc13aa..242efd91 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index cdd1c919..7b1d23ed 100644
+index 8f63e997..e0079030 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -13,6 +13,13 @@ import java.util.UUID;
@@ -1363,7 +1363,7 @@ index 76f496ce..eab2523d 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7129f5e7..6440db3a 100644
+index e1be7cce..7a20078b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -79,7 +79,12 @@ public class UpstreamBridge extends PacketHandler
@@ -1971,5 +1971,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.18.0
+2.19.1
 
