@@ -1,4 +1,4 @@
-From bfa18231fb8272f226a2f3c10b6542189770101b Mon Sep 17 00:00:00 2001
+From 078b41b3d778208738dd528e093aed191aaa670d Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -167,7 +167,7 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index c3c46399..aaee9df7 100644
+index cc863d9b..bfa24ffa 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -378,6 +378,8 @@ public enum Protocol
@@ -179,7 +179,7 @@ index c3c46399..aaee9df7 100644
                      ProtocolConstants.MINECRAFT_1_9,
                      ProtocolConstants.MINECRAFT_1_12,
                      ProtocolConstants.MINECRAFT_1_13
-@@ -434,7 +436,11 @@ public enum Protocol
+@@ -435,7 +437,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -193,7 +193,7 @@ index c3c46399..aaee9df7 100644
  
              Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index ab949b4d..9091f6c1 100644
+index d9a3c7e5..67f2976e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -205,15 +205,15 @@ index ab949b4d..9091f6c1 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -20,6 +22,7 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_13 = 393;
+@@ -21,6 +23,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_13_1 = 401;
+     public static final int MINECRAFT_1_13_2 = 404;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
              "1.9.x",
              "1.10.x",
-@@ -28,6 +31,8 @@ public class ProtocolConstants
+@@ -29,6 +32,8 @@ public class ProtocolConstants
              "1.13.x"
      );
      public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
@@ -1381,7 +1381,7 @@ index e1be7cce..7a20078b 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 2843b94e..31ce6712 100644
+index 7c19c6fb..2bb6fbcc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -29,6 +29,10 @@ public abstract class EntityMap
