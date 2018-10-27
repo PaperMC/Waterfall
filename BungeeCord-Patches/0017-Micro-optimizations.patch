@@ -1,4 +1,4 @@
-From c5f4b70c8a48babd30dd0ccefe0e2277fe327fb4 Mon Sep 17 00:00:00 2001
+From 7efdaf9473c1dc4618d0dc8ac5c18ae196ac2a06 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -7,27 +7,6 @@ Subject: [PATCH] Micro-optimizations
 - Don't attempt to format arguments when there are none provided
 - Don't create a data input stream for every plugin message we get from servers
 
-diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 096538a7..54a65155 100644
---- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-+++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
- public class PluginManager
- {
- 
--    private static final Pattern argsSplit = Pattern.compile( " " );
-     /*========================================================================*/
-     private final ProxyServer proxy;
-     /*========================================================================*/
-@@ -126,7 +125,7 @@ public class PluginManager
-      */
-     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
-     {
--        String[] split = argsSplit.split( commandLine, -1 );
-+        String[] split = commandLine.split(" ", -1);
-         // Check for chat that only contains " "
-         if ( split.length == 0 )
-         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 4a13910e..4fbc307c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
