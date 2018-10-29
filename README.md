@@ -33,8 +33,8 @@ Clone this repo, run `./waterfall b` from *bash*, get jar from Waterfall-Proxy/b
 ## Join us
 
 * Feel free to open a PR! We accept contributions.
-* Join us on IRC (irc.spi.gt #waterfall, [webchat](http://hansel.spi.gt/iris/?nick=&channels=waterfall)).
-* Visit our forums on [Aquifer](https://aquifermc.org).
+* Join us on IRC (irc.spi.gt #paper, [webchat](http://irc.spi.gt/iris/?nick=&channels=paper)).
+* Visit our forums (https://papermc.io/forums).
 
 ## Special Thanks To
 
