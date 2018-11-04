@@ -1,4 +1,4 @@
-From f5d5d0c3e84b58853c7c906c99134b5ea89dd6be Mon Sep 17 00:00:00 2001
+From 8334a03d4f60df604ea20808354c9c74fa3f5075 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -144,23 +144,23 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 416c54e3..920b9b36 100644
+index 27672410..91b4bed9 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-@@ -84,7 +84,7 @@ public class CommandServer extends Command implements TabExecutor
+@@ -85,7 +85,7 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
 -        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServers().values(), new Predicate<ServerInfo>()
 +        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
          {
-             private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase();
+             private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 43abe22e..07eeea16 100644
+index 20ef5b0d..9dee3bff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -592,10 +592,18 @@ public class BungeeCord extends ProxyServer
+@@ -591,10 +591,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  

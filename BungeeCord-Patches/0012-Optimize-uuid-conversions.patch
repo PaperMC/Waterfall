@@ -1,4 +1,4 @@
-From c564a733d0c0425b5d50255ab1401c08c0e62f04 Mon Sep 17 00:00:00 2001
+From b5478f00dae047628ec4875a6f06b59a9074365d Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -208,13 +208,13 @@ index 00000000..cc24dd35
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 86a00555..6c9c6d61 100644
+index cb84917e..52bdb94d 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
-@@ -1,11 +1,15 @@
- package net.md_5.bungee;
+@@ -2,11 +2,14 @@ package net.md_5.bungee;
  
  import com.google.common.base.Joiner;
+ import com.google.common.primitives.UnsignedLongs;
 +import com.google.common.primitives.Ints;
  import java.net.InetSocketAddress;
  import java.net.URI;
@@ -222,12 +222,11 @@ index 86a00555..6c9c6d61 100644
  import java.util.UUID;
  
 +import io.github.waterfallmc.waterfall.utils.Hex;
-+import io.github.waterfallmc.waterfall.utils.UUIDUtils;
 +
  /**
   * Series of utility classes to perform various operations.
   */
-@@ -42,7 +46,7 @@ public class Util
+@@ -43,7 +46,7 @@ public class Util
       */
      public static String hex(int i)
      {
@@ -236,19 +235,11 @@ index 86a00555..6c9c6d61 100644
      }
  
      /**
-@@ -78,6 +82,6 @@ public class Util
-      */
-     public static UUID getUUID(String uuid)
-     {
--        return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
-+        return UUIDUtils.fromString(uuid);
-     }
- }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index 2f707ba6..8bf17f9c 100644
+index 88d36ad2..fc92a7b5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-@@ -75,7 +75,7 @@ public class ServerPing
+@@ -74,7 +74,7 @@ public class ServerPing
  
          public String getId()
          {
@@ -258,10 +249,10 @@ index 2f707ba6..8bf17f9c 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d4fadcf6..0e8041f8 100644
+index 34dd743c..8c79f9b0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -625,7 +625,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -623,7 +623,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {

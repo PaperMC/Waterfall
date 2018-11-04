@@ -1,4 +1,4 @@
-From d89e83caad7e2663ed8835ef5c8d45121afc4fde Mon Sep 17 00:00:00 2001
+From 378fbb34c6b7b1aaf2513cfcb35b52fcd279c1ac Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -368,10 +368,10 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 595b7375..cba6f0b2 100644
+index 5f34eb4e..d246adb7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+@@ -44,7 +44,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
@@ -379,7 +379,7 @@ index 595b7375..cba6f0b2 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -78,14 +77,11 @@ import net.md_5.bungee.command.CommandEnd;
+@@ -77,14 +76,11 @@ import net.md_5.bungee.command.CommandEnd;
  import net.md_5.bungee.command.CommandIP;
  import net.md_5.bungee.command.CommandPerms;
  import net.md_5.bungee.command.CommandReload;
@@ -394,7 +394,7 @@ index 595b7375..cba6f0b2 100644
  import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
-@@ -95,7 +91,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -94,7 +90,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -402,7 +402,7 @@ index 595b7375..cba6f0b2 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -151,8 +146,12 @@ public class BungeeCord extends ProxyServer
+@@ -150,8 +145,12 @@ public class BungeeCord extends ProxyServer
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
@@ -415,7 +415,7 @@ index 595b7375..cba6f0b2 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -194,6 +193,8 @@ public class BungeeCord extends ProxyServer
+@@ -193,6 +192,8 @@ public class BungeeCord extends ProxyServer
          }
          reloadMessages();
  
@@ -424,7 +424,7 @@ index 595b7375..cba6f0b2 100644
          // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
          // When jansi attempts to extract its natives, by default it tries to extract a specific version,
          // using the loading class's implementation version. Normally this works completely fine,
-@@ -212,6 +213,9 @@ public class BungeeCord extends ProxyServer
+@@ -211,6 +212,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );

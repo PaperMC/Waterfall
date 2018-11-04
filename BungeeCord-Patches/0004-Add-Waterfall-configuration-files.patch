@@ -1,4 +1,4 @@
-From b1daa760c06c5e706ae3bc34a67b2f646ed6b047 Mon Sep 17 00:00:00 2001
+From 646d6568f7a1d99bf28ab4651ffa6f48140a99b2 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -42,10 +42,10 @@ index 00000000..741ebfde
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 71f30980..084bc11e 100644
+index 7fe5bbea..a8bb4fd0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  import com.google.gson.Gson;
  import com.google.gson.GsonBuilder;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,7 +53,7 @@ index 71f30980..084bc11e 100644
  import io.netty.bootstrap.ServerBootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -110,7 +111,7 @@ public class BungeeCord extends ProxyServer
+@@ -109,7 +110,7 @@ public class BungeeCord extends ProxyServer
       * Configuration.
       */
      @Getter
@@ -63,7 +63,7 @@ index 71f30980..084bc11e 100644
       * Localization bundle.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 1ee82eec..6c722e8b 100644
+index d7879d10..1c585e60 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -24,7 +24,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -76,10 +76,10 @@ index 1ee82eec..6c722e8b 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 95590b6d..1019c307 100644
+index 8a17c8d4..5237182a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -43,10 +43,15 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -44,10 +44,15 @@ public class YamlConfig implements ConfigurationAdapter
      }
      private final Yaml yaml;
      private Map<String, Object> config;
@@ -97,7 +97,7 @@ index 95590b6d..1019c307 100644
          DumperOptions options = new DumperOptions();
          options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
          yaml = new Yaml( options );
-@@ -54,6 +59,11 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -55,6 +60,11 @@ public class YamlConfig implements ConfigurationAdapter
  
      @Override
      public void load()
@@ -109,7 +109,7 @@ index 95590b6d..1019c307 100644
      {
          try
          {
-@@ -82,6 +92,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -83,6 +93,7 @@ public class YamlConfig implements ConfigurationAdapter
              throw new RuntimeException( "Could not load configuration!", ex );
          }
  
@@ -118,5 +118,5 @@ index 95590b6d..1019c307 100644
          if ( permissions.isEmpty() )
          {
 -- 
-2.18.0
+2.19.1
 

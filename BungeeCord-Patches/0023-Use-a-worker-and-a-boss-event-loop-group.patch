@@ -1,4 +1,4 @@
-From 594e46581ad93aebc8a12857247a35a9a75dddb4 Mon Sep 17 00:00:00 2001
+From 1adff2bcbf3ec2a30cbe03cb0220029b43d1f9df Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,10 +8,10 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 4fbc307c..43abe22e 100644
+index 19b897c0..20ef5b0d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -117,7 +117,7 @@ public class BungeeCord extends ProxyServer
+@@ -116,7 +116,7 @@ public class BungeeCord extends ProxyServer
       */
      private ResourceBundle baseBundle;
      private ResourceBundle customBundle;
@@ -20,7 +20,7 @@ index 4fbc307c..43abe22e 100644
      /**
       * locations.yml save thread.
       */
-@@ -254,7 +254,8 @@ public class BungeeCord extends ProxyServer
+@@ -253,7 +253,8 @@ public class BungeeCord extends ProxyServer
              ResourceLeakDetector.setLevel( ResourceLeakDetector.Level.DISABLED ); // Eats performance
          }
  
@@ -30,7 +30,7 @@ index 4fbc307c..43abe22e 100644
  
          File moduleDirectory = new File( "modules" );
          moduleManager.load( this, moduleDirectory );
-@@ -328,7 +329,7 @@ public class BungeeCord extends ProxyServer
+@@ -327,7 +328,7 @@ public class BungeeCord extends ProxyServer
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
@@ -39,7 +39,7 @@ index 4fbc307c..43abe22e 100644
                      .localAddress( info.getHost() )
                      .bind().addListener( listener );
  
-@@ -349,7 +350,7 @@ public class BungeeCord extends ProxyServer
+@@ -348,7 +349,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -48,7 +48,7 @@ index 4fbc307c..43abe22e 100644
              }
          }
      }
-@@ -444,12 +445,14 @@ public class BungeeCord extends ProxyServer
+@@ -443,12 +444,14 @@ public class BungeeCord extends ProxyServer
                  }
  
                  getLogger().info( "Closing IO threads" );
@@ -70,7 +70,7 @@ index 4fbc307c..43abe22e 100644
  
                  getLogger().info( "Thank you and goodbye" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 9756c09c..648cd273 100644
+index 875ad538..ec96d1fd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -145,7 +145,7 @@ public class BungeeServerInfo implements ServerInfo

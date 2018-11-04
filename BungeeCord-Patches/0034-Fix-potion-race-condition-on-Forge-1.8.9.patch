@@ -1,4 +1,4 @@
-From a9838cfb9f29641112d334f3f625d107b30aa5d0 Mon Sep 17 00:00:00 2001
+From d2390a542d1ff7a0767a288a7c1de649b5f583df Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -165,12 +165,12 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d1d3142e..032ffcbe 100644
+index 6dae9a88..9c872a1c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -2,7 +2,9 @@ package net.md_5.bungee;
+@@ -1,7 +1,9 @@
+ package net.md_5.bungee;
  
- import com.google.common.base.Objects;
  import com.google.common.base.Preconditions;
 +import com.google.common.collect.HashMultimap;
  import com.google.common.collect.ImmutableMap;
@@ -178,7 +178,7 @@ index d1d3142e..032ffcbe 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -127,6 +129,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
