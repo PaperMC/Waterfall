@@ -1,0 +1,35 @@
+From cd9503f197d3824dea398b9f045cb9aa3d05f378 Mon Sep 17 00:00:00 2001
+From: Jamie Mansfield <dev@jamierocks.uk>
+Date: Mon, 28 May 2018 21:43:55 +0100
+Subject: [PATCH] Forge is a first class citizen
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index d246adb7..c1c04995 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -275,8 +275,6 @@ public class BungeeCord extends ProxyServer
+             registerChannel( ForgeConstants.FML_TAG );
+             registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
+             registerChannel( ForgeConstants.FORGE_REGISTER );
+-
+-            getLogger().warning( "MinecraftForge support is currently unmaintained and may have unresolved issues. Please use at your own risk." );
+         }
+ 
+         isRunning = true;
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index cbbd8d34..2599b579 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -65,7 +65,7 @@ public abstract class Configuration implements ProxyConfig
+     private Favicon favicon;
+     private int compressionThreshold = 256;
+     private boolean preventProxyConnections;
+-    private boolean forgeSupport;
++    private boolean forgeSupport = true; // Waterfall: default to enabled
+ 
+     @Synchronized("serversLock") // Waterfall
+     public void load()
+-- 
+2.19.1
+
