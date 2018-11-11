@@ -8,7 +8,7 @@ Patches to Travertine are very simple, but center around the directory 'Traverti
 Assuming you already have forked the repository:
 
 1. Pull the latest changes from the main repository
-2. Type `git submodule update --recursive --init && ./applyPatches.sh` in git bash to apply the changes from upstream
+2. Type `./travertine p` in git bash to apply the changes from upstream
 3. cd into `Travertine-Proxy` for proxy changes
 
 This directory is not a git repository in the traditional sense:
@@ -24,7 +24,7 @@ Adding patches to Travertine is very simple:
 1. Modify `Travertine-Proxy` with the appropriate changes
 2. Type `git add .` to add your changes
 3. Run `git commit` with the desired patch message
-4. Run `./rebuildPatches.sh` in the main directory to convert your commit into a new patch
+4. Run `./travertine rb` in the main directory to convert your commit into a new patch
 5. PR your patches back to this repository
 
 Your commit will be converted into a patch that you can then PR into Travertine
@@ -47,7 +47,7 @@ This method works by temporarily resetting HEAD to the desired commit to edit us
   - **MAKE SURE TO ADD `--amend`** or else a new patch will be created.
   - You can also modify the commit message here.
 7. Type `git rebase --continue` to finish rebasing.
-8. Type `./rebuildPatches.sh` in the main directory.
+8. Type `./travertine rb` in the main directory.
   - This will modify the appropriate patches based on your commits.
 9. PR your modifications back to this project.
 
@@ -58,8 +58,8 @@ If you are simply editing a more recent commit or your change is small, simply m
 2. Make a temporary commit. You don't need to make a message for this.
 3. Type `git rebase -i upstream/upstream`, move (cut) your temporary commit and move it under the line of the patch you wish to modify.
 4. Change the `pick` with `f` (fixup) or `s` (squash) if you need to edit the commit message 
-5. Type `./rebuildPatches.sh` in the main directory
-  - This will modify the appropriate patches based on your commits
+5. Type `./travertine rb` in the main directory.
+  - This will modify the appropriate patches based on your commits.
 6. PR your modifications to github
 
 

@@ -1,4 +1,5 @@
-# Travertine <a href="https://ci.destroystokyo.com/job/Travertine/"><img src="https://ci.destroystokyo.com/job/Paper/badge/icon"/></a>
+Travertine [![Build Status](https://papermc.io/ci/job/Travertine/badge/icon)](https://papermc.io/ci/job/Travertine/)
+=========
 
 Travertine is Waterfall with additional protocols. Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
 
@@ -22,24 +23,24 @@ Travertine will track upstream Waterfall and merge changes as needed.
 
 ## How to (Server Admins)
 
-Download a copy of of Travertine.jar from our buildserver here: [Travertine](https://ci.destroystokyo.com/job/Travertine)
+Download a copy of Travertine.jar from our buildserver here: [Travertine](https://papermc.io/ci/job/Travertine/)
 
-Travertine requires **java 8** or above.
+Travertine requires **Java 8** or above.
 
 ## How To (Compiling from source)
 
 To compile Travertine, you need JDK8, git, bash, maven, and an internet connection.
 
-Clone this repo, run `./build.sh` from *bash*, get jar from `Travertine-Proxy/bootstrap/target`
+Clone this repo, run `./travertine b` from *bash*, get jar from `Travertine-Proxy/bootstrap/target`
 
 ## Join us
 
 * Feel free to open a PR! We accept contributions.
-* Join us on IRC (irc.esper.net #waterfall, [webchat](http://webchat.esper.net/?nick=&channels=waterfall)).
-* Visit our forums on [Aquifer](https://aquifermc.org).
+* Join us on IRC (irc.spi.gt #paper, [webchat](http://irc.spi.gt/iris/?nick=&channels=paper)).
+* Visit our forums (https://papermc.io/forums).
 
 Special Thanks To
 -----------------
 ![YourKit-Logo](https://yourkit.com/images/yklogo.png)
 
-[YourKit](https://yourkit.com/), makers of the outstanding Java profiler, supports open source projects of all kinds with their full-featured [Java](https://yourkit.com/features/) and [.NET](https://yourkit.com/dotnet/features/) application profilers. We thank them for granting Waterfall an OSS license so that we can make our software the best it can be.
+[YourKit](https://yourkit.com/), makers of the outstanding Java profiler, supports open source projects of all kinds with their full-featured [Java](https://yourkit.com/features/) and [.NET](https://yourkit.com/dotnet/features/) application profilers. We thank them for granting Travertine an OSS license so that we can make our software the best it can be.
