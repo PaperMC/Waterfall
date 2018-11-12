@@ -1,4 +1,4 @@
-From 1d8337ef38b966b38d6b4bedddcfd2f8e7f6a31f Mon Sep 17 00:00:00 2001
+From 886d32b797d2a8388344b919d29a2d2d63f3b5ea Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1164,10 +1164,18 @@ index 1d75cd0d..5f086f4f 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9c872a1c..1f9bd695 100644
+index 9c872a1c..32830770 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -194,6 +194,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -53,6 +53,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
++import net.md_5.bungee.protocol.ProtocolConstants; // Travertine
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Kick;
+@@ -194,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1175,7 +1183,7 @@ index 9c872a1c..1f9bd695 100644
          displayName = name;
      }
  
-@@ -476,7 +477,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -476,7 +478,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message );
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1184,7 +1192,7 @@ index 9c872a1c..1f9bd695 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -491,7 +492,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -491,7 +493,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message )[0];
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1193,7 +1201,7 @@ index 9c872a1c..1f9bd695 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -670,6 +671,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -670,6 +672,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1201,7 +1209,7 @@ index 9c872a1c..1f9bd695 100644
          header = ChatComponentTransformer.getInstance().transform( this, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, footer )[0];
  
-@@ -682,6 +684,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -682,6 +685,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1209,7 +1217,7 @@ index 9c872a1c..1f9bd695 100644
          header = ChatComponentTransformer.getInstance().transform( this, header );
          footer = ChatComponentTransformer.getInstance().transform( this, footer );
  
-@@ -711,6 +714,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -711,6 +715,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
