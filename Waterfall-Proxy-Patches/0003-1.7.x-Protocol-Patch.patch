@@ -1,4 +1,4 @@
-From 886d32b797d2a8388344b919d29a2d2d63f3b5ea Mon Sep 17 00:00:00 2001
+From 002b21b81de8b335a223d48e1024b7bd398253c3 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1287,7 +1287,7 @@ index 76dc13aa..242efd91 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 16d60577..adf025ff 100644
+index 5919d54a..0f7b1667 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.UUID;
@@ -1304,7 +1304,7 @@ index 16d60577..adf025ff 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -232,8 +239,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -233,8 +240,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -1331,7 +1331,7 @@ index 16d60577..adf025ff 100644
                      }
                  };
  
-@@ -520,7 +543,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -521,7 +544,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
