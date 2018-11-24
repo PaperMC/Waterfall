@@ -1,9 +1,51 @@
-From df735701e44954657b1aaef94df28a4b3b2389d4 Mon Sep 17 00:00:00 2001
+From 306d19cf4c83fa9c457cba588f49c9e21368f5ce Mon Sep 17 00:00:00 2001
 From: DoNotSpamPls <7570108+DoNotSpamPls@users.noreply.github.com>
 Date: Sun, 18 Nov 2018 21:27:51 +0200
 Subject: [PATCH] Remove entity map rewriting
 
 
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 1d75cd0d..1169d26d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -244,12 +244,6 @@ public class ServerConnector extends PacketHandler
+                     (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.isReducedDebugInfo() );
+ 
+             user.unsafe().sendPacket( modLogin );
+-
+-            ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
+-            user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+-            brand.release();
+-
+             user.setDimension( login.getDimension() );
+         } else
+         {
+@@ -285,6 +279,11 @@ public class ServerConnector extends PacketHandler
+             }
+ 
+             user.setServerEntityId( login.getEntityId() );
++
++            // Waterfall - send login packet on every server switch
++            Login modLogin = new Login( login.getEntityId(), login.getGameMode(), ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(), (byte) 0, login.getLevelType(), login.isReducedDebugInfo() );
++            user.unsafe().sendPacket( modLogin );
++
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             user.setDimension( login.getDimension() );
+ 
+@@ -292,6 +291,12 @@ public class ServerConnector extends PacketHandler
+             user.getServer().disconnect( "Quitting" );
+         }
+ 
++        // Waterfall - send login packet on every server switch
++        ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
++        DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
++        user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
++        brand.release();
++
+         // TODO: Fix this?
+         if ( !user.isActive() )
+         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index 9c872a1c..5e6e507f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -57,5 +99,5 @@ index e1be7cce..ffcc7487 100644
          }
      }
 -- 
-2.19.1.windows.1
+2.19.2.windows.1
 
