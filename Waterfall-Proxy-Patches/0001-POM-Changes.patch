@@ -1,4 +1,4 @@
-From 6754ff868200176601a4d21ccf6a252e6a53c421 Mon Sep 17 00:00:00 2001
+From 7c3eeb8ba477719096c376953dbd4d13d5c4293e Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 08:56:43 -0500
 Subject: [PATCH] POM Changes
@@ -58,7 +58,7 @@ index 0e46cbbe..6058e11c 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index e7bc7a5d..21990c32 100644
+index 6cacf112..82ea6916 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -5,18 +5,18 @@
@@ -84,7 +84,7 @@ index e7bc7a5d..21990c32 100644
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
-@@ -28,7 +28,7 @@
+@@ -28,14 +28,14 @@
      <dependencies>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -93,7 +93,6 @@ index e7bc7a5d..21990c32 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -41,7 +41,7 @@
      </dependencies>
  
      <build>
@@ -130,7 +129,7 @@ index c9328ac3..04daec40 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index febc4af0..52fbf681 100644
+index 1bc01b9a..793719e4 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -5,18 +5,18 @@
@@ -218,7 +217,7 @@ index e24b3e40..95dd1a83 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index a085a39c..87ee1371 100644
+index 33f1b659..7a20d5ca 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -4,17 +4,17 @@
@@ -451,7 +450,7 @@ index 7073b404..15fa568a 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 565e70a4..4f762ccf 100644
+index 5c9fefbe..a89ea60b 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -5,19 +5,19 @@
@@ -503,10 +502,10 @@ index 565e70a4..4f762ccf 100644
  
      <distributionManagement>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 333ae1e8..88ddcfb9 100644
+index ee513895..f53ace34 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -5,23 +5,23 @@
+@@ -5,18 +5,18 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
@@ -527,7 +526,10 @@ index 333ae1e8..88ddcfb9 100644
 +    <name>Travertine-Protocol</name>
 +    <description>Minimal implementation of the Minecraft protocol for use in Travertine</description>
  
-     <dependencies>
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+     <repositories>
+@@ -42,7 +42,7 @@
+         </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
 -            <artifactId>waterfall-chat</artifactId>
@@ -536,7 +538,7 @@ index 333ae1e8..88ddcfb9 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index df84d6f1..f25ee27e 100644
+index f0497f59..d83cf34f 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -5,17 +5,17 @@
@@ -664,5 +666,5 @@ index 4ae682ee..c8f62a78 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.19.1
+2.20.1
 

@@ -1,4 +1,4 @@
-From 04729d2b5c8d03b8b6844ad3ea61f69b06e2bd21 Mon Sep 17 00:00:00 2001
+From 4c0346ac7c6d393270a7c6484fd8e92c1ac93fb9 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -17,28 +17,6 @@ index a4516ed9..1f63a2c2 100644
              System.out.println( "You can check your Java version with the command: java -version" );
              return;
          }
-diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index f5270655..87ed8b88 100644
---- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-+++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -43,7 +43,7 @@ public class BungeeCordLauncher
-             if ( buildDate.before( deadline.getTime() ) )
-             {
-                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
--                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
-+                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Travertine/ ***" );
-                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
-                 System.err.println( "*** Server will start in 10 seconds ***" );
-                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -52,7 +52,7 @@ public class BungeeCordLauncher
- 
-         BungeeCord bungee = new BungeeCord();
-         ProxyServer.setInstance( bungee );
--        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
-+        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
-         bungee.start();
- 
-         if ( !options.has( "noconsole" ) )
 diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
 index d703d6d2..d8dcdc1e 100644
 --- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
@@ -52,19 +30,6 @@ index d703d6d2..d8dcdc1e 100644
          this.logger = logger;
      }
  
-diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
-index f036efcd..c93c313a 100644
---- a/proxy/src/main/java/Test.java
-+++ b/proxy/src/main/java/Test.java
-@@ -19,7 +19,7 @@ public class Test
-     {
-         BungeeCord bungee = new BungeeCord();
-         ProxyServer.setInstance( bungee );
--        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
-+        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
-         bungee.start();
- 
-         // Waterfall start - Use TerminalConsoleAppender
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index c1c04995..670bcede 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -87,6 +52,28 @@ index c1c04995..670bcede 100644
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index eeacd0c8..cd69896a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -43,7 +43,7 @@ public class BungeeCordLauncher
+             if ( buildDate.before( deadline.getTime() ) )
+             {
+                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
+-                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
++                System.err.println( "*** Please check for a new build from https://ci.destroystokyo.com/job/Travertine/ ***" );
+                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
+                 System.err.println( "*** Server will start in 10 seconds ***" );
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
+@@ -52,7 +52,7 @@ public class BungeeCordLauncher
+ 
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
++        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 index b26035cf..4e2c6129 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
@@ -114,10 +101,10 @@ index f5c028dd..c50a05f7 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 5237182a..631eabcf 100644
+index 44011a96..8cceac2d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -219,7 +219,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -224,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );
@@ -127,5 +114,5 @@ index 5237182a..631eabcf 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.19.1
+2.20.1
 

@@ -1,4 +1,4 @@
-From 002b21b81de8b335a223d48e1024b7bd398253c3 Mon Sep 17 00:00:00 2001
+From c5e6f09649764e1e97d9e7539df69a70e69af4c2 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -101,10 +101,10 @@ index 00000000..90064112
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 10e16d79..04a34033 100644
+index 28a3efde..6e811930 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -193,6 +193,11 @@ public abstract class DefinedPacket
+@@ -206,6 +206,11 @@ public abstract class DefinedPacket
          read( buf );
      }
  
@@ -116,7 +116,7 @@ index 10e16d79..04a34033 100644
      public void write(ByteBuf buf)
      {
          throw new UnsupportedOperationException( "Packet must implement write method" );
-@@ -203,6 +208,11 @@ public abstract class DefinedPacket
+@@ -216,6 +221,11 @@ public abstract class DefinedPacket
          write( buf );
      }
  
@@ -167,10 +167,10 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index cc863d9b..bfa24ffa 100644
+index 39affec6..d194f221 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -378,6 +378,8 @@ public enum Protocol
+@@ -394,6 +394,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
@@ -179,7 +179,7 @@ index cc863d9b..bfa24ffa 100644
                      ProtocolConstants.MINECRAFT_1_9,
                      ProtocolConstants.MINECRAFT_1_12,
                      ProtocolConstants.MINECRAFT_1_13
-@@ -435,7 +437,11 @@ public enum Protocol
+@@ -451,7 +453,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -1090,7 +1090,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1d75cd0d..5f086f4f 100644
+index c7f081d4..41e26b9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
@@ -1101,7 +1101,7 @@ index 1d75cd0d..5f086f4f 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -245,10 +246,20 @@ public class ServerConnector extends PacketHandler
+@@ -247,10 +248,20 @@ public class ServerConnector extends PacketHandler
  
              user.unsafe().sendPacket( modLogin );
  
@@ -1126,7 +1126,7 @@ index 1d75cd0d..5f086f4f 100644
  
              user.setDimension( login.getDimension() );
          } else
-@@ -259,7 +270,7 @@ public class ServerConnector extends PacketHandler
+@@ -261,7 +272,7 @@ public class ServerConnector extends PacketHandler
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
@@ -1135,7 +1135,7 @@ index 1d75cd0d..5f086f4f 100644
              }
              for ( Score score : serverScoreboard.getScores() )
              {
-@@ -392,6 +403,14 @@ public class ServerConnector extends PacketHandler
+@@ -397,6 +408,14 @@ public class ServerConnector extends PacketHandler
              {
                  this.handshakeHandler.handle( pluginMessage );
  
@@ -1213,10 +1213,10 @@ index 9c872a1c..32830770 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 76dc13aa..242efd91 100644
+index 56c81262..9d07568d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -144,7 +144,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -153,7 +153,7 @@ public class DownstreamBridge extends PacketHandler
          switch ( objective.getAction() )
          {
              case 0:
@@ -1225,7 +1225,7 @@ index 76dc13aa..242efd91 100644
                  break;
              case 1:
                  serverScoreboard.removeObjective( objective.getName() );
-@@ -154,7 +154,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -163,7 +163,7 @@ public class DownstreamBridge extends PacketHandler
                  if ( oldObjective != null )
                  {
                      oldObjective.setValue( objective.getValue() );
@@ -1234,7 +1234,7 @@ index 76dc13aa..242efd91 100644
                  }
                  break;
              default:
-@@ -251,16 +251,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -260,16 +260,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
@@ -1274,7 +1274,7 @@ index 76dc13aa..242efd91 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5919d54a..0f7b1667 100644
+index e84c8aa4..b5e397e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.UUID;
@@ -1336,7 +1336,7 @@ index 5919d54a..0f7b1667 100644
  
                              ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 76f496ce..eab2523d 100644
+index 6bc14d67..2b3bc361 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -1347,7 +1347,7 @@ index 76f496ce..eab2523d 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.StatusRequest;
  import net.md_5.bungee.protocol.packet.StatusResponse;
-@@ -63,7 +64,7 @@ public class PingHandler extends PacketHandler
+@@ -64,7 +65,7 @@ public class PingHandler extends PacketHandler
      @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
      public void handle(StatusResponse statusResponse) throws Exception
      {
@@ -1357,10 +1357,10 @@ index 76f496ce..eab2523d 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e1be7cce..7a20078b 100644
+index 9287d168..7348f817 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -79,7 +79,12 @@ public class UpstreamBridge extends PacketHandler
+@@ -83,7 +83,12 @@ public class UpstreamBridge extends PacketHandler
              } );
              for ( ProxiedPlayer player : con.getServer().getInfo().getPlayers() )
              {
@@ -1965,5 +1965,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.19.1
+2.20.1
 
