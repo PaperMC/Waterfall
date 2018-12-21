@@ -1,4 +1,4 @@
-From 891a76c65e65308ea316dfbdfcc3af776e53eb46 Mon Sep 17 00:00:00 2001
+From 441f1f77ca0f9efb08ded45ebbd15fa0d51cc33d Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -23,10 +23,10 @@ index 49c97cd9..19b897c0 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d4c58098..30f8a7df 100644
+index 1693f42b..b54e7b9b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -224,7 +224,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -233,7 +233,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -34,7 +34,7 @@ index d4c58098..30f8a7df 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -251,6 +250,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -260,6 +259,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -43,5 +43,5 @@ index d4c58098..30f8a7df 100644
              String subChannel = in.readUTF();
  
 -- 
-2.19.1
+2.20.1
 

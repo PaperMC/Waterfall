@@ -1,4 +1,4 @@
-From 7c47855a7b68728aae3816f8426f23855278b085 Mon Sep 17 00:00:00 2001
+From 63e0068231d004959aa61af1ffe9bcc00dc176d0 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 15fc538a..ad5124e8 100644
+index 00a1988b..3e950918 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -23,7 +23,7 @@ index 15fc538a..ad5124e8 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -98,15 +99,39 @@ public class ServerConnector extends PacketHandler
+@@ -100,15 +101,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + user.getAddress().getHostString() + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -100,5 +100,5 @@ index 6dca2048..f5253b89 100644
       * The FML 1.8 handshake token.
       */
 -- 
-2.19.1
+2.20.1
 

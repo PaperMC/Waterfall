@@ -1,4 +1,4 @@
-From 44f61c24b033e3bc7fd167e5163f7b0eff51ee81 Mon Sep 17 00:00:00 2001
+From cd99027f638fc0db380f0635fd44471e9411fb62 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -67,7 +67,7 @@ index 5432a6eb..48bd8a54 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 615ac3f5..ee76507c 100644
+index b3bcb6c1..ba94c757 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,19 @@
@@ -96,7 +96,7 @@ index 615ac3f5..ee76507c 100644
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
-@@ -27,8 +27,8 @@
+@@ -27,15 +27,15 @@
  
      <dependencies>
          <dependency>
@@ -107,7 +107,6 @@ index 615ac3f5..ee76507c 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -41,7 +41,7 @@
      </dependencies>
  
      <build>
@@ -116,7 +115,7 @@ index 615ac3f5..ee76507c 100644
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -50,7 +50,7 @@
+@@ -44,7 +44,7 @@
                  <configuration>
                      <archive>
                          <manifestEntries>
@@ -126,17 +125,14 @@ index 615ac3f5..ee76507c 100644
                              <Specification-Version>${maven.build.timestamp}</Specification-Version>
                          </manifestEntries>
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
-index b7cb81e2..a4516ed9 100644
+index 6be22739..a4516ed9 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
-@@ -5,9 +5,9 @@ public class Bootstrap
- 
-     public static void main(String[] args) throws Exception
+@@ -7,7 +7,7 @@ public class Bootstrap
      {
--        if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 51.0 )
-+        if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
+         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
          {
--            System.err.println( "*** ERROR *** BungeeCord requires Java 7 or above to function! Please download and install it!" );
+-            System.err.println( "*** ERROR *** BungeeCord requires Java 8 or above to function! Please download and install it!" );
 +            System.err.println( "*** ERROR *** Waterfall requires Java 8 or above to function! Please download and install it!" );
              System.out.println( "You can check your Java version with the command: java -version" );
              return;
@@ -487,7 +483,7 @@ index 15c0ada2..7073b404 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 8587db46..5eab8750 100644
+index 4f8786a5..5eab8750 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -614,7 +610,7 @@ index 8587db46..5eab8750 100644
                  <configuration>
 -                    <signature>
 -                        <groupId>org.codehaus.mojo.signature</groupId>
--                        <artifactId>java17</artifactId>
+-                        <artifactId>java18</artifactId>
 -                        <version>1.0</version>
 -                    </signature>
 +                    <additionalparam>-Xdoclint:none</additionalparam>
@@ -672,10 +668,10 @@ index 8587db46..5eab8750 100644
 +    </profiles>
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 34e38ff7..a635cb70 100644
+index ec0240a4..ee513895 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -4,24 +4,24 @@
+@@ -4,19 +4,19 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
@@ -699,7 +695,11 @@ index 34e38ff7..a635cb70 100644
 +    <name>Waterfall-Protocol</name>
 +    <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
  
-     <dependencies>
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+     <repositories>
+@@ -41,8 +41,8 @@
+             <scope>compile</scope>
+         </dependency>
          <dependency>
 -            <groupId>net.md-5</groupId>
 -            <artifactId>bungeecord-chat</artifactId>
@@ -709,7 +709,7 @@ index 34e38ff7..a635cb70 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 2db37850..f4eae4e3 100644
+index af3536bc..879a82d7 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -821,5 +821,5 @@ index fdd44b20..4ae682ee 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.20.0
+2.20.1
 

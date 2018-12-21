@@ -1,4 +1,4 @@
-From cd9503f197d3824dea398b9f045cb9aa3d05f378 Mon Sep 17 00:00:00 2001
+From 799eed4305aa7a672cf3cede6ff43bccfb78b17f Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
@@ -18,7 +18,7 @@ index d246adb7..c1c04995 100644
  
          isRunning = true;
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index cbbd8d34..2599b579 100644
+index ba7a1e61..1d3a1113 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -65,7 +65,7 @@ public abstract class Configuration implements ProxyConfig
@@ -27,9 +27,9 @@ index cbbd8d34..2599b579 100644
      private boolean preventProxyConnections;
 -    private boolean forgeSupport;
 +    private boolean forgeSupport = true; // Waterfall: default to enabled
+     private boolean injectCommands;
  
      @Synchronized("serversLock") // Waterfall
-     public void load()
 -- 
-2.19.1
+2.20.1
 

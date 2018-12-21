@@ -1,4 +1,4 @@
-From 646d6568f7a1d99bf28ab4651ffa6f48140a99b2 Mon Sep 17 00:00:00 2001
+From a3365b8976e6e8c5825dce8e65089a173ae1af58 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -63,7 +63,7 @@ index 7fe5bbea..a8bb4fd0 100644
       * Localization bundle.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index d7879d10..1c585e60 100644
+index 36cac069..dddc57a8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -24,7 +24,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -76,7 +76,7 @@ index d7879d10..1c585e60 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 8a17c8d4..5237182a 100644
+index 0ec6dabb..e517ea5d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -44,10 +44,15 @@ public class YamlConfig implements ConfigurationAdapter
@@ -109,14 +109,6 @@ index 8a17c8d4..5237182a 100644
      {
          try
          {
-@@ -83,6 +93,7 @@ public class YamlConfig implements ConfigurationAdapter
-             throw new RuntimeException( "Could not load configuration!", ex );
-         }
- 
-+        if (!doPermissions) return;
-         Map<String, Object> permissions = get( "permissions", new HashMap<String, Object>() );
-         if ( permissions.isEmpty() )
-         {
 -- 
-2.19.1
+2.20.1
 

@@ -1,11 +1,11 @@
-From 006ffd6b76838f63748d69ca8d8eeb270ed81ef0 Mon Sep 17 00:00:00 2001
+From f9e766ad2bd4304d50defaa47d567d46e6cd35d7 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 93f324e2..0e81b43c 100644
+index 219488dd..bef7b370 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -1,6 +1,8 @@
@@ -17,10 +17,11 @@ index 93f324e2..0e81b43c 100644
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.ClientStatus;
-@@ -158,4 +160,13 @@ public abstract class AbstractPacketHandler
-     public void handle(LoginPayloadResponse response) throws Exception
+@@ -168,4 +170,14 @@ public abstract class AbstractPacketHandler
+     public void handle(Commands commands) throws Exception
      {
      }
++
 +    // Waterfall start
 +    public void handle(EntityEffect entityEffect) throws Exception
 +    {
@@ -32,19 +33,19 @@ index 93f324e2..0e81b43c 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index acd28a94..cc863d9b 100644
+index 1161dc5d..39affec6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Chat;
- import net.md_5.bungee.protocol.packet.ClientSettings;
+@@ -18,6 +18,8 @@ import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
+ import net.md_5.bungee.protocol.packet.EntityStatus;
 +import net.md_5.bungee.protocol.packet.EntityEffect;
 +import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -94,6 +96,26 @@ public enum Protocol
+@@ -96,6 +98,26 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0C )
              );
@@ -190,19 +191,19 @@ index 6dae9a88..9c872a1c 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4743af1d..76dc13aa 100644
+index d0c2ac42..56c81262 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -33,6 +33,8 @@ import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.PacketWrapper;
+@@ -42,6 +42,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.Commands;
 +import net.md_5.bungee.protocol.packet.EntityEffect;
 +import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.Respawn;
-@@ -540,6 +542,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -549,6 +551,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -273,5 +274,5 @@ index 0d683856..c1272da3 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.19.1
+2.20.1
 

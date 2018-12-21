@@ -1,4 +1,4 @@
-From dc2d74ec7be07d543d87e35c8ac9cbae4b3d3a1d Mon Sep 17 00:00:00 2001
+From 24da31173f0c8a99366c8c157a0d07058e712a5f Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 25 Oct 2016 12:34:41 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
@@ -33,18 +33,18 @@ index 00000000..940ad806
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 78b39fef..e1be7cce 100644
+index 4bb61f63..9287d168 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee.connection;
- 
- import com.google.common.base.Preconditions;
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
+ import com.mojang.brigadier.suggestion.Suggestions;
 +import io.github.waterfallmc.waterfall.StringUtil;
  import io.netty.channel.Channel;
  import java.util.ArrayList;
- import java.util.List;
-@@ -135,6 +136,7 @@ public class UpstreamBridge extends PacketHandler
+ import java.util.LinkedList;
+@@ -139,6 +140,7 @@ public class UpstreamBridge extends PacketHandler
      {
          int maxLength = ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_11 ) ? 256 : 100;
          Preconditions.checkArgument( chat.getMessage().length() <= maxLength, "Chat message too long" ); // Mojang limit, check on updates
@@ -53,5 +53,5 @@ index 78b39fef..e1be7cce 100644
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
 -- 
-2.19.1
+2.20.1
 

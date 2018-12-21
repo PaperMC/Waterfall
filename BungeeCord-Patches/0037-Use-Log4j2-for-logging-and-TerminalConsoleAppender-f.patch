@@ -1,4 +1,4 @@
-From d4c54e88e156584193009438c9d1817e3ff25e74 Mon Sep 17 00:00:00 2001
+From 59847386bf4c839a16b55b9b7a62627e57f637c7 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,10 +6,10 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index ee76507c..dae58ec6 100644
+index ba94c757..6cacf112 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -53,6 +53,9 @@
+@@ -47,6 +47,9 @@
                              <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
                              <Implementation-Version>${describe}</Implementation-Version>
                              <Specification-Version>${maven.build.timestamp}</Specification-Version>
@@ -19,7 +19,7 @@ index ee76507c..dae58ec6 100644
                          </manifestEntries>
                      </archive>
                  </configuration>
-@@ -80,7 +83,17 @@
+@@ -74,7 +77,17 @@
                              </excludes>
                          </filter>
                      </filters>
@@ -37,29 +37,6 @@ index ee76507c..dae58ec6 100644
              </plugin>
          </plugins>
      </build>
-diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 2efe7211..f5270655 100644
---- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-+++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -57,6 +57,9 @@ public class BungeeCordLauncher
- 
-         if ( !options.has( "noconsole" ) )
-         {
-+            // Waterfall start - Use TerminalConsoleAppender
-+            new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
-+            /*
-             String line;
-             while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
-             {
-@@ -65,6 +68,8 @@ public class BungeeCordLauncher
-                     bungee.getConsole().sendMessage( new ComponentBuilder( "Command not found" ).color( ChatColor.RED ).create() );
-                 }
-             }
-+            */
-+            // Waterfall end
-         }
-     }
- }
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
 index 00000000..e27b582f
@@ -255,7 +232,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index ddd91e8d..565e70a4 100644
+index 5eab8750..5c9fefbe 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -267,7 +244,7 @@ index ddd91e8d..565e70a4 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 3542b6da..dff5bc74 100644
+index fa1e6046..f0497f59 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
@@ -279,7 +256,7 @@ index 3542b6da..dff5bc74 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -98,6 +98,20 @@
+@@ -104,6 +104,20 @@
              <version>5.1.47</version>
              <scope>runtime</scope>
          </dependency>
@@ -300,28 +277,6 @@ index 3542b6da..dff5bc74 100644
      </dependencies>
  
      <build>
-diff --git a/proxy/src/main/java/Test.java b/proxy/src/main/java/Test.java
-index 446dfe2f..f036efcd 100644
---- a/proxy/src/main/java/Test.java
-+++ b/proxy/src/main/java/Test.java
-@@ -22,6 +22,9 @@ public class Test
-         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
-         bungee.start();
- 
-+        // Waterfall start - Use TerminalConsoleAppender
-+        new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
-+        /*
-         while ( bungee.isRunning )
-         {
-             String line = bungee.getConsoleReader().readLine( ">" );
-@@ -33,5 +36,7 @@ public class Test
-                 }
-             }
-         }
-+        */
-+        // Waterfall end
-     }
- }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 new file mode 100644
 index 00000000..765d24bc
@@ -434,6 +389,29 @@ index 5f34eb4e..d246adb7 100644
  
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 31cde42d..eeacd0c8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -57,6 +57,9 @@ public class BungeeCordLauncher
+ 
+         if ( !options.has( "noconsole" ) )
+         {
++            // Waterfall start - Use TerminalConsoleAppender
++            new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
++            /*
+             String line;
+             while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
+             {
+@@ -65,6 +68,8 @@ public class BungeeCordLauncher
+                     bungee.getConsole().sendMessage( new ComponentBuilder( "Command not found" ).color( ChatColor.RED ).create() );
+                 }
+             }
++            */
++            // Waterfall end
+         }
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
 deleted file mode 100644
 index bd52d880..00000000
@@ -479,5 +457,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.19.1
+2.20.1
 

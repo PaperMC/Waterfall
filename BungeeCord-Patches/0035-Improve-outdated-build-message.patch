@@ -1,13 +1,13 @@
-From 83f19e8b0400e2ae1d6a29837c89a3404d5567f9 Mon Sep 17 00:00:00 2001
+From 0d2024006bef83ca8ead4c18e644db6caf406fd2 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Sat, 10 Jun 2017 20:56:02 +0100
 Subject: [PATCH] Improve outdated build message
 
 
-diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 11526c9c..2efe7211 100644
---- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-+++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 20681838..31cde42d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -42,9 +42,9 @@ public class BungeeCordLauncher
              deadline.add( Calendar.WEEK_OF_YEAR, -4 );
              if ( buildDate.before( deadline.getTime() ) )
@@ -22,5 +22,5 @@ index 11526c9c..2efe7211 100644
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
              }
 -- 
-2.19.1
+2.20.1
 

@@ -1,4 +1,4 @@
-From 5ce31a20ed3f1f60ebcd9fa2a6afe25eff20bf07 Mon Sep 17 00:00:00 2001
+From 588ff53bcf3df531bc5de1a913adeb72aa1b46d4 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -144,10 +144,10 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 27672410..91b4bed9 100644
+index ebf9a12d..489b0018 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-@@ -85,7 +85,7 @@ public class CommandServer extends Command implements TabExecutor
+@@ -84,7 +84,7 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
@@ -181,7 +181,7 @@ index 20ef5b0d..9dee3bff 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index bdb012c3..cbbd8d34 100644
+index 45736498..ba7a1e61 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -208,15 +208,15 @@ index bdb012c3..cbbd8d34 100644
      /**
       * Set of all servers.
       */
-@@ -64,6 +67,7 @@ public abstract class Configuration implements ProxyConfig
-     private boolean preventProxyConnections;
+@@ -65,6 +68,7 @@ public abstract class Configuration implements ProxyConfig
      private boolean forgeSupport;
+     private boolean injectCommands;
  
 +    @Synchronized("serversLock") // Waterfall
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -106,7 +110,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -112,7 +116,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -225,7 +225,7 @@ index bdb012c3..cbbd8d34 100644
              this.servers = new CaseInsensitiveMap<>(newServers);
  
              for ( ServerInfo oldServer : oldServers.values() )
-@@ -164,4 +168,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -170,4 +174,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }
@@ -298,5 +298,5 @@ index bdb012c3..cbbd8d34 100644
 +    // Waterfall end
  }
 -- 
-2.19.1
+2.20.1
 
