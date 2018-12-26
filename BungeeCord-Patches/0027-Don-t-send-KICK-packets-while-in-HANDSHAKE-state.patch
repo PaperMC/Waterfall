@@ -1,14 +1,14 @@
-From f43c192dfecdd497e246131497933cdbae36eded Mon Sep 17 00:00:00 2001
+From 8f6e98f20b6661478c0d488272561d375897c9ff Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:36:10 -0600
 Subject: [PATCH] Don't send KICK packets while in HANDSHAKE state
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 282d5ec2..5ba336d5 100644
+index 3b565575..af3a8200 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -567,7 +567,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -566,7 +566,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void disconnect(final BaseComponent... reason)
      {

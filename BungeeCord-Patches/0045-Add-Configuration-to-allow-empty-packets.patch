@@ -1,4 +1,4 @@
-From 3cfe0e4cd7612acdd852103fc878b098fa95eeea Mon Sep 17 00:00:00 2001
+From 23381cff6c1af4999870811c3461c5fce1c8cb6b Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Add Configuration to allow empty packets
@@ -89,10 +89,10 @@ index d343e9b8..ea06f3ba 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index c26fc55b..3f082afb 100644
+index feea59d6..042bccb5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -139,7 +139,7 @@ public class PipelineUtils
+@@ -146,7 +146,7 @@ public class PipelineUtils
              ch.config().setWriteBufferWaterMark( MARK );
  
              ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
@@ -102,5 +102,5 @@ index c26fc55b..3f082afb 100644
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
 -- 
-2.19.1
+2.20.1
 

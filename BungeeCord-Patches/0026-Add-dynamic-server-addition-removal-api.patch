@@ -1,4 +1,4 @@
-From 588ff53bcf3df531bc5de1a913adeb72aa1b46d4 Mon Sep 17 00:00:00 2001
+From 31493ce2966e381dd290cf0a99eb1219fe91da76 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -157,7 +157,7 @@ index ebf9a12d..489b0018 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 20ef5b0d..9dee3bff 100644
+index d8ea68ea..9f1e5a0a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -591,10 +591,18 @@ public class BungeeCord extends ProxyServer
@@ -181,7 +181,7 @@ index 20ef5b0d..9dee3bff 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 45736498..ba7a1e61 100644
+index 7b82ced7..7d54e41a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -208,7 +208,7 @@ index 45736498..ba7a1e61 100644
      /**
       * Set of all servers.
       */
-@@ -65,6 +68,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -66,6 +69,7 @@ public abstract class Configuration implements ProxyConfig
      private boolean forgeSupport;
      private boolean injectCommands;
  
@@ -216,7 +216,7 @@ index 45736498..ba7a1e61 100644
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -112,7 +116,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -114,7 +118,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -225,7 +225,7 @@ index 45736498..ba7a1e61 100644
              this.servers = new CaseInsensitiveMap<>(newServers);
  
              for ( ServerInfo oldServer : oldServers.values() )
-@@ -170,4 +174,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -172,4 +176,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }

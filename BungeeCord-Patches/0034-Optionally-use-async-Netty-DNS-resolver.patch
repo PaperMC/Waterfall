@@ -1,4 +1,4 @@
-From 415429349c08dff2df7d415d2adc3d34e6585f0d Mon Sep 17 00:00:00 2001
+From 1402d27067ec700f3a01ad7ceb1613e56d5e43cc Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -22,7 +22,7 @@ index 34d7e2cb..47d4ab36 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index b45cdba0..3542b6da 100644
+index 03e35f42..fa1e6046 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -41,6 +41,14 @@
@@ -168,10 +168,10 @@ index 2feb4d66..b265bb43 100644
 +    // Waterfall End
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 41330ec2..c26fc55b 100644
+index ba274eea..feea59d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -112,7 +112,7 @@ public class PipelineUtils
+@@ -119,7 +119,7 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
@@ -181,5 +181,5 @@ index 41330ec2..c26fc55b 100644
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
      }
 -- 
-2.19.1
+2.20.1
 
