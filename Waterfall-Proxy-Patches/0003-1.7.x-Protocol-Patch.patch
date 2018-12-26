@@ -1,4 +1,4 @@
-From c5e6f09649764e1e97d9e7539df69a70e69af4c2 Mon Sep 17 00:00:00 2001
+From 6b73cdf9daa2c3795757035e54a2565003c1bf81 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -996,7 +996,7 @@ index f93508d9..13af5112 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 670bcede..ba5fadc8 100644
+index bacf00f2..a196b994 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -162,6 +162,14 @@ public class BungeeCord extends ProxyServer
@@ -1274,7 +1274,7 @@ index 56c81262..9d07568d 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e84c8aa4..b5e397e0 100644
+index e81236fc..144420e2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.UUID;
@@ -1291,13 +1291,17 @@ index e84c8aa4..b5e397e0 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -233,8 +240,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -233,12 +240,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
 -                        Gson gson = BungeeCord.getInstance().gson;
 -                        unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
 +                        Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson; // Travertine
+                         if ( bungee.getConnectionThrottle() != null )
+                         {
+                             bungee.getConnectionThrottle().unthrottle( getAddress().getAddress() );
+                         }
 +                        // Travertine start
 +                        if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
 +                        {
@@ -1318,7 +1322,7 @@ index e84c8aa4..b5e397e0 100644
                      }
                  };
  
-@@ -521,7 +544,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -520,7 +543,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
