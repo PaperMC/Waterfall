@@ -1,4 +1,4 @@
-From 1fbaa495ef6ed9601f2d9479b2d2b228d3474274 Mon Sep 17 00:00:00 2001
+From 646fe1ca409a835cd6880bfe4909c49c7a5a0036 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,7 +8,7 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 19b897c0..20ef5b0d 100644
+index eb369ebb..d8ea68ea 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -116,7 +116,7 @@ public class BungeeCord extends ProxyServer
@@ -70,10 +70,10 @@ index 19b897c0..20ef5b0d 100644
  
                  getLogger().info( "Thank you and goodbye" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 875ad538..ec96d1fd 100644
+index f4c17cf4..4c0637b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -145,7 +145,7 @@ public class BungeeServerInfo implements ServerInfo
+@@ -151,7 +151,7 @@ public class BungeeServerInfo implements ServerInfo
          };
          new Bootstrap()
                  .channel( PipelineUtils.getChannel() )
@@ -83,5 +83,5 @@ index 875ad538..ec96d1fd 100644
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
                  .remoteAddress( getAddress() )
 -- 
-2.19.1
+2.20.1
 
