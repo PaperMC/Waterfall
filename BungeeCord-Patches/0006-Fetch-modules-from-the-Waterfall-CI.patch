@@ -1,4 +1,4 @@
-From f8f184cb101633ece93dd65d1d7cf8f54d41ebe5 Mon Sep 17 00:00:00 2001
+From 6b7dd2468dbdf6289bf10352dd4f96b70fa39483 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
 Subject: [PATCH] Fetch modules from the Waterfall CI
@@ -6,7 +6,7 @@ Subject: [PATCH] Fetch modules from the Waterfall CI
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2536435c..e1cf0010 100644
+index 2536435c..9b20d0df 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 @@ -1,10 +1,10 @@
@@ -27,7 +27,7 @@ index 2536435c..e1cf0010 100644
          try
          {
 -            URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+            URL website = new URL( "https://ci.destroystokyo.com/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
++            URL website = new URL( "https://papermc.io/ci/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
              URLConnection con = website.openConnection();
              // 15 second timeout at various stages
              con.setConnectTimeout( 15000 );
@@ -40,5 +40,5 @@ index 2536435c..e1cf0010 100644
          } catch ( IOException ex )
          {
 -- 
-2.19.0
+2.20.1
 

@@ -1,4 +1,4 @@
-Waterfall [![Build Status](https://ci.destroystokyo.com/job/Waterfall/badge/icon)](https://ci.destroystokyo.com/job/Waterfall/)
+Waterfall [![Build Status](https://papermc.io/ci/job/Waterfall/badge/icon)](https://papermc.io/ci/job/Waterfall/)
 =========
 
 Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
