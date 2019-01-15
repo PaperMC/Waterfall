@@ -1,0 +1,213 @@
+From 5e8ac4be1ffc17de941465d30171eb39828b1cbb Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Mon, 14 Jan 2019 03:35:21 +0000
+Subject: [PATCH] Provide an option to disable entity metadata rewriting
+
+The work here is derived from the research and guidance of
+various members of the minecraft community
+
+This patch provides the ability to disable entity remapping,
+which creates various incompatability issues with mods, however,
+may also create various issues with mods which do not support this,
+hence why the configuration option is provided
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index f792426e..92070fcf 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -193,4 +193,9 @@ public interface ProxyConfig
+     boolean isDisableModernTabLimiter();
+ 
+     boolean isAllowEmptyPackets();
++
++    /**
++     * @return Should we disable entity metadata rewriting?
++     */
++    boolean isDisableEntityMetadataRewrite();
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index ea06f3ba..d9ea75ca 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -60,6 +60,8 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private boolean allowEmptyPackets = false;
+ 
++    private boolean disableEntityMetadataRewrite = false;
++
+     @Override
+     public void load() {
+         super.load();
+@@ -73,6 +75,7 @@ public class WaterfallConfiguration extends Configuration {
+         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+         allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
++        disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
+     }
+ 
+     @Override
+@@ -109,4 +112,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isAllowEmptyPackets() {
+         return false;
+     }
++
++    @Override
++    public boolean isDisableEntityMetadataRewrite() {
++        return disableEntityMetadataRewrite;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index c7f081d4..110ac496 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -225,7 +225,7 @@ public class ServerConnector extends PacketHandler
+             ch.write( message );
+         }
+ 
+-        if ( user.getSettings() != null )
++        if (!user.isDisableEntityMetadataRewrite() && user.getSettings() != null )
+         {
+             ch.write( user.getSettings() );
+         }
+@@ -259,6 +259,7 @@ public class ServerConnector extends PacketHandler
+             user.getTabListHandler().onServerChange();
+ 
+             Scoreboard serverScoreboard = user.getServerSentScoreboard();
++            if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
+             for ( Objective objective : serverScoreboard.getObjectives() )
+             {
+                 user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
+@@ -271,6 +272,7 @@ public class ServerConnector extends PacketHandler
+             {
+                 user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
+             }
++            } // Waterfall
+             serverScoreboard.clear();
+ 
+             for ( UUID bossbar : user.getSentBossBars() )
+@@ -284,12 +286,27 @@ public class ServerConnector extends PacketHandler
+             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
+ 
+             user.setDimensionChange( true );
+-            if ( login.getDimension() == user.getDimension() )
++            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
+             {
+                 user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             }
+ 
+             user.setServerEntityId( login.getEntityId() );
++            // Waterfall start
++            if ( user.isDisableEntityMetadataRewrite() ) {
++                // Ensure that we maintain consistency
++                user.setClientEntityId( login.getEntityId() );
++
++                Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(),
++                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.isReducedDebugInfo() );
++                user.unsafe().sendPacket(modLogin);
++
++                // Only send if we're in the same dimension
++                if (user.getDimension() == login.getDimension()) {
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
++                }
++            }
++            // Waterfall end
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             user.setDimension( login.getDimension() );
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 9c872a1c..8a524a64 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -145,6 +145,7 @@ public final class UserConnection implements ProxiedPlayer
+     @Setter
+     private ForgeServerHandler forgeServerHandler;
+     /*========================================================================*/
++    private boolean disableEntityMetadaRewrite;
+     private final Unsafe unsafe = new Unsafe()
+     {
+         @Override
+@@ -156,6 +157,13 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void init()
+     {
++        // Waterfall start
++        disableEntityMetadaRewrite = bungee.getConfig().isDisableEntityMetadataRewrite();
++        if ( disableEntityMetadaRewrite )
++        {
++            entityRewrite = net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
++        } else
++        // Waterfall end
+         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
+ 
+         this.displayName = name;
+@@ -730,4 +738,10 @@ public final class UserConnection implements ProxiedPlayer
+     {
+         return serverSentScoreboard;
+     }
++
++    // Waterfall start
++    public boolean isDisableEntityMetadataRewrite() {
++        return disableEntityMetadaRewrite;
++    }
++    // Waterfall end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 9076ce39..da7ade56 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -555,6 +555,7 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(EntityEffect entityEffect) throws Exception
+     {
++        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
+         // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
+         // condition on the client.
+         if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
+@@ -566,6 +567,7 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(EntityRemoveEffect removeEffect) throws Exception
+     {
++        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
+         con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
+new file mode 100644
+index 00000000..cb81d1dd
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
+@@ -0,0 +1,30 @@
++
++package net.md_5.bungee.entitymap;
++
++import io.netty.buffer.ByteBuf;
++// Waterfall start
++
++public class EntityMap_Dummy extends EntityMap {
++
++    public static final EntityMap_Dummy INSTANCE = new EntityMap_Dummy();
++
++    EntityMap_Dummy() {
++    }
++
++    @Override
++    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
++    }
++
++    @Override
++    public void rewriteServerbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
++    }
++
++    @Override
++    public void rewriteClientbound(ByteBuf packet, int oldId, int newId) {
++    }
++
++    @Override
++    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
++    }
++}
++// Waterfall end
+\ No newline at end of file
+-- 
+2.20.1
+
