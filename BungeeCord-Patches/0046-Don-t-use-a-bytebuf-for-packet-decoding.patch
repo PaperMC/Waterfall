@@ -1,11 +1,11 @@
-From 55dc9beefb1976dba1595821e640072020f1b701 Mon Sep 17 00:00:00 2001
+From d6ffcd90f47bc395e824b36fe7fe47991bf869e1 Mon Sep 17 00:00:00 2001
 From: creeper123123321 <creeper123123321@gmail.com>
 Date: Thu, 17 Jan 2019 03:25:59 +0000
 Subject: [PATCH] Don't use a bytebuf for packet decoding
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index 880a3dc7..8680e4f4 100644
+index 880a3dc7..aef9fc37 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -25,8 +25,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
@@ -35,7 +35,7 @@ index 880a3dc7..8680e4f4 100644
                  if ( length == 0 && !allowEmptyPackets) // Waterfall
                  {
                      throw new CorruptedFrameException( "Empty Packet!" );
-@@ -47,26 +49,10 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -47,26 +49,11 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                  {
                      in.resetReaderIndex();
                      return;
@@ -58,10 +58,10 @@ index 880a3dc7..8680e4f4 100644
 -                        in.readBytes( dst );
 -                        out.add( dst );
 -                    }
--                    return;
 +                    // Waterfall start
 +                } else {
 +                    out.add(in.readRetainedSlice(length));
+                     return;
 +                    // Waterfall end
                  }
              }
