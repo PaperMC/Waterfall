@@ -1,4 +1,4 @@
-From b596e53d71ed3330aba53fb1aa5db81acebd9077 Mon Sep 17 00:00:00 2001
+From 04cd75a5a2fe2d1653b5c9bd2f4e5ef6d14d9fc1 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,18 +75,18 @@ index e7869cfb..c7f081d4 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 54be8954..d0c2ac42 100644
+index f52c1312..14ab7f58 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
- import com.mojang.brigadier.suggestion.SuggestionProvider;
+@@ -14,6 +14,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
+ import com.mojang.brigadier.suggestion.Suggestions;
  import com.mojang.brigadier.tree.LiteralCommandNode;
  import java.io.DataInput;
 +import java.util.Objects; // Waterfall
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
-@@ -70,16 +71,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -77,16 +78,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -111,7 +111,7 @@ index 54be8954..d0c2ac42 100644
      }
  
      @Override
-@@ -94,7 +98,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -101,7 +105,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -132,7 +132,7 @@ index 54be8954..d0c2ac42 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -476,7 +492,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -483,7 +499,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );

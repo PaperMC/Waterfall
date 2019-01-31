@@ -1,4 +1,4 @@
-From 441f1f77ca0f9efb08ded45ebbd15fa0d51cc33d Mon Sep 17 00:00:00 2001
+From 5e44afa155b708568fbd414bd5d7f930626b2bb3 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -8,7 +8,7 @@ Subject: [PATCH] Micro-optimizations
 - Don't create a data input stream for every plugin message we get from servers
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 49c97cd9..19b897c0 100644
+index d9f49e34..eb369ebb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -515,7 +515,9 @@ public class BungeeCord extends ProxyServer
@@ -23,10 +23,10 @@ index 49c97cd9..19b897c0 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1693f42b..b54e7b9b 100644
+index 277422ee..bfbc8b18 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -233,7 +233,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -240,7 +240,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -34,7 +34,7 @@ index 1693f42b..b54e7b9b 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -260,6 +259,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -267,6 +266,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {

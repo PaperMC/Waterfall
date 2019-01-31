@@ -1,4 +1,4 @@
-From 887434ef58f84e7de93fe0791d98228e442c92ab Mon Sep 17 00:00:00 2001
+From d2521c4481ccd232d38a9184871cc7adba563ee5 Mon Sep 17 00:00:00 2001
 From: minecrafter <unknown@unknown>
 Date: Sun, 3 Jul 2016 04:03:21 -0400
 Subject: [PATCH] Proxy query event
@@ -107,7 +107,7 @@ index 00000000..220d59f0
 +    private QueryResult result;
 +}
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 79d6886a..a72cfd92 100644
+index 9b81197f..ac99d02c 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee.query;
@@ -132,7 +132,7 @@ index 79d6886a..a72cfd92 100644
  import lombok.Data;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ProxyServer;
-@@ -84,19 +88,30 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -95,19 +99,30 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                  throw new IllegalStateException( "No session!" );
              }
  
@@ -170,7 +170,7 @@ index 79d6886a..a72cfd92 100644
              } else if ( in.readableBytes() == 4 )
              {
                  // Long Response
-@@ -106,18 +121,20 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -117,18 +132,20 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                  } );
                  Map<String, String> data = new LinkedHashMap<>();
  
@@ -201,7 +201,7 @@ index 79d6886a..a72cfd92 100644
  
                  for ( Map.Entry<String, String> entry : data.entrySet() )
                  {
-@@ -129,10 +146,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -140,10 +157,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                  // Padding
                  writeString( out, "\01player_\00" );
                  // Player List
@@ -214,5 +214,5 @@ index 79d6886a..a72cfd92 100644
              } else
              {
 -- 
-2.19.1
+2.20.1
 
