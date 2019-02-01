@@ -70,7 +70,7 @@ While we will fix minor formatting issues, you should stick to the guide below w
 ## Formatting
 All modifications to non-Waterfall files should be marked
 - Multi line changes start with `// Waterfall start` and end with `// Waterfall end`
-- You can put a messages with a change if it isn't obvious, like this: `// Waterfall start - reason
+- You can put a messages with a change if it isn't obvious, like this: `// Waterfall start - reason`
   - Should generally be about the reason the change was made, what it was before, or what the change is
   - Multi-line messages should start with `// Waterfall start` and use `/* Multi line message here */` for the message itself
 - Single line changes should have `// Waterfall` or `// Waterfall - reason`
