@@ -1,4 +1,4 @@
-From 4aabe9a68bec1377ce1f669eb45d9496ff52b46a Mon Sep 17 00:00:00 2001
+From d82607666d67970313984865327a2f4542d8ea09 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Disable Metrics
@@ -6,7 +6,7 @@ Subject: [PATCH] Disable Metrics
 MCStats has not been stable for a long while now, and in our opinion it is not worth migrating to an alternative service. Waterfall has been maintained for the past two years without any or much consideration to statistics, we have users and that's enough for us ;)
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a8bb4fd0..bfb83c21 100644
+index 44a77ff3..f38445d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -121,7 +121,7 @@ public class BungeeCord extends ProxyServer
@@ -27,7 +27,7 @@ index a8bb4fd0..bfb83c21 100644
      }
  
      public void startListeners()
-@@ -423,7 +423,7 @@ public class BungeeCord extends ProxyServer
+@@ -429,7 +429,7 @@ public class BungeeCord extends ProxyServer
                      reconnectHandler.close();
                  }
                  saveThread.cancel();
@@ -172,5 +172,5 @@ index a7ce8d82..00000000
 -    }
 -}
 -- 
-2.19.1
+2.20.1
 

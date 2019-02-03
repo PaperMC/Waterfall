@@ -1,4 +1,4 @@
-From 5e44afa155b708568fbd414bd5d7f930626b2bb3 Mon Sep 17 00:00:00 2001
+From f0d0879bb02cdef1fc1cf2c25d82085848903d90 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -8,10 +8,10 @@ Subject: [PATCH] Micro-optimizations
 - Don't create a data input stream for every plugin message we get from servers
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d9f49e34..eb369ebb 100644
+index 5d98c781..be32db49 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -515,7 +515,9 @@ public class BungeeCord extends ProxyServer
+@@ -521,7 +521,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
