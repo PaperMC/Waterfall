@@ -1,11 +1,11 @@
-From 0e00fe3d861d036364105256e5cba4dcbde97371 Mon Sep 17 00:00:00 2001
+From aee90e210ae6132b9276f7e6a0f7dfa7c6b47f56 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bda6525c..a518fe45 100644
+index c407cc97..4ff03488 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -275,8 +275,6 @@ public class BungeeCord extends ProxyServer
@@ -18,7 +18,7 @@ index bda6525c..a518fe45 100644
  
          isRunning = true;
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 7d54e41a..2a3a47af 100644
+index 92093602..0482d74a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -66,7 +66,7 @@ public abstract class Configuration implements ProxyConfig
@@ -27,9 +27,9 @@ index 7d54e41a..2a3a47af 100644
      private boolean preventProxyConnections;
 -    private boolean forgeSupport;
 +    private boolean forgeSupport = true; // Waterfall: default to enabled
-     private boolean injectCommands;
  
      @Synchronized("serversLock") // Waterfall
+     public void load()
 -- 
 2.20.1
 
