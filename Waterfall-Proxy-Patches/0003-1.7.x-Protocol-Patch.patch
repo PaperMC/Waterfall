@@ -1,4 +1,4 @@
-From 93a48cbe50e20969254791e3208b56b388940669 Mon Sep 17 00:00:00 2001
+From 0002b1f2ea298245dfa864b82cb41ebc23e96f73 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -167,10 +167,10 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 39affec6..d194f221 100644
+index d1320698..961e95e1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -394,6 +394,8 @@ public enum Protocol
+@@ -391,6 +391,8 @@ public enum Protocol
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
          {
              linkedProtocols.put( ProtocolConstants.MINECRAFT_1_8, Arrays.asList(
@@ -179,7 +179,7 @@ index 39affec6..d194f221 100644
                      ProtocolConstants.MINECRAFT_1_9,
                      ProtocolConstants.MINECRAFT_1_12,
                      ProtocolConstants.MINECRAFT_1_13
-@@ -451,7 +453,11 @@ public enum Protocol
+@@ -448,7 +450,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -1213,7 +1213,7 @@ index 8a524a64..67f7102d 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8469e665..e8c9762a 100644
+index c1dc6489..b0874b69 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -160,7 +160,7 @@ public class DownstreamBridge extends PacketHandler
@@ -1361,7 +1361,7 @@ index 6bc14d67..2b3bc361 100644
          channel.close();
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 9287d168..7348f817 100644
+index 51d0c6cf..35b9530a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -83,7 +83,12 @@ public class UpstreamBridge extends PacketHandler
@@ -1379,7 +1379,7 @@ index 9287d168..7348f817 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 7c19c6fb..2bb6fbcc 100644
+index 994670cd..7d1c05cc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -29,6 +29,10 @@ public abstract class EntityMap
