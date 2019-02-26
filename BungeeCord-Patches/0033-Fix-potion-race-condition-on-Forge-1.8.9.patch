@@ -1,4 +1,4 @@
-From 30a0215378f22fc5dfeda5fce5de783801d21763 Mon Sep 17 00:00:00 2001
+From 048c8c798e9623855157222e4f535208e1c0d081 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,10 +33,10 @@ index 219488dd..bef7b370 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 1161dc5d..39affec6 100644
+index fac02784..52ee3461 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -18,6 +18,8 @@ import net.md_5.bungee.protocol.packet.Commands;
+@@ -15,6 +15,8 @@ import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
@@ -45,9 +45,9 @@ index 1161dc5d..39affec6 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -96,6 +98,26 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x0C )
+@@ -88,6 +90,26 @@ public enum Protocol
+                     BossBar.class,
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -191,7 +191,7 @@ index 6dae9a88..9c872a1c 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 14ab7f58..9737a8d2 100644
+index 522f93c7..f635a7e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -49,6 +49,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
@@ -274,5 +274,5 @@ index 0d683856..c1272da3 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.20.1
+2.21.0
 

@@ -1,0 +1,21 @@
+From be1c40f01873b60d3b96692fb54594c6fc7dc7bd Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Tue, 26 Feb 2019 19:36:42 +0000
+Subject: [PATCH] fixup! Fix potion race condition on Forge 1.8.9
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 52ee3461..4966d0a5 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -96,7 +96,6 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
+                     map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
+                     map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
+-                    map(ProtocolConstants.MINECRAFT_1_10, 0x4B),
+                     map(ProtocolConstants.MINECRAFT_1_12, 0x4E),
+                     map(ProtocolConstants.MINECRAFT_1_12_1, 0x4F),
+                     map(ProtocolConstants.MINECRAFT_1_13, 0x53)
+-- 
+2.21.0
+
