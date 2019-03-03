@@ -1,4 +1,4 @@
-From 11df9d459a1b1204e39e95519c7df2c2ded1c243 Mon Sep 17 00:00:00 2001
+From cf5db0321cfe0f797da846bd91a8e76cd4d2a7ac Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -167,7 +167,7 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d1320698..049c7879 100644
+index d1320698..e09447f2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -54,7 +54,7 @@ public enum Protocol
@@ -321,7 +321,7 @@ index d1320698..049c7879 100644
              TO_CLIENT.registerPacket(
                      EntityStatus.class,
 -                    map( ProtocolConstants.MINECRAFT_1_8, 0x1A ),
-+                    map( ProtocolConstants.MINECRAFT_1_8, 0x1A ), // Travertine
++                    map( ProtocolConstants.MINECRAFT_1_7_2, 0x1A ), // Travertine
                      map( ProtocolConstants.MINECRAFT_1_9, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1C )
@@ -419,7 +419,7 @@ index d1320698..049c7879 100644
              );
              TO_CLIENT.registerPacket(
                      LoginPayloadRequest.class,
-@@ -301,15 +301,15 @@ public enum Protocol
+@@ -301,11 +301,11 @@ public enum Protocol
  
              TO_SERVER.registerPacket(
                      LoginRequest.class,
@@ -433,11 +433,6 @@ index d1320698..049c7879 100644
              );
              TO_SERVER.registerPacket(
                      LoginPayloadResponse.class,
--                    map( ProtocolConstants.MINECRAFT_1_13, 0x02 )
-+                    map( ProtocolConstants.MINECRAFT_1_13, 0x02 ) // Travertine
-             );
-         }
-     };
 @@ -390,7 +390,9 @@ public enum Protocol
          }
          private final TIntObjectMap<List<Integer>> linkedProtocols = new TIntObjectHashMap<>();
@@ -1663,227 +1658,6 @@ index 994670cd..7d1c05cc 100644
              case ProtocolConstants.MINECRAFT_1_8:
                  return EntityMap_1_8.INSTANCE;
              case ProtocolConstants.MINECRAFT_1_9:
-diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
-new file mode 100644
-index 00000000..d98a8056
---- /dev/null
-+++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java.orig
-@@ -0,0 +1,215 @@
-+package net.md_5.bungee.entitymap;
-+
-+import com.flowpowered.nbt.stream.NBTInputStream;
-+import com.google.common.base.Throwables;
-+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-+import io.netty.buffer.ByteBuf;
-+import io.netty.buffer.ByteBufInputStream;
-+import java.io.IOException;
-+import lombok.AccessLevel;
-+import lombok.NoArgsConstructor;
-+import net.md_5.bungee.protocol.DefinedPacket;
-+import net.md_5.bungee.protocol.ProtocolConstants;
-+
-+/**
-+ * Class to rewrite integers within packets.
-+ */
-+@NoArgsConstructor(access = AccessLevel.PACKAGE)
-+public abstract class EntityMap
-+{
-+
-+    private final boolean[] clientboundInts = new boolean[ 256 ];
-+    private final boolean[] clientboundVarInts = new boolean[ 256 ];
-+
-+    private final boolean[] serverboundInts = new boolean[ 256 ];
-+    private final boolean[] serverboundVarInts = new boolean[ 256 ];
-+
-+    // Returns the correct entity map for the protocol version
-+    public static EntityMap getEntityMap(int version)
-+    {
-+        switch ( version )
-+        {
-+            case ProtocolConstants.MINECRAFT_1_8:
-+                return EntityMap_1_8.INSTANCE;
-+            case ProtocolConstants.MINECRAFT_1_9:
-+            case ProtocolConstants.MINECRAFT_1_9_1:
-+            case ProtocolConstants.MINECRAFT_1_9_2:
-+                return EntityMap_1_9.INSTANCE;
-+            case ProtocolConstants.MINECRAFT_1_9_4:
-+                return EntityMap_1_9_4.INSTANCE;
-+            case ProtocolConstants.MINECRAFT_1_10:
-+                return EntityMap_1_10.INSTANCE;
-+            case ProtocolConstants.MINECRAFT_1_11:
-+            case ProtocolConstants.MINECRAFT_1_11_1:
-+                return EntityMap_1_11.INSTANCE;
-+        }
-+        throw new RuntimeException( "Version " + version + " has no entity map" );
-+    }
-+
-+    protected void addRewrite(int id, ProtocolConstants.Direction direction, boolean varint)
-+    {
-+        if ( direction == ProtocolConstants.Direction.TO_CLIENT )
-+        {
-+            if ( varint )
-+            {
-+                clientboundVarInts[id] = true;
-+            } else
-+            {
-+                clientboundInts[id] = true;
-+            }
-+        } else if ( varint )
-+        {
-+            serverboundVarInts[id] = true;
-+        } else
-+        {
-+            serverboundInts[id] = true;
-+        }
-+    }
-+
-+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
-+    {
-+        rewrite( packet, oldId, newId, serverboundInts, serverboundVarInts );
-+    }
-+
-+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
-+    {
-+        rewrite( packet, oldId, newId, clientboundInts, clientboundVarInts );
-+    }
-+
-+    protected static void rewriteInt(ByteBuf packet, int oldId, int newId, int offset)
-+    {
-+        int readId = packet.getInt( offset );
-+        if ( readId == oldId )
-+        {
-+            packet.setInt( offset, newId );
-+        } else if ( readId == newId )
-+        {
-+            packet.setInt( offset, oldId );
-+        }
-+    }
-+
-+    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-+    protected static void rewriteVarInt(ByteBuf packet, int oldId, int newId, int offset)
-+    {
-+        // Need to rewrite the packet because VarInts are variable length
-+        int readId = DefinedPacket.readVarInt( packet );
-+        int readIdLength = packet.readerIndex() - offset;
-+        if ( readId == oldId || readId == newId )
-+        {
-+            ByteBuf data = packet.copy();
-+            packet.readerIndex( offset );
-+            packet.writerIndex( offset );
-+            DefinedPacket.writeVarInt( readId == oldId ? newId : oldId, packet );
-+            packet.writeBytes( data );
-+            data.release();
-+        }
-+    }
-+
-+    protected static void rewriteMetaVarInt(ByteBuf packet, int oldId, int newId, int metaIndex)
-+    {
-+        int readerIndex = packet.readerIndex();
-+
-+        short index;
-+        while ( ( index = packet.readUnsignedByte() ) != 0xFF )
-+        {
-+            int type = DefinedPacket.readVarInt( packet );
-+
-+            switch ( type )
-+            {
-+                case 0:
-+                    packet.skipBytes( 1 ); // byte
-+                    break;
-+                case 1:
-+                    if ( index == metaIndex )
-+                    {
-+                        int position = packet.readerIndex();
-+                        rewriteVarInt( packet, oldId, newId, position );
-+                        packet.readerIndex( position );
-+                    }
-+                    DefinedPacket.readVarInt( packet );
-+                    break;
-+                case 2:
-+                    packet.skipBytes( 4 ); // float
-+                    break;
-+                case 3:
-+                case 4:
-+                    DefinedPacket.readString( packet );
-+                    break;
-+                case 5:
-+                    if ( packet.readShort() != -1 )
-+                    {
-+                        packet.skipBytes( 3 ); // byte, short
-+
-+                        int position = packet.readerIndex();
-+                        if ( packet.readByte() != 0 )
-+                        {
-+                            packet.readerIndex( position );
-+
-+                            try
-+                            {
-+                                new NBTInputStream( new ByteBufInputStream( packet ), false ).readTag();
-+                            } catch ( IOException ex )
-+                            {
-+                                throw Throwables.propagate( ex );
-+                            }
-+                        }
-+                    }
-+                    break;
-+                case 6:
-+                    packet.skipBytes( 1 ); // boolean
-+                    break;
-+                case 7:
-+                    packet.skipBytes( 12 ); // float, float, float
-+                    break;
-+                case 8:
-+                    packet.readLong();
-+                    break;
-+                case 9:
-+                    if ( packet.readBoolean() )
-+                    {
-+                        packet.skipBytes( 8 ); // long
-+                    }
-+                    break;
-+                case 10:
-+                    DefinedPacket.readVarInt( packet );
-+                    break;
-+                case 11:
-+                    if ( packet.readBoolean() )
-+                    {
-+                        packet.skipBytes( 16 ); // long, long
-+                    }
-+                    break;
-+                case 12:
-+                    DefinedPacket.readVarInt( packet );
-+                    break;
-+                default:
-+                    throw new IllegalArgumentException( "Unknown meta type " + type );
-+            }
-+        }
-+
-+        packet.readerIndex( readerIndex );
-+    }
-+
-+    // Handles simple packets
-+    private static void rewrite(ByteBuf packet, int oldId, int newId, boolean[] ints, boolean[] varints)
-+    {
-+        int readerIndex = packet.readerIndex();
-+        int packetId = DefinedPacket.readVarInt( packet );
-+        int packetIdLength = packet.readerIndex() - readerIndex;
-+
-+        if (packetId < 0 || packetId > ints.length || packetId > varints.length) { // Invalid packet id
-+            // Ignore these invalid packets for compatibility reasons
-+            packet.readerIndex( readerIndex );
-+            return;
-+        }
-+
-+        if ( ints[packetId] )
-+        {
-+            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
-+        } else if ( varints[packetId] )
-+        {
-+            rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
-+        }
-+        packet.readerIndex( readerIndex );
-+    }
-+}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 new file mode 100644
 index 00000000..65c1a9ec
