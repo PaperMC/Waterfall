@@ -1,4 +1,4 @@
-From 23381cff6c1af4999870811c3461c5fce1c8cb6b Mon Sep 17 00:00:00 2001
+From a4251c9dab7b2441bb8893fc2ef9443225d9b50e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Add Configuration to allow empty packets
@@ -49,7 +49,7 @@ index 29e54dba..880a3dc7 100644
                      throw new CorruptedFrameException( "Empty Packet!" );
                  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index d343e9b8..ea06f3ba 100644
+index d343e9b8..04b21d0f 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -49,6 +49,17 @@ public class WaterfallConfiguration extends Configuration {
@@ -85,7 +85,7 @@ index d343e9b8..ea06f3ba 100644
 +
 +    @Override
 +    public boolean isAllowEmptyPackets() {
-+        return false;
++        return allowEmptyPackets;
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
@@ -102,5 +102,5 @@ index feea59d6..042bccb5 100644
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
 -- 
-2.20.1
+2.21.0
 

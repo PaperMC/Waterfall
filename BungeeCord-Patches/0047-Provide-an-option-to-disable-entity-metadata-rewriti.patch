@@ -1,4 +1,4 @@
-From 99262e2285605ffe26c6a0e0df756c9ced6c3152 Mon Sep 17 00:00:00 2001
+From f3291be33d3a2e2766ba43ce1da71dada0511a7a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -26,7 +26,7 @@ index f792426e..92070fcf 100644
 +    boolean isDisableEntityMetadataRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index ea06f3ba..d9ea75ca 100644
+index 04b21d0f..42b17a69 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -60,6 +60,8 @@ public class WaterfallConfiguration extends Configuration {
@@ -48,7 +48,7 @@ index ea06f3ba..d9ea75ca 100644
      @Override
 @@ -109,4 +112,9 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isAllowEmptyPackets() {
-         return false;
+         return allowEmptyPackets;
      }
 +
 +    @Override
@@ -152,7 +152,7 @@ index 9c872a1c..8a524a64 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9737a8d2..8469e665 100644
+index f635a7e4..c1dc6489 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -590,6 +590,7 @@ public class DownstreamBridge extends PacketHandler
@@ -209,5 +209,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.20.1
+2.21.0
 
