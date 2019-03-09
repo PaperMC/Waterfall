@@ -1,4 +1,4 @@
-From e933e744f00c8910885eb33b2f3c55c0c3eeb946 Mon Sep 17 00:00:00 2001
+From 177925e31475b3720037d0765f44d9bfff151a09 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,10 +33,10 @@ index 219488dd..bef7b370 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index fac02784..4966d0a5 100644
+index 3e73345f..01af5c1c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -15,6 +15,8 @@ import net.md_5.bungee.protocol.packet.Commands;
+@@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
@@ -45,7 +45,7 @@ index fac02784..4966d0a5 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -88,6 +90,25 @@ public enum Protocol
+@@ -89,6 +91,25 @@ public enum Protocol
                      BossBar.class,
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
              );
@@ -273,5 +273,5 @@ index 0d683856..c1272da3 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.21.0
+2.20.1
 

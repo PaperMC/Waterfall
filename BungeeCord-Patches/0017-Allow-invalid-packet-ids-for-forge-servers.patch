@@ -1,4 +1,4 @@
-From 9e9254228993e2de0601a0644dac5b8abf0491ca Mon Sep 17 00:00:00 2001
+From f39c08d489df643450f3e8270c0f799da0c89858 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,11 +37,11 @@ index ea44573d..5b32effe 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 56d8a0de..fac02784 100644
+index 98be98e8..3e73345f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -359,14 +359,23 @@ public enum Protocol
-             }
+@@ -370,14 +370,23 @@ public enum Protocol
+             return protocol;
          }
  
 +        public boolean hasPacket(int i, boolean supportsForge) {
@@ -55,7 +55,7 @@ index 56d8a0de..fac02784 100644
 +
 +        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
          {
-             ProtocolData protocolData = protocols.get( version );
+             ProtocolData protocolData = getProtocolData( version );
              if ( protocolData == null )
              {
                  throw new BadPacketException( "Unsupported protocol version " + version );
@@ -122,5 +122,5 @@ index 1ecee69e..994670cd 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.21.0
+2.20.1
 
