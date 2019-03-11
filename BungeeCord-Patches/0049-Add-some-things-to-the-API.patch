@@ -1,0 +1,264 @@
+From fa435a332e99ec02e25ffb65d90c78aa10bbd172 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Mon, 11 Mar 2019 16:00:17 +0200
+Subject: [PATCH] Add some things to the API
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/Callback.java b/api/src/main/java/net/md_5/bungee/api/Callback.java
+index 0cccc175..f383279b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/Callback.java
++++ b/api/src/main/java/net/md_5/bungee/api/Callback.java
+@@ -6,6 +6,7 @@ package net.md_5.bungee.api;
+  *
+  * @param <V> the type of result
+  */
++@FunctionalInterface // Waterfall
+ public interface Callback<V>
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/CommandSender.java b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
+index a35b3fd0..f83fc023 100644
+--- a/api/src/main/java/net/md_5/bungee/api/CommandSender.java
++++ b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
+@@ -16,19 +16,19 @@ public interface CommandSender
+ 
+     /**
+      * Send a message to this sender.
++     * Waterfall - Deprecation removal. No reason deprecating
+      *
+      * @param message the message to send
+      */
+-    @Deprecated
+     public void sendMessage(String message);
+ 
+     /**
+      * Send several messages to this sender. Each message will be sent
+      * separately.
++     * Waterfall - Deprecation removal. No reason deprecating
+      *
+      * @param messages the messages to send
+      */
+-    @Deprecated
+     public void sendMessages(String... messages);
+ 
+     /**
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index f7459860..9946c310 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -69,7 +69,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param position the screen position
+      * @param message the message to send
++     * @deprecated This is unlikely the API you want to use. See {@link #sendActionBar(String)} or {@link #sendActionBar(BaseComponent)}, {@link #sendActionBar(BaseComponent...)} for a more proper ActionBar API.
+      */
++    @Deprecated // Waterfall
+     public void sendMessage(ChatMessageType position, BaseComponent... message);
+ 
+     /**
+@@ -77,7 +79,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param position the screen position
+      * @param message the message to send
++     * @deprecated This is unlikely the API you want to use. See {@link #sendActionBar(String)} or {@link #sendActionBar(BaseComponent)}, {@link #sendActionBar(BaseComponent...)} for a more proper ActionBar API.
+      */
++    @Deprecated // Waterfall
+     public void sendMessage(ChatMessageType position, BaseComponent message);
+ 
+     /**
+@@ -372,4 +376,37 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * @return this player's {@link Scoreboard}
+      */
+     Scoreboard getScoreboard();
++
++    // Waterfall start
++
++    /**
++     * Sends ActionBar message to the client.
++     *
++     * @param message the message you wish to send
++     */
++    public void sendActionBar(String message);
++
++    /**
++     * Sends ActionBar message to the client.
++     *
++     * @param message the message you wish to send
++     */
++    public void sendActionBar(BaseComponent message);
++
++    /**
++     * Sends ActionBar message to the client.
++     *
++     * @param message the message you wish to send
++     */
++    public void sendActionBar(BaseComponent... message);
++
++    /**
++     * Gets the current player title. The method can return null if the current
++     * title is null.
++     *
++     * @return title if not null
++     */
++    public Title getCurrentTitle();
++
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index 2e5ae4fb..981dd8ef 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -67,6 +67,13 @@ public class Plugin
+         return new File( getProxy().getPluginsFolder(), getDescription().getName() );
+     }
+ 
++    // Waterfall start - allow plugins to get plugin names directly
++    public String getName()
++    {
++        return description.getName();
++    }
++    // Waterfall end
++
+     /**
+      * Get a resource from within this plugins jar or container. Care must be
+      * taken to close the returned stream.
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 81bd18f0..44ff7cd9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -181,10 +181,14 @@ public class PluginManager
+             {
+                 if ( proxy.getConfig().isLogCommands() )
+                 {
+-                    proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
++                    // Waterfall - check if the command sender is not the console
++                    if ( !sender.getName().equalsIgnoreCase( proxy.getConsole().getName() ) )
+                     {
+-                        sender.getName(), commandLine
+-                    } );
++                        proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
++                                {
++                                        sender.getName(), commandLine
++                                } );
++                    }
+                 }
+                 command.execute( sender, args );
+             } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
+diff --git a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+index 5d2b088c..4fa6ec45 100644
+--- a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
++++ b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+@@ -58,6 +58,35 @@ public interface TaskScheduler
+      */
+     ScheduledTask schedule(Plugin owner, Runnable task, long delay, TimeUnit unit);
+ 
++    // Waterfall start - allow scheduling tasks with ticks
++
++    /**
++     * Schedules a task to be executed asynchronously after the specified delay
++     * is up.
++     *
++     * @param owner the plugin owning this task
++     * @param task the task to run
++     * @param delay the delay before this task will be executed, specified in ticks
++     * @return the scheduled task
++     */
++    ScheduledTask schedule(Plugin owner, Runnable task, long delay);
++
++    /**
++     * Schedules a task to be executed asynchronously after the specified delay
++     * is up. The scheduled task will continue running at the specified
++     * interval. The interval will not begin to count down until the last task
++     * invocation is complete.
++     *
++     * @param owner the plugin owning this task
++     * @param task the task to run
++     * @param delay the delay before this task will be executed, specified in ticks
++     * @param period the interval before subsequent executions of this task, specified in ticks
++     * @return the scheduled task
++     */
++    ScheduledTask schedule(Plugin owner, Runnable task, long delay, long period);
++
++    // Waterfall end
++
+     /**
+      * Schedules a task to be executed asynchronously after the specified delay
+      * is up. The scheduled task will continue running at the specified
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index e649678e..24e84846 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -130,6 +130,8 @@ public final class UserConnection implements ProxiedPlayer
+     // Waterfall start
+     @Getter
+     private final Multimap<Integer, Integer> potions = HashMultimap.create();
++    @Getter
++    private Title currentTitle;
+     // Waterfall end
+     /*========================================================================*/
+     @Getter
+@@ -709,6 +711,7 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public void sendTitle(Title title)
+     {
++        this.currentTitle = title; // Waterfall
+         title.send( this );
+     }
+ 
+@@ -740,6 +743,26 @@ public final class UserConnection implements ProxiedPlayer
+     }
+ 
+     // Waterfall start
++
++    @Override
++    public void sendActionBar(String message)
++    {
++        sendActionBar( TextComponent.fromLegacyText( message ) );
++    }
++
++    @Override
++    public void sendActionBar(BaseComponent message)
++    {
++        BaseComponent[] sent = ChatComponentTransformer.getInstance().transform( this, message );
++        sendActionBar( sent );
++    }
++
++    @Override
++    public void sendActionBar(BaseComponent... message)
++    {
++        sendMessage( ChatMessageType.ACTION_BAR, message );
++    }
++
+     public boolean isDisableEntityMetadataRewrite() {
+         return disableEntityMetadaRewrite;
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
+index fd0dabcf..ff080581 100644
+--- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
++++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
+@@ -88,6 +88,22 @@ public class BungeeScheduler implements TaskScheduler
+         return schedule( owner, task, delay, 0, unit );
+     }
+ 
++    // Waterfall start
++
++    @Override
++    public ScheduledTask schedule(Plugin owner, Runnable task, long delay)
++    {
++        return schedule( owner, task, delay * 50, TimeUnit.MILLISECONDS );
++    }
++
++    @Override
++    public ScheduledTask schedule(Plugin owner, Runnable task, long delay, long period)
++    {
++        return schedule( owner, task, delay * 50, period * 50, TimeUnit.MILLISECONDS );
++    }
++
++    //Waterfall end
++
+     @Override
+     public ScheduledTask schedule(Plugin owner, Runnable task, long delay, long period, TimeUnit unit)
+     {
+-- 
+2.20.1.windows.1
+
