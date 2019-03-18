@@ -1,4 +1,4 @@
-From 18df497277d05192ca2a1eb8e242411d45b4779c Mon Sep 17 00:00:00 2001
+From c2caf310836a836b4641a002ab133c7be8a17451 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -483,7 +483,7 @@ index 15c0ada2..7073b404 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 4f8786a5..697aa136 100644
+index 4f8786a5..1f9880ef 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -617,7 +617,7 @@ index 4f8786a5..697aa136 100644
                  </configuration>
              </plugin>
          </plugins>
-@@ -171,4 +184,68 @@
+@@ -171,4 +184,86 @@
              </plugins>
          </pluginManagement>
      </build>
@@ -649,6 +649,9 @@ index 4f8786a5..697aa136 100644
 +                        <groupId>org.apache.maven.plugins</groupId>
 +                        <artifactId>maven-javadoc-plugin</artifactId>
 +                        <version>2.7</version>
++                        <configuration>
++                            <additionalparam>-Xdoclint:none</additionalparam>
++                        </configuration>
 +                        <executions>
 +                            <execution>
 +                                <id>attach-javadocs</id>
@@ -658,7 +661,22 @@ index 4f8786a5..697aa136 100644
 +                                </goals>
 +                                <configuration>
 +                                    <sourcepath>target/generated-sources/delombok</sourcepath>
-+                                    <additionalparam>-Xdoclint:none</additionalparam>
++                                </configuration>
++                            </execution>
++                            <execution>
++                                <id>aggregate-javadocs</id>
++                                <phase>package</phase>
++                                <goals>
++                                    <goal>javadoc</goal>
++                                </goals>
++                                <inherited>false</inherited>
++                                <configuration>
++                                    <doctitle>Waterfall ${project.version} API</doctitle>
++                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
++                                    <sourcepath>
++                                        api/target/generated-sources/delombok;
++                                        chat/target/generated-sources/delombok
++                                    </sourcepath>
 +                                </configuration>
 +                            </execution>
 +                        </executions>
