@@ -1,4 +1,4 @@
-From cd99027f638fc0db380f0635fd44471e9411fb62 Mon Sep 17 00:00:00 2001
+From 18df497277d05192ca2a1eb8e242411d45b4779c Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -483,7 +483,7 @@ index 15c0ada2..7073b404 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 4f8786a5..5eab8750 100644
+index 4f8786a5..697aa136 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -617,7 +617,7 @@ index 4f8786a5..5eab8750 100644
                  </configuration>
              </plugin>
          </plugins>
-@@ -171,4 +184,49 @@
+@@ -171,4 +184,68 @@
              </plugins>
          </pluginManagement>
      </build>
@@ -627,6 +627,24 @@ index 4f8786a5..5eab8750 100644
 +            <id>deployment</id>
 +            <build>
 +                <plugins>
++                    <plugin>
++                        <groupId>org.projectlombok</groupId>
++                        <artifactId>lombok-maven-plugin</artifactId>
++                        <version>1.18.4.0</version>
++                        <executions>
++                            <execution>
++                                <id>delombok</id>
++                                <phase>generate-sources</phase>
++                                <goals>
++                                    <goal>delombok</goal>
++                                </goals>
++                                <configuration>
++                                    <addOutputDirectory>false</addOutputDirectory>
++                                    <sourceDirectory>src/main/java</sourceDirectory>
++                                </configuration>
++                            </execution>
++                        </executions>
++                    </plugin>
 +                    <plugin>
 +                        <groupId>org.apache.maven.plugins</groupId>
 +                        <artifactId>maven-javadoc-plugin</artifactId>
@@ -639,6 +657,7 @@ index 4f8786a5..5eab8750 100644
 +                                    <goal>jar</goal>
 +                                </goals>
 +                                <configuration>
++                                    <sourcepath>target/generated-sources/delombok</sourcepath>
 +                                    <additionalparam>-Xdoclint:none</additionalparam>
 +                                </configuration>
 +                            </execution>
@@ -821,5 +840,5 @@ index fdd44b20..4ae682ee 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.20.1
+2.21.0.windows.1
 
