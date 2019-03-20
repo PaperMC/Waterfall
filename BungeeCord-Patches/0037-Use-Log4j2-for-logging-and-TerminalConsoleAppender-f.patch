@@ -1,4 +1,4 @@
-From 59847386bf4c839a16b55b9b7a62627e57f637c7 Mon Sep 17 00:00:00 2001
+From b4677c171d3d0aae5a492540823c2b737db5fa41 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -232,7 +232,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 5eab8750..5c9fefbe 100644
+index daaf18b9..4a007355 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -323,7 +323,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 5f34eb4e..d246adb7 100644
+index 00f8a19c..c407cc97 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -44,7 +44,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -390,10 +390,10 @@ index 5f34eb4e..d246adb7 100644
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 31cde42d..eeacd0c8 100644
+index 9fab61ec..624eb5f0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -57,6 +57,9 @@ public class BungeeCordLauncher
+@@ -63,6 +63,9 @@ public class BungeeCordLauncher
  
          if ( !options.has( "noconsole" ) )
          {
@@ -403,7 +403,7 @@ index 31cde42d..eeacd0c8 100644
              String line;
              while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
              {
-@@ -65,6 +68,8 @@ public class BungeeCordLauncher
+@@ -71,6 +74,8 @@ public class BungeeCordLauncher
                      bungee.getConsole().sendMessage( new ComponentBuilder( "Command not found" ).color( ChatColor.RED ).create() );
                  }
              }
@@ -457,5 +457,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.20.1
+2.21.0
 

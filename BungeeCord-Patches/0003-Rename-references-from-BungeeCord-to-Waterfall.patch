@@ -1,4 +1,4 @@
-From 1c177ba6eb08c7c8d1a3f8c8bff33344fd70a008 Mon Sep 17 00:00:00 2001
+From 4bf66e9d8133c9aa8ccf0b13ab0042a62e062eb2 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -40,10 +40,10 @@ index 6599e38e..8d931b1d 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c38b8fc2..20681838 100644
+index 13f9812f..50195762 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -43,7 +43,7 @@ public class BungeeCordLauncher
+@@ -49,7 +49,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Warning, this build is outdated ***" );
@@ -52,7 +52,7 @@ index c38b8fc2..20681838 100644
                  System.err.println( "*** You will get NO support regarding this build ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -52,7 +52,7 @@ public class BungeeCordLauncher
+@@ -58,7 +58,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
@@ -101,5 +101,5 @@ index 4cfb13c0..0ec6dabb 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.20.1
+2.21.0
 

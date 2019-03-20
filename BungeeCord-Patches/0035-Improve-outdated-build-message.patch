@@ -1,14 +1,14 @@
-From 73a8aa42b159f0d2c1e0b0f1ade0e52f7c5a2b93 Mon Sep 17 00:00:00 2001
+From d8dbe569ea22ef4720d8d0cde155074419e96a22 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Sat, 10 Jun 2017 20:56:02 +0100
 Subject: [PATCH] Improve outdated build message
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 20681838..e615f1ff 100644
+index 50195762..9fab61ec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -42,9 +42,9 @@ public class BungeeCordLauncher
+@@ -48,9 +48,9 @@ public class BungeeCordLauncher
              deadline.add( Calendar.WEEK_OF_YEAR, -4 );
              if ( buildDate.before( deadline.getTime() ) )
              {
@@ -22,5 +22,5 @@ index 20681838..e615f1ff 100644
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
              }
 -- 
-2.20.1
+2.21.0
 
