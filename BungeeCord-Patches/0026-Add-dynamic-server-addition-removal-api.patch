@@ -1,4 +1,4 @@
-From c8593999b470857ca5d9f5bd6515eae071558aa0 Mon Sep 17 00:00:00 2001
+From 2c75e17fb5b997014b548a5c9f6a8899c94c7453 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -144,7 +144,7 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index ebf9a12d..489b0018 100644
+index 794d571f..54e85b0f 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 @@ -84,7 +84,7 @@ public class CommandServer extends Command implements TabExecutor
@@ -181,7 +181,7 @@ index 7c437c75..ef6d2028 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 7c915e88..92093602 100644
+index 193d8bce..2ec6c23c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -222,10 +222,10 @@ index 7c915e88..92093602 100644
          {
 -            Map<String, ServerInfo> oldServers = this.servers;
 +            Map<String, ServerInfo> oldServers = getServersCopy();
-             this.servers = new CaseInsensitiveMap<>(newServers);
  
              for ( ServerInfo oldServer : oldServers.values() )
-@@ -166,4 +170,71 @@ public abstract class Configuration implements ProxyConfig
+             {
+@@ -171,4 +175,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }
@@ -298,5 +298,5 @@ index 7c915e88..92093602 100644
 +    // Waterfall end
  }
 -- 
-2.20.1
+2.21.0
 
