@@ -1,4 +1,4 @@
-From d2521c4481ccd232d38a9184871cc7adba563ee5 Mon Sep 17 00:00:00 2001
+From 8c80ae6e41922c2347dd89527701619e5721a9e3 Mon Sep 17 00:00:00 2001
 From: minecrafter <unknown@unknown>
 Date: Sun, 3 Jul 2016 04:03:21 -0400
 Subject: [PATCH] Proxy query event
@@ -6,10 +6,10 @@ Subject: [PATCH] Proxy query event
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java b/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java
 new file mode 100644
-index 00000000..1e33cd19
+index 00000000..9a262c8a
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/QueryResult.java
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,59 @@
 +package io.github.waterfallmc.waterfall;
 +
 +import lombok.AllArgsConstructor;
@@ -39,17 +39,14 @@ index 00000000..1e33cd19
 +    /**
 +     * The number of players currently online.
 +     */
-+    @NonNull
 +    private int onlinePlayers;
 +    /**
 +     * The maximum number of players that can be online.
 +     */
-+    @NonNull
 +    private int maxPlayers;
 +    /**
 +     * The port for this server.
 +     */
-+    @NonNull
 +    private int port;
 +    /**
 +     * The hostname for this server.
@@ -214,5 +211,5 @@ index 9b81197f..ac99d02c 100644
              } else
              {
 -- 
-2.20.1
+2.21.0
 
