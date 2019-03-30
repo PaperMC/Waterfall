@@ -1,16 +1,16 @@
-From 892d03a7b8c7ac4e3bc442fe877c3aa5f9cf449d Mon Sep 17 00:00:00 2001
+From 781898a172025bb263f888e7e717ea5c8a5055b3 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index cf47e24a..7220ca08 100644
+index cb62dfa8..95cd6ad4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -177,6 +177,13 @@ public interface ProxyConfig
-      */
-     boolean isLogServerListPing();
+@@ -170,6 +170,13 @@ public interface ProxyConfig
+     // Waterfall Options
+     //
  
 +    /**
 +     * Whether we log InitialHandler connections
@@ -23,12 +23,12 @@ index cf47e24a..7220ca08 100644
       * The supported versions
       *
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index b7e3dad0..d343e9b8 100644
+index ef44d334..4ff8da6d 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -16,6 +16,13 @@ public class WaterfallConfiguration extends Configuration {
-      */
-     private boolean logServerListPing = false;
+@@ -9,6 +9,13 @@ import java.io.File;
+ 
+ public class WaterfallConfiguration extends Configuration {
  
 +    /**
 +     * Whether we log InitialHandler connections
@@ -40,16 +40,16 @@ index b7e3dad0..d343e9b8 100644
      /**
       * The supported versions displayed to the client
       * <p>Default is a comma separated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
-@@ -48,6 +55,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -40,6 +47,7 @@ public class WaterfallConfiguration extends Configuration {
+         super.load();
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
-         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
 +        logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
          useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
          // Throttling options
-@@ -60,6 +68,11 @@ public class WaterfallConfiguration extends Configuration {
-         return logServerListPing;
+@@ -47,6 +55,11 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
      }
  
 +    @Override
@@ -61,7 +61,7 @@ index b7e3dad0..d343e9b8 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b0b2994a..e81236fc 100644
+index 47bdce40..765731d8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -315,7 +315,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

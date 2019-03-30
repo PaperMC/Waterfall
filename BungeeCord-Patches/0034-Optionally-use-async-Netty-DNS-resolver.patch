@@ -1,4 +1,4 @@
-From 4d4473a2e1176e6bf862252f1df7e9491072d80e Mon Sep 17 00:00:00 2001
+From 2709eadf686971d35fbcfe3e4041a320cd620a15 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index ed85dfc0..cf47e24a 100644
+index d93326cb..cb62dfa8 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -184,6 +184,13 @@ public interface ProxyConfig
+@@ -177,6 +177,13 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
@@ -43,10 +43,10 @@ index 03e35f42..fa1e6046 100644
              <groupId>io.netty</groupId>
              <artifactId>netty-handler</artifactId>
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e55c28d8..b7e3dad0 100644
+index 111404fb..ef44d334 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -22,6 +22,12 @@ public class WaterfallConfiguration extends Configuration {
+@@ -15,6 +15,12 @@ public class WaterfallConfiguration extends Configuration {
       */
      private String gameVersion;
  
@@ -59,15 +59,15 @@ index e55c28d8..b7e3dad0 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -43,6 +49,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -35,6 +41,7 @@ public class WaterfallConfiguration extends Configuration {
+         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
-         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
 +        useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
-@@ -58,6 +65,11 @@ public class WaterfallConfiguration extends Configuration {
+@@ -45,6 +52,11 @@ public class WaterfallConfiguration extends Configuration {
          return gameVersion;
      }
  

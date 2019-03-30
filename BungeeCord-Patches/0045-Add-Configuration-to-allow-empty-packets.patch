@@ -1,4 +1,4 @@
-From 0a67ac857dfea46c1a46ee5335d451add2c82340 Mon Sep 17 00:00:00 2001
+From 13e5493fc39a0d75046e9dfece46bea0955d46e9 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Add Configuration to allow empty packets
@@ -11,10 +11,10 @@ provided as a last ditch effort for server owners to allow players
 to connect in such a broken state as allowed by vanilla.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 7220ca08..edc16a7d 100644
+index 95cd6ad4..a8705438 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -215,4 +215,11 @@ public interface ProxyConfig
+@@ -208,4 +208,11 @@ public interface ProxyConfig
       * @return should we disable the tab completion limit for 1.13+ clients
       */
      boolean isDisableModernTabLimiter();
@@ -54,10 +54,10 @@ index 29e54dba..880a3dc7 100644
                      throw new CorruptedFrameException( "Empty Packet!" );
                  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index d343e9b8..04b21d0f 100644
+index 4ff8da6d..f28f0111 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -49,6 +49,17 @@ public class WaterfallConfiguration extends Configuration {
+@@ -42,6 +42,17 @@ public class WaterfallConfiguration extends Configuration {
      private int tabThrottle = 1000;
      private boolean disableModernTabLimiter = true;
  
@@ -75,7 +75,7 @@ index d343e9b8..04b21d0f 100644
      @Override
      public void load() {
          super.load();
-@@ -61,6 +72,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -53,6 +64,7 @@ public class WaterfallConfiguration extends Configuration {
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
@@ -83,7 +83,7 @@ index d343e9b8..04b21d0f 100644
      }
  
      @Override
-@@ -92,4 +104,9 @@ public class WaterfallConfiguration extends Configuration {
+@@ -79,4 +91,9 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isDisableModernTabLimiter() {
          return disableModernTabLimiter;
      }

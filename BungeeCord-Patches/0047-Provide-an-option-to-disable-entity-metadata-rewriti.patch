@@ -1,4 +1,4 @@
-From fe4d850a54704e52323047ac9dc0248efe732242 Mon Sep 17 00:00:00 2001
+From 3b83a43c3c2aa06bac31e14fc25815fab3ba1f61 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,10 +12,10 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index edc16a7d..4372f758 100644
+index a8705438..ab289e72 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -222,4 +222,9 @@ public interface ProxyConfig
+@@ -215,4 +215,9 @@ public interface ProxyConfig
       * @return should we allow empty packets
       */
      boolean isAllowEmptyPackets();
@@ -26,10 +26,10 @@ index edc16a7d..4372f758 100644
 +    boolean isDisableEntityMetadataRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 04b21d0f..42b17a69 100644
+index f28f0111..41a71f65 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -60,6 +60,8 @@ public class WaterfallConfiguration extends Configuration {
+@@ -53,6 +53,8 @@ public class WaterfallConfiguration extends Configuration {
       */
      private boolean allowEmptyPackets = false;
  
@@ -38,7 +38,7 @@ index 04b21d0f..42b17a69 100644
      @Override
      public void load() {
          super.load();
-@@ -73,6 +75,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -65,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
          allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
@@ -46,7 +46,7 @@ index 04b21d0f..42b17a69 100644
      }
  
      @Override
-@@ -109,4 +112,9 @@ public class WaterfallConfiguration extends Configuration {
+@@ -96,4 +99,9 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isAllowEmptyPackets() {
          return allowEmptyPackets;
      }

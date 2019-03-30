@@ -1,16 +1,16 @@
-From 32cd939db6245ae0090b8268ebeb9b9c66125e7b Mon Sep 17 00:00:00 2001
+From efbed5b8dbbd0835f2c883dc2669070578707606 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 7f828010..ed85dfc0 100644
+index c7a1c7ca..d93326cb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -177,6 +177,13 @@ public interface ProxyConfig
-      */
-     boolean isLogServerListPing();
+@@ -170,6 +170,13 @@ public interface ProxyConfig
+     // Waterfall Options
+     //
  
 +    /**
 +     * The supported versions
@@ -23,10 +23,10 @@ index 7f828010..ed85dfc0 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index a5db82b8..e55c28d8 100644
+index 91743f01..111404fb 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -1,7 +1,9 @@
+@@ -1,12 +1,20 @@
  package io.github.waterfallmc.waterfall.conf;
  
 +import com.google.common.base.Joiner;
@@ -36,9 +36,7 @@ index a5db82b8..e55c28d8 100644
  
  import java.io.File;
  
-@@ -14,6 +16,12 @@ public class WaterfallConfiguration extends Configuration {
-      */
-     private boolean logServerListPing = false;
+ public class WaterfallConfiguration extends Configuration {
  
 +    /**
 +     * The supported versions displayed to the client
@@ -49,16 +47,14 @@ index a5db82b8..e55c28d8 100644
      /*
       * Throttling options
       * Helps prevent players from overloading the servers behind us
-@@ -34,6 +42,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -26,11 +34,17 @@ public class WaterfallConfiguration extends Configuration {
+         super.load();
          YamlConfig config = new YamlConfig(new File("waterfall.yml"));
          config.load(false); // Load, but no permissions
-         logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
 +        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
-@@ -44,6 +53,11 @@ public class WaterfallConfiguration extends Configuration {
-         return logServerListPing;
      }
  
 +    @Override
