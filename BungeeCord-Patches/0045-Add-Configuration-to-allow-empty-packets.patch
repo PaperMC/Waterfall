@@ -1,4 +1,4 @@
-From a4251c9dab7b2441bb8893fc2ef9443225d9b50e Mon Sep 17 00:00:00 2001
+From 0a67ac857dfea46c1a46ee5335d451add2c82340 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Add Configuration to allow empty packets
@@ -11,14 +11,19 @@ provided as a last ditch effort for server owners to allow players
 to connect in such a broken state as allowed by vanilla.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 8680fd9b..f792426e 100644
+index 7220ca08..edc16a7d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -191,4 +191,6 @@ public interface ProxyConfig
+@@ -215,4 +215,11 @@ public interface ProxyConfig
       * @return should we disable the tab completion limit for 1.13+ clients
       */
      boolean isDisableModernTabLimiter();
 +
++    /**
++     * Should we allow empty packets
++     *
++     * @return should we allow empty packets
++     */
 +    boolean isAllowEmptyPackets();
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java

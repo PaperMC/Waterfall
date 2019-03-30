@@ -1,4 +1,4 @@
-From c58af26b87c012573c2596456e5a22c3a982e677 Mon Sep 17 00:00:00 2001
+From eeaf6ec7c4ce8b15447399baffe5b63675ea7358 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 25 Apr 2016 23:46:00 -0700
 Subject: [PATCH] Reduce the overhead of lots and lots of teams with the same
@@ -11,7 +11,7 @@ Uses a sorted array to avoid the overhead of the hashset in a team.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
 new file mode 100644
-index 00000000..a1b6981e
+index 00000000..6c006923
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/LowMemorySet.java
 @@ -0,0 +1,151 @@
@@ -31,7 +31,7 @@ index 00000000..a1b6981e
 +import static com.google.common.base.Preconditions.checkNotNull;
 +
 +/**
-+ * A set that uses a <a href=>binary search</a> to find objects in a <a href=https://en.wikipedia.org/wiki/Sorted_array>sorted array</a>.
++ * A set that uses a <a href=https://en.wikipedia.org/wiki/Binary_search_algorithm>binary search</a> to find objects in a <a href=https://en.wikipedia.org/wiki/Sorted_array>sorted array</a>.
 + * Avoids the memory cost of {@link java.util.HashSet}, while maintaining reasonable {@link Set#contains}
 + * <b>Insertions are O(N)!</b>
 + */
@@ -267,5 +267,5 @@ index 00000000..5aa306a1
 +
 +}
 -- 
-2.19.1
+2.21.0
 

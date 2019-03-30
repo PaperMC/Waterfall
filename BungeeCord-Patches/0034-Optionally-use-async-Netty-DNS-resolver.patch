@@ -1,4 +1,4 @@
-From 1402d27067ec700f3a01ad7ceb1613e56d5e43cc Mon Sep 17 00:00:00 2001
+From 4d4473a2e1176e6bf862252f1df7e9491072d80e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,15 +6,17 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 34d7e2cb..47d4ab36 100644
+index ed85dfc0..cf47e24a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -168,6 +168,11 @@ public interface ProxyConfig
+@@ -184,6 +184,13 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
 +    /**
 +     * Whether Netty's async DNS resolver is used for account authentication.
++     *
++     * @return whether Netty's async DNS resolver is used for account authentication.
 +     */
 +    boolean isUseNettyDnsResolver();
 +
@@ -181,5 +183,5 @@ index ba274eea..feea59d6 100644
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
      }
 -- 
-2.20.1
+2.21.0
 

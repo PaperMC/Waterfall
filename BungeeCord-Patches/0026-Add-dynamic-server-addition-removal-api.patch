@@ -1,4 +1,4 @@
-From 2c75e17fb5b997014b548a5c9f6a8899c94c7453 Mon Sep 17 00:00:00 2001
+From 1ccc9a25873be025895b669c8c3388bc7e05ada9 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,10 +8,10 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 72f35bd6..78519227 100644
+index 0d48c775..7f828010 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -32,9 +32,83 @@ public interface ProxyConfig
+@@ -32,9 +32,95 @@ public interface ProxyConfig
  
      /**
       * Set of all servers.
@@ -45,6 +45,8 @@ index 72f35bd6..78519227 100644
 +     * Any currently registered server with the same name will be replaced.
 +     * This change is not saved to config.yml
 +     *
++     * @param server The server to register with the proxy
++     *
 +     * @return the previously registered server with the same name, or null if there was no such server.
 +     */
 +    ServerInfo addServer(ServerInfo server);
@@ -53,6 +55,8 @@ index 72f35bd6..78519227 100644
 +     * Register all of the given servers to the proxy.
 +     * This change is not saved to config.yml
 +     *
++     * @param servers The collection of servers to register with the proxy
++     *
 +     * @return true if any servers were added or replaced.
 +     */
 +    boolean addServers(Collection<ServerInfo> servers);
@@ -60,6 +64,8 @@ index 72f35bd6..78519227 100644
 +    /**
 +     * Un-register the server with the given name from the proxy.
 +     * This change is not saved to config.yml
++     *
++     * @param name The name of the server to unregister
 +     *
 +     * @return the server that was removed, or null if there is no server with the given name.
 +     */
@@ -70,6 +76,8 @@ index 72f35bd6..78519227 100644
 +     * The server is matched by name only, other fields in the given {@link ServerInfo} are ignored.
 +     * This change is not saved to config.yml
 +     *
++     * @param server the server to unregister from the proxy
++     *
 +     * @return the server that was removed, or null if there is no server with a matching name.
 +     */
 +    ServerInfo removeServer(ServerInfo server);
@@ -77,6 +85,8 @@ index 72f35bd6..78519227 100644
 +    /**
 +     * Un-register servers with any of the given names from the proxy.
 +     * This change is not saved to config.yml
++     *
++     * @param names a collection of server names to be unregistered
 +     *
 +     * @return true if any servers were removed.
 +     */
@@ -86,6 +96,8 @@ index 72f35bd6..78519227 100644
 +     * Un-register all of the given servers from the proxy.
 +     * The servers are matched by name only, other fields in the given {@link ServerInfo} are ignored.
 +     * This change is not saved to config.yml
++     *
++     * @param servers a collection of servers to be unregistered
 +     *
 +     * @return true if any servers were removed.
 +     */

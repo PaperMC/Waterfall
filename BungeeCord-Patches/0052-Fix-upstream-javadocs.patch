@@ -1,0 +1,151 @@
+From 8eaa9350d99477878bc934fadf0ead9d685ee577 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sat, 30 Mar 2019 15:11:11 +0000
+Subject: [PATCH] Fix upstream javadocs
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 4372f758..b39f3a98 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -17,22 +17,27 @@ public interface ProxyConfig
+ 
+     /**
+      * Time before users are disconnected due to no network activity.
++     * @return the time before users are disconnected due to no network activity.
+      */
+     int getTimeout();
+ 
+     /**
+      * UUID used for metrics.
++     * @return the UUID used for metrics
+      */
+     String getUuid();
+ 
+     /**
+      * Set of all listeners.
++     * @return a set of all listeners
+      */
+     Collection<ListenerInfo> getListeners();
+ 
+     /**
+      * Set of all servers.
+      *
++     * @return a map of registered servers
++     *
+      * @deprecated The returned map may be modified concurrently by the proxy.
+      *             The safe alternative is {@link #getServersCopy()}.
+      */
+@@ -123,32 +128,44 @@ public interface ProxyConfig
+ 
+     /**
+      * Does the server authenticate with mojang
++     *
++     * @return if the server authenticates to mojang
+      */
+     boolean isOnlineMode();
+ 
+     /**
+      * Whether proxy commands are logged to the proxy log
++     *
++     * @return should the proxy log commands
+      */
+     boolean isLogCommands();
+ 
+     /**
+      * Returns the player max.
++     *
++     * @return the player limit
+      */
+     int getPlayerLimit();
+ 
+     /**
+      * A collection of disabled commands.
++     *
++     * @return a collection of disabled commands
+      */
+     Collection<String> getDisabledCommands();
+ 
+     /**
+      * The connection throttle delay.
++     *
++     * @return the connection throttle delay
+      */
+     @Deprecated
+     int getThrottle();
+ 
+     /**
+-     * Whether the proxy will parse IPs with spigot or not
++     * Whether the proxy will forward the players information (UUID, IP)
++     *
++     * @return should we forward player information
+      */
+     @Deprecated
+     boolean isIpForward();
+@@ -156,6 +173,7 @@ public interface ProxyConfig
+     /**
+      * The encoded favicon.
+      *
++     * @return the encoded favicon
+      * @deprecated Use #getFaviconObject instead.
+      */
+     @Deprecated
+@@ -163,6 +181,8 @@ public interface ProxyConfig
+ 
+     /**
+      * The favicon used for the server ping list.
++     *
++     * @return the favicon used for the server ping list
+      */
+     Favicon getFaviconObject();
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index ccfefd26..4965b234 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -52,6 +52,9 @@ public abstract class ProxyServer
+     /**
+      * Gets a localized string from the .properties file.
+      *
++     * @param name the name of the translation
++     * @param args the arguments used for translation
++     *
+      * @return the localized string
+      */
+     public abstract String getTranslation(String name, Object... args);
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 9408e6c2..884f78c8 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -148,6 +148,7 @@ public class PluginManager
+      * @param sender the sender executing the command
+      * @param commandLine the complete command line including command name and
+      * arguments
++     * @param tabResults the List for tab results to be added to, or null if executing the command
+      * @return whether the command was handled
+      */
+     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
+@@ -475,6 +476,8 @@ public class PluginManager
+ 
+     /**
+      * Unregister all of a Plugin's listener.
++     *
++     * @param plugin the plugin to unregister listeners for
+      */
+     public void unregisterListeners(Plugin plugin)
+     {
+diff --git a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+index 5d2b088c..be32ba89 100644
+--- a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
++++ b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+@@ -85,6 +85,7 @@ public interface TaskScheduler
+ 
+         /**
+          * An executor service which underlies this scheduler.
++         * @param plugin The plugin of which to fetch an executor service for
+          *
+          * @return the underlying executor service or compatible wrapper
+          */
+-- 
+2.21.0
+

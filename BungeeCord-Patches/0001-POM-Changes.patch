@@ -1,4 +1,4 @@
-From e13d5e03ba9dbb686937c214bce85a6bfabd860c Mon Sep 17 00:00:00 2001
+From 28cd0114e469f193732903fc2e3beb23d3ac898b Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -483,7 +483,7 @@ index 15c0ada2..7073b404 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 6cd54c2d..daaf18b9 100644
+index 6cd54c2d..c209363d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -587,7 +587,7 @@ index 6cd54c2d..daaf18b9 100644
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
      </properties>
  
-@@ -118,24 +142,13 @@
+@@ -118,24 +142,12 @@
                      </execution>
                  </executions>
              </plugin>
@@ -606,18 +606,17 @@ index 6cd54c2d..daaf18b9 100644
 -                </executions>
 +                <groupId>org.apache.maven.plugins</groupId>
 +                <artifactId>maven-javadoc-plugin</artifactId>
-+                <version>2.7</version>
++                <version>3.1.0</version>
                  <configuration>
 -                    <signature>
 -                        <groupId>org.codehaus.mojo.signature</groupId>
 -                        <artifactId>java18</artifactId>
 -                        <version>1.0</version>
 -                    </signature>
-+                    <additionalparam>-Xdoclint:none</additionalparam>
                  </configuration>
              </plugin>
          </plugins>
-@@ -171,4 +184,87 @@
+@@ -171,4 +183,87 @@
              </plugins>
          </pluginManagement>
      </build>
@@ -648,9 +647,9 @@ index 6cd54c2d..daaf18b9 100644
 +                    <plugin>
 +                        <groupId>org.apache.maven.plugins</groupId>
 +                        <artifactId>maven-javadoc-plugin</artifactId>
-+                        <version>2.7</version>
++                        <version>3.1.0</version>
 +                        <configuration>
-+                            <additionalparam>-Xdoclint:none</additionalparam>
++                            <!--<additionalparam>-Xdoclint:none</additionalparam>-->
 +                        </configuration>
 +                        <executions>
 +                            <execution>

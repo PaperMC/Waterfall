@@ -1,4 +1,4 @@
-From 409714e4e17b097a97540fae759b0d955cb35f5a Mon Sep 17 00:00:00 2001
+From e0ea7ec08b0d7306fa1a3f742f4b8899e60f5f63 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Optional server list ping logging.
@@ -9,15 +9,17 @@ This avoids spamming the logs with connection notices.
 Server list pings are only logged if the log_server_list_pings config.yml option is true, defaults to false
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 08d2a870..72f35bd6 100644
+index 79d8b683..0d48c775 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -84,6 +84,11 @@ public interface ProxyConfig
+@@ -84,6 +84,13 @@ public interface ProxyConfig
      // Waterfall Options
      //
  
 +    /**
 +     * Whether we log server list pings
++     *
++     * @return whether we log server list pings
 +     */
 +    boolean isLogServerListPing();
 +
@@ -130,5 +132,5 @@ index de916f6e..bdaee47e 100644
      }
  }
 -- 
-2.20.1
+2.21.0
 

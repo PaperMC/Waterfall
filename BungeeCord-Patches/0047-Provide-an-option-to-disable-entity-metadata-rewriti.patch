@@ -1,4 +1,4 @@
-From f3291be33d3a2e2766ba43ce1da71dada0511a7a Mon Sep 17 00:00:00 2001
+From fe4d850a54704e52323047ac9dc0248efe732242 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,12 +12,12 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index f792426e..92070fcf 100644
+index edc16a7d..4372f758 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -193,4 +193,9 @@ public interface ProxyConfig
-     boolean isDisableModernTabLimiter();
- 
+@@ -222,4 +222,9 @@ public interface ProxyConfig
+      * @return should we allow empty packets
+      */
      boolean isAllowEmptyPackets();
 +
 +    /**
