@@ -1,4 +1,4 @@
-From 3b83a43c3c2aa06bac31e14fc25815fab3ba1f61 Mon Sep 17 00:00:00 2001
+From 1fa3aa755a785e79dfdd5da526658f4f1ff6dc1e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -26,7 +26,7 @@ index a8705438..ab289e72 100644
 +    boolean isDisableEntityMetadataRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index f28f0111..41a71f65 100644
+index f28f0111..76967fb6 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -53,6 +53,8 @@ public class WaterfallConfiguration extends Configuration {
@@ -38,15 +38,20 @@ index f28f0111..41a71f65 100644
      @Override
      public void load() {
          super.load();
-@@ -65,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -65,6 +67,12 @@ public class WaterfallConfiguration extends Configuration {
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
          allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
 +        disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
++        // We're exposing this as a property to bypass the fact that we can't pass this to UserConnection, might as well...
++        if (disableEntityMetadataRewrite || System.getProperty("waterfall.disable_entity_metadata") != null) {
++            disableEntityMetadataRewrite = true;
++            System.setProperty("waterfall.disable_entity_metadata", "true");
++        }
      }
  
      @Override
-@@ -96,4 +99,9 @@ public class WaterfallConfiguration extends Configuration {
+@@ -96,4 +104,9 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isAllowEmptyPackets() {
          return allowEmptyPackets;
      }
@@ -115,39 +120,17 @@ index c7f081d4..110ac496 100644
              user.setDimension( login.getDimension() );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9c872a1c..8a524a64 100644
+index 9c872a1c..a12fec7f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -145,6 +145,7 @@ public final class UserConnection implements ProxiedPlayer
-     @Setter
-     private ForgeServerHandler forgeServerHandler;
-     /*========================================================================*/
-+    private boolean disableEntityMetadaRewrite;
-     private final Unsafe unsafe = new Unsafe()
-     {
-         @Override
-@@ -156,6 +157,13 @@ public final class UserConnection implements ProxiedPlayer
- 
-     public void init()
-     {
-+        // Waterfall start
-+        disableEntityMetadaRewrite = bungee.getConfig().isDisableEntityMetadataRewrite();
-+        if ( disableEntityMetadaRewrite )
-+        {
-+            entityRewrite = net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
-+        } else
-+        // Waterfall end
-         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
- 
-         this.displayName = name;
-@@ -730,4 +738,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -730,4 +730,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
 +
 +    // Waterfall start
 +    public boolean isDisableEntityMetadataRewrite() {
-+        return disableEntityMetadaRewrite;
++        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
 +    }
 +    // Waterfall end
  }
@@ -171,6 +154,22 @@ index f635a7e4..c1dc6489 100644
          con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
      }
  
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index 994670cd..4d8c665d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -27,6 +27,11 @@ public abstract class EntityMap
+     // Returns the correct entity map for the protocol version
+     public static EntityMap getEntityMap(int version)
+     {
++        // Waterfall start
++        if (System.getProperty("waterfall.disable_entity_metadata") != null) {
++            return EntityMap_Dummy.INSTANCE;
++        }
++        // Waterfall end
+         switch ( version )
+         {
+             case ProtocolConstants.MINECRAFT_1_8:
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 new file mode 100644
 index 00000000..cb81d1dd
