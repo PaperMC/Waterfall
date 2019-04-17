@@ -1,0 +1,156 @@
+From 1571a7bc5b1d57a9ddd988b131b7b146af67721a Mon Sep 17 00:00:00 2001
+From: Colin Godsey <crgodsey@gmail.com>
+Date: Tue, 16 Apr 2019 07:25:52 -0600
+Subject: [PATCH] OSX native zlib and crypto
+
+
+diff --git a/native/compile-native.sh b/native/compile-native.sh
+index 98baf0e2..f378c7fc 100755
+--- a/native/compile-native.sh
++++ b/native/compile-native.sh
+@@ -1,6 +1,17 @@
+ #!/bin/sh
+ 
+-CXX="g++ -shared -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
++# Waterfall - rewrite below to extend platform support
+ 
+-$CXX src/main/c/NativeCipherImpl.cpp -o src/main/resources/native-cipher.so -lcrypto
+-$CXX src/main/c/NativeCompressImpl.cpp -o src/main/resources/native-compress.so -lz
++if [[ "$OSTYPE" == "darwin"* ]]; then
++  # brew install mbedtls zlib
++  PREFIX="osx-"
++  CXX_ARGS="-lmbedcrypto -lz -I$JAVA_HOME/include/ -I$JAVA_HOME/include/darwin/"
++else
++  # apt-get install libmbedtls-dev zlib1g-dev
++  CXX_ARGS="-lcrypto -lz -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
++fi
++
++CXX="g++ -shared -fPIC -O3 -Wall -Werror"
++
++$CXX src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX}native-cipher.so $CXX_ARGS
++$CXX src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX}native-compress.so $CXX_ARGS
+diff --git a/native/src/main/c/NativeCipherImpl.cpp b/native/src/main/c/NativeCipherImpl.cpp
+index aa7a12b4..0cedd7e5 100644
+--- a/native/src/main/c/NativeCipherImpl.cpp
++++ b/native/src/main/c/NativeCipherImpl.cpp
+@@ -1,5 +1,7 @@
+ // Support for CentOS 6
++#if __linux__ // Waterfall
+ __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
++#endif // Waterfall
+ 
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+index 6c92c1f5..9695c6e4 100644
+--- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
++++ b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+@@ -19,6 +19,7 @@ public final class NativeCode<T>
+ 
+     public NativeCode(String name, Class<? extends T> javaImpl, Class<? extends T> nativeImpl)
+     {
++        if ("Mac OS X".equals( System.getProperty( "os.name" ))) name = "osx-" + name; // Waterfall
+         this.name = name;
+         this.javaImpl = javaImpl;
+         this.nativeImpl = nativeImpl;
+@@ -80,6 +81,6 @@ public final class NativeCode<T>
+ 
+     public static boolean isSupported()
+     {
+-        return "Linux".equals( System.getProperty( "os.name" ) ) && "amd64".equals( System.getProperty( "os.arch" ) );
++        return ("Linux".equals( System.getProperty( "os.name" ) ) || "Mac OS X".equals( System.getProperty( "os.name" ) )) && ("amd64".equals( System.getProperty( "os.arch" ) ) || "x86_64".equals( System.getProperty( "os.arch" )) ); // Waterfall
+     }
+ }
+diff --git a/native/src/main/resources/osx-native-cipher.so b/native/src/main/resources/osx-native-cipher.so
+new file mode 100755
+index 0000000000000000000000000000000000000000..26e990efaf2be16799ead915dd958a37cb5e1cbf
+GIT binary patch
+literal 9016
+zcmeHNUuauZ82{3CE_3VJL6NAP%f!~{Skq3$K8WP%3O6$y)wXM4#<L{7wVBCHmU}ao
+zjY(imb_|6g2tFvXJ&E|BV~A65bxth!VAk!)|L9f{nc|az56161_uO!s+CB8ihx5TX
+z-=FiH-#PbpPRqUL<m<nG`)56XuN44p!_tYR(gtu!SO9mTf7%DY*x1nI7&^^D9lRoa
+z#DsNN5K0JRwsF*!4yqM+o1L~^97_oLZeQWILCI-wYQ`+Pkgyt|X1v}Gr|ChNLB0!3
+zA-}|<XC`s**o=|R8F}F^f8G&^w_jufkl!M0p;pYVV7{0#r&!9I&i)79I}&eFVvxTK
+z&x?&VtwR+HV|%nQ&C}@ezlx@HptW_e88g$&DrOSdG|SofRq<Rn+6L6$72=C9U12O8
+zzZG7m1R9hb$oJwA)&>_0H9e<}g|TR4-%~?-BJQ3GVvxk0SWtK{D8UHFyT0w{hp_~j
+z;#NKx%EVJ<C~sKVLOy9&p{#Xuml?NHM~q#`RBpz|_gPuE7ogOSeIbZ@1(hE)VYw0v
+z0=$9FN2m{?CVr_sxE)|4>P`gMffFKo1dCT_%2Wt<HK`zu`>5WWyV0R>-a7l?iQ{iS
+ze&%A&jojXxv2Y*8M1K4209a_>d;4!fpXNb*X|B*tbt{AlRz8%@CgbT)HfM)231iAm
+zTcLC+L5198zL>MKeGm0b6){3xNeHhWi;K6h1s@hyz`=8RAL|=vbZX9r4RhFGd46)|
+z&PET)AN1h2?Y@rx4wmPS7A@Pz^gYoS1oL~b&~pcnKjQZR>C?I>Q4A;s6a$I@#eiZ!
+zF`yU#7}xm?Z9?0xjca40`pKICoqwhC*gPM<7UA_sdA-hmsLxH}r<~4*7SJD9jPkk&
+z&SNmbFJJ7(7rE+BNM?k8F+5xFNBLjXU(nUdv4z>L?}=p$Mfp<oDn*mu>ioy*`)Ee^
+zDSAcL`Ip$J^KYsbFgP$@I&lp;UZ2<a5a4(h=slH&EEndZ{O9@{eWpfvRX=$-a6o%j
+zi)qhkEcSWFwwE!_d7jY`onO^wkNd0iwWgOpp;4;zHi;u+KmUPPjoyztwuQy>5A#bA
+zzEIvBNq(l6UlmiDJ?7W>rD1+0R--r3de3!HFNwM;>R&~DQ`EnU`VXw5vs*tvrH$5m
+z&Y+%~xeM#sQoUZEp$XK!BWr}LMY3kdS|AGzsC`Nn4Olx*)+=Pai<a|k(@i-jUM=3`
+z@mu*}j8nN^epixB-x!;)4hRccDg=X6p!m@6U71|xcp~Ifr)B@wq&_J1A*pStUy}Mw
+zsXY+NR17Ev6a$I@#eiZ!F`yVw3@8Q^1BwB~fMVc(#=w^Cof9;rt}tHjO^Hi&mcV;!
+zyaa#xFwDW>&aN<<&Km~V0kkvmG+q~y7u<rLb6?2fhQ-81Axlmt2B~#NQ>%;7-xN=o
+zDVy>Ko8p#XzhD%ZVT!TBG_sLN=8Bjr#K-o=kHnd2*eo-}1|DIFg895*utR2wIoG&s
+zpSaY0QrziAGPyK^N1;`WH!NoJjFSfwtx)R5Gm^?ytV;I?_)>Sp*N+yRuXNBUi9F|c
+zO!^i1dj;EVm;QU`V>;edI&!Yb|Jd;x=Prv)KAkgRW261gCV#Wj*ucM|$)__PYNX#@
+z;6a(VtEYQVx?{(iVUqBza)Pi1UL}uf=qc7=4gJI_I{VVyk*n>+WpQUb@2+)_yb;gN
+LbNAeezYX{oXB-T<
+
+literal 0
+HcmV?d00001
+
+diff --git a/native/src/main/resources/osx-native-compress.so b/native/src/main/resources/osx-native-compress.so
+new file mode 100755
+index 0000000000000000000000000000000000000000..0f90cf0d1c53df0660401f6773084a54f9419fbb
+GIT binary patch
+literal 9676
+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
+
+literal 0
+HcmV?d00001
+
+-- 
+2.17.2 (Apple Git-113)
+
