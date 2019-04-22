@@ -1,4 +1,4 @@
-From 3f3c2f958efa77486d3163fbf7b5b7f058d8f08c Mon Sep 17 00:00:00 2001
+From 7960a4c2a4959570f74e1c931b1d0332a4cd8259 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Tue, 26 Feb 2019 20:15:54 +0000
 Subject: [PATCH] Handle empty minecraft packets
@@ -46,10 +46,10 @@ index 9e9ea49c..a46bbc78 100644
              packetTypeInfo = packetId;
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a12fec7f..ade817e9 100644
+index 8a524a64..e649678e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -343,7 +343,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -351,7 +351,7 @@ public final class UserConnection implements ProxiedPlayer
              protected void initChannel(Channel ch) throws Exception
              {
                  PipelineUtils.BASE.initChannel( ch );
