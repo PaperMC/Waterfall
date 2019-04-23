@@ -1,14 +1,14 @@
-From 8eaa9350d99477878bc934fadf0ead9d685ee577 Mon Sep 17 00:00:00 2001
+From f8145502b28ce0b36f31ea74efe4ab1c743d8275 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 30 Mar 2019 15:11:11 +0000
 Subject: [PATCH] Fix upstream javadocs
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4372f758..b39f3a98 100644
+index 0e69db36..cbcf8a24 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -17,22 +17,27 @@ public interface ProxyConfig
+@@ -16,22 +16,27 @@ public interface ProxyConfig
  
      /**
       * Time before users are disconnected due to no network activity.
@@ -36,7 +36,7 @@ index 4372f758..b39f3a98 100644
       * @deprecated The returned map may be modified concurrently by the proxy.
       *             The safe alternative is {@link #getServersCopy()}.
       */
-@@ -123,32 +128,44 @@ public interface ProxyConfig
+@@ -122,32 +127,44 @@ public interface ProxyConfig
  
      /**
       * Does the server authenticate with mojang
@@ -82,7 +82,7 @@ index 4372f758..b39f3a98 100644
       */
      @Deprecated
      boolean isIpForward();
-@@ -156,6 +173,7 @@ public interface ProxyConfig
+@@ -155,6 +172,7 @@ public interface ProxyConfig
      /**
       * The encoded favicon.
       *
@@ -90,7 +90,7 @@ index 4372f758..b39f3a98 100644
       * @deprecated Use #getFaviconObject instead.
       */
      @Deprecated
-@@ -163,6 +181,8 @@ public interface ProxyConfig
+@@ -162,6 +180,8 @@ public interface ProxyConfig
  
      /**
       * The favicon used for the server ping list.
@@ -100,7 +100,7 @@ index 4372f758..b39f3a98 100644
      Favicon getFaviconObject();
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index ccfefd26..4965b234 100644
+index 1c8e9eda..d44ac67e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -52,6 +52,9 @@ public abstract class ProxyServer

@@ -1,4 +1,4 @@
-From 2709eadf686971d35fbcfe3e4041a320cd620a15 Mon Sep 17 00:00:00 2001
+From b6c3ccafa8e2479faa7bb5077b90219a4d20ff69 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d93326cb..cb62dfa8 100644
+index db615ed9..af93ae8c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -177,6 +177,13 @@ public interface ProxyConfig
+@@ -176,6 +176,13 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
@@ -24,7 +24,7 @@ index d93326cb..cb62dfa8 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 03e35f42..fa1e6046 100644
+index 5a81d36f..e637cf99 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -41,6 +41,14 @@
@@ -170,7 +170,7 @@ index 2feb4d66..b265bb43 100644
 +    // Waterfall End
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index ba274eea..feea59d6 100644
+index 6c418567..23241d68 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -119,7 +119,7 @@ public class PipelineUtils

@@ -1,4 +1,4 @@
-From 6989508c9780a3ac06168830cdf00e3fb92655d0 Mon Sep 17 00:00:00 2001
+From 0bcddf3f2a54189e017bb728c4486f65dd691a8b Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Mon, 17 Jul 2017 20:24:17 +0100
 Subject: [PATCH] Fix some forge plugin message packets not being forwarded
@@ -42,10 +42,10 @@ index 52429265..5e02f8c8 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeServerHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeServerHandler.java
-index 3fe5ec5f..a0c07874 100644
+index 7166d061..b5b9ec70 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeServerHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeServerHandler.java
-@@ -51,7 +51,7 @@ public class ForgeServerHandler
+@@ -50,7 +50,7 @@ public class ForgeServerHandler
          ForgeServerHandshakeState prevState = state;
          packetQueue.add( message );
          state = state.send( message, con );
@@ -55,5 +55,5 @@ index 3fe5ec5f..a0c07874 100644
              synchronized ( packetQueue )
              {
 -- 
-2.19.1
+2.21.0
 

@@ -1,14 +1,14 @@
-From 5bc1929e48a551778c0c8e7f596f935c1c562e56 Mon Sep 17 00:00:00 2001
+From 9de373cbf48bf9e971def774c5611cf8dc91f891 Mon Sep 17 00:00:00 2001
 From: kashike <kashike@vq.lc>
 Date: Wed, 20 Mar 2019 21:39:12 -0700
 Subject: [PATCH] Use proper max length for serverbound chat packet
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 28a3efde..d2d23b34 100644
+index 57155c3b..9951c1f9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -38,6 +38,34 @@ public abstract class DefinedPacket
+@@ -37,6 +37,34 @@ public abstract class DefinedPacket
          return new String( b, Charsets.UTF_8 );
      }
  
@@ -44,7 +44,7 @@ index 28a3efde..d2d23b34 100644
      {
          if ( b.length > Short.MAX_VALUE )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index 95ad39b7..ce131cb9 100644
+index ffcd815c..0ded6739 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -27,6 +27,11 @@ public class Chat extends DefinedPacket

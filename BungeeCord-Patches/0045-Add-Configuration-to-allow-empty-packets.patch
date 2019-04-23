@@ -1,4 +1,4 @@
-From 13e5493fc39a0d75046e9dfece46bea0955d46e9 Mon Sep 17 00:00:00 2001
+From 59cd643646283aa72acf873abea280d7c59ceeba Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Add Configuration to allow empty packets
@@ -11,10 +11,10 @@ provided as a last ditch effort for server owners to allow players
 to connect in such a broken state as allowed by vanilla.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 95cd6ad4..a8705438 100644
+index 058cca67..46adc983 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -208,4 +208,11 @@ public interface ProxyConfig
+@@ -207,4 +207,11 @@ public interface ProxyConfig
       * @return should we disable the tab completion limit for 1.13+ clients
       */
      boolean isDisableModernTabLimiter();
@@ -27,10 +27,10 @@ index 95cd6ad4..a8705438 100644
 +    boolean isAllowEmptyPackets();
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index 29e54dba..880a3dc7 100644
+index e903fd09..98a54601 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-@@ -12,6 +12,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -11,6 +11,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
  {
  
      private static boolean DIRECT_WARNING;
@@ -44,7 +44,7 @@ index 29e54dba..880a3dc7 100644
  
      @Override
      protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
-@@ -31,7 +38,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -30,7 +37,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
              if ( buf[i] >= 0 )
              {
                  int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
@@ -94,7 +94,7 @@ index 4ff8da6d..f28f0111 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index feea59d6..042bccb5 100644
+index 23241d68..051430ce 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -146,7 +146,7 @@ public class PipelineUtils

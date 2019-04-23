@@ -1,4 +1,4 @@
-From 04cd75a5a2fe2d1653b5c9bd2f4e5ef6d14d9fc1 Mon Sep 17 00:00:00 2001
+From 7f4ff24a33f133c3208b27963debf6dbc2c10c37 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -62,7 +62,7 @@ index 0e1ef5c4..ee63732d 100644
      @Deprecated
      public String getKickReason()
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e7869cfb..c7f081d4 100644
+index 82c0bbbd..c8fc4e41 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -333,7 +333,7 @@ public class ServerConnector extends PacketHandler
@@ -75,18 +75,18 @@ index e7869cfb..c7f081d4 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f52c1312..14ab7f58 100644
+index 2eff743d..034040a0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -14,6 +14,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
+@@ -12,6 +12,7 @@ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
  import com.mojang.brigadier.tree.LiteralCommandNode;
- import java.io.DataInput;
 +import java.util.Objects; // Waterfall
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
-@@ -77,16 +78,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -75,16 +76,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -111,7 +111,7 @@ index f52c1312..14ab7f58 100644
      }
  
      @Override
-@@ -101,7 +105,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -99,7 +103,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -132,7 +132,7 @@ index f52c1312..14ab7f58 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -483,7 +499,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -481,7 +497,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -146,5 +146,5 @@ index f52c1312..14ab7f58 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.20.1
+2.21.0
 

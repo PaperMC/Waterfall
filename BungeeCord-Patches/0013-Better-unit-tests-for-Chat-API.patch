@@ -1,14 +1,14 @@
-From ebf7cd9d6b6e122c450c7ac8847daded9190931e Mon Sep 17 00:00:00 2001
+From fae8d892f44f35dfc160d522255095487c375c85 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
 
 
 diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
-index 8fa10e44..a6279567 100644
+index 730370ad..ba261a9a 100644
 --- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
 +++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
-@@ -224,6 +224,26 @@ public class ComponentsTest
+@@ -223,6 +223,26 @@ public class ComponentsTest
          Assert.assertEquals( eventRetention[1].getClickEvent(), testClickEvent );
      }
  
@@ -36,20 +36,20 @@ index 8fa10e44..a6279567 100644
      public void testLoopSimple()
      {
 diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-index 2391c22f..8397db2d 100644
+index 7e63488c..e85c55b7 100644
 --- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 +++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 @@ -13,4 +13,12 @@ public class TranslatableComponentTest
-         assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
-         assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
+         Assert.assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
+         Assert.assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
      }
 +
 +    @Test
 +    public void testEscapedPercentInPlainText()
 +    {
 +        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
-+        assertEquals( "Test string with % sign", testComponent.toPlainText() );
-+        assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
++        Assert.assertEquals( "Test string with % sign", testComponent.toPlainText() );
++        Assert.assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
 +    }
  }
 -- 

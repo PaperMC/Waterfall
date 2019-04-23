@@ -1,4 +1,4 @@
-From 8357712a235f24756ecd7f7f823fe41fc3c2e0e3 Mon Sep 17 00:00:00 2001
+From 911d768f6c07714cbc4bed0d12b5df5bc8e0fdbb Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -6,17 +6,17 @@ Subject: [PATCH] Don't access a ByteBuf's underlying array
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index a71cc710..0e06b49d 100644
+index c01cf317..17e12655 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
- import com.google.common.base.Function;
+@@ -4,6 +4,7 @@ import com.google.common.base.Function;
  import com.google.common.base.Preconditions;
  import com.google.common.base.Predicate;
-+import io.netty.buffer.ByteBufUtil;
- import net.md_5.bungee.protocol.DefinedPacket;
  import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufUtil; // Waterfall
  import java.io.ByteArrayInputStream;
+ import java.io.DataInput;
+ import java.io.DataInputStream;
 @@ -56,10 +57,23 @@ public class PluginMessage extends DefinedPacket
              return ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) || input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) ) && input.getData().length < Byte.MAX_VALUE;
          }
@@ -43,7 +43,7 @@ index a71cc710..0e06b49d 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 177b7389..00a1988b 100644
+index fb2d9e27..d1ae05b3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -216,7 +216,7 @@ public class ServerConnector extends PacketHandler
@@ -56,10 +56,10 @@ index 177b7389..00a1988b 100644
  
              user.setDimension( login.getDimension() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 75aebc65..277422ee 100644
+index 63162de0..db39f52d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -258,7 +258,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -256,7 +256,7 @@ public class DownstreamBridge extends PacketHandler
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
@@ -69,7 +69,7 @@ index 75aebc65..277422ee 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 16e07a4c..a2af0a36 100644
+index f75ec97d..bc7a6d80 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -43,9 +43,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
@@ -86,5 +86,5 @@ index 16e07a4c..a2af0a36 100644
      {
          @Override
 -- 
-2.20.1
+2.21.0
 

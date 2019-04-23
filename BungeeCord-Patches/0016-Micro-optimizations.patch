@@ -1,4 +1,4 @@
-From f0d0879bb02cdef1fc1cf2c25d82085848903d90 Mon Sep 17 00:00:00 2001
+From 7644bdb527293d3cb40d70759ec849c865ae44bf Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -8,10 +8,10 @@ Subject: [PATCH] Micro-optimizations
 - Don't create a data input stream for every plugin message we get from servers
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 5d98c781..be32db49 100644
+index ea11489b..d14b8d3c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -521,7 +521,9 @@ public class BungeeCord extends ProxyServer
+@@ -520,7 +520,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -23,10 +23,10 @@ index 5d98c781..be32db49 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 277422ee..bfbc8b18 100644
+index db39f52d..1911923c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -240,7 +240,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -238,7 +238,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -34,7 +34,7 @@ index 277422ee..bfbc8b18 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -267,6 +266,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -265,6 +264,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -43,5 +43,5 @@ index 277422ee..bfbc8b18 100644
              String subChannel = in.readUTF();
  
 -- 
-2.20.1
+2.21.0
 

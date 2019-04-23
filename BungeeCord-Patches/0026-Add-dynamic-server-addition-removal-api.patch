@@ -1,4 +1,4 @@
-From 1ccc9a25873be025895b669c8c3388bc7e05ada9 Mon Sep 17 00:00:00 2001
+From 9ece9eee1db885737f55a9215fd014c1664f7ccf Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,10 +8,10 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0d48c775..7f828010 100644
+index 1f643980..dc4d609f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -32,9 +32,95 @@ public interface ProxyConfig
+@@ -31,9 +31,95 @@ public interface ProxyConfig
  
      /**
       * Set of all servers.
@@ -108,7 +108,7 @@ index 0d48c775..7f828010 100644
       * Does the server authenticate with mojang
       */
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index baae54f6..ccfefd26 100644
+index 15bea8fe..1c8e9eda 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -93,9 +93,25 @@ public abstract class ProxyServer
@@ -156,10 +156,10 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 794d571f..54e85b0f 100644
+index 9693701d..3fdd9949 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-@@ -84,7 +84,7 @@ public class CommandServer extends Command implements TabExecutor
+@@ -83,7 +83,7 @@ public class CommandServer extends Command implements TabExecutor
      @Override
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
@@ -169,10 +169,10 @@ index 794d571f..54e85b0f 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7c437c75..ef6d2028 100644
+index 83a300dc..0ff6781c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -597,10 +597,18 @@ public class BungeeCord extends ProxyServer
+@@ -596,10 +596,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  

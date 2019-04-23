@@ -1,14 +1,14 @@
-From aee90e210ae6132b9276f7e6a0f7dfa7c6b47f56 Mon Sep 17 00:00:00 2001
+From 8508e32ef2fafc99b25534646a23294388b11771 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c407cc97..4ff03488 100644
+index c527e3a9..8acdc22d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -275,8 +275,6 @@ public class BungeeCord extends ProxyServer
+@@ -274,8 +274,6 @@ public class BungeeCord extends ProxyServer
              registerChannel( ForgeConstants.FML_TAG );
              registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
              registerChannel( ForgeConstants.FORGE_REGISTER );
@@ -18,7 +18,7 @@ index c407cc97..4ff03488 100644
  
          isRunning = true;
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 92093602..0482d74a 100644
+index 2ec6c23c..5841cf63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -66,7 +66,7 @@ public abstract class Configuration implements ProxyConfig
@@ -31,5 +31,5 @@ index 92093602..0482d74a 100644
      @Synchronized("serversLock") // Waterfall
      public void load()
 -- 
-2.20.1
+2.21.0
 

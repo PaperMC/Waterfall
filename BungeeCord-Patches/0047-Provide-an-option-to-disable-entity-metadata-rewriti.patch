@@ -1,4 +1,4 @@
-From 30dfafedb513a62703ceb09ee107372b7e38437b Mon Sep 17 00:00:00 2001
+From fc9081afdc806555f78e430e6315dc2dfa23f2a3 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,10 +12,10 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index a8705438..ab289e72 100644
+index 46adc983..0e69db36 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -215,4 +215,9 @@ public interface ProxyConfig
+@@ -214,4 +214,9 @@ public interface ProxyConfig
       * @return should we allow empty packets
       */
      boolean isAllowEmptyPackets();
@@ -57,7 +57,7 @@ index f28f0111..41a71f65 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c7f081d4..110ac496 100644
+index c8fc4e41..94545251 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -225,7 +225,7 @@ public class ServerConnector extends PacketHandler
@@ -102,7 +102,7 @@ index c7f081d4..110ac496 100644
 +                user.setClientEntityId( login.getEntityId() );
 +
 +                Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(),
-+                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.isReducedDebugInfo() );
++                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo() );
 +                user.unsafe().sendPacket(modLogin);
 +
 +                // Only send if we're in the same dimension
@@ -115,7 +115,7 @@ index c7f081d4..110ac496 100644
              user.setDimension( login.getDimension() );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9c872a1c..8a524a64 100644
+index 74aa4f3e..7e9678d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -145,6 +145,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -152,10 +152,10 @@ index 9c872a1c..8a524a64 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f635a7e4..c1dc6489 100644
+index fd14f518..fba84905 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -590,6 +590,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -588,6 +588,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -163,7 +163,7 @@ index f635a7e4..c1dc6489 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -601,6 +602,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -599,6 +600,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -172,11 +172,11 @@ index f635a7e4..c1dc6489 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 994670cd..e14b72db 100644
+index c1206a3f..f1ed6050 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -233,7 +233,13 @@ public abstract class EntityMap
-                     }
+@@ -271,7 +271,13 @@ public abstract class EntityMap
+                     DefinedPacket.readVarInt( packet );
                      break;
                  default:
 -                    throw new IllegalArgumentException( "Unknown meta type " + type );

@@ -1,14 +1,14 @@
-From d6ffcd90f47bc395e824b36fe7fe47991bf869e1 Mon Sep 17 00:00:00 2001
+From 5c4d4e11b2329b221394f7b216c749edc00c57bf Mon Sep 17 00:00:00 2001
 From: creeper123123321 <creeper123123321@gmail.com>
 Date: Thu, 17 Jan 2019 03:25:59 +0000
 Subject: [PATCH] Don't use a bytebuf for packet decoding
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index 880a3dc7..aef9fc37 100644
+index 98a54601..8de4d9be 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-@@ -25,8 +25,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -24,8 +24,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
      {
          in.markReaderIndex();
  
@@ -18,7 +18,7 @@ index 880a3dc7..aef9fc37 100644
          {
              if ( !in.isReadable() )
              {
-@@ -34,10 +33,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -33,10 +32,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                  return;
              }
  
@@ -35,7 +35,7 @@ index 880a3dc7..aef9fc37 100644
                  if ( length == 0 && !allowEmptyPackets) // Waterfall
                  {
                      throw new CorruptedFrameException( "Empty Packet!" );
-@@ -47,26 +49,11 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -46,26 +48,11 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                  {
                      in.resetReaderIndex();
                      return;
@@ -67,5 +67,5 @@ index 880a3dc7..aef9fc37 100644
              }
          }
 -- 
-2.20.1
+2.21.0
 

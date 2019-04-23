@@ -1,4 +1,4 @@
-From c6f4a177aeb85a63c485e4e12a56f2c3c2e9fc4a Mon Sep 17 00:00:00 2001
+From 64d9097f51560007e15d0c3ef63a024e7562e4b1 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,21 +54,29 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c1dc6489..7698b871 100644
+index fba84905..1f8a2439 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -14,7 +14,10 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
+@@ -12,14 +12,17 @@ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
  import com.mojang.brigadier.tree.LiteralCommandNode;
- import java.io.DataInput;
-+import java.util.HashMap; // Waterfall
- import java.util.Objects; // Waterfall
+-import java.util.Objects; // Waterfall
 +
 +import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
-@@ -625,9 +628,25 @@ public class DownstreamBridge extends PacketHandler
+ import java.io.DataInput;
+ import java.util.ArrayList;
++import java.util.HashMap; // Waterfall
+ import java.util.List;
+ import java.util.Map;
++import java.util.Objects; // Waterfall
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.UserConnection;
+@@ -623,9 +626,25 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
