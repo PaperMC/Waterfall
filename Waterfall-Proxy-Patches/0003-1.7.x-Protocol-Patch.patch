@@ -1,4 +1,4 @@
-From 83f505362db5c470582941de59a0ccff3c40c80f Mon Sep 17 00:00:00 2001
+From 08054bd793048b764e3167ff743eb8a1b342e21e Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -167,10 +167,10 @@ index d4b03843..9aac7ca9 100644
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 3a319cff..6ccfdcf1 100644
+index 87093807..fd5642e4 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -52,7 +52,7 @@ public enum Protocol
+@@ -53,7 +53,7 @@ public enum Protocol
          {
              TO_SERVER.registerPacket(
                      Handshake.class,
@@ -179,7 +179,7 @@ index 3a319cff..6ccfdcf1 100644
              );
          }
      },
-@@ -63,26 +63,26 @@ public enum Protocol
+@@ -64,26 +64,26 @@ public enum Protocol
          {
              TO_CLIENT.registerPacket(
                      KeepAlive.class,
@@ -210,7 +210,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x33 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x34 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x35 ),
-@@ -96,7 +96,7 @@ public enum Protocol
+@@ -97,7 +97,7 @@ public enum Protocol
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
@@ -219,7 +219,7 @@ index 3a319cff..6ccfdcf1 100644
                      map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
                      map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
                      map(ProtocolConstants.MINECRAFT_1_12, 0x4E),
-@@ -106,7 +106,7 @@ public enum Protocol
+@@ -107,7 +107,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      EntityRemoveEffect.class,
@@ -228,7 +228,7 @@ index 3a319cff..6ccfdcf1 100644
                      map(ProtocolConstants.MINECRAFT_1_9, 0x31),
                      map(ProtocolConstants.MINECRAFT_1_12, 0x32),
                      map(ProtocolConstants.MINECRAFT_1_12_1, 0x33),
-@@ -116,7 +116,7 @@ public enum Protocol
+@@ -117,7 +117,7 @@ public enum Protocol
              // Waterfall end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
@@ -237,7 +237,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x2D ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x2E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x30 ),
-@@ -124,13 +124,13 @@ public enum Protocol
+@@ -125,13 +125,13 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      TabCompleteResponse.class,
@@ -253,7 +253,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x3F ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x42 ),
-@@ -139,7 +139,7 @@ public enum Protocol
+@@ -140,7 +140,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      ScoreboardScore.class,
@@ -262,7 +262,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x42 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x44 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x45 ),
-@@ -148,7 +148,7 @@ public enum Protocol
+@@ -149,7 +149,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      ScoreboardDisplay.class,
@@ -271,7 +271,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x38 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x3A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x3B ),
-@@ -157,7 +157,7 @@ public enum Protocol
+@@ -158,7 +158,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      Team.class,
@@ -280,7 +280,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x43 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x44 ),
-@@ -166,21 +166,21 @@ public enum Protocol
+@@ -167,21 +167,21 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
@@ -305,7 +305,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x48 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x4B ),
-@@ -188,7 +188,7 @@ public enum Protocol
+@@ -189,7 +189,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      PlayerListHeaderFooter.class,
@@ -314,7 +314,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x48 ),
                      map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x49 ),
-@@ -198,7 +198,7 @@ public enum Protocol
+@@ -199,7 +199,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket(
                      EntityStatus.class,
@@ -323,7 +323,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1B )
-@@ -210,7 +210,7 @@ public enum Protocol
+@@ -215,7 +215,7 @@ public enum Protocol
  
              TO_SERVER.registerPacket(
                      KeepAlive.class,
@@ -332,7 +332,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x0B ),
-@@ -219,7 +219,7 @@ public enum Protocol
+@@ -224,7 +224,7 @@ public enum Protocol
              );
              TO_SERVER.registerPacket(
                      Chat.class,
@@ -341,7 +341,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x03 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x02 ),
-@@ -227,7 +227,7 @@ public enum Protocol
+@@ -232,7 +232,7 @@ public enum Protocol
              );
              TO_SERVER.registerPacket(
                      TabCompleteRequest.class,
@@ -350,7 +350,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x01 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x01 ),
-@@ -236,7 +236,7 @@ public enum Protocol
+@@ -241,7 +241,7 @@ public enum Protocol
              );
              TO_SERVER.registerPacket(
                      ClientSettings.class,
@@ -359,7 +359,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x04 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x04 ),
-@@ -244,7 +244,7 @@ public enum Protocol
+@@ -249,7 +249,7 @@ public enum Protocol
              );
              TO_SERVER.registerPacket(
                      PluginMessage.class,
@@ -368,7 +368,7 @@ index 3a319cff..6ccfdcf1 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x09 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x09 ),
-@@ -260,20 +260,20 @@ public enum Protocol
+@@ -265,20 +265,20 @@ public enum Protocol
          {
              TO_CLIENT.registerPacket(
                      StatusResponse.class,
@@ -393,7 +393,7 @@ index 3a319cff..6ccfdcf1 100644
              );
          }
      },
-@@ -284,19 +284,19 @@ public enum Protocol
+@@ -289,19 +289,19 @@ public enum Protocol
          {
              TO_CLIENT.registerPacket(
                      Kick.class,
@@ -417,7 +417,7 @@ index 3a319cff..6ccfdcf1 100644
              );
              TO_CLIENT.registerPacket(
                      LoginPayloadRequest.class,
-@@ -305,11 +305,11 @@ public enum Protocol
+@@ -310,11 +310,11 @@ public enum Protocol
  
              TO_SERVER.registerPacket(
                      LoginRequest.class,
@@ -431,7 +431,7 @@ index 3a319cff..6ccfdcf1 100644
              );
              TO_SERVER.registerPacket(
                      LoginPayloadResponse.class,
-@@ -428,7 +428,11 @@ public enum Protocol
+@@ -433,7 +433,11 @@ public enum Protocol
              }
              if ( !hasPacket(id, supportsForge) )
              {
@@ -1336,7 +1336,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 94545251..064529ca 100644
+index 1375d1e2..bd3dc40b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
@@ -1347,7 +1347,7 @@ index 94545251..064529ca 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -247,10 +248,20 @@ public class ServerConnector extends PacketHandler
+@@ -248,10 +249,20 @@ public class ServerConnector extends PacketHandler
  
              user.unsafe().sendPacket( modLogin );
  
@@ -1372,7 +1372,7 @@ index 94545251..064529ca 100644
  
              user.setDimension( login.getDimension() );
          } else
-@@ -262,7 +273,7 @@ public class ServerConnector extends PacketHandler
+@@ -263,7 +274,7 @@ public class ServerConnector extends PacketHandler
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
@@ -1381,7 +1381,7 @@ index 94545251..064529ca 100644
              }
              for ( Score score : serverScoreboard.getScores() )
              {
-@@ -414,6 +425,14 @@ public class ServerConnector extends PacketHandler
+@@ -419,6 +430,14 @@ public class ServerConnector extends PacketHandler
              {
                  this.handshakeHandler.handle( pluginMessage );
  
