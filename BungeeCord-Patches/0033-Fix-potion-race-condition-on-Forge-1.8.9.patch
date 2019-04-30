@@ -1,11 +1,11 @@
-From 724dddb499f59e74f6bb497855d3fa7d04e1b753 Mon Sep 17 00:00:00 2001
+From 42d7f2f7231893a6a067131d59635ef6c0580102 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index e49af259..581503b8 100644
+index 39e257c3..e4f14974 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -7,6 +7,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -17,8 +17,8 @@ index e49af259..581503b8 100644
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
-@@ -168,4 +170,14 @@ public abstract class AbstractPacketHandler
-     public void handle(Commands commands) throws Exception
+@@ -173,4 +175,14 @@ public abstract class AbstractPacketHandler
+     public void handle(ViewDistance viewDistance) throws Exception
      {
      }
 +
@@ -33,7 +33,7 @@ index e49af259..581503b8 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 3c817c1e..3a319cff 100644
+index d599eef3..87093807 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Commands;
@@ -45,7 +45,7 @@ index 3c817c1e..3a319cff 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -91,6 +93,27 @@ public enum Protocol
+@@ -92,6 +94,27 @@ public enum Protocol
                      BossBar.class,
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
              );
