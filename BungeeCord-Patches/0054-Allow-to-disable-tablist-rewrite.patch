@@ -1,0 +1,75 @@
+From 40c75152f0c14adf2b7b2cd609f397993908e3fb Mon Sep 17 00:00:00 2001
+From: xDark <aleshkailyashevich@gmail.com>
+Date: Fri, 31 May 2019 08:11:31 +0300
+Subject: [PATCH] Allow to disable tablist rewrite
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index cbcf8a24..4222db77 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -239,4 +239,10 @@ public interface ProxyConfig
+      * @return Should we disable entity metadata rewriting?
+      */
+     boolean isDisableEntityMetadataRewrite();
++
++    /**
++     * Whether tablist rewriting should be disabled or not
++     * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
++     */
++    boolean isDisableTabListRewrite();
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 41a71f65..6929e51c 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -54,6 +54,7 @@ public class WaterfallConfiguration extends Configuration {
+     private boolean allowEmptyPackets = false;
+ 
+     private boolean disableEntityMetadataRewrite = false;
++    private boolean disableTabListRewrite = false;
+ 
+     @Override
+     public void load() {
+@@ -68,6 +69,7 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+         allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
+         disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
++        disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
+     }
+ 
+     @Override
+@@ -104,4 +106,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isDisableEntityMetadataRewrite() {
+         return disableEntityMetadataRewrite;
+     }
++
++    @Override
++    public boolean isDisableTabListRewrite() {
++        return disableTabListRewrite;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 1f8a2439..cd1f4c9f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -150,8 +150,14 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(PlayerListItem playerList) throws Exception
+     {
+-        con.getTabListHandler().onUpdate( TabList.rewrite( playerList ) );
+-        throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
++        //Waterfall start
++        boolean skipRewrites = bungee.getConfig().isDisableTabListRewrite();
++        con.getTabListHandler().onUpdate( skipRewrites ? playerList : TabList.rewrite( playerList ) );
++        if ( !skipRewrites )
++        {
++            throw CancelSendSignal.INSTANCE; // Only throw if profile rewriting is enabled
++        }
++        // Waterfall end
+     }
+ 
+     @Override
+-- 
+2.21.0.windows.1
+
