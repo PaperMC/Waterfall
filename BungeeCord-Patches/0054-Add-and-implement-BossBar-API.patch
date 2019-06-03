@@ -1,0 +1,502 @@
+From 220a0988281d001943a4f81272ed814deb34a80c Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Mon, 3 Jun 2019 17:26:59 +0300
+Subject: [PATCH] Add and implement BossBar API
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBar.java b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBar.java
+new file mode 100644
+index 00000000..49cece8e
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBar.java
+@@ -0,0 +1,161 @@
++package io.github.waterfallmc.waterfall.bossbar;
++
++import java.util.Collection;
++
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++/**
++ * Represents a boss bar, which can be send to a (group of) player(s).
++ * <b>Boss bars only work on 1.9 and above.</b>
++ */
++public interface BossBar {
++
++    /**
++     * Adds {@link ProxiedPlayer} to this boss bar. This adds the player to the {@link #getPlayers()}
++     * and makes him see the boss bar.
++     *
++     * @param player the player you wish to add
++     */
++    void addPlayer(ProxiedPlayer player);
++
++    /**
++     * Adds all specified players to this boss bar
++     *
++     * @param players players
++     * @see #addPlayer(ProxiedPlayer)
++     */
++    void addPlayers(Iterable<ProxiedPlayer> players);
++
++    /**
++     * Removes {@link ProxiedPlayer} from this boss bar. This removes the player from {@link #getPlayers()}
++     * and makes him not see the boss bar.
++     *
++     * @param player the player you wish to remove
++     */
++    void removePlayer(ProxiedPlayer player);
++
++    /**
++     * Removes all specified players from this boss bar
++     *
++     * @param players players
++     * @see #removePlayer(ProxiedPlayer)
++     */
++    void removePlayers(Iterable<ProxiedPlayer> players);
++
++    /**
++     * Removes all players, that see this boss bar
++     *
++     * @see #removePlayer(ProxiedPlayer)
++     */
++    void removeAllPlayers();
++
++    /**
++     * Gets the title of this boss bar.
++     *
++     * @return title
++     */
++    BaseComponent[] getTitle();
++
++    /**
++     * Sets a new title of the boss bar.
++     *
++     * @param title new title
++     */
++    void setTitle(BaseComponent... title);
++
++    /**
++     * Gets the boss bar's progress.
++     *
++     * @return progress
++     */
++    float getProgress();
++
++    /**
++     * Sets a new progress of the boss bar.
++     *
++     * @param progress a float between 0 and 1, representing boss bar's progress
++     * @throws IllegalArgumentException if the new progress is not between 0 and 1
++     */
++    void setProgress(float progress);
++
++    /**
++     * Returns a unmodifiable {@link Collection} of all {@link ProxiedPlayer} added to the
++     * boss bar.
++     * <i>Can be empty.</i>
++     *
++     * @return players
++     */
++    Collection<ProxiedPlayer> getPlayers();
++
++    /**
++     * Gets the color of the boss bar
++     *
++     * @return boss bar color
++     */
++    BossBarColor getColor();
++
++    /**
++     * Sets a new color of the boss bar.
++     *
++     * @param color the color you wish the boss bar be displayed with
++     */
++    void setColor(BossBarColor color);
++
++    /**
++     * Gets the style of the boss bar.
++     *
++     * @return boss bar style
++     */
++    BossBarStyle getStyle();
++
++    /**
++     * Sets a new style of the boss bar.
++     *
++     * @param style the style you wish the boss bar be displayed with
++     */
++    void setStyle(BossBarStyle style);
++
++    /**
++     * Returns whenever this boss bar is visible to all added {@link #getPlayers()}. By default, it
++     * returns <code>true</code>
++     *
++     * @return <code>true</code> if visible, otherwise <code>false</code>
++     */
++    boolean isVisible();
++
++    /**
++     * Sets a new visibility of the boss bar.
++     *
++     * @param visible boss bar visibility value
++     */
++    void setVisible(boolean visible);
++
++    /**
++     * Returns a unmodifiable {@link Collection} of all {@link BossBarFlag}s added to the boss bar.
++     *
++     * @return flags
++     */
++    Collection<BossBarFlag> getFlags();
++
++    /**
++     * Adds new flags to the boss bar.
++     *
++     * @param flags the flags you wish to add
++     */
++    void addFlags(BossBarFlag... flags);
++
++    /**
++     * Removes flag from the boss bar.
++     *
++     * @param flag the flag you wish to remove
++     */
++    void removeFlag(BossBarFlag flag);
++
++    /**
++     * Removes flags from the boss bar.
++     *
++     * @param flags the flags you wish to remove
++     */
++    void removeFlags(BossBarFlag... flags);
++}
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarColor.java b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarColor.java
+new file mode 100644
+index 00000000..d7bedec2
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarColor.java
+@@ -0,0 +1,14 @@
++package io.github.waterfallmc.waterfall.bossbar;
++
++/**
++ * Represents a color of a {@link BossBar}.
++ */
++public enum BossBarColor {
++    PINK,
++    BLUE,
++    RED,
++    GREEN,
++    YELLOW,
++    PURPLE,
++    WHITE;
++}
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarFlag.java b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarFlag.java
+new file mode 100644
+index 00000000..7aaecd33
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarFlag.java
+@@ -0,0 +1,10 @@
++package io.github.waterfallmc.waterfall.bossbar;
++
++/**
++ * Represents any {@link BossBar}'s flags.
++ */
++public enum BossBarFlag {
++    DARKEN_SCREEN,
++    PLAY_BOSS_MUSIC,
++    CREATE_WORLD_FOG
++}
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarStyle.java b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarStyle.java
+new file mode 100644
+index 00000000..ff7371b9
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/bossbar/BossBarStyle.java
+@@ -0,0 +1,11 @@
++package io.github.waterfallmc.waterfall.bossbar;
++
++/**
++ * Represents a {@link BossBar} style
++ */
++public enum BossBarStyle {
++    SOLID,
++    SEGMENTED_6,
++    SEGMENTED_12,
++    SEGMENTED_20
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index d44ac67e..39de44e8 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -7,6 +7,11 @@ import java.util.Collection;
+ import java.util.Map;
+ import java.util.UUID;
+ import java.util.logging.Logger;
++// Waterfall start
++import io.github.waterfallmc.waterfall.bossbar.BossBar;
++import io.github.waterfallmc.waterfall.bossbar.BossBarColor;
++import io.github.waterfallmc.waterfall.bossbar.BossBarStyle;
++// Waterfall end
+ import lombok.Getter;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
+@@ -315,4 +320,19 @@ public abstract class ProxyServer
+      */
+     public abstract Title createTitle();
+ 
++    // Waterfall start - creation of boss bars
++
++    /**
++     * Creates a new {@link BossBar}
++     *
++     * @param title boss bar title
++     * @param color boss bar color
++     * @param style boss bar style
++     * @param progress boss bar progress
++     * @return a fresh new boss bar
++     */
++    public abstract BossBar createBossBar(BaseComponent[] title, BossBarColor color, BossBarStyle style, float progress);
++
++    // Waterfall end
++
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/bossbar/WaterfallBossBar.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/bossbar/WaterfallBossBar.java
+new file mode 100644
+index 00000000..2fb6f8d4
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/bossbar/WaterfallBossBar.java
+@@ -0,0 +1,231 @@
++package io.github.waterfallmc.waterfall.bossbar;
++
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.EnumSet;
++import java.util.List;
++import java.util.Set;
++import java.util.UUID;
++
++import com.google.common.collect.ImmutableList;
++import lombok.Getter;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.chat.ComponentSerializer;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.BossBar;
++
++import static com.google.common.base.Preconditions.checkNotNull;
++
++public class WaterfallBossBar implements io.github.waterfallmc.waterfall.bossbar.BossBar {
++
++    private final List<ProxiedPlayer> players;
++    private final Set<BossBarFlag> flags;
++    private final UUID uuid;
++
++    @Getter
++    private boolean visible;
++
++    @Getter
++    private BaseComponent[] title;
++
++    @Getter
++    private float progress;
++
++    @Getter
++    private BossBarColor color;
++
++    @Getter
++    private BossBarStyle style;
++
++    public WaterfallBossBar(BaseComponent[] title, BossBarColor color, BossBarStyle style,
++                            float progress) {
++        this.title = checkNotNull(title, "title");
++        this.color = checkNotNull(color, "color");
++        this.style = checkNotNull(style, "style");
++        checkProgress(progress);
++        this.progress = progress;
++        this.uuid = UUID.randomUUID();
++        this.visible = true;
++        this.players = new ArrayList<>();
++        this.flags = EnumSet.noneOf(BossBarFlag.class);
++    }
++
++    @Override
++    public void addPlayer(ProxiedPlayer player) {
++        checkNotNull(player, "player");
++        if (!players.contains(player)) {
++            players.add(player);
++        }
++        if (player.isConnected() && visible) {
++            sendPacket(player, addPacket());
++        }
++    }
++
++    @Override
++    public void addPlayers(Iterable<ProxiedPlayer> players) {
++        checkNotNull(players, "players");
++        players.forEach(this::addPlayer);
++    }
++
++    @Override
++    public void removePlayer(ProxiedPlayer player) {
++        checkNotNull(player, "player");
++        players.remove(player);
++        if (player.isConnected()) {
++            sendPacket(player, removePacket());
++        }
++    }
++
++    @Override
++    public void removePlayers(Iterable<ProxiedPlayer> players) {
++        checkNotNull(players, "players");
++        players.forEach(this::removePlayer);
++    }
++
++    @Override
++    public void removeAllPlayers() {
++        removePlayers(ImmutableList.copyOf(players));
++    }
++
++    @Override
++    public void setTitle(BaseComponent... title) {
++        this.title = checkNotNull(title, "title");
++        if (visible) {
++            BossBar bar = new BossBar(uuid, 3);
++            bar.setTitle(ComponentSerializer.toString(title));
++            sendToPlayers(bar);
++        }
++    }
++
++    @Override
++    public void setProgress(float progress) {
++        checkProgress(progress);
++        this.progress = progress;
++        if (visible) {
++            BossBar bar = new BossBar(uuid, 2);
++            bar.setHealth(progress);
++            sendToPlayers(bar);
++        }
++    }
++
++    @Override
++    public Collection<ProxiedPlayer> getPlayers() {
++        return Collections.unmodifiableCollection(players);
++    }
++
++    @Override
++    public void setColor(BossBarColor color) {
++        this.color = checkNotNull(color, "color");
++        if (visible) {
++            setDivisions(color, style);
++        }
++    }
++
++    @Override
++    public void setStyle(BossBarStyle style) {
++        this.style = checkNotNull(style, "style");
++        if (visible) {
++            setDivisions(color, style);
++        }
++    }
++
++    private void setDivisions(BossBarColor color, BossBarStyle style) {
++        BossBar bar = new BossBar(uuid, 4);
++        bar.setColor(color.ordinal());
++        bar.setDivision(style.ordinal());
++        sendToPlayers(bar);
++    }
++
++    @Override
++    public void setVisible(boolean visible) {
++        boolean previous = this.visible;
++        if (previous && !visible) {
++            sendToPlayers(removePacket());
++        } else if (!previous && visible) {
++            sendToPlayers(addPacket());
++        }
++        this.visible = visible;
++    }
++
++    @Override
++    public Collection<BossBarFlag> getFlags() {
++        return Collections.unmodifiableCollection(flags);
++    }
++
++    @Override
++    public void addFlags(BossBarFlag... flags) {
++        if (this.flags.addAll(Arrays.asList(flags)) && visible) {
++            sendToPlayers(updateFlags());
++        }
++    }
++
++    @Override
++    public void removeFlag(BossBarFlag flag) {
++        checkNotNull(flag, "flag");
++        if (this.flags.remove(flag) && visible) {
++            sendToPlayers(updateFlags());
++        }
++    }
++
++    @Override
++    public void removeFlags(BossBarFlag... flags) {
++        if (this.flags.removeAll(Arrays.asList(flags)) && visible) {
++            sendToPlayers(updateFlags());
++        }
++    }
++
++    private void checkProgress(float progress) {
++        if (progress > 1 || progress < 0) {
++            throw new IllegalArgumentException("Progress must be between 0 and 1");
++        }
++    }
++
++    private BossBar addPacket() {
++        BossBar bar = new BossBar(uuid, 0);
++        bar.setTitle(ComponentSerializer.toString(title));
++        bar.setHealth(progress);
++        bar.setDivision(style.ordinal());
++        bar.setColor(color.ordinal());
++        bar.setFlags(serializeFlags());
++        return bar;
++    }
++
++    private BossBar removePacket() {
++        return new BossBar(uuid, 1);
++    }
++
++    private byte serializeFlags() {
++        byte flagMask = 0x0;
++        if (flags.contains(BossBarFlag.DARKEN_SCREEN)) {
++            flagMask |= 0x1;
++        }
++        if (flags.contains(BossBarFlag.PLAY_BOSS_MUSIC)) {
++            flagMask |= 0x2;
++        }
++        if (flags.contains(BossBarFlag.CREATE_WORLD_FOG)) {
++            flagMask |= 0x4;
++        }
++        return flagMask;
++    }
++
++    private BossBar updateFlags() {
++        BossBar bar = new BossBar(uuid, 5);
++        bar.setFlags(serializeFlags());
++        return bar;
++    }
++
++    private void sendToPlayers(BossBar packet) {
++        players.forEach(player -> {
++            if (player.isConnected() && player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_9) {
++                sendPacket(player, packet);
++            }
++        });
++    }
++
++    private void sendPacket(ProxiedPlayer player, BossBar packet) {
++        player.unsafe().sendPacket(packet);
++    }
++}
+-- 
+2.21.0.windows.1
+
