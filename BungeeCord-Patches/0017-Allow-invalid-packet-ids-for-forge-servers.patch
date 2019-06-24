@@ -1,4 +1,4 @@
-From b0d4d4022f8866d4da33cc9f86c88125e111aea6 Mon Sep 17 00:00:00 2001
+From 694fc81e5e99287f1e5f13e02e1655934538d8ee Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -105,10 +105,10 @@ index e5a63541..644522b1 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 43c58d0b..e67c0034 100644
+index eb42bd12..43d4d017 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -313,6 +313,12 @@ public abstract class EntityMap
+@@ -314,6 +314,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -122,5 +122,5 @@ index 43c58d0b..e67c0034 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.21.0
+2.22.0
 
