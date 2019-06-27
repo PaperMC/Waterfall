@@ -1,4 +1,4 @@
-From 7819491c31d95725158715348f133888f9520397 Mon Sep 17 00:00:00 2001
+From 64a2d5a0ea5d0b807b060e9efcd678d3298afab4 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index f28f0111..41a71f65 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c2b1de82..1375d1e2 100644
+index c2b1de82..72f487dc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -226,7 +226,7 @@ public class ServerConnector extends PacketHandler
@@ -85,7 +85,7 @@ index c2b1de82..1375d1e2 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -285,12 +287,27 @@ public class ServerConnector extends PacketHandler
+@@ -285,12 +287,32 @@ public class ServerConnector extends PacketHandler
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
  
              user.setDimensionChange( true );
@@ -100,6 +100,11 @@ index c2b1de82..1375d1e2 100644
 +            if ( user.isDisableEntityMetadataRewrite() ) {
 +                // Ensure that we maintain consistency
 +                user.setClientEntityId( login.getEntityId() );
++
++                // Only send if we are not in the same dimension
++                if (user.getDimension() != login.getDimension()) {
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
++                }
 +
 +                Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(),
 +                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo() );
