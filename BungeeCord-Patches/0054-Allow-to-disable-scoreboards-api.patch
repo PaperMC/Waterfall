@@ -130,7 +130,7 @@ index 41a71f65..d674ecb8 100644
 +        disableScoreboardsApi = config.getBoolean("disable_scoreboards_api", disableScoreboardsApi);
 +
 +        if (!disableEntityMetadataRewrite && disableScoreboardsApi) {
-+            ProxyServer.getInstance().getLogger().log(Level.WARNING, "Scoreboards API cannot be disabled with entity rewrite turned off!");
++            ProxyServer.getInstance().getLogger().log(Level.WARNING, "Scoreboards API cannot be disabled with entity rewrite turned on!");
 +            disableScoreboardsApi = false;
 +        }
      }
