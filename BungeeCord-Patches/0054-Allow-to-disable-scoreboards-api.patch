@@ -1,0 +1,212 @@
+From 30983bac71170c09edabdc31384422665fd580b7 Mon Sep 17 00:00:00 2001
+From: xDark <aleshkailyashevich@gmail.com>
+Date: Sat, 6 Jul 2019 14:55:05 +0300
+Subject: [PATCH] Allow to disable scoreboards api
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index cbcf8a24..440f3560 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -239,4 +239,9 @@ public interface ProxyConfig
+      * @return Should we disable entity metadata rewriting?
+      */
+     boolean isDisableEntityMetadataRewrite();
++
++    /**
++     * @return {@code true} if scoreboards api should be disabled, {@code false} otherwise
++     */
++    boolean isDisableScoreboardsApi();
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 87093807..02c0a682 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -7,6 +7,7 @@ import gnu.trove.map.TObjectIntMap;
+ import gnu.trove.map.hash.TIntObjectHashMap;
+ import gnu.trove.map.hash.TObjectIntHashMap;
+ import java.lang.reflect.Constructor;
++
+ import lombok.Data;
+ import lombok.Getter;
+ import net.md_5.bungee.protocol.packet.BossBar;
+@@ -362,13 +363,35 @@ public enum Protocol
+         }
+     }
+ 
++    // Waterfall start
++    public void setSkipDecode(ProtocolConstants.Direction direction, boolean skipDecode, Class<? extends DefinedPacket>... packetClasses) {
++        DirectionData directionData = (direction == ProtocolConstants.Direction.TO_CLIENT ? TO_CLIENT : TO_SERVER);
++        ProtocolData[] toUpdate = directionData.protocols.values(new ProtocolData[0]);
++        for (ProtocolData protocolData : toUpdate) {
++            TObjectIntMap<Class<? extends DefinedPacket>> map = protocolData.packetMap;
++            PacketData packetData = protocolData.packetData;
++            for (Class<? extends DefinedPacket> packetClass : packetClasses) {
++                if (map.containsKey(packetClass)) {
++                    packetData.skipDecode[map.get(packetClass)] = skipDecode;
++                }
++            }
++        }
++    }
++    // Waterfall end
++
+     @Data
+     private static class ProtocolData
+     {
+ 
+         private final int protocolVersion;
+         private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
++        private final PacketData packetData = new PacketData();
++    }
++
++    private static class PacketData
++    {
+         private final Constructor<? extends DefinedPacket>[] packetConstructors = new Constructor[ MAX_PACKET_ID ];
++        private final boolean[] skipDecode = new boolean[ MAX_PACKET_ID ]; // Waterfall
+     }
+ 
+     @Data
+@@ -436,7 +459,11 @@ public enum Protocol
+                 throw new BadPacketException( "Packet with id " + id + " outside of range " );
+             }
+ 
+-            Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
++            PacketData packetData = protocolData.packetData;
++            if (packetData.skipDecode[id]) { // Waterfall
++                return null;
++            }
++            Constructor<? extends DefinedPacket> constructor = packetData.packetConstructors[id];
+             try
+             {
+                 return ( constructor == null ) ? null : constructor.newInstance();
+@@ -451,6 +478,7 @@ public enum Protocol
+             try
+             {
+                 Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
++                constructor.setAccessible( true );
+ 
+                 int mappingIndex = 0;
+                 ProtocolMapping mapping = mappings[mappingIndex];
+@@ -477,7 +505,8 @@ public enum Protocol
+ 
+                     ProtocolData data = protocols.get( protocol );
+                     data.packetMap.put( packetClass, mapping.packetID );
+-                    data.packetConstructors[mapping.packetID] = constructor;
++                    PacketData packetData = data.packetData;
++                    packetData.packetConstructors[mapping.packetID] = constructor;
+                 }
+             } catch ( NoSuchMethodException ex )
+             {
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 41a71f65..d674ecb8 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,11 +1,13 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
+ import com.google.common.base.Joiner;
++import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.io.File;
++import java.util.logging.Level;
+ 
+ public class WaterfallConfiguration extends Configuration {
+ 
+@@ -54,6 +56,7 @@ public class WaterfallConfiguration extends Configuration {
+     private boolean allowEmptyPackets = false;
+ 
+     private boolean disableEntityMetadataRewrite = false;
++    private boolean disableScoreboardsApi = false;
+ 
+     @Override
+     public void load() {
+@@ -68,6 +71,12 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+         allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
+         disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
++        disableScoreboardsApi = config.getBoolean("disable_scoreboards_api", disableScoreboardsApi);
++
++        if (!disableEntityMetadataRewrite && disableScoreboardsApi) {
++            ProxyServer.getInstance().getLogger().log(Level.WARNING, "Scoreboards API cannot be disabled with entity rewrite turned on!");
++            disableScoreboardsApi = false;
++        }
+     }
+ 
+     @Override
+@@ -104,4 +113,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isDisableEntityMetadataRewrite() {
+         return disableEntityMetadataRewrite;
+     }
++
++    @Override
++    public boolean isDisableScoreboardsApi() {
++        return disableEntityMetadataRewrite && disableScoreboardsApi;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 8acdc22d..dd1f24d0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -22,7 +22,6 @@ import io.netty.util.ResourceLeakDetector;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.text.MessageFormat;
+ import java.util.ArrayList;
+@@ -84,9 +83,14 @@ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
++import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
++import net.md_5.bungee.protocol.packet.ScoreboardObjective;
++import net.md_5.bungee.protocol.packet.ScoreboardScore;
++import net.md_5.bungee.protocol.packet.Team;
+ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+@@ -268,6 +272,7 @@ public class BungeeCord extends ProxyServer
+ 
+         pluginManager.loadPlugins();
+         config.load();
++        reconfigureProtocol();
+ 
+         if ( config.isForgeSupport() )
+         {
+@@ -300,6 +305,13 @@ public class BungeeCord extends ProxyServer
+         // metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) ); // Waterfall: Disable Metrics
+     }
+ 
++    // Waterfall start
++    public void reconfigureProtocol() {
++        Protocol.GAME.setSkipDecode(ProtocolConstants.Direction.TO_CLIENT, config.isDisableScoreboardsApi(), ScoreboardObjective.class,
++                ScoreboardScore.class, ScoreboardDisplay.class, Team.class);
++    }
++    // Waterfall end
++
+     public void startListeners()
+     {
+         for ( final ListenerInfo info : config.getListeners() )
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 720d0c3b..74298a77 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -18,6 +18,7 @@ public class CommandReload extends Command
+     public void execute(CommandSender sender, String[] args)
+     {
+         BungeeCord.getInstance().config.load();
++        BungeeCord.getInstance().reconfigureProtocol();
+         BungeeCord.getInstance().reloadMessages();
+         BungeeCord.getInstance().stopListeners();
+         BungeeCord.getInstance().startListeners();
+-- 
+2.22.0.windows.1
+
