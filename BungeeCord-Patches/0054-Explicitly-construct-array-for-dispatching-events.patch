@@ -1,0 +1,259 @@
+From ce5f4b3af8d611e3249334f9a291492e44184f5b Mon Sep 17 00:00:00 2001
+From: xDark <me@xdark.dev>
+Date: Fri, 19 Jul 2019 21:55:03 +0300
+Subject: [PATCH] Explicitly construct array for dispatching events
+
+
+diff --git a/event/pom.xml b/event/pom.xml
+index d6efe097..7dba1ae3 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -17,4 +17,21 @@
+ 
+     <name>Waterfall-Event</name>
+     <description>Generic java event dispatching API intended for use with Waterfall.</description>
++
++    <build>
++        <plugins>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-jar-plugin</artifactId>
++                <configuration>
++                    <excludes>
++                        <exclude>jdk/internal/reflect/MethodAccessor.class</exclude>
++                        <exclude>jdk/internal/reflect/ReflectionFactory.class</exclude>
++                        <exclude>sun/reflect/MethodAccessor.class</exclude>
++                        <exclude>sun/reflect/ReflectionFactory.class</exclude>
++                    </excludes>
++                </configuration>
++            </plugin>
++        </plugins>
++    </build>
+ </project>
+diff --git a/event/src/main/java/jdk/internal/reflect/MethodAccessor.java b/event/src/main/java/jdk/internal/reflect/MethodAccessor.java
+new file mode 100644
+index 00000000..ebecb840
+--- /dev/null
++++ b/event/src/main/java/jdk/internal/reflect/MethodAccessor.java
+@@ -0,0 +1,12 @@
++package jdk.internal.reflect;
++
++import java.lang.reflect.InvocationTargetException;
++
++/**
++ * This class is used just for compilation and removed during build
++ */
++public interface MethodAccessor {
++
++    Object invoke(Object obj, Object[] args)
++            throws IllegalArgumentException, InvocationTargetException;
++}
+\ No newline at end of file
+diff --git a/event/src/main/java/jdk/internal/reflect/ReflectionFactory.java b/event/src/main/java/jdk/internal/reflect/ReflectionFactory.java
+new file mode 100644
+index 00000000..0be06d97
+--- /dev/null
++++ b/event/src/main/java/jdk/internal/reflect/ReflectionFactory.java
+@@ -0,0 +1,17 @@
++package jdk.internal.reflect;
++
++import java.lang.reflect.Method;
++
++/**
++ * This class is used just for compilation and removed during build
++ */
++public final class ReflectionFactory {
++
++    public static ReflectionFactory getReflectionFactory() {
++        return null;
++    }
++
++    public MethodAccessor newMethodAccessor(Method method) {
++        return null;
++    }
++}
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+index 5b5d4201..d5186475 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+@@ -39,22 +39,19 @@ public class EventBus
+ 
+         if ( handlers != null )
+         {
++            // Waterfall start - explicitly wrap event into array
++            Object[] wrapped = { event };
+             for ( EventHandlerMethod method : handlers )
+             {
+                 try
+                 {
+-                    method.invoke( event );
+-                } catch ( IllegalAccessException ex )
+-                {
+-                    throw new Error( "Method became inaccessible: " + event, ex );
+-                } catch ( IllegalArgumentException ex )
+-                {
+-                    throw new Error( "Method rejected target/argument: " + event, ex );
++                    method.invoke( wrapped );
+                 } catch ( InvocationTargetException ex )
+                 {
+                     logger.log( Level.WARNING, MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() ), ex.getCause() );
+                 }
+             }
++            // Waterfall end
+         }
+     }
+ 
+@@ -186,6 +183,7 @@ public class EventBus
+                     {
+                         for ( Method method : listenerHandlers.getValue() )
+                         {
++                            method.setAccessible( true ); // Waterfall - forcibly make method accessible
+                             EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
+                             handlersList.add( ehm );
+                         }
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+index ad19c020..95fe382d 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+@@ -2,20 +2,29 @@ package net.md_5.bungee.event;
+ 
+ import java.lang.reflect.InvocationTargetException;
+ import java.lang.reflect.Method;
+-import lombok.AllArgsConstructor;
++
+ import lombok.Getter;
+ 
+-@AllArgsConstructor
+ public class EventHandlerMethod
+ {
+ 
+     @Getter
+     private final Object listener;
+     @Getter
++    // Waterfall start
++    @Deprecated
+     private final Method method;
++    private final WrappedMethodAccessor accessor;
++
++    public EventHandlerMethod(Object listener, Method method) {
++        this.listener = listener;
++        this.method = method;
++        this.accessor = InternalReflectionFactory.unreflect(method);
++    }
++    // Waterfall end
+ 
+-    public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
++    public void invoke(Object[] event) throws InvocationTargetException // Waterfall - replace with array
+     {
+-        method.invoke( listener, event );
++        accessor.invoke( listener, event ); // Waterfall
+     }
+ }
+diff --git a/event/src/main/java/net/md_5/bungee/event/InternalReflectionFactory.java b/event/src/main/java/net/md_5/bungee/event/InternalReflectionFactory.java
+new file mode 100644
+index 00000000..aa6d69ca
+--- /dev/null
++++ b/event/src/main/java/net/md_5/bungee/event/InternalReflectionFactory.java
+@@ -0,0 +1,43 @@
++package net.md_5.bungee.event;
++
++import sun.reflect.MethodAccessor;
++import sun.reflect.ReflectionFactory;
++
++import java.lang.reflect.Method;
++import java.util.function.Function;
++
++final class InternalReflectionFactory {
++
++    private InternalReflectionFactory() { }
++
++    private static final Function<Method, WrappedMethodAccessor> wrapper;
++
++    static {
++        wrapper = Float.parseFloat(System.getProperty("java.class.version")) <= 52.0 ? wrapperForJava8() : wrapperForJava9();
++    }
++
++    static WrappedMethodAccessor unreflect(Method method) {
++        return wrapper.apply(method);
++    }
++
++    private static Function<Method, WrappedMethodAccessor> wrapperForJava9() {
++        return new Function<Method, WrappedMethodAccessor>() {
++            @Override
++            public WrappedMethodAccessor apply(Method method) {
++                jdk.internal.reflect.MethodAccessor impl = jdk.internal.reflect.ReflectionFactory.getReflectionFactory()
++                        .newMethodAccessor(method);
++                return impl::invoke;
++            }
++        };
++    }
++
++    private static Function<Method, WrappedMethodAccessor> wrapperForJava8() {
++        return new Function<Method, WrappedMethodAccessor>() {
++            @Override
++            public WrappedMethodAccessor apply(Method method) {
++                MethodAccessor impl = ReflectionFactory.getReflectionFactory().newMethodAccessor(method);
++                return impl::invoke;
++            }
++        };
++    }
++}
+diff --git a/event/src/main/java/net/md_5/bungee/event/WrappedMethodAccessor.java b/event/src/main/java/net/md_5/bungee/event/WrappedMethodAccessor.java
+new file mode 100644
+index 00000000..7577f75d
+--- /dev/null
++++ b/event/src/main/java/net/md_5/bungee/event/WrappedMethodAccessor.java
+@@ -0,0 +1,8 @@
++package net.md_5.bungee.event;
++
++import java.lang.reflect.InvocationTargetException;
++
++public interface WrappedMethodAccessor {
++
++    void invoke(Object obj, Object[] args) throws IllegalArgumentException, InvocationTargetException;
++}
+diff --git a/event/src/main/java/sun/reflect/MethodAccessor.java b/event/src/main/java/sun/reflect/MethodAccessor.java
+new file mode 100644
+index 00000000..f11c7995
+--- /dev/null
++++ b/event/src/main/java/sun/reflect/MethodAccessor.java
+@@ -0,0 +1,12 @@
++package sun.reflect;
++
++import java.lang.reflect.InvocationTargetException;
++
++/**
++ * This class is used just for compilation and removed during build
++ */
++public interface MethodAccessor {
++
++    Object invoke(Object obj, Object[] args)
++            throws IllegalArgumentException, InvocationTargetException;
++}
+\ No newline at end of file
+diff --git a/event/src/main/java/sun/reflect/ReflectionFactory.java b/event/src/main/java/sun/reflect/ReflectionFactory.java
+new file mode 100644
+index 00000000..920e0508
+--- /dev/null
++++ b/event/src/main/java/sun/reflect/ReflectionFactory.java
+@@ -0,0 +1,17 @@
++package sun.reflect;
++
++import java.lang.reflect.Method;
++
++/**
++ * This class is used just for compilation and removed during build
++ */
++public final class ReflectionFactory {
++
++    public static ReflectionFactory getReflectionFactory() {
++        return null;
++    }
++
++    public MethodAccessor newMethodAccessor(Method method) {
++        return null;
++    }
++}
+-- 
+2.22.0.windows.1
+
