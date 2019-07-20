@@ -1,4 +1,4 @@
-From 0e121749810b98524d26f55404ac340adcd24cb0 Mon Sep 17 00:00:00 2001
+From add872fb48e8a9de2966f7a02db4eca8147fc89a Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -445,7 +445,7 @@ index 87093807..fd5642e4 100644
  
              Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index a2bc6a0d..ab7849bf 100644
+index ff1f28aa..ba6faa8d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -457,15 +457,15 @@ index a2bc6a0d..ab7849bf 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -25,6 +27,7 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_14_2 = 485;
+@@ -26,6 +28,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_14_3 = 490;
+     public static final int MINECRAFT_1_14_4 = 498;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
              "1.9.x",
              "1.10.x",
-@@ -34,6 +37,8 @@ public class ProtocolConstants
+@@ -35,6 +38,8 @@ public class ProtocolConstants
              "1.14.x"
      );
      public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
@@ -1625,7 +1625,7 @@ index 51d0c6cf..35b9530a 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 3855c0b9..57ecf74d 100644
+index 38a4761e..d321bf9a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -29,6 +29,10 @@ public abstract class EntityMap
@@ -1994,5 +1994,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.22.0
+2.21.0 (Apple Git-120)
 
