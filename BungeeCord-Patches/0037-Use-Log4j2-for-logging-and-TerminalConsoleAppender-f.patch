@@ -1,4 +1,4 @@
-From f49ada629ce06ccfb3a8f27300933965a990c83c Mon Sep 17 00:00:00 2001
+From 3069250401f2768ebc3ed42ae855a9baba3be5a5 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -198,11 +198,12 @@ index 00000000..e046897a
 +}
 diff --git a/log4j/src/main/resources/log4j2.component.properties b/log4j/src/main/resources/log4j2.component.properties
 new file mode 100644
-index 00000000..6ed08f31
+index 00000000..e43f5dac
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2.component.properties
-@@ -0,0 +1 @@
+@@ -0,0 +1,2 @@
 +log4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
++log4j.skipJansi=true
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 new file mode 100644
 index 00000000..93ce3b14
@@ -244,7 +245,7 @@ index 516b87eb..eff0bf2e 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index e637cf99..f15927ec 100644
+index e637cf99..440e128f 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
@@ -265,12 +266,12 @@ index e637cf99..f15927ec 100644
 +        <dependency>
 +            <groupId>net.minecrell</groupId>
 +            <artifactId>terminalconsoleappender</artifactId>
-+            <version>1.1.1</version>
++            <version>1.2.0</version>
 +        </dependency>
 +        <dependency>
-+            <groupId>net.java.dev.jna</groupId>
-+            <artifactId>jna</artifactId>
-+            <version>4.5.2</version>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-terminal-jansi</artifactId>
++            <version>3.12.1</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <!-- Waterfall end -->
