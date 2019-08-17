@@ -1,11 +1,11 @@
-From f5fca7edf8593baf51d1f71c2e34cdc5ed48238a Mon Sep 17 00:00:00 2001
+From 39f9f9796d555c8c373444a9afa988bb9b647e81 Mon Sep 17 00:00:00 2001
 From: Mark Vainomaa <mikroskeem@mikroskeem.eu>
 Date: Wed, 17 Apr 2019 09:24:38 +0300
 Subject: [PATCH] Speed up packet construction
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 87093807..660cc714 100644
+index 87093807..c2b0e12c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -53,6 +53,7 @@ public enum Protocol
@@ -313,15 +313,14 @@ index 87093807..660cc714 100644
                      data.packetMap.put( packetClass, mapping.packetID );
                      data.packetConstructors[mapping.packetID] = constructor;
                  }
--            } catch ( NoSuchMethodException ex )
-+            // Waterfall start
++            // Waterfall start - speed up packet construction
 +            /*
-+            } catch ( NoSuchMethodException ex ) // Waterfall - speed up packet construction
+             } catch ( NoSuchMethodException ex )
              {
                  throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
              }
-+             */ // Waterfall end  - speed up packet construction
-+        }
++             */ // Waterfall end
+         }
 +        // Waterfall start - speed up packet construction (backwards compat)
 +        private <P extends DefinedPacket> void registerPacket(Class<P> packetClass, ProtocolMapping... mappings) {
 +            java.util.function.Supplier<P> packetSupplier;
@@ -338,7 +337,7 @@ index 87093807..660cc714 100644
 +                throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
 +            }
 +            registerPacket(packetClass, packetSupplier, mappings);
-         }
++        }
 +        // Waterfall end
  
          final int getId(Class<? extends DefinedPacket> packet, int version)
