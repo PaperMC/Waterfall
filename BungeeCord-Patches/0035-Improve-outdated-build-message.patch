@@ -1,15 +1,15 @@
-From d8dbe569ea22ef4720d8d0cde155074419e96a22 Mon Sep 17 00:00:00 2001
+From ccf2d098264af3f6482da258d2e1ccc3288d192d Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Sat, 10 Jun 2017 20:56:02 +0100
 Subject: [PATCH] Improve outdated build message
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 50195762..9fab61ec 100644
+index 4ba0ced5..4c119b9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -48,9 +48,9 @@ public class BungeeCordLauncher
-             deadline.add( Calendar.WEEK_OF_YEAR, -4 );
+             deadline.add( Calendar.WEEK_OF_YEAR, -8 );
              if ( buildDate.before( deadline.getTime() ) )
              {
 -                System.err.println( "*** Warning, this build is outdated ***" );
@@ -22,5 +22,5 @@ index 50195762..9fab61ec 100644
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
              }
 -- 
-2.21.0
+2.22.0
 
