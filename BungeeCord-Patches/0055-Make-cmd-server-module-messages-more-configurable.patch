@@ -1,0 +1,73 @@
+From 59760e2bc35c63aaf4871689a8e41acacc31e82c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jakub=20Zag=C3=B3rski?= <jaqobbdev@gmail.com>
+Date: Sun, 25 Aug 2019 12:42:53 +0200
+Subject: [PATCH] Make cmd-server module messages more configurable
+
+
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+index 1272cbf5..dbbfa84c 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+@@ -8,6 +8,7 @@ import java.util.Locale;
+ import java.util.Map;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.ClickEvent;
+ import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.HoverEvent;
+@@ -46,17 +47,32 @@ public class CommandServer extends Command implements TabExecutor
+             {
+                 if ( server.canAccess( sender ) )
+                 {
+-                    TextComponent serverTextComponent = new TextComponent( first ? server.getName() : ", " + server.getName() );
++                    // Waterfall start - Make cmd-server module messages more configurable
++                    BaseComponent[] serverBaseComponents;
++                    if ( first )
++                    {
++                        serverBaseComponents = TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "server_list_value_first", server.getName() ) );
++                    } else
++                    {
++                        serverBaseComponents = TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "server_list_value_next", server.getName() ) );
++                    }
++                    // Waterfall end
+                     int count = server.getPlayers().size();
+-                    serverTextComponent.setHoverEvent( new HoverEvent(
++                    // Waterfall start - Make cmd-server module messages more configurable
++                    for ( BaseComponent serverBaseComponent : serverBaseComponents )
++                    {
++                        serverBaseComponent.setHoverEvent( new HoverEvent(
+                             HoverEvent.Action.SHOW_TEXT,
+                             new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).appendLegacy( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
+-                    );
+-                    serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+-                    serverList.append( serverTextComponent );
++                        );
++                        serverBaseComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
++                    }
++                    // Waterfall end
++                    serverList.append( serverBaseComponents );
+                     first = false;
+                 }
+             }
++            serverList.appendLegacy( ProxyServer.getInstance().getTranslation( "server_list_ending" ) ); // Waterfall - Make cmd-server module messages more configurable
+             sender.sendMessage( serverList.create() );
+         } else
+         {
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 6e3ef0a4..42d3c4bc 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -18,6 +18,9 @@ proxy_full=Server is full!
+ restart=[Proxy] Proxy restarting.
+ server_kick=[Kicked] 
+ server_list=\u00a76You may connect to the following servers at this time: 
++server_list_value_first={0}
++server_list_value_next=, {0}
++server_list_ending=.
+ server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
+ total_players=Total players online: {0}
+ name_too_long=Cannot have username longer than 16 characters
+-- 
+2.18.0.windows.1
+
