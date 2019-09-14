@@ -1,0 +1,146 @@
+From 856a1301e0f044cd5bbb50d7021ca7c741218cd2 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sat, 14 Sep 2019 11:52:34 +0300
+Subject: [PATCH] Add gplugins command
+
+
+diff --git a/module/cmd-gplugins/pom.xml b/module/cmd-gplugins/pom.xml
+new file mode 100644
+index 00000000..753e52ee
+--- /dev/null
++++ b/module/cmd-gplugins/pom.xml
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++  <parent>
++    <artifactId>waterfall-module</artifactId>
++    <groupId>io.github.waterfallmc</groupId>
++    <version>1.14-SNAPSHOT</version>
++  </parent>
++  <modelVersion>4.0.0</modelVersion>
++
++  <groupId>io.github.waterfallmc</groupId>
++  <artifactId>waterfall-module-cmd-gplugins</artifactId>
++  <version>1.14-SNAPSHOT</version>
++  <packaging>jar</packaging>
++
++  <name>cmd_gplugins</name>
++  <description>Provides the gplugins command</description>
++
++</project>
+\ No newline at end of file
+diff --git a/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/CommandPlugins.java b/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/CommandPlugins.java
+new file mode 100644
+index 00000000..aaa3f975
+--- /dev/null
++++ b/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/CommandPlugins.java
+@@ -0,0 +1,37 @@
++package io.github.waterfallmc.waterfall.module.cmd.gplugins;
++
++import java.text.Collator;
++import java.util.List;
++import java.util.stream.Collectors;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.plugin.Command;
++
++public class CommandPlugins extends Command {
++
++  public CommandPlugins() {
++    super("gplugins", "waterfall.command.gplugins", "gpl");
++  }
++
++  @Override
++  public void execute(CommandSender sender, String[] args) {
++    List<String> pluginNames =
++        ProxyServer.getInstance().getPluginManager().getPlugins().stream()
++            .map(plugin -> plugin.getDescription().getName())
++            .sorted(Collator.getInstance())
++            .collect(Collectors.toList());
++    StringBuilder pluginsList = new StringBuilder();
++    for (String name : pluginNames) {
++      pluginsList.append(ChatColor.GREEN).append(name).append(ChatColor.WHITE).append(", ");
++    }
++    String plugins = pluginsList.substring(0, pluginsList.length() - 2);
++    sender.sendMessage(
++        new ComponentBuilder("Plugins (")
++            .appendLegacy(Integer.toString(pluginNames.size()))
++            .appendLegacy("): ")
++            .appendLegacy(plugins)
++            .create());
++  }
++}
+diff --git a/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/PluginPlugins.java b/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/PluginPlugins.java
+new file mode 100644
+index 00000000..cb484a32
+--- /dev/null
++++ b/module/cmd-gplugins/src/main/java/io/github/waterfallmc/waterfall/module/cmd/gplugins/PluginPlugins.java
+@@ -0,0 +1,11 @@
++package io.github.waterfallmc.waterfall.module.cmd.gplugins;
++
++import net.md_5.bungee.api.plugin.Plugin;
++
++public class PluginPlugins extends Plugin {
++
++  @Override
++  public void onEnable() {
++    getProxy().getPluginManager().registerCommand(this, new CommandPlugins());
++  }
++}
+diff --git a/module/cmd-gplugins/src/main/resources/plugin.yml b/module/cmd-gplugins/src/main/resources/plugin.yml
+new file mode 100644
+index 00000000..1b365634
+--- /dev/null
++++ b/module/cmd-gplugins/src/main/resources/plugin.yml
+@@ -0,0 +1,5 @@
++name: ${project.name}
++main: io.github.waterfallmc.waterfall.module.cmd.gplugins.PluginPlugins
++version: ${describe}
++description: ${project.description}
++author: ${module.author}
+\ No newline at end of file
+diff --git a/module/pom.xml b/module/pom.xml
+index aa604f35..d7fc94d4 100644
+--- a/module/pom.xml
++++ b/module/pom.xml
+@@ -25,6 +25,7 @@
+         <module>cmd-send</module>
+         <module>cmd-server</module>
+         <module>reconnect-yaml</module>
++        <module>cmd-gplugins</module>
+     </modules>
+ 
+     <properties>
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 44011a96..3a1d2843 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter
+             } ) );
+             set( "permissions.admin", Arrays.asList( new String[]
+             {
+-                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
++                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload",
++                "waterfall.command.gplugins" // Waterfall - add gplugins command
+             } ) );
+         }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+index 8c5cc949..c66bbabf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+@@ -85,6 +85,7 @@ public class ModuleManager
+                 defaults.add( "jenkins://cmd_list" );
+                 defaults.add( "jenkins://cmd_send" );
+                 defaults.add( "jenkins://cmd_server" );
++                defaults.add("jenkins://cmd_gplugins"); // Waterfall - add gplugins command
+             case 1:
+                 defaults.add( "jenkins://reconnect_yaml" );
+         }
+-- 
+2.23.0.windows.1
+
