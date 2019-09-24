@@ -1,4 +1,4 @@
-From 66bf7487b7d6ac842ccb685b8e24d00cc63f6367 Mon Sep 17 00:00:00 2001
+From 24451de40fd98201fd6cd75b113d0e10d8bfa0d6 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,13 +12,13 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 46adc983..0e69db36 100644
+index 058cca67..6bc54495 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -214,4 +214,9 @@ public interface ProxyConfig
-      * @return should we allow empty packets
+@@ -207,4 +207,9 @@ public interface ProxyConfig
+      * @return should we disable the tab completion limit for 1.13+ clients
       */
-     boolean isAllowEmptyPackets();
+     boolean isDisableModernTabLimiter();
 +
 +    /**
 +     * @return Should we disable entity metadata rewriting?
@@ -26,29 +26,29 @@ index 46adc983..0e69db36 100644
 +    boolean isDisableEntityMetadataRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index f28f0111..41a71f65 100644
+index 4ff8da6d..e860214f 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -53,6 +53,8 @@ public class WaterfallConfiguration extends Configuration {
-      */
-     private boolean allowEmptyPackets = false;
+@@ -42,6 +42,8 @@ public class WaterfallConfiguration extends Configuration {
+     private int tabThrottle = 1000;
+     private boolean disableModernTabLimiter = true;
  
 +    private boolean disableEntityMetadataRewrite = false;
 +
      @Override
      public void load() {
          super.load();
-@@ -65,6 +67,7 @@ public class WaterfallConfiguration extends Configuration {
+@@ -53,6 +55,7 @@ public class WaterfallConfiguration extends Configuration {
+         // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
-         allowEmptyPackets = config.getBoolean("allow_empty_packets", allowEmptyPackets);
 +        disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
      }
  
      @Override
-@@ -96,4 +99,9 @@ public class WaterfallConfiguration extends Configuration {
-     public boolean isAllowEmptyPackets() {
-         return allowEmptyPackets;
+@@ -79,4 +82,9 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isDisableModernTabLimiter() {
+         return disableModernTabLimiter;
      }
 +
 +    @Override
@@ -233,5 +233,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.21.0 (Apple Git-120)
+2.23.0
 
