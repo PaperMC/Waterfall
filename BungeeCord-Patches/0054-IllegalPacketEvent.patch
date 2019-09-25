@@ -1,0 +1,55 @@
+From 3d8c6e3046440eb1418f0fab91c41f354ba42a37 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Wed, 25 Sep 2019 16:33:33 +0100
+Subject: [PATCH] IllegalPacketEvent
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/IllegalPacketEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/IllegalPacketEvent.java
+new file mode 100644
+index 00000000..b3a642f9
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/IllegalPacketEvent.java
+@@ -0,0 +1,23 @@
++package io.github.waterfallmc.waterfall.event;
++
++import net.md_5.bungee.api.connection.Connection;
++import net.md_5.bungee.api.plugin.Event;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++
++
++@ToString(callSuper = false)
++@EqualsAndHashCode(callSuper = false)
++public class IllegalPacketEvent extends Event {
++    private Connection sender;
++
++    public IllegalPacketEvent(Connection connection) {
++        this.sender = connection;
++    }
++
++    public Connection getSender() {
++        return sender;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 3a9dab68..d2bd8ad0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -334,7 +334,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+                 break;
+             default:
+-                throw new IllegalArgumentException( "Cannot request protocol " + handshake.getRequestedProtocol() );
++                // Waterfall start
++                bungee.pluginManager.callEvent(new io.github.waterfallmc.waterfall.event.IllegalPacketEvent(this));
++                ch.close();
++                bungee.getLogger().warning(this + ": Cannot request protocol " + handshake.getRequestedProtocol());
++                // Waterfall end
+         }
+     }
+ 
+-- 
+2.23.0
+
