@@ -1,4 +1,4 @@
-From 3069250401f2768ebc3ed42ae855a9baba3be5a5 Mon Sep 17 00:00:00 2001
+From 40173bfdf3193d6b393cfab6df0fcf4fdfb7f417 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -324,7 +324,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 083bc177..c527e3a9 100644
+index 083bc177..c4f45964 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -44,7 +44,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -371,15 +371,15 @@ index 083bc177..c527e3a9 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -192,6 +191,8 @@ public class BungeeCord extends ProxyServer
-         }
-         reloadMessages();
+@@ -202,6 +201,8 @@ public class BungeeCord extends ProxyServer
+         // BungeeCord. This version is only used when extracting the libraries to their temp folder.
+         System.setProperty( "library.jansi.version", "BungeeCord" );
  
 +        // Waterfall start - Use TerminalConsoleAppender and Log4J
 +        /*
-         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
-         // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-         // using the loading class's implementation version. Normally this works completely fine,
+         AnsiConsole.systemInstall();
+         consoleReader = new ConsoleReader();
+         consoleReader.setExpandEvents( false );
 @@ -210,6 +211,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
@@ -391,7 +391,7 @@ index 083bc177..c527e3a9 100644
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 9fab61ec..624eb5f0 100644
+index 4c119b9d..dc2c584d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -63,6 +63,9 @@ public class BungeeCordLauncher
@@ -458,5 +458,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.22.0
+2.23.0
 
