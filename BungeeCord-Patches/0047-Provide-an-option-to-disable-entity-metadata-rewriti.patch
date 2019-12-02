@@ -1,4 +1,4 @@
-From 24451de40fd98201fd6cd75b113d0e10d8bfa0d6 Mon Sep 17 00:00:00 2001
+From b28b2cebfc3ce3ac59fddc4d8a7c03278012d903 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -120,39 +120,25 @@ index c2b1de82..72f487dc 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 74aa4f3e..7e9678d9 100644
+index 74aa4f3e..922c4411 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -145,6 +145,7 @@ public final class UserConnection implements ProxiedPlayer
-     @Setter
-     private ForgeServerHandler forgeServerHandler;
-     /*========================================================================*/
-+    private boolean disableEntityMetadaRewrite;
-     private final Unsafe unsafe = new Unsafe()
-     {
-         @Override
-@@ -156,6 +157,13 @@ public final class UserConnection implements ProxiedPlayer
- 
-     public void init()
-     {
-+        // Waterfall start
-+        disableEntityMetadaRewrite = bungee.getConfig().isDisableEntityMetadataRewrite();
-+        if ( disableEntityMetadaRewrite )
-+        {
-+            entityRewrite = net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
-+        } else
-+        // Waterfall end
-         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
- 
-         this.displayName = name;
-@@ -730,4 +738,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -42,6 +42,7 @@ import net.md_5.bungee.api.score.Scoreboard;
+ import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.connection.InitialHandler;
+ import net.md_5.bungee.entitymap.EntityMap;
++import net.md_5.bungee.entitymap.EntityMap_Dummy;
+ import net.md_5.bungee.forge.ForgeClientHandler;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.forge.ForgeServerHandler;
+@@ -730,4 +731,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
 +
 +    // Waterfall start
 +    public boolean isDisableEntityMetadataRewrite() {
-+        return disableEntityMetadaRewrite;
++        return entityRewrite == EntityMap_Dummy.INSTANCE;
 +    }
 +    // Waterfall end
  }
@@ -177,10 +163,31 @@ index fd14f518..fba84905 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index bd2bea7c..38a4761e 100644
+index bd2bea7c..ab10d10c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -275,7 +275,13 @@ public abstract class EntityMap
+@@ -8,6 +8,8 @@ import io.netty.buffer.ByteBufInputStream;
+ import java.io.IOException;
+ import lombok.AccessLevel;
+ import lombok.NoArgsConstructor;
++
++import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+@@ -27,6 +29,11 @@ public abstract class EntityMap
+     // Returns the correct entity map for the protocol version
+     public static EntityMap getEntityMap(int version)
+     {
++        // Waterfall start
++        if (ProxyServer.getInstance().getConfig().isDisableEntityMetadataRewrite()) {
++            return EntityMap_Dummy.INSTANCE;
++        }
++        // Waterfall end
+         switch ( version )
+         {
+             case ProtocolConstants.MINECRAFT_1_8:
+@@ -275,7 +282,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -233,5 +240,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.23.0
+2.24.0
 
