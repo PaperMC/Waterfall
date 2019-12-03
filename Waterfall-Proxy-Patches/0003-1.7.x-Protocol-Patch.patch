@@ -1,4 +1,4 @@
-From e96543ee3dba4b62ae0a82c944fbe35ca9289523 Mon Sep 17 00:00:00 2001
+From 38fdbe4c22469bc4803297537fe9f300e49ed576 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1256,7 +1256,7 @@ index 85d386c0..7a80acac 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 58b0983c..1296c1fb 100644
+index 0c90b978..a3ba3521 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -162,6 +162,14 @@ public class BungeeCord extends ProxyServer
@@ -1411,7 +1411,7 @@ index 72f487dc..a92b979a 100644
                  throw CancelSendSignal.INSTANCE;
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e9678d9..18cecf6d 100644
+index eeb7a51e..04f2af59 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -53,6 +53,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -1422,7 +1422,7 @@ index 7e9678d9..18cecf6d 100644
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -202,6 +203,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -194,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1430,7 +1430,7 @@ index 7e9678d9..18cecf6d 100644
          displayName = name;
      }
  
-@@ -484,7 +486,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -476,7 +478,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message );
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1439,7 +1439,7 @@ index 7e9678d9..18cecf6d 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -499,7 +501,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -491,7 +493,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message )[0];
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1448,7 +1448,7 @@ index 7e9678d9..18cecf6d 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -678,6 +680,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -670,6 +672,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1456,7 +1456,7 @@ index 7e9678d9..18cecf6d 100644
          header = ChatComponentTransformer.getInstance().transform( this, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, footer )[0];
  
-@@ -690,6 +693,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -682,6 +685,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1464,7 +1464,7 @@ index 7e9678d9..18cecf6d 100644
          header = ChatComponentTransformer.getInstance().transform( this, header );
          footer = ChatComponentTransformer.getInstance().transform( this, footer );
  
-@@ -719,6 +723,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -711,6 +715,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1639,11 +1639,11 @@ index 51d0c6cf..35b9530a 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 38a4761e..d321bf9a 100644
+index 324a7741..f09dc2aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -29,6 +29,10 @@ public abstract class EntityMap
-     {
+@@ -35,6 +35,10 @@ public abstract class EntityMap
+         // Waterfall end
          switch ( version )
          {
 +            case ProtocolConstants.MINECRAFT_1_7_2:
@@ -2008,5 +2008,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.23.0
+2.24.0
 
