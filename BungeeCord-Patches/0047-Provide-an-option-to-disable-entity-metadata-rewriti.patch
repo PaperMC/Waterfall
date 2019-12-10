@@ -1,4 +1,4 @@
-From 0e88d1a3be4a4d500bf6ce78100a066252ded0b0 Mon Sep 17 00:00:00 2001
+From 0eba7da12fc8c161aa50d07bfcd616a8acbede73 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c2b1de82..72f487dc 100644
+index 7aa792a2..00cd477f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -226,7 +226,7 @@ public class ServerConnector extends PacketHandler
@@ -85,17 +85,18 @@ index c2b1de82..72f487dc 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -285,12 +287,32 @@ public class ServerConnector extends PacketHandler
+@@ -285,12 +287,33 @@ public class ServerConnector extends PacketHandler
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
  
              user.setDimensionChange( true );
 -            if ( login.getDimension() == user.getDimension() )
 +            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
              {
-                 user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+                 user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              }
  
              user.setServerEntityId( login.getEntityId() );
++
 +            // Waterfall start
 +            if ( user.isDisableEntityMetadataRewrite() ) {
 +                // Ensure that we maintain consistency
@@ -103,20 +104,20 @@ index c2b1de82..72f487dc 100644
 +
 +                // Only send if we are not in the same dimension
 +                if (user.getDimension() != login.getDimension()) {
-+                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
 +                }
 +
-+                Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(),
-+                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo() );
++                Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(), login.getSeed(),
++                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn() );
 +                user.unsafe().sendPacket(modLogin);
 +
 +                // Only send if we're in the same dimension
 +                if (user.getDimension() == login.getDimension()) {
-+                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
 +                }
 +            }
 +            // Waterfall end
-             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -155,7 +156,7 @@ index fd14f518..fba84905 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index bd2bea7c..324a7741 100644
+index 298a99be..e5d566bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -8,6 +8,7 @@ import io.netty.buffer.ByteBufInputStream;
@@ -178,7 +179,7 @@ index bd2bea7c..324a7741 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -275,7 +281,13 @@ public abstract class EntityMap
+@@ -277,7 +283,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:

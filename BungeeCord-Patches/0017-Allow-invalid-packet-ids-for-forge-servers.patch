@@ -1,4 +1,4 @@
-From 711534132b55ac51ac7522e17415ad181110282c Mon Sep 17 00:00:00 2001
+From 6559583460588cb30d956d9db8eae834eb2a9ef5 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index ea44573d..5b32effe 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 0e6cac95..d599eef3 100644
+index 8c99ee85..31cbaa53 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -392,14 +392,23 @@ public enum Protocol
+@@ -410,14 +410,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -66,7 +66,7 @@ index 0e6cac95..d599eef3 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ac54ff74..e32a06c2 100644
+index cf397206..8cdd3f98 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -31,7 +31,9 @@ import net.md_5.bungee.forge.ForgeUtils;
@@ -105,10 +105,10 @@ index e5a63541..644522b1 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 3b469ab9..bd2bea7c 100644
+index ff59c824..298a99be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -315,6 +315,12 @@ public abstract class EntityMap
+@@ -317,6 +317,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -122,5 +122,5 @@ index 3b469ab9..bd2bea7c 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.21.0 (Apple Git-120)
+2.24.0
 
