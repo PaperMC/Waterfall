@@ -1,4 +1,4 @@
-From ccd977e511e6201c62e9e0da5879b55b1351f9cf Mon Sep 17 00:00:00 2001
+From b61bb662bb822884c42a5f7777a22a7196bcd1ee Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -6,10 +6,10 @@ Subject: [PATCH] ConnectionInitEvent
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
 new file mode 100644
-index 00000000..381c8deb
+index 00000000..509b76a3
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,42 @@
 +package io.github.waterfallmc.waterfall.event;
 +
 +import net.md_5.bungee.api.Callback;
@@ -43,6 +43,13 @@ index 00000000..381c8deb
 +    @Override
 +    public void setCancelled(boolean cancel) {
 +        this.isCancelled = cancel;
++    }
++
++    /**
++     * @return the INetSocketAddress of the connection being opened
++     */
++    public InetSocketAddress getRemoteAddress() {
++        return remoteAddress;
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
@@ -98,5 +105,5 @@ index 23241d68..31de5a6f 100644
      };
      public static final Base BASE = new Base();
 -- 
-2.24.0
+2.24.1
 
