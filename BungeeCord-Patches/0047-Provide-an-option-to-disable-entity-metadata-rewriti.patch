@@ -1,4 +1,4 @@
-From 1a31a8c4089c1325cb5434d30a52d91ad4d92701 Mon Sep 17 00:00:00 2001
+From 9ca8e2ccb7047c10c172b9635aacf01111b86244 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -156,10 +156,10 @@ index fd14f518..fba84905 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 232f7316..066135ad 100644
+index d87ceb57..af27f65c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBufInputStream;
+@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBufInputStream;
  import java.io.IOException;
  import lombok.AccessLevel;
  import lombok.NoArgsConstructor;
@@ -167,7 +167,7 @@ index 232f7316..066135ad 100644
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
  
-@@ -27,6 +28,11 @@ public abstract class EntityMap
+@@ -26,6 +27,11 @@ public abstract class EntityMap
      // Returns the correct entity map for the protocol version
      public static EntityMap getEntityMap(int version)
      {
@@ -179,7 +179,7 @@ index 232f7316..066135ad 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -278,7 +284,13 @@ public abstract class EntityMap
+@@ -277,7 +283,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
