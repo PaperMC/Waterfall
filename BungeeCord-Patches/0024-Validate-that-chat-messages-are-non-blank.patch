@@ -48,7 +48,7 @@ index 4bb61f63..9287d168 100644
      {
          int maxLength = ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_11 ) ? 256 : 100;
          Preconditions.checkArgument( chat.getMessage().length() <= maxLength, "Chat message too long" ); // Mojang limit, check on updates
-+        Preconditions.checkArgument(!StringUtil.isBlank(chat.getMessage()), "Chat message is empty");
++        if (StringUtil.isBlank(chat.getMessage())) return;
  
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
