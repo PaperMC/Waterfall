@@ -1,0 +1,147 @@
+From 6c369ce350d2c2e606225dac50d9d0ba2c524ce2 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Mon, 25 Nov 2019 19:54:06 +0000
+Subject: [PATCH] Speed up some common exceptions
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java
+new file mode 100644
+index 00000000..11e103cb
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java
+@@ -0,0 +1,19 @@
++package io.github.waterfallmc.waterfall.utils;
++
++// This is basically a copy of QuietException
++public class FastException extends RuntimeException {
++
++    public FastException(String message) {
++        super(message);
++    }
++
++    @Override
++    public synchronized Throwable initCause(Throwable cause) {
++        return this;
++    }
++
++    @Override
++    public synchronized Throwable fillInStackTrace() {
++        return this;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
+index 6c0ef4df..a620b7c0 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
+@@ -12,4 +12,18 @@ public class BadPacketException extends RuntimeException
+     {
+         super( message, cause );
+     }
++
++    // Waterfall start
++    @Override
++    public Throwable initCause(Throwable cause)
++    {
++        return this;
++    }
++
++    @Override
++    public Throwable fillInStackTrace()
++    {
++        return this;
++    }
++    // Waterfall end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 9951c1f9..e56bfccb 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -145,13 +145,18 @@ public abstract class DefinedPacket
+         byte in;
+         while ( true )
+         {
++            // Waterfall start
++            if (input.readableBytes() == 0) {
++                throw new BadPacketException("No more bytes reading varint");
++            }
++            // Waterfall end
+             in = input.readByte();
+ 
+             out |= ( in & 0x7F ) << ( bytes++ * 7 );
+ 
+             if ( bytes > maxBytes )
+             {
+-                throw new RuntimeException( "VarInt too big" );
++                throw new BadPacketException( "VarInt too big" );
+             }
+ 
+             if ( ( in & 0x80 ) != 0x80 )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java b/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java
+new file mode 100644
+index 00000000..2583aa2c
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java
+@@ -0,0 +1,26 @@
++package net.md_5.bungee.protocol;
++
++import io.netty.handler.codec.DecoderException;
++
++public class FastDecoderException extends DecoderException {
++
++    public FastDecoderException(String message, Throwable cause) {
++        super(message, cause);
++    }
++
++    public FastDecoderException(String message) {
++        super(message);
++    }
++
++    @Override
++    public Throwable initCause(Throwable cause)
++    {
++        return this;
++    }
++
++    @Override
++    public Throwable fillInStackTrace()
++    {
++        return this;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 71ddf022..6c3c7ab8 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -71,7 +71,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
+-            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e);
++            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
+         } finally
+         {
+             if ( slice != null )
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index ac99d02c..0c1ecfb8 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -32,6 +32,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+     /*========================================================================*/
+     private final Random random = new Random();
+     private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite( 30, TimeUnit.SECONDS ).build();
++    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
+ 
+     private void writeShort(ByteBuf buf, int s)
+     {
+@@ -96,7 +97,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+             QuerySession session = sessions.getIfPresent( msg.sender().getAddress() );
+             if ( session == null || session.getToken() != challengeToken )
+             {
+-                throw new IllegalStateException( "No session!" );
++                throw cachedNoSessionException; // Waterfall
+             }
+ 
+             // Waterfall start
+-- 
+2.24.1
+
