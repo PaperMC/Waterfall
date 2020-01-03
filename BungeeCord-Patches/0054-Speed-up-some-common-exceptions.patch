@@ -1,4 +1,4 @@
-From 6c369ce350d2c2e606225dac50d9d0ba2c524ce2 Mon Sep 17 00:00:00 2001
+From 3744c3a8de353d95401dec3e47a93c7c5d820eb5 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -30,10 +30,18 @@ index 00000000..11e103cb
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
-index 6c0ef4df..a620b7c0 100644
+index 6c0ef4df..f20104a2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
-@@ -12,4 +12,18 @@ public class BadPacketException extends RuntimeException
+@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol;
+ 
+ public class BadPacketException extends RuntimeException
+ {
++    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
+ 
+     public BadPacketException(String message)
+     {
+@@ -12,4 +13,24 @@ public class BadPacketException extends RuntimeException
      {
          super( message, cause );
      }
@@ -42,12 +50,18 @@ index 6c0ef4df..a620b7c0 100644
 +    @Override
 +    public Throwable initCause(Throwable cause)
 +    {
++        if (PROCESS_TRACES) {
++            return super.initCause(cause);
++        }
 +        return this;
 +    }
 +
 +    @Override
 +    public Throwable fillInStackTrace()
 +    {
++        if (PROCESS_TRACES) {
++            return super.fillInStackTrace();
++        }
 +        return this;
 +    }
 +    // Waterfall end
