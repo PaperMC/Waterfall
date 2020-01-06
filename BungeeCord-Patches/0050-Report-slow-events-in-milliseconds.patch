@@ -1,4 +1,4 @@
-From a4d949a57edd3e44403db85279ee99d229b000fa Mon Sep 17 00:00:00 2001
+From cdc746a9ee1c083ea0598a553647e17498fde3bc Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Tue, 26 Mar 2019 04:28:18 +0000
 Subject: [PATCH] Report slow events in milliseconds
@@ -11,10 +11,10 @@ community, especially when we do not care about nanosecond level
 accuracy.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 81bd18f0..9408e6c2 100644
+index 11abcbb7..5b99c84a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -435,9 +435,9 @@ public class PluginManager
+@@ -438,9 +438,9 @@ public class PluginManager
          long elapsed = System.nanoTime() - start;
          if ( elapsed > 250000000 )
          {
@@ -27,5 +27,5 @@ index 81bd18f0..9408e6c2 100644
          }
          return event;
 -- 
-2.24.0
+2.24.1
 

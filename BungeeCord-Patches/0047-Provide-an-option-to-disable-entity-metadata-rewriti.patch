@@ -1,4 +1,4 @@
-From 9ca8e2ccb7047c10c172b9635aacf01111b86244 Mon Sep 17 00:00:00 2001
+From ab161819def12b90ea804eff66cb3826d1be3744 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,10 +12,10 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 058cca67..6bc54495 100644
+index 167cc3aa..217cd6a3 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -207,4 +207,9 @@ public interface ProxyConfig
+@@ -228,4 +228,9 @@ public interface ProxyConfig
       * @return should we disable the tab completion limit for 1.13+ clients
       */
      boolean isDisableModernTabLimiter();
@@ -121,10 +121,10 @@ index 7aa792a2..00cd477f 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 74aa4f3e..eeb7a51e 100644
+index 2b33e722..b4cbc3f3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -730,4 +730,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -741,4 +741,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }

@@ -1,4 +1,4 @@
-From 9d0423a0fc9c025eb17ae9c86635cad557f964af Mon Sep 17 00:00:00 2001
+From 1acf38d9b835459183bfc53539c3f56e3fab2dfa Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Disable Metrics
@@ -6,7 +6,7 @@ Subject: [PATCH] Disable Metrics
 MCStats has not been stable for a long while now, and in our opinion it is not worth migrating to an alternative service. Waterfall has been maintained for the past two years without any or much consideration to statistics, we have users and that's enough for us ;)
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1269cc10..57d82b66 100644
+index a1320099..5636e0c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -121,7 +121,7 @@ public class BungeeCord extends ProxyServer
@@ -38,10 +38,10 @@ index 1269cc10..57d82b66 100644
                  getLogger().info( "Disabling plugins" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/Metrics.java b/proxy/src/main/java/net/md_5/bungee/Metrics.java
 deleted file mode 100644
-index 4fd3dd78..00000000
+index eabf7573..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/Metrics.java
 +++ /dev/null
-@@ -1,129 +0,0 @@
+@@ -1,134 +0,0 @@
 -package net.md_5.bungee;
 -
 -import java.io.BufferedReader;
@@ -96,7 +96,10 @@ index 4fd3dd78..00000000
 -    }
 -
 -    /**
--     * Generic method that posts a plugin to the metrics website
+-     * Generic method that posts a plugin to the metrics website.
+-     *
+-     * @param isPing first post or not
+-     * @throws IOException any errors encountered
 -     */
 -    private void postPlugin(boolean isPing) throws IOException
 -    {
@@ -154,6 +157,7 @@ index 4fd3dd78..00000000
 -     * @param buffer the StringBuilder to append the data pair onto
 -     * @param key the key value
 -     * @param value the value
+-     * @throws UnsupportedEncodingException if UTF-8 encoding not supported
 -     */
 -    private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException
 -    {
@@ -165,6 +169,7 @@ index 4fd3dd78..00000000
 -     *
 -     * @param text the text to encode
 -     * @return the encoded text, as UTF-8
+-     * @throws UnsupportedEncodingException if UTF-8 encoding not supported
 -     */
 -    private static String encode(final String text) throws UnsupportedEncodingException
 -    {
@@ -172,5 +177,5 @@ index 4fd3dd78..00000000
 -    }
 -}
 -- 
-2.21.0
+2.24.1
 

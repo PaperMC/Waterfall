@@ -1,4 +1,4 @@
-From 9ece9eee1db885737f55a9215fd014c1664f7ccf Mon Sep 17 00:00:00 2001
+From f585ad9a010ee4bdadc19786829c14ec5f58cc3b Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,14 +8,15 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 1f643980..dc4d609f 100644
+index 89bf000b..69cbbf9b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -31,9 +31,95 @@ public interface ProxyConfig
+@@ -37,11 +37,95 @@ public interface ProxyConfig
  
      /**
       * Set of all servers.
-+     *
+-     *
+      * @return servers
 +     * @deprecated The returned map may be modified concurrently by the proxy.
 +     *             The safe alternative is {@link #getServersCopy()}.
       */
@@ -105,13 +106,13 @@ index 1f643980..dc4d609f 100644
 +    // Waterfall end
 +
      /**
-      * Does the server authenticate with mojang
-      */
+      * Does the server authenticate with Mojang.
+      *
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 15bea8fe..1c8e9eda 100644
+index 490a0944..218ec45c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -93,9 +93,25 @@ public abstract class ProxyServer
+@@ -95,9 +95,25 @@ public abstract class ProxyServer
       * return a fresh map each time.
       *
       * @return all registered remote server destinations
@@ -156,7 +157,7 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 9693701d..3fdd9949 100644
+index 59c104d3..698b420f 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 @@ -83,7 +83,7 @@ public class CommandServer extends Command implements TabExecutor
@@ -169,7 +170,7 @@ index 9693701d..3fdd9949 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 83a300dc..0ff6781c 100644
+index 9b461efa..69d60a5f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -596,10 +596,18 @@ public class BungeeCord extends ProxyServer
@@ -310,5 +311,5 @@ index 193d8bce..2ec6c23c 100644
 +    // Waterfall end
  }
 -- 
-2.21.0
+2.24.1
 

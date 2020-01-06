@@ -1,74 +1,75 @@
-From 674e6779cd3c7db539ead28bf224cfdf6bbfc5a9 Mon Sep 17 00:00:00 2001
+From fe117d6dea1360ea75662d587efcd1725de0921f Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 30 Mar 2019 15:11:11 +0000
 Subject: [PATCH] Fix upstream javadocs
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 6bc54495..fd422f36 100644
+index 217cd6a3..9f8f4740 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -16,22 +16,27 @@ public interface ProxyConfig
- 
+@@ -17,27 +17,25 @@ public interface ProxyConfig
      /**
       * Time before users are disconnected due to no network activity.
+      *
+-     * @return timeout
 +     * @return the time before users are disconnected due to no network activity.
       */
      int getTimeout();
  
      /**
       * UUID used for metrics.
+-     *
+-     * @return uuid
 +     * @return the UUID used for metrics
       */
      String getUuid();
  
      /**
       * Set of all listeners.
+-     *
+-     * @return listeners
 +     * @return a set of all listeners
       */
      Collection<ListenerInfo> getListeners();
  
      /**
       * Set of all servers.
-      *
+-     * @return servers
 +     * @return a map of registered servers
-+     *
       * @deprecated The returned map may be modified concurrently by the proxy.
       *             The safe alternative is {@link #getServersCopy()}.
       */
-@@ -122,32 +127,44 @@ public interface ProxyConfig
- 
+@@ -129,14 +127,14 @@ public interface ProxyConfig
      /**
-      * Does the server authenticate with mojang
-+     *
+      * Does the server authenticate with Mojang.
+      *
+-     * @return online mode
 +     * @return if the server authenticates to mojang
       */
      boolean isOnlineMode();
  
      /**
-      * Whether proxy commands are logged to the proxy log
-+     *
+      * Whether proxy commands are logged to the proxy log.
+      *
+-     * @return log commands
 +     * @return should the proxy log commands
       */
      boolean isLogCommands();
  
-     /**
-      * Returns the player max.
-+     *
-+     * @return the player limit
-      */
-     int getPlayerLimit();
- 
+@@ -150,22 +148,22 @@ public interface ProxyConfig
      /**
       * A collection of disabled commands.
-+     *
+      *
+-     * @return disabled commands
 +     * @return a collection of disabled commands
       */
      Collection<String> getDisabledCommands();
  
      /**
       * The connection throttle delay.
-+     *
+      *
+-     * @return throttle
 +     * @return the connection throttle delay
       */
      @Deprecated
@@ -77,65 +78,32 @@ index 6bc54495..fd422f36 100644
      /**
 -     * Whether the proxy will parse IPs with spigot or not
 +     * Whether the proxy will forward the players information (UUID, IP)
-+     *
+      *
+-     * @return ip forward
 +     * @return should we forward player information
       */
      @Deprecated
      boolean isIpForward();
-@@ -155,6 +172,7 @@ public interface ProxyConfig
+@@ -173,7 +171,7 @@ public interface ProxyConfig
      /**
       * The encoded favicon.
       *
+-     * @return favicon
 +     * @return the encoded favicon
       * @deprecated Use #getFaviconObject instead.
       */
      @Deprecated
-@@ -162,6 +180,8 @@ public interface ProxyConfig
- 
+@@ -182,7 +180,7 @@ public interface ProxyConfig
      /**
       * The favicon used for the server ping list.
-+     *
+      *
+-     * @return favicon
 +     * @return the favicon used for the server ping list
       */
      Favicon getFaviconObject();
  
-diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1c8e9eda..d44ac67e 100644
---- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-+++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -52,6 +52,9 @@ public abstract class ProxyServer
-     /**
-      * Gets a localized string from the .properties file.
-      *
-+     * @param name the name of the translation
-+     * @param args the arguments used for translation
-+     *
-      * @return the localized string
-      */
-     public abstract String getTranslation(String name, Object... args);
-diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 9408e6c2..884f78c8 100644
---- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-+++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -148,6 +148,7 @@ public class PluginManager
-      * @param sender the sender executing the command
-      * @param commandLine the complete command line including command name and
-      * arguments
-+     * @param tabResults the List for tab results to be added to, or null if executing the command
-      * @return whether the command was handled
-      */
-     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
-@@ -475,6 +476,8 @@ public class PluginManager
- 
-     /**
-      * Unregister all of a Plugin's listener.
-+     *
-+     * @param plugin the plugin to unregister listeners for
-      */
-     public void unregisterListeners(Plugin plugin)
-     {
 diff --git a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
-index 5d2b088c..be32ba89 100644
+index 32732703..46d70184 100644
 --- a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
 +++ b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
 @@ -85,6 +85,7 @@ public interface TaskScheduler
@@ -144,8 +112,8 @@ index 5d2b088c..be32ba89 100644
           * An executor service which underlies this scheduler.
 +         * @param plugin The plugin of which to fetch an executor service for
           *
+          * @param plugin owning plugin
           * @return the underlying executor service or compatible wrapper
-          */
 -- 
-2.24.0
+2.24.1
 

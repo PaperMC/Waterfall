@@ -1,4 +1,4 @@
-From c64e18322664b2b19ff86f05fa389611016cee5e Mon Sep 17 00:00:00 2001
+From e07ab170b66d0c97f45a071d1edcd2dc915e3adb Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index db615ed9..af93ae8c 100644
+index 9218f31f..5a39c597 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -176,6 +176,13 @@ public interface ProxyConfig
+@@ -197,6 +197,13 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
@@ -24,7 +24,7 @@ index db615ed9..af93ae8c 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 2d66e26d..3ba7d5cb 100644
+index cbf7a379..548b6bb9 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -41,6 +41,14 @@
@@ -80,7 +80,7 @@ index 111404fb..ef44d334 100644
      public int getTabThrottle() {
          return tabThrottle;
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 2feb4d66..b265bb43 100644
+index f95d5b6f..6b44b37e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -28,6 +28,10 @@ public class HttpClient
@@ -183,5 +183,5 @@ index 6c418567..23241d68 100644
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
      }
 -- 
-2.24.0
+2.24.1
 
