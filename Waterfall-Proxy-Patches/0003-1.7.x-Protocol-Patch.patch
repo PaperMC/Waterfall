@@ -1,4 +1,4 @@
-From f64fa4f601225924a1b4a445842b032d932bfed7 Mon Sep 17 00:00:00 2001
+From 52c98d078eacd8e3ccc89b826cff2493027613bb Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1176,7 +1176,7 @@ index d6865ae2..01e38206 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index 85d386c0..7a80acac 100644
+index a5555f6a..415a4bcd 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -1,5 +1,6 @@
@@ -1195,7 +1195,7 @@ index 85d386c0..7a80acac 100644
  {
  
      private String name;
-@@ -39,6 +40,31 @@ public class Team extends DefinedPacket
+@@ -41,6 +42,31 @@ public class Team extends DefinedPacket
          this.mode = 1;
      }
  
@@ -1227,7 +1227,7 @@ index 85d386c0..7a80acac 100644
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
-@@ -76,6 +102,30 @@ public class Team extends DefinedPacket
+@@ -78,6 +104,30 @@ public class Team extends DefinedPacket
          }
      }
  
@@ -1259,7 +1259,7 @@ index 85d386c0..7a80acac 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0c90b978..a3ba3521 100644
+index 122befe6..26719300 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -162,6 +162,14 @@ public class BungeeCord extends ProxyServer
@@ -1414,18 +1414,10 @@ index 00cd477f..ed53591c 100644
                  throw CancelSendSignal.INSTANCE;
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index eeb7a51e..04f2af59 100644
+index b4cbc3f3..6bfa4cb7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -53,6 +53,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.MinecraftEncoder;
- import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.Protocol;
-+import net.md_5.bungee.protocol.ProtocolConstants; // Travertine
- import net.md_5.bungee.protocol.packet.Chat;
- import net.md_5.bungee.protocol.packet.ClientSettings;
- import net.md_5.bungee.protocol.packet.Kick;
-@@ -194,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -195,6 +195,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1433,16 +1425,17 @@ index eeb7a51e..04f2af59 100644
          displayName = name;
      }
  
-@@ -476,7 +478,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -476,7 +477,8 @@ public final class UserConnection implements ProxiedPlayer
+         // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, message );
  
-         // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
 -        if ( position == ChatMessageType.ACTION_BAR )
++        // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
 +        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
          {
-             sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
-         } else
-@@ -491,7 +493,7 @@ public final class UserConnection implements ProxiedPlayer
+             // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
+             // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
+@@ -502,7 +504,7 @@ public final class UserConnection implements ProxiedPlayer
          message = ChatComponentTransformer.getInstance().transform( this, message )[0];
  
          // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
@@ -1451,7 +1444,7 @@ index eeb7a51e..04f2af59 100644
          {
              sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
          } else
-@@ -670,6 +672,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -681,6 +683,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1459,7 +1452,7 @@ index eeb7a51e..04f2af59 100644
          header = ChatComponentTransformer.getInstance().transform( this, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, footer )[0];
  
-@@ -682,6 +685,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -693,6 +696,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1467,7 +1460,7 @@ index eeb7a51e..04f2af59 100644
          header = ChatComponentTransformer.getInstance().transform( this, header );
          footer = ChatComponentTransformer.getInstance().transform( this, footer );
  
-@@ -711,6 +715,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -722,6 +726,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1537,7 +1530,7 @@ index 1f8a2439..8e1830e8 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 34f7f997..5ef8c7c8 100644
+index 8e637718..f40f56b2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -11,6 +11,13 @@ import java.util.List;
@@ -1585,7 +1578,7 @@ index 34f7f997..5ef8c7c8 100644
                      }
                  };
  
-@@ -519,7 +542,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -520,7 +543,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
@@ -1833,7 +1826,7 @@ index 00000000..6755fe84
 +}
 +// Travertine end
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index c1272da3..45af7ea4 100644
+index bea2bbff..f61de127 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 @@ -8,6 +8,7 @@ import lombok.Getter;
@@ -1857,7 +1850,7 @@ index c1272da3..45af7ea4 100644
      /**
       * The users' mod list.
       */
-@@ -173,4 +180,22 @@ public class ForgeClientHandler
+@@ -175,4 +182,22 @@ public class ForgeClientHandler
      {
          return fmlTokenInHandshake || clientModList != null;
      }
