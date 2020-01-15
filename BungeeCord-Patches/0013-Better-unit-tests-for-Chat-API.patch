@@ -1,4 +1,4 @@
-From bc753096ca1c59125c7338f5276942018e3325c2 Mon Sep 17 00:00:00 2001
+From 4d2ab0a0763157aa7018b8db62964ad865455d0a Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
@@ -36,12 +36,12 @@ index df38e297..563b6911 100644
      public void testLoopSimple()
      {
 diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-index 7e63488c..e85c55b7 100644
+index 9e37eed0..a25a01b8 100644
 --- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 +++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-@@ -13,4 +13,12 @@ public class TranslatableComponentTest
-         Assert.assertEquals( "Test string with 2 placeholders: aoeu", testComponent.toPlainText() );
-         Assert.assertEquals( "§fTest string with §f2§f placeholders: §faoeu", testComponent.toLegacyText() );
+@@ -25,4 +25,12 @@ public class TranslatableComponentTest
+         Assert.assertEquals( "Test string with a placeholder", TextComponent.toPlainText( baseComponents ) );
+         Assert.assertEquals( "§fTest string with §fa§f placeholder", TextComponent.toLegacyText( baseComponents ) );
      }
 +
 +    @Test
