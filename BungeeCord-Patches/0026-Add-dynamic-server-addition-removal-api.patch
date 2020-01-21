@@ -1,4 +1,4 @@
-From f585ad9a010ee4bdadc19786829c14ec5f58cc3b Mon Sep 17 00:00:00 2001
+From 23bafa3bee49774c0e57c0d8956237faa3e37bae Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -109,10 +109,10 @@ index 89bf000b..69cbbf9b 100644
       * Does the server authenticate with Mojang.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 490a0944..218ec45c 100644
+index 1f330bd2..a4011335 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -95,9 +95,25 @@ public abstract class ProxyServer
+@@ -96,9 +96,25 @@ public abstract class ProxyServer
       * return a fresh map each time.
       *
       * @return all registered remote server destinations
@@ -170,10 +170,10 @@ index 59c104d3..698b420f 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9b461efa..69d60a5f 100644
+index b18027e2..d572ff28 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -596,10 +596,18 @@ public class BungeeCord extends ProxyServer
+@@ -599,10 +599,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -311,5 +311,5 @@ index 193d8bce..2ec6c23c 100644
 +    // Waterfall end
  }
 -- 
-2.24.1
+2.25.0
 

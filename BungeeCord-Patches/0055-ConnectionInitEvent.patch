@@ -1,4 +1,4 @@
-From b61bb662bb822884c42a5f7777a22a7196bcd1ee Mon Sep 17 00:00:00 2001
+From 3fff0a06f93a7b1882fa1a6563889697270cec0a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -6,10 +6,10 @@ Subject: [PATCH] ConnectionInitEvent
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
 new file mode 100644
-index 00000000..509b76a3
+index 00000000..e884eac8
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,52 @@
 +package io.github.waterfallmc.waterfall.event;
 +
 +import net.md_5.bungee.api.Callback;
@@ -17,6 +17,7 @@ index 00000000..509b76a3
 +import net.md_5.bungee.api.plugin.Cancellable;
 +
 +import java.net.InetSocketAddress;
++import java.net.SocketAddress;
 +
 +import lombok.ToString;
 +
@@ -27,10 +28,10 @@ index 00000000..509b76a3
 +@ToString
 +public class ConnectionInitEvent extends AsyncEvent<ConnectionInitEvent> implements Cancellable {
 +
-+    private final InetSocketAddress remoteAddress;
++    private final SocketAddress remoteAddress;
 +    private boolean isCancelled = false;
 +
-+    public ConnectionInitEvent(InetSocketAddress remoteAddress, Callback<ConnectionInitEvent> done) {
++    public ConnectionInitEvent(SocketAddress remoteAddress, Callback<ConnectionInitEvent> done) {
 +        super(done);
 +        this.remoteAddress = remoteAddress;
 +    }
@@ -47,35 +48,46 @@ index 00000000..509b76a3
 +
 +    /**
 +     * @return the INetSocketAddress of the connection being opened
++     * @deprecated BungeeCord can accept connections via Unix domain sockets
 +     */
++    @Deprecated
 +    public InetSocketAddress getRemoteAddress() {
++        return (InetSocketAddress) remoteAddress;
++    }
++
++    /**
++     * @return the SocketAddress of the connection being opened
++     */
++    public SocketAddress getRemoteSocketAddress() {
 +        return remoteAddress;
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 23241d68..31de5a6f 100644
+index 0c91f7ed..e89f3669 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -1,5 +1,6 @@
+@@ -1,6 +1,7 @@
  package net.md_5.bungee.netty;
  
+ import com.google.common.base.Preconditions;
 +import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -31,6 +32,7 @@ import net.md_5.bungee.UserConnection;
- import net.md_5.bungee.Util;
- import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.config.ListenerInfo;
-+import net.md_5.bungee.api.connection.Connection;
- import net.md_5.bungee.connection.InitialHandler;
- import net.md_5.bungee.protocol.KickStringWriter;
- import net.md_5.bungee.protocol.LegacyDecoder;
-@@ -57,9 +59,22 @@ public class PipelineUtils
+@@ -26,6 +27,8 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
+ import io.netty.handler.timeout.ReadTimeoutHandler;
+ import io.netty.util.AttributeKey;
+ import io.netty.util.internal.PlatformDependent;
++
++import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.util.concurrent.ThreadFactory;
+ import java.util.concurrent.TimeUnit;
+@@ -62,9 +65,22 @@ public class PipelineUtils
                  return;
              }
  
-+            ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent((InetSocketAddress) ch.remoteAddress(), (result, throwable) -> { // Waterfall
++            ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), (result, throwable) -> { // Waterfall
 +
 +            if (result.isCancelled()) {
 +                ch.close();
@@ -94,7 +106,7 @@ index 23241d68..31de5a6f 100644
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-@@ -70,6 +85,9 @@ public class PipelineUtils
+@@ -75,6 +91,9 @@ public class PipelineUtils
              {
                  ch.pipeline().addFirst( new HAProxyMessageDecoder() );
              }
@@ -105,5 +117,5 @@ index 23241d68..31de5a6f 100644
      };
      public static final Base BASE = new Base();
 -- 
-2.24.1
+2.25.0
 

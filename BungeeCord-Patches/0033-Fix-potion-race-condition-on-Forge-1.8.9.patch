@@ -1,4 +1,4 @@
-From 816fd124a3b3bbc135b5c5533bd80b7a989b62d1 Mon Sep 17 00:00:00 2001
+From 6b9831e144e5d6b4653db345368a14b6b792dd1e Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -169,7 +169,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e4b375a..2b33e722 100644
+index a52e15eb..589e22f5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -182,7 +182,7 @@ index 7e4b375a..2b33e722 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -126,6 +128,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -127,6 +129,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -194,10 +194,10 @@ index 7e4b375a..2b33e722 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 034040a0..fd14f518 100644
+index b5f3999f..708088f3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -47,6 +47,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -49,6 +49,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
@@ -206,7 +206,7 @@ index 034040a0..fd14f518 100644
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
-@@ -582,6 +584,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -591,6 +593,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -277,5 +277,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.24.1
+2.25.0
 

@@ -1,4 +1,4 @@
-From beefdd141a82e9b063c99873c993ef104d433d7a Mon Sep 17 00:00:00 2001
+From 0193f69ac34fca99f79151710e5b6e4b2f333495 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -7,10 +7,10 @@ This functionality of this patch was adopted upstream, however, this
 patch remains for a few misc improvements around here
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8cdd3f98..84f74bfb 100644
+index e55d572a..281adc8c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -415,6 +415,6 @@ public class ServerConnector extends PacketHandler
+@@ -416,6 +416,6 @@ public class ServerConnector extends PacketHandler
      @Override
      public String toString()
      {
@@ -19,10 +19,10 @@ index 8cdd3f98..84f74bfb 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1911923c..2eff743d 100644
+index 567b5b71..5401b7aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -597,6 +597,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -606,6 +606,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
@@ -31,15 +31,15 @@ index 1911923c..2eff743d 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 47f2c876..db0bdd53 100644
+index b9e42946..4e5c8a5c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -625,7 +625,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -632,7 +632,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
--        return "[" + ( ( getName() != null ) ? getName() : getAddress() ) + "] <-> InitialHandler";
-+        return "[" + getAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
+-        return "[" + ( ( getName() != null ) ? getName() : getSocketAddress() ) + "] <-> InitialHandler";
++        return "[" + getSocketAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
      }
  
      @Override
@@ -56,5 +56,5 @@ index de916f6e..bdaee47e 100644
      }
  }
 -- 
-2.24.1
+2.25.0
 

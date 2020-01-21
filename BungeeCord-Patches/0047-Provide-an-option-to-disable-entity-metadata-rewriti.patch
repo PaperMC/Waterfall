@@ -1,4 +1,4 @@
-From ab161819def12b90ea804eff66cb3826d1be3744 Mon Sep 17 00:00:00 2001
+From 4111e1762ca8665c34dc1837c277dbd0b2f68be1 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7aa792a2..00cd477f 100644
+index dae9e294..139c4f09 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -226,7 +226,7 @@ public class ServerConnector extends PacketHandler
+@@ -227,7 +227,7 @@ public class ServerConnector extends PacketHandler
              ch.write( message );
          }
  
@@ -69,7 +69,7 @@ index 7aa792a2..00cd477f 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -260,6 +260,7 @@ public class ServerConnector extends PacketHandler
+@@ -261,6 +261,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -77,7 +77,7 @@ index 7aa792a2..00cd477f 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -272,6 +273,7 @@ public class ServerConnector extends PacketHandler
+@@ -273,6 +274,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -85,7 +85,7 @@ index 7aa792a2..00cd477f 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -285,12 +287,33 @@ public class ServerConnector extends PacketHandler
+@@ -286,12 +288,33 @@ public class ServerConnector extends PacketHandler
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
  
              user.setDimensionChange( true );
@@ -121,10 +121,10 @@ index 7aa792a2..00cd477f 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 2b33e722..b4cbc3f3 100644
+index 589e22f5..e9284882 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -741,4 +741,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -748,4 +748,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -136,10 +136,10 @@ index 2b33e722..b4cbc3f3 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index fd14f518..fba84905 100644
+index 708088f3..fe27b406 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -588,6 +588,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -597,6 +597,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -147,7 +147,7 @@ index fd14f518..fba84905 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -599,6 +600,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -608,6 +609,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -232,5 +232,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.24.1
+2.25.0
 

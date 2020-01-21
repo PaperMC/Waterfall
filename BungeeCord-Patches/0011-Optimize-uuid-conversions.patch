@@ -1,4 +1,4 @@
-From 13f04d202d0f756b106fec3b54cfa34e25c181d4 Mon Sep 17 00:00:00 2001
+From 5c0326d8bd07fa3561fec33132282c6f8c61cb88 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -208,15 +208,16 @@ index 00000000..cc24dd35
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 5e5b53a7..684abf4c 100644
+index 31101f6b..77eb64a1 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
-@@ -2,11 +2,14 @@ package net.md_5.bungee;
- 
+@@ -3,12 +3,15 @@ package net.md_5.bungee;
  import com.google.common.base.Joiner;
  import com.google.common.primitives.UnsignedLongs;
+ import io.netty.channel.unix.DomainSocketAddress;
 +import com.google.common.primitives.Ints;
  import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
  import java.net.URI;
  import java.net.URISyntaxException;
  import java.util.UUID;
@@ -226,7 +227,7 @@ index 5e5b53a7..684abf4c 100644
  /**
   * Series of utility classes to perform various operations.
   */
-@@ -48,7 +51,7 @@ public class Util
+@@ -65,7 +68,7 @@ public class Util
       */
      public static String hex(int i)
      {
@@ -249,10 +250,10 @@ index 88d36ad2..fc92a7b5 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 18c9fa6f..47f2c876 100644
+index a53b113c..b9e42946 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -619,7 +619,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -626,7 +626,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {
@@ -262,5 +263,5 @@ index 18c9fa6f..47f2c876 100644
  
      @Override
 -- 
-2.24.1
+2.25.0
 

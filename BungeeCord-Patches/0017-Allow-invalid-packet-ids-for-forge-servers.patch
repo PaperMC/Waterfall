@@ -1,4 +1,4 @@
-From 3fe05ff7372f21618834a3299a012165bdfc4371 Mon Sep 17 00:00:00 2001
+From 54742637aa0b70247beb96d38797a1675fe63f3b Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -66,10 +66,10 @@ index 8c99ee85..31cbaa53 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index cf397206..8cdd3f98 100644
+index e8fd2148..e55d572a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -31,7 +31,9 @@ import net.md_5.bungee.forge.ForgeUtils;
+@@ -32,7 +32,9 @@ import net.md_5.bungee.forge.ForgeUtils;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.HandlerBoss;
  import net.md_5.bungee.netty.PacketHandler;
@@ -79,7 +79,7 @@ index cf397206..8cdd3f98 100644
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -201,6 +203,12 @@ public class ServerConnector extends PacketHandler
+@@ -202,6 +204,12 @@ public class ServerConnector extends PacketHandler
  
          ServerConnection server = new ServerConnection( ch, target );
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
@@ -93,10 +93,10 @@ index cf397206..8cdd3f98 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index fb7141a1..4700d1d6 100644
+index aebfdc16..e245c3c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -71,6 +71,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
      @NonNull
      private final ProxyServer bungee;
      @NonNull
@@ -122,5 +122,5 @@ index 60e2889c..d87ceb57 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.24.1
+2.25.0
 
