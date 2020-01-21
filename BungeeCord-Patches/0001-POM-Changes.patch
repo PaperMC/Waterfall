@@ -1,4 +1,4 @@
-From 5596cf8eeee5006b2584a5ab38bfbf78cc3912c7 Mon Sep 17 00:00:00 2001
+From 52b2476ab289177423fd0c5d4a644eaaf5292b6e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -483,7 +483,7 @@ index f11cad04..f8b549dc 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index ff92bf1e..32ef5311 100644
+index 73b51d49..82872150 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -541,7 +541,7 @@ index ff92bf1e..32ef5311 100644
          </developer>
      </developers>
  
-@@ -45,31 +64,36 @@
+@@ -45,23 +64,27 @@
      </modules>
  
      <scm>
@@ -576,18 +576,7 @@ index ff92bf1e..32ef5311 100644
          </snapshotRepository>
      </distributionManagement>
  
-     <properties>
-         <build.number>unknown</build.number>
-         <netty.version>4.1.45.Final</netty.version>
--        <maven.compiler.source>1.7</maven.compiler.source>
--        <maven.compiler.target>1.7</maven.compiler.target>
-+        <!-- Require Java 8 -->
-+        <maven.compiler.source>1.8</maven.compiler.source>
-+        <maven.compiler.target>1.8</maven.compiler.target>
-         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     </properties>
- 
-@@ -118,7 +142,17 @@
+@@ -118,7 +141,17 @@
                      </execution>
                  </executions>
              </plugin>
@@ -605,7 +594,7 @@ index ff92bf1e..32ef5311 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.1.0</version>
-@@ -143,6 +177,7 @@
+@@ -143,6 +176,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -613,7 +602,7 @@ index ff92bf1e..32ef5311 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -165,4 +200,87 @@
+@@ -165,4 +199,87 @@
              </plugin>
          </plugins>
      </build>
@@ -743,7 +732,7 @@ index e11af008..4592e2b3 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 97a75125..dbd4c79d 100644
+index 04c5af43..b525340d 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
