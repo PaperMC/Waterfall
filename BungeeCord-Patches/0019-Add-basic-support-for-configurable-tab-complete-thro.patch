@@ -1,14 +1,14 @@
-From cd902b232d0f227bcab4c1be569f106e6914181e Mon Sep 17 00:00:00 2001
+From d01ebf0bea7d2b6aea4bd299d20ac63d57022a3e Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 899b8647..89bf000b 100644
+index c2dc9bd1..57835bb7 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -106,4 +106,21 @@ public interface ProxyConfig
+@@ -114,4 +114,21 @@ public interface ProxyConfig
      // Waterfall Options
      //
  
@@ -73,10 +73,10 @@ index 741ebfde..91743f01 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 540cf213..de916f6e 100644
+index 6b888c85..c7e1a621 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -37,6 +37,8 @@ public class UpstreamBridge extends PacketHandler
+@@ -38,6 +38,8 @@ public class UpstreamBridge extends PacketHandler
      private final ProxyServer bungee;
      private final UserConnection con;
  
@@ -85,7 +85,7 @@ index 540cf213..de916f6e 100644
      public UpstreamBridge(ProxyServer bungee, UserConnection con)
      {
          this.bungee = bungee;
-@@ -153,6 +155,20 @@ public class UpstreamBridge extends PacketHandler
+@@ -156,6 +158,20 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteRequest tabComplete) throws Exception
      {
@@ -107,5 +107,5 @@ index 540cf213..de916f6e 100644
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
 -- 
-2.24.1
+2.25.0
 

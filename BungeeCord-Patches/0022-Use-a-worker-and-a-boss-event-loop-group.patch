@@ -1,4 +1,4 @@
-From 6459c67045351f0b7216541572af29719bab1d15 Mon Sep 17 00:00:00 2001
+From 982ee67746ef5784ba6dc9cefd69f6357273a414 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -70,10 +70,10 @@ index 5643684c..b18027e2 100644
  
                  getLogger().info( "Thank you and goodbye" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 3dab3422..8e86462c 100644
+index 7d7e5a7f..fa4fff0e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -158,7 +158,7 @@ public class BungeeServerInfo implements ServerInfo
+@@ -184,7 +184,7 @@ public class BungeeServerInfo implements ServerInfo
          };
          new Bootstrap()
                  .channel( PipelineUtils.getChannel( socketAddress ) )

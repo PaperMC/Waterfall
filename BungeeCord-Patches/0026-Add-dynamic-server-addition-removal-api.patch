@@ -1,4 +1,4 @@
-From 23bafa3bee49774c0e57c0d8956237faa3e37bae Mon Sep 17 00:00:00 2001
+From 6566339942a14a4eebfe3bdc63ea7b01308617cb Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,7 +8,7 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 89bf000b..69cbbf9b 100644
+index 57835bb7..a1c1ba33 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -37,11 +37,95 @@ public interface ProxyConfig
@@ -194,7 +194,7 @@ index b18027e2..d572ff28 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 193d8bce..2ec6c23c 100644
+index 8d047dfc..f45ff190 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -221,7 +221,7 @@ index 193d8bce..2ec6c23c 100644
      /**
       * Set of all servers.
       */
-@@ -65,6 +68,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -66,6 +69,7 @@ public abstract class Configuration implements ProxyConfig
      private boolean preventProxyConnections;
      private boolean forgeSupport;
  
@@ -229,7 +229,7 @@ index 193d8bce..2ec6c23c 100644
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -108,7 +112,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -110,7 +114,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -238,7 +238,7 @@ index 193d8bce..2ec6c23c 100644
  
              for ( ServerInfo oldServer : oldServers.values() )
              {
-@@ -171,4 +175,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -173,4 +177,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }

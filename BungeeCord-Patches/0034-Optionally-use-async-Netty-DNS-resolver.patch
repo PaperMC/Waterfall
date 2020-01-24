@@ -1,4 +1,4 @@
-From 0e434adbf5617dd8337126ecafe64c9202488d63 Mon Sep 17 00:00:00 2001
+From 94b012e38aa05a0e17a9873c31b8c396f4f4ed99 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -6,10 +6,10 @@ Subject: [PATCH] Optionally use async Netty DNS resolver
 We no longer need to cache the address for the session server now.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 9218f31f..5a39c597 100644
+index 480fb574..888ef5a3 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -197,6 +197,13 @@ public interface ProxyConfig
+@@ -205,6 +205,13 @@ public interface ProxyConfig
       */
      String getGameVersion();
  
@@ -24,7 +24,7 @@ index 9218f31f..5a39c597 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index cbf7a379..548b6bb9 100644
+index 66561fd9..01cb5c50 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -41,6 +41,14 @@
