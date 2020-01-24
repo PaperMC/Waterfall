@@ -1,4 +1,4 @@
-From 52b2476ab289177423fd0c5d4a644eaaf5292b6e Mon Sep 17 00:00:00 2001
+From 54b91cd62efdce89489199bc102a9beab569079e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -67,10 +67,10 @@ index 5d782001..4b9e171d 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 9a11e65a..5e9b2ab3 100644
+index 9a11e65a..9cae021d 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -4,19 +4,19 @@
+@@ -4,38 +4,39 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
@@ -96,7 +96,13 @@ index 9a11e65a..5e9b2ab3 100644
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
-@@ -27,15 +27,15 @@
+-        <maven.compiler.source>1.6</maven.compiler.source>
+-        <maven.compiler.target>1.6</maven.compiler.target>
++        <!-- use java 1.8, literally nobody is using 1.6-7 anymore, and, if they are, that's their own stupidity. -->
++        <maven.compiler.source>1.8</maven.compiler.source>
++        <maven.compiler.target>1.8</maven.compiler.target>
+         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+     </properties>
  
      <dependencies>
          <dependency>
@@ -115,7 +121,7 @@ index 9a11e65a..5e9b2ab3 100644
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -44,7 +44,7 @@
+@@ -44,7 +45,7 @@
                  <configuration>
                      <archive>
                          <manifestEntries>

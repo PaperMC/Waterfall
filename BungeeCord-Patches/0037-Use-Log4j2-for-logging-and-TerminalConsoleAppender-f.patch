@@ -1,4 +1,4 @@
-From 58d84e502354fbf7ba5085a92c1dffc0ee8db8cc Mon Sep 17 00:00:00 2001
+From f8b721b6e23bc29ad538e02d117a4ddf561fba06 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,10 +6,10 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 5e9b2ab3..0a27c9f6 100644
+index 9cae021d..e7b76d5b 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -47,6 +47,9 @@
+@@ -48,6 +48,9 @@
                              <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
                              <Implementation-Version>${describe}</Implementation-Version>
                              <Specification-Version>${maven.build.timestamp}</Specification-Version>
@@ -19,7 +19,7 @@ index 5e9b2ab3..0a27c9f6 100644
                          </manifestEntries>
                      </archive>
                  </configuration>
-@@ -74,7 +77,17 @@
+@@ -75,7 +78,17 @@
                              </excludes>
                          </filter>
                      </filters>
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 32ef5311..b8f1d94f 100644
+index 82872150..903fd182 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,7 +245,7 @@ index 32ef5311..b8f1d94f 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 548b6bb9..39d6e35e 100644
+index 01cb5c50..52e45fe1 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -70,7 +70,7 @@
