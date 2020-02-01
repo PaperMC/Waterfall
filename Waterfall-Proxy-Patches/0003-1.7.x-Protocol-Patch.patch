@@ -1,4 +1,4 @@
-From 426dcb573f3d5f70d3a43834c939424bc23ffd89 Mon Sep 17 00:00:00 2001
+From 410626d28715bf57e1688080bac98c4979dfdd72 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1469,10 +1469,10 @@ index 95dbaefd..066c83b5 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9fbb5e92..3f6dd419 100644
+index d7d0fafc..21597768 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -166,7 +166,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -167,7 +167,7 @@ public class DownstreamBridge extends PacketHandler
          switch ( objective.getAction() )
          {
              case 0:
@@ -1481,7 +1481,7 @@ index 9fbb5e92..3f6dd419 100644
                  break;
              case 1:
                  serverScoreboard.removeObjective( objective.getName() );
-@@ -176,7 +176,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -177,7 +177,7 @@ public class DownstreamBridge extends PacketHandler
                  if ( oldObjective != null )
                  {
                      oldObjective.setValue( objective.getValue() );
@@ -1490,7 +1490,7 @@ index 9fbb5e92..3f6dd419 100644
                  }
                  break;
              default:
-@@ -273,16 +273,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -274,16 +274,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
@@ -1530,7 +1530,7 @@ index 9fbb5e92..3f6dd419 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 8e1b9a19..00a369d3 100644
+index 007d3daf..87f4bf12 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.List;
@@ -1547,7 +1547,7 @@ index 8e1b9a19..00a369d3 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -233,12 +240,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -253,12 +260,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -1578,7 +1578,7 @@ index 8e1b9a19..00a369d3 100644
                      }
                  };
  
-@@ -521,7 +544,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -536,7 +559,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                              userCon.init();
  
