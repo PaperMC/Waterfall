@@ -1,4 +1,4 @@
-From e224b3ff66473f60105966a95e15737214bcde86 Mon Sep 17 00:00:00 2001
+From ec5ec620f2bab5a9575390f4b12bd590d8f510b6 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -19,10 +19,10 @@ index e55d572a..281adc8c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6d5b00c2..9e03a228 100644
+index ea905b07..6598781b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -609,6 +609,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -610,6 +610,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
@@ -31,14 +31,27 @@ index 6d5b00c2..9e03a228 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b9e42946..4e5c8a5c 100644
+index 9b9641d2..1109a9b5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -632,7 +632,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -653,20 +653,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
--        return "[" + ( ( getName() != null ) ? getName() : getSocketAddress() ) + "] <-> InitialHandler";
+-        StringBuilder sb = new StringBuilder();
+-        sb.append( '[' );
+-
+-        String currentName = getName();
+-        if ( currentName != null )
+-        {
+-            sb.append( currentName );
+-            sb.append( ',' );
+-        }
+-
+-        sb.append( getSocketAddress() );
+-        sb.append( "] <-> InitialHandler" );
+-
+-        return sb.toString();
 +        return "[" + getSocketAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
      }
  

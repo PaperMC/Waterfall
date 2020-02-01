@@ -1,4 +1,4 @@
-From dd829b720395a30759602f2d3e191a08aed57932 Mon Sep 17 00:00:00 2001
+From 41cc576d0b2d95be6c0bf22e989604e18725913a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,10 +12,10 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index ebf541fb..ab012bff 100644
+index e0baca9c..f3bced0a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -236,4 +236,9 @@ public interface ProxyConfig
+@@ -252,4 +252,9 @@ public interface ProxyConfig
       * @return should we disable the tab completion limit for 1.13+ clients
       */
      boolean isDisableModernTabLimiter();
@@ -136,10 +136,10 @@ index a5da62f3..95dbaefd 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9c64d159..f1c57532 100644
+index cfd25859..f845da09 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -600,6 +600,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -601,6 +601,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -147,7 +147,7 @@ index 9c64d159..f1c57532 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -611,6 +612,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -612,6 +613,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {

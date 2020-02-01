@@ -1,14 +1,14 @@
-From 2716fc037774a033673a599191b1820b9229ea73 Mon Sep 17 00:00:00 2001
+From a4f49ca4293a902d4926c7a428bb6aaa131911e3 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 888ef5a3..ebf541fb 100644
+index 6141128b..e0baca9c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -198,6 +198,13 @@ public interface ProxyConfig
+@@ -214,6 +214,13 @@ public interface ProxyConfig
      // Waterfall Options
      //
  
@@ -61,10 +61,10 @@ index ef44d334..4ff8da6d 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ed9643c1..8e1b9a19 100644
+index 1771ff3c..007d3daf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -316,7 +316,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -331,7 +331,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login

@@ -1,4 +1,4 @@
-From 982ee67746ef5784ba6dc9cefd69f6357273a414 Mon Sep 17 00:00:00 2001
+From 61eb721efb50a13bb3de793753cf74764d54850c Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -70,7 +70,7 @@ index 5643684c..b18027e2 100644
  
                  getLogger().info( "Thank you and goodbye" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 7d7e5a7f..fa4fff0e 100644
+index 9d581d9a..7b002089 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -184,7 +184,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -80,7 +80,7 @@ index 7d7e5a7f..fa4fff0e 100644
 -                .group( BungeeCord.getInstance().eventLoops )
 +                .group( BungeeCord.getInstance().workerEventLoopGroup )
                  .handler( PipelineUtils.BASE )
-                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
+                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
                  .remoteAddress( socketAddress )
 -- 
 2.25.0
