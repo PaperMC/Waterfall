@@ -1,4 +1,4 @@
-From f8b721b6e23bc29ad538e02d117a4ddf561fba06 Mon Sep 17 00:00:00 2001
+From 211d83d5dc9d417b84fdbaf1105b984af12acc4b Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,10 +6,10 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 9cae021d..e7b76d5b 100644
+index 66ed2128..2876d8d6 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -48,6 +48,9 @@
+@@ -49,6 +49,9 @@
                              <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
                              <Implementation-Version>${describe}</Implementation-Version>
                              <Specification-Version>${maven.build.timestamp}</Specification-Version>
@@ -19,7 +19,7 @@ index 9cae021d..e7b76d5b 100644
                          </manifestEntries>
                      </archive>
                  </configuration>
-@@ -75,7 +78,17 @@
+@@ -76,7 +79,17 @@
                              </excludes>
                          </filter>
                      </filters>
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 82872150..903fd182 100644
+index 19f63586..37bdaf3d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,10 +245,10 @@ index 82872150..903fd182 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 01cb5c50..52e45fe1 100644
+index 38392b64..54500dde 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -70,7 +70,7 @@
+@@ -71,7 +71,7 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -257,7 +257,7 @@ index 01cb5c50..52e45fe1 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -104,6 +104,20 @@
+@@ -105,6 +105,20 @@
              <version>5.1.48</version>
              <scope>runtime</scope>
          </dependency>

@@ -1,4 +1,4 @@
-From 54b91cd62efdce89489199bc102a9beab569079e Mon Sep 17 00:00:00 2001
+From 9e6a4af2aa2192218a0e6535d3ba7352fe47bcb9 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 5d782001..4b9e171d 100644
+index a3f6a6a9..15228459 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,42 @@
@@ -67,10 +67,10 @@ index 5d782001..4b9e171d 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 9a11e65a..9cae021d 100644
+index 3e63a0bf..66ed2128 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -4,38 +4,39 @@
+@@ -4,39 +4,40 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
@@ -96,6 +96,7 @@ index 9a11e65a..9cae021d 100644
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
+         <maven.javadoc.skip>true</maven.javadoc.skip>
 -        <maven.compiler.source>1.6</maven.compiler.source>
 -        <maven.compiler.target>1.6</maven.compiler.target>
 +        <!-- use java 1.8, literally nobody is using 1.6-7 anymore, and, if they are, that's their own stupidity. -->
@@ -121,7 +122,7 @@ index 9a11e65a..9cae021d 100644
          <plugins>
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
-@@ -44,7 +45,7 @@
+@@ -45,7 +46,7 @@
                  <configuration>
                      <archive>
                          <manifestEntries>
@@ -174,7 +175,7 @@ index 4ca669f9..0bd76ea5 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 4b44d27e..764fcc6b 100644
+index 95449790..4bf7237f 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,19 @@
@@ -388,7 +389,7 @@ index 875e8eb1..d8ebf472 100644
      <packaging>jar</packaging>
  
 diff --git a/module/pom.xml b/module/pom.xml
-index 7c81fe86..7b05190b 100644
+index 088fc997..261c8d75 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,19 @@
@@ -417,13 +418,14 @@ index 7c81fe86..7b05190b 100644
  
      <modules>
          <module>cmd-alert</module>
-@@ -28,14 +28,14 @@
+@@ -28,15 +28,15 @@
      </modules>
  
      <properties>
 -        <module.author>SpigotMC</module.author>
 +        <module.author>WaterfallMC</module.author>
          <maven.deploy.skip>true</maven.deploy.skip>
+         <maven.javadoc.skip>true</maven.javadoc.skip>
      </properties>
  
      <dependencies>
@@ -489,7 +491,7 @@ index f11cad04..f8b549dc 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 73b51d49..82872150 100644
+index 67122278..19f63586 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -608,12 +610,11 @@ index 73b51d49..82872150 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -165,4 +199,87 @@
-             </plugin>
-         </plugins>
-     </build>
-+
-+    <profiles>
+@@ -236,5 +270,87 @@
+                 </plugins>
+             </build>
+         </profile>
++        <!-- Waterfall Start -->
 +        <profile>
 +            <id>deployment</id>
 +            <build>
@@ -694,7 +695,8 @@ index 73b51d49..82872150 100644
 +                </plugins>
 +            </build>
 +        </profile>
-+    </profiles>
++        <!-- Waterfall end -->
+     </profiles>
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
 index e11af008..4592e2b3 100644
@@ -738,7 +740,7 @@ index e11af008..4592e2b3 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 04c5af43..b525340d 100644
+index a682d3c6..9ac3c1af 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -765,7 +767,7 @@ index 04c5af43..b525340d 100644
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -55,32 +55,32 @@
+@@ -56,32 +56,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>

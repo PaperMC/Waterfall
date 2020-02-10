@@ -1,18 +1,17 @@
-From 4aecdf4068b45c1ffc7c78aaf720e30e63fce926 Mon Sep 17 00:00:00 2001
+From 0116c8f04967a0c811477029d574d2e55a5b9193 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 4b9e171d..2380a5fd 100644
+index 15228459..705b7279 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
-@@ -49,5 +49,12 @@
-             <version>${netty.version}</version>
+@@ -55,5 +55,11 @@
+             <version>1.25</version>
              <scope>compile</scope>
          </dependency>
-+
 +        <!-- Waterfall - Add SLF4J -->
 +        <dependency>
 +            <groupId>org.slf4j</groupId>
