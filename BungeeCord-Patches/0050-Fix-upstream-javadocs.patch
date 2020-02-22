@@ -1,4 +1,4 @@
-From 1f214e0f51add45580c27f75825d1516ff438827 Mon Sep 17 00:00:00 2001
+From 0035af0d7779842e4fe63b3601e571f82db9b3c4 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sat, 30 Mar 2019 15:11:11 +0000
 Subject: [PATCH] Fix upstream javadocs
@@ -103,6 +103,18 @@ index f3bced0a..4a198ee9 100644
       */
      Favicon getFaviconObject();
  
+diff --git a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+index 32732703..46d70184 100644
+--- a/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
++++ b/api/src/main/java/net/md_5/bungee/api/scheduler/TaskScheduler.java
+@@ -85,6 +85,7 @@ public interface TaskScheduler
+ 
+         /**
+          * An executor service which underlies this scheduler.
++         * @param plugin The plugin of which to fetch an executor service for
+          *
+          * @param plugin owning plugin
+          * @return the underlying executor service or compatible wrapper
 -- 
-2.23.0.windows.1
+2.25.0
 

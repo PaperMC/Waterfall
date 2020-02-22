@@ -1,4 +1,4 @@
-From e7304c8179fc7985a420337d51d441f1000794e2 Mon Sep 17 00:00:00 2001
+From bedeffb74e8ac3cfd9940c66b68fd3091c349f90 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -6,7 +6,7 @@ Subject: [PATCH] ConnectionInitEvent
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
 new file mode 100644
-index 00000000..77ff8740
+index 00000000..6e79675f
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ConnectionInitEvent.java
 @@ -0,0 +1,56 @@
@@ -28,13 +28,13 @@ index 00000000..77ff8740
 + * efficiently close a connection, useful for connection throttlers, etc
 + */
 +@ToString
-+public class ConnectionInitEvent extends AsyncEvent<ClientConnectEvent> implements Cancellable {
++public class ConnectionInitEvent extends AsyncEvent<ConnectionInitEvent> implements Cancellable {
 +
 +    private final SocketAddress remoteAddress;
 +    private final ListenerInfo listener;
 +    private boolean isCancelled = false;
 +
-+    public ConnectionInitEvent(SocketAddress remoteAddress, ListenerInfo listener, Callback<ClientConnectEvent> done) {
++    public ConnectionInitEvent(SocketAddress remoteAddress, ListenerInfo listener, Callback<ConnectionInitEvent> done) {
 +        super(done);
 +        this.remoteAddress = remoteAddress;
 +        this.listener = listener;
