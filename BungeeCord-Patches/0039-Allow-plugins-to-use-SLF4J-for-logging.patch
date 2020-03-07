@@ -1,4 +1,4 @@
-From 0116c8f04967a0c811477029d574d2e55a5b9193 Mon Sep 17 00:00:00 2001
+From 9e78801085e10772415bf79f9806161591071cde Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
@@ -21,18 +21,19 @@ index 15228459..705b7279 100644
      </dependencies>
  </project>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index e85b4914..2e5ae4fb 100644
+index 9660234d..3d1e9a3a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-@@ -27,6 +27,12 @@ public class Plugin
-     @Getter
-     private Logger logger;
+@@ -44,6 +44,13 @@ public class Plugin
+         // init( proxy, description );
+     }
  
 +    // Waterfall start - Allow plugins to use SLF4J for logging
 +    public org.slf4j.Logger getSLF4JLogger() {
 +        return org.slf4j.LoggerFactory.getLogger(logger.getName());
 +    }
 +    // Waterfall end
++
 +
      /**
       * Called when the plugin has just been loaded. Most of the proxy will not

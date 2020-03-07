@@ -1,4 +1,4 @@
-From 96117eeb20c6213a829847d91d41f0b75f35f64b Mon Sep 17 00:00:00 2001
+From 613341857eeec62fcc4f3adfcac77a9eadb7c2c0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -76,10 +76,10 @@ index e1a6b2b3..56a0f29c 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 4c9a0054..85c2a0b5 100644
+index e65558ad..65121ba2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -44,10 +44,15 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -47,10 +47,15 @@ public class YamlConfig implements ConfigurationAdapter
      }
      private final Yaml yaml;
      private Map<String, Object> config;
@@ -97,7 +97,7 @@ index 4c9a0054..85c2a0b5 100644
          DumperOptions options = new DumperOptions();
          options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
          yaml = new Yaml( options );
-@@ -55,6 +60,11 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -58,6 +63,11 @@ public class YamlConfig implements ConfigurationAdapter
  
      @Override
      public void load()
@@ -109,7 +109,7 @@ index 4c9a0054..85c2a0b5 100644
      {
          try
          {
-@@ -83,6 +93,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -86,6 +96,7 @@ public class YamlConfig implements ConfigurationAdapter
              throw new RuntimeException( "Could not load configuration!", ex );
          }
  

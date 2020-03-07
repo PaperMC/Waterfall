@@ -1,4 +1,4 @@
-From 1b1c3dbe43edb753e38f18730b6e6d43bf907d09 Mon Sep 17 00:00:00 2001
+From 990153b9c40bd80f395eb4fa9983e57259e7019a Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index ea44573d..5b32effe 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 8c99ee85..31cbaa53 100644
+index 3e3cf99e..17f2bf4c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -410,14 +410,23 @@ public enum Protocol
+@@ -415,14 +415,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -66,7 +66,7 @@ index 8c99ee85..31cbaa53 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range " );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e8fd2148..e55d572a 100644
+index 674de454..031ea985 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -32,7 +32,9 @@ import net.md_5.bungee.forge.ForgeUtils;
@@ -79,7 +79,7 @@ index e8fd2148..e55d572a 100644
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -202,6 +204,12 @@ public class ServerConnector extends PacketHandler
+@@ -203,6 +205,12 @@ public class ServerConnector extends PacketHandler
  
          ServerConnection server = new ServerConnection( ch, target );
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
@@ -93,7 +93,7 @@ index e8fd2148..e55d572a 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index aebfdc16..e245c3c0 100644
+index e77804f8..51aed6da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -105,7 +105,7 @@ index aebfdc16..e245c3c0 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 0d7a6d83..ccebd15a 100644
+index b15045f6..05e6b438 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -318,6 +318,12 @@ public abstract class EntityMap

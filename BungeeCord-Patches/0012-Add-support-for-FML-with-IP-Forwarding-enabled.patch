@@ -1,4 +1,4 @@
-From 36f9a586c2ebfb7947ab641c721219ad21090f98 Mon Sep 17 00:00:00 2001
+From ea20858832ab1b742e5a570cf3a6acaeee84db32 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 15b9e66c..e8fd2148 100644
+index 6ed2bf92..674de454 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
@@ -23,7 +23,7 @@ index 15b9e66c..e8fd2148 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -102,15 +103,39 @@ public class ServerConnector extends PacketHandler
+@@ -103,15 +104,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + user.getAddress().getHostString() + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -67,7 +67,7 @@ index 15b9e66c..e8fd2148 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index afcae3a2..8f369a3d 100644
+index bb62e27d..e77804f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -163,8 +163,12 @@ public final class UserConnection implements ProxiedPlayer

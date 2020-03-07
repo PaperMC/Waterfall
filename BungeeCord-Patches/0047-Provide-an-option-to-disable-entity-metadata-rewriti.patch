@@ -1,4 +1,4 @@
-From 41cc576d0b2d95be6c0bf22e989604e18725913a Mon Sep 17 00:00:00 2001
+From 4b35a73e97e5397ad49ff7dc9f9618f0a897873c Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index dae9e294..139c4f09 100644
+index 8b3ff379..858b3ae6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -227,7 +227,7 @@ public class ServerConnector extends PacketHandler
+@@ -228,7 +228,7 @@ public class ServerConnector extends PacketHandler
              ch.write( message );
          }
  
@@ -69,7 +69,7 @@ index dae9e294..139c4f09 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -261,6 +261,7 @@ public class ServerConnector extends PacketHandler
+@@ -262,6 +262,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -77,7 +77,7 @@ index dae9e294..139c4f09 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -273,6 +274,7 @@ public class ServerConnector extends PacketHandler
+@@ -274,6 +275,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -85,8 +85,8 @@ index dae9e294..139c4f09 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -286,12 +288,33 @@ public class ServerConnector extends PacketHandler
-             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
+@@ -292,12 +294,33 @@ public class ServerConnector extends PacketHandler
+             }
  
              user.setDimensionChange( true );
 -            if ( login.getDimension() == user.getDimension() )
@@ -121,7 +121,7 @@ index dae9e294..139c4f09 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a5da62f3..95dbaefd 100644
+index ee4ede23..7c129221 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -745,4 +745,10 @@ public final class UserConnection implements ProxiedPlayer

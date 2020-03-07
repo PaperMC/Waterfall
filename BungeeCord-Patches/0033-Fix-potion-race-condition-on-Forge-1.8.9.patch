@@ -1,11 +1,11 @@
-From cb58c49decf1797f281bf3beb8c773574af6f396 Mon Sep 17 00:00:00 2001
+From c3b8811c3d1eba74e281a68ffca69f8abbd52e73 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 39e257c3..e4f14974 100644
+index ac31e435..252389bd 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -7,6 +7,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -15,10 +15,10 @@ index 39e257c3..e4f14974 100644
 +import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
 +import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
  import net.md_5.bungee.protocol.packet.EntityStatus;
+ import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
- import net.md_5.bungee.protocol.packet.KeepAlive;
-@@ -173,4 +175,14 @@ public abstract class AbstractPacketHandler
-     public void handle(ViewDistance viewDistance) throws Exception
+@@ -178,4 +180,14 @@ public abstract class AbstractPacketHandler
+     public void handle(GameState gameState) throws Exception
      {
      }
 +
@@ -33,19 +33,19 @@ index 39e257c3..e4f14974 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 31cbaa53..3556eda0 100644
+index 17f2bf4c..043e8562 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -16,6 +16,8 @@ import net.md_5.bungee.protocol.packet.Commands;
- import net.md_5.bungee.protocol.packet.EncryptionRequest;
+@@ -17,6 +17,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
+ import net.md_5.bungee.protocol.packet.GameState;
 +import net.md_5.bungee.protocol.packet.EntityEffect;
 +import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -97,6 +99,29 @@ public enum Protocol
+@@ -98,6 +100,29 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D )
              );
@@ -169,7 +169,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 3f9a91e3..a5da62f3 100644
+index 3f55af3d..ee4ede23 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
