@@ -1,0 +1,35 @@
+From efbfda2070d1d7162b3e05686fd7d90e17f171ab Mon Sep 17 00:00:00 2001
+From: Mark Vainomaa <mikroskeem@mikroskeem.eu>
+Date: Sat, 13 Apr 2019 19:51:09 +0300
+Subject: [PATCH] Add missing permissions nodes
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index b26035cf..ccddc30c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -10,7 +10,7 @@ public class CommandBungee extends Command
+ 
+     public CommandBungee()
+     {
+-        super( "bungee" );
++        super( "bungee", "bungeecord.command.bungee" ); // Waterfall - add missing permission node
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+index 18422669..d6e6e4e4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+@@ -12,7 +12,7 @@ public class CommandPerms extends Command
+ 
+     public CommandPerms()
+     {
+-        super( "perms" );
++        super( "perms", "bungeecord.command.perms" ); // Waterfall - add missing permission node
+     }
+ 
+     @Override
+-- 
+2.25.1
+
