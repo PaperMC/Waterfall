@@ -1,0 +1,31 @@
+From 658617d5f9adc5fa441d53a0b76af108f05dcc47 Mon Sep 17 00:00:00 2001
+From: Mark Vainomaa <mikroskeem@mikroskeem.eu>
+Date: Fri, 8 May 2020 22:10:29 +0300
+Subject: [PATCH] Remove this dumb startup delay
+
+Inspired from DemonWav's commit made for Paper
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index dc2c584d..c49cc357 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -48,11 +48,16 @@ public class BungeeCordLauncher
+             deadline.add( Calendar.WEEK_OF_YEAR, -8 );
+             if ( buildDate.before( deadline.getTime() ) )
+             {
++                /* Waterfall start - this is some stupid bullshit
+                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
+                 System.err.println( "*** Please check for a new build from https://papermc.io/ci/job/Waterfall/ ***" );
+                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
+                 System.err.println( "*** Server will start in 10 seconds ***" );
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
++                */
++                System.err.println("*** Warning, you've not updated in a while! ***");
++                System.err.println("*** Please download a new build as per instructions from https://papermc.io/downloads ***");
++                // Waterfall end
+             }
+         }
+ 
+-- 
+2.25.1
+
