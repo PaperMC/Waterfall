@@ -1,0 +1,213 @@
+From 406c0e2d4823a9ffc3fecb4fb42e7d8f5c8d2f39 Mon Sep 17 00:00:00 2001
+From: Mark Vainomaa <mikroskeem@mikroskeem.eu>
+Date: Fri, 8 May 2020 22:02:02 +0300
+Subject: [PATCH] Use ASM to invoke event handlers
+
+
+diff --git a/event/pom.xml b/event/pom.xml
+index 5eb97c1f..9ccfd079 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -17,4 +17,13 @@
+ 
+     <name>Waterfall-Event</name>
+     <description>Generic java event dispatching API intended for use with Waterfall.</description>
++    <!-- Waterfall start - Use ASM to invoke event handlers -->
++    <dependencies>
++        <dependency>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm</artifactId>
++            <version>8.0.1</version>
++        </dependency>
++    </dependencies>
++    <!-- Waterfall end -->
+ </project>
+diff --git a/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/ASMEventExecutor.java b/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/ASMEventExecutor.java
+new file mode 100644
+index 00000000..8ec968a6
+--- /dev/null
++++ b/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/ASMEventExecutor.java
+@@ -0,0 +1,112 @@
++package io.github.waterfallmc.waterfall.impl.event;
++
++import org.objectweb.asm.ClassWriter;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
++import org.objectweb.asm.Type;
++
++import java.lang.reflect.Method;
++import java.util.WeakHashMap;
++import java.util.concurrent.atomic.AtomicInteger;
++
++/**
++ * @author Mark Vainomaa
++ */
++class ASMEventExecutor {
++    private final static AtomicInteger CLASS_NAME_COUNTER = new AtomicInteger(0);
++    private final static Method defineClassMethod;
++
++    private final static WeakHashMap<Method, EventExecutor> generatedExecutors = new WeakHashMap<>();
++
++    static EventExecutor getEventExecutor(Method handlerMethod) {
++        return generatedExecutors.computeIfAbsent(handlerMethod, (__) -> {
++            try {
++                // Generate and load newly created event executor
++                ClassLoader classLoader = handlerMethod.getDeclaringClass().getClassLoader();
++                String className = generateNewClassName();
++                byte[] generatedExc = generateEventExecutor(className, handlerMethod);
++                Class<? extends EventExecutor> eventExcClass = defineClass(classLoader, className, generatedExc).asSubclass(EventExecutor.class);
++
++                // Instantiate generated executor
++                return eventExcClass.getConstructor().newInstance();
++            } catch (Exception e) {
++                throw new RuntimeException("Failed to generate an event executor", e);
++            }
++        });
++    }
++
++    /**
++     * @return New ASM event executor class name
++     */
++    static String generateNewClassName() {
++        return ASMEventExecutor.class.getPackage().getName() + ".generated.GeneratedASMEventExecutor" + CLASS_NAME_COUNTER.getAndIncrement();
++    }
++
++    static byte[] generateEventExecutor(String className, Method handlerMethod) {
++        String rawName = className.replace('.', '/');
++
++        Class<?> listenerClass = handlerMethod.getDeclaringClass();
++        Class<?> eventClass = handlerMethod.getParameterTypes()[0];
++
++        String objectName = Type.getInternalName(Object.class);
++        String objectDesc = "L" + objectName + ";";
++        String eeName = Type.getInternalName(EventExecutor.class);
++        String eeDesc = "(" + objectDesc + objectDesc + ")V";
++
++        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
++        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, rawName, null, objectName, new String[]{ eeName });
++
++        // Generate no-args public constructor
++        {
++            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
++            mv.visitVarInsn(Opcodes.ALOAD, 0);
++            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, objectName, "<init>", "()V", false);
++            mv.visitInsn(Opcodes.RETURN);
++            mv.visitMaxs(0, 0);
++            mv.visitEnd();
++        }
++
++        // Generate event executor method
++        {
++            MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "execute", eeDesc, null, null);
++            mv.visitVarInsn(Opcodes.ALOAD, 1);
++            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(listenerClass));
++            mv.visitVarInsn(Opcodes.ALOAD, 2);
++            mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(eventClass));
++            int inv = listenerClass.isInterface() ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
++            mv.visitMethodInsn(inv, Type.getInternalName(listenerClass), handlerMethod.getName(), Type.getMethodDescriptor(handlerMethod), listenerClass.isInterface());
++            Class<?> ret = handlerMethod.getReturnType();
++            if (ret != void.class) {
++                if (ret == long.class || ret == double.class) {
++                    // https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-2.html#jvms-2.11.1
++                    mv.visitInsn(Opcodes.POP2);
++                } else {
++                    mv.visitInsn(Opcodes.POP);
++                }
++            }
++            mv.visitInsn(Opcodes.RETURN);
++            mv.visitMaxs(0, 0);
++            mv.visitEnd();
++        }
++
++        cw.visitEnd();
++        return cw.toByteArray();
++    }
++
++    private static Class<?> defineClass(ClassLoader loader, String name, byte[] data) {
++        try {
++            return (Class<?>) defineClassMethod.invoke(loader, name, data, 0, data.length);
++        } catch (Exception e) {
++            throw new RuntimeException("Failed to define class '" + name + "'", e);
++        }
++    }
++
++    static {
++        try {
++            defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
++            defineClassMethod.setAccessible(true);
++        } catch (Exception e) {
++            throw new Error("Failed to get ClassLoader#defineClass method", e);
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/EventExecutor.java b/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/EventExecutor.java
+new file mode 100644
+index 00000000..64c407c4
+--- /dev/null
++++ b/event/src/main/java/io/github/waterfallmc/waterfall/impl/event/EventExecutor.java
+@@ -0,0 +1,18 @@
++package io.github.waterfallmc.waterfall.impl.event;
++
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++
++/**
++ * @author Mark Vainomaa
++ */
++public interface EventExecutor {
++    void execute(Object listener, Object event);
++
++    static EventExecutor create(Method method) {
++        if (!Modifier.isPublic(method.getModifiers())) {
++            throw new IllegalArgumentException("Event handler method must be public");
++        }
++        return ASMEventExecutor.getEventExecutor(method);
++    }
++}
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+index d7c3b90d..2aa4941d 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+@@ -51,10 +51,10 @@ public class EventBus
+                 } catch ( IllegalArgumentException ex )
+                 {
+                     throw new Error( "Method rejected target/argument: " + event, ex );
+-                } catch ( InvocationTargetException ex )
++                } catch ( Exception ex ) // Waterfall - Use ASM to invoke event handlers
+                 {
+                     String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
+-                    logger.log( Level.WARNING, msg, ex.getCause() );
++                    logger.log( Level.WARNING, msg, ex ); // Waterfall - Use ASM to invoke event handlers
+                     if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
+                 }
+             }
+@@ -191,7 +191,8 @@ public class EventBus
+                     {
+                         for ( Method method : listenerHandlers.getValue() )
+                         {
+-                            EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
++                            if (!java.lang.reflect.Modifier.isPublic(method.getModifiers())) continue; // Waterfall - Use ASM to invoke event handlers; ignore non-public methods silently as they'll blow up more violently later
++                            EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method, io.github.waterfallmc.waterfall.impl.event.EventExecutor.create(method) ); // Waterfall - Use ASM to invoke event handlers
+                             handlersList.add( ehm );
+                         }
+                     }
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+index ad19c020..3d80d6e7 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+@@ -13,9 +13,10 @@ public class EventHandlerMethod
+     private final Object listener;
+     @Getter
+     private final Method method;
++    private final io.github.waterfallmc.waterfall.impl.event.EventExecutor executor; // Waterfall - Use ASM to invoke event handlers
+ 
+     public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+     {
+-        method.invoke( listener, event );
++        executor.execute( listener, event ); // Waterfall - Use ASM to invoke event handlers
+     }
+ }
+-- 
+2.25.1
+
