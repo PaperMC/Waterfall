@@ -1,4 +1,4 @@
-From c3b8811c3d1eba74e281a68ffca69f8abbd52e73 Mon Sep 17 00:00:00 2001
+From 14aad6dcfb2d749c4d0dc58c49220b2c59896107 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -169,7 +169,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 3f55af3d..ee4ede23 100644
+index 2c689edf..0c36ab52 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -277,5 +277,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.25.0
+2.26.1
 

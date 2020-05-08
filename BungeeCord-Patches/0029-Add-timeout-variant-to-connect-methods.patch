@@ -1,4 +1,4 @@
-From 90b458f4915b37108a21fcaaf2d29dabf53c4185 Mon Sep 17 00:00:00 2001
+From b7b31dfb797e512a5b58b730a2db3f29a05ba775 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -75,7 +75,7 @@ index 867e4428..f7459860 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 51aed6da..c270cd77 100644
+index ecde76ec..2c689edf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -254,9 +254,20 @@ public final class UserConnection implements ProxiedPlayer
@@ -109,5 +109,5 @@ index 51aed6da..c270cd77 100644
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
 -- 
-2.26.2.windows.1
+2.26.1
 

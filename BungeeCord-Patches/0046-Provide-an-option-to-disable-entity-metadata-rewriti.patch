@@ -1,4 +1,4 @@
-From 4b35a73e97e5397ad49ff7dc9f9618f0a897873c Mon Sep 17 00:00:00 2001
+From d5377834246c8b9d93ee383981289e25d0a0e6e4 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8b3ff379..858b3ae6 100644
+index f594a287..35a19224 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,7 +228,7 @@ public class ServerConnector extends PacketHandler
@@ -121,7 +121,7 @@ index 8b3ff379..858b3ae6 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ee4ede23..7c129221 100644
+index 0c36ab52..87cff4ff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -745,4 +745,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -232,5 +232,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.25.0
+2.26.1
 
