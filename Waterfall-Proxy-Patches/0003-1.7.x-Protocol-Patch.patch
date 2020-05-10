@@ -1,4 +1,4 @@
-From e0c2ad90e1c91d7d950d85ceab8b9f5e3f2adf9d Mon Sep 17 00:00:00 2001
+From 85fab59576a386bb89c27c7dbdf9269b94ff1831 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1127,7 +1127,7 @@ index 0b27fc86..74066702 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-index d6865ae2..01e38206 100644
+index fca4c5d2..25d16751 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
 @@ -1,5 +1,6 @@
@@ -1530,7 +1530,7 @@ index d7d0fafc..21597768 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 007d3daf..87f4bf12 100644
+index 37ea35e3..b1c37a55 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.List;
@@ -1635,10 +1635,10 @@ index 4d8bac5d..359c90e0 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index e6afb98d..b1da3605 100644
+index bc1de55a..73b05167 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -34,6 +34,10 @@ public abstract class EntityMap
+@@ -35,6 +35,10 @@ public abstract class EntityMap
          // Waterfall end
          switch ( version )
          {
@@ -2004,5 +2004,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.26.1
+2.26.2
 
