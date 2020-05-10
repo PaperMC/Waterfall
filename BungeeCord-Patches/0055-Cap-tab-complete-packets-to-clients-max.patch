@@ -1,0 +1,22 @@
+From 2a8a64e7e53e5c6784f65274ca35900bb47ed622 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Sat, 9 May 2020 21:40:23 -0400
+Subject: [PATCH] Cap tab complete packets to clients max
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+index d6865ae2..fca4c5d2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
+@@ -41,7 +41,7 @@ public class TabCompleteRequest extends DefinedPacket
+         {
+             transactionId = readVarInt( buf );
+         }
+-        cursor = readString( buf );
++        cursor = readString( buf , 256); // Waterfall
+ 
+         if ( protocolVersion < ProtocolConstants.MINECRAFT_1_13 )
+         {
+-- 
+2.26.2
+
