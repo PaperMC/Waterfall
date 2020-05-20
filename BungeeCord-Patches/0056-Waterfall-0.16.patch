@@ -1,7 +1,7 @@
-From 243d04e5628f8fe5ebb9df872a23991bd7622eff Mon Sep 17 00:00:00 2001
+From eb7e17bb1fe866c664183cce4740704ac049f9cb Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
-Subject: [PATCH] Waterfall 1.16
+Subject: [PATCH] Waterfall 0.16
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
@@ -85,14 +85,14 @@ index aa1515f4..6dd261aa 100644
              TO_SERVER.registerPacket(
                      Chat.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index cd987c8a..42dcc751 100644
+index cd987c8a..c72e5c96 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -28,6 +28,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_15 = 573;
      public static final int MINECRAFT_1_15_1 = 575;
      public static final int MINECRAFT_1_15_2 = 578;
-+    public static final int MINECRAFT_1_16 = 716; // Waterfall (1.16 - 20w20a)
++    public static final int MINECRAFT_1_16 = 717; // Waterfall (1.16 - 20w20b)
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
              "1.8.x",
              "1.9.x",
@@ -389,7 +389,7 @@ index 35a19224..b0a86c02 100644
              {
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 007d3daf..b901e933 100644
+index 37ea35e3..98c0c2d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -536,7 +536,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -402,10 +402,10 @@ index 007d3daf..b901e933 100644
  
                              ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index e6afb98d..07b1f1ed 100644
+index bc1de55a..ef2a66fa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -66,6 +66,8 @@ public abstract class EntityMap
+@@ -67,6 +67,8 @@ public abstract class EntityMap
              case ProtocolConstants.MINECRAFT_1_15_1:
              case ProtocolConstants.MINECRAFT_1_15_2:
                  return EntityMap_1_15.INSTANCE;
@@ -616,5 +616,5 @@ index 00000000..e87d2632
 +// Travertine end
 \ No newline at end of file
 -- 
-2.25.0.windows.1
+2.24.0
 
