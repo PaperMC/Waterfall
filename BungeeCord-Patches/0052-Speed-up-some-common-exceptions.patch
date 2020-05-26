@@ -1,4 +1,4 @@
-From e47cbe074b7e85808481412366d3d6c186f5119c Mon Sep 17 00:00:00 2001
+From 8f9e65679651afff4a1feb974c76b532a09e821e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -67,16 +67,26 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 9951c1f9..e56bfccb 100644
+index 9951c1f9..68c716b9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -145,13 +145,18 @@ public abstract class DefinedPacket
+@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
+ public abstract class DefinedPacket
+ {
+ 
++    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
++    private static final BadPacketException OVERSIZED_VAR_INT_EXCEPTION = new BadPacketException( "VarInt too big" );
++    private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
+     public static void writeString(String s, ByteBuf buf)
+     {
+         if ( s.length() > Short.MAX_VALUE )
+@@ -145,13 +148,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {
 +            // Waterfall start
 +            if (input.readableBytes() == 0) {
-+                throw new BadPacketException("No more bytes reading varint");
++                throw PROCESS_TRACES ? new BadPacketException("No more bytes reading varint") : NO_MORE_BYTES_EXCEPTION;
 +            }
 +            // Waterfall end
              in = input.readByte();
@@ -86,7 +96,7 @@ index 9951c1f9..e56bfccb 100644
              if ( bytes > maxBytes )
              {
 -                throw new RuntimeException( "VarInt too big" );
-+                throw new BadPacketException( "VarInt too big" );
++                throw PROCESS_TRACES ? new BadPacketException( "VarInt too big" ) : OVERSIZED_VAR_INT_EXCEPTION;
              }
  
              if ( ( in & 0x80 ) != 0x80 )
@@ -157,5 +167,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.26.1
+2.26.2
 
