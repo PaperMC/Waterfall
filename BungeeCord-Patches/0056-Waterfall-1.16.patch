@@ -1,4 +1,4 @@
-From 5e4222527533558d5c901ad1cd0f54bfb2d4eed2 Mon Sep 17 00:00:00 2001
+From b3d3bae6ec02dfe1194e96ea8ba9f07176d3bc5b Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
 Subject: [PATCH] Waterfall 1.16
@@ -162,14 +162,14 @@ index aa1515f4..6dd261aa 100644
              TO_SERVER.registerPacket(
                      Chat.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index cd987c8a..153dc8d9 100644
+index cd987c8a..23d57c71 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -28,6 +28,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_15 = 573;
      public static final int MINECRAFT_1_15_1 = 575;
      public static final int MINECRAFT_1_15_2 = 578;
-+    public static final int MINECRAFT_1_16 = 718; // Waterfall (1.16 - 20w21a)
++    public static final int MINECRAFT_1_16 = 719; // Waterfall (1.16 - 20w22a)
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
              "1.8.x",
              "1.9.x",
@@ -578,7 +578,7 @@ index 2f14d074..56af8b57 100644
  
          private static void registerDummy(String name)
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
-index e0cdf82e..f39627fc 100644
+index e0cdf82e..461ad219 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
 @@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
@@ -589,7 +589,7 @@ index e0cdf82e..f39627fc 100644
  
  @Data
  @NoArgsConstructor
-@@ -26,19 +27,32 @@ public class Login extends DefinedPacket
+@@ -26,19 +27,42 @@ public class Login extends DefinedPacket
      private int viewDistance;
      private boolean reducedDebugInfo;
      private boolean normalRespawn;
@@ -597,6 +597,8 @@ index e0cdf82e..f39627fc 100644
 +    private boolean isFlat; // Waterfall (1.16: 20w20a+)
 +    private String dimensionCodecName; // Waterfall (1.16: 20w21a+)
 +    private NBTTag codecTag; // Waterfall (1.16: 20w21a+)
++    private String[] worlds; // Waterfall (1.16: 20w22a+)
++    private String world; // Waterfall (1.16: 20w22a+)
  
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
@@ -608,8 +610,16 @@ index e0cdf82e..f39627fc 100644
 +        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
          {
 -            dimension = buf.readInt();
++            // Waterfall (1.16: 20w22a) world name array
++            int worldNameArrayLen = readVarInt( buf );
++            worlds = new String[worldNameArrayLen];
++            for ( int iter = 0; iter < worldNameArrayLen; iter++ )
++            {
++                worlds[iter] = readString( buf );
++            }
 +            codecTag = readNBT( buf );
 +            dimensionCodecName = readString( buf );
++            world = readString( buf ); // Waterfall (1.16: 20w22a) world name
          } else
          {
 -            dimension = buf.readByte();
@@ -625,7 +635,7 @@ index e0cdf82e..f39627fc 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_15 )
          {
              seed = buf.readLong();
-@@ -48,7 +62,12 @@ public class Login extends DefinedPacket
+@@ -48,7 +72,12 @@ public class Login extends DefinedPacket
              difficulty = buf.readUnsignedByte();
          }
          maxPlayers = buf.readUnsignedByte();
@@ -639,7 +649,7 @@ index e0cdf82e..f39627fc 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_14 )
          {
              viewDistance = readVarInt( buf );
-@@ -61,6 +80,13 @@ public class Login extends DefinedPacket
+@@ -61,6 +90,13 @@ public class Login extends DefinedPacket
          {
              normalRespawn = buf.readBoolean();
          }
@@ -653,7 +663,7 @@ index e0cdf82e..f39627fc 100644
      }
  
      @Override
-@@ -68,13 +94,22 @@ public class Login extends DefinedPacket
+@@ -68,13 +104,29 @@ public class Login extends DefinedPacket
      {
          buf.writeInt( entityId );
          buf.writeByte( gameMode );
@@ -662,8 +672,15 @@ index e0cdf82e..f39627fc 100644
 +        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
          {
 -            buf.writeInt( dimension );
++            // Waterfall (1.16: 20w22a) world name array
++            writeVarInt( worlds.length, buf );
++            for ( int iter = 0; iter < worlds.length; iter++ )
++            {
++                writeString( worlds[iter], buf );
++            }
 +            writeNBT( codecTag, buf );
 +            writeString( dimensionCodecName, buf );
++            writeString( world, buf ); // Waterfall (1.16: 20w22a) world name
          } else
          {
 -            buf.writeByte( dimension );
@@ -679,7 +696,7 @@ index e0cdf82e..f39627fc 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_15 )
          {
              buf.writeLong( seed );
-@@ -84,7 +119,12 @@ public class Login extends DefinedPacket
+@@ -84,7 +136,12 @@ public class Login extends DefinedPacket
              buf.writeByte( difficulty );
          }
          buf.writeByte( maxPlayers );
@@ -693,7 +710,7 @@ index e0cdf82e..f39627fc 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_14 )
          {
              writeVarInt( viewDistance, buf );
-@@ -97,6 +137,13 @@ public class Login extends DefinedPacket
+@@ -97,6 +154,13 @@ public class Login extends DefinedPacket
          {
              buf.writeBoolean( normalRespawn );
          }
@@ -777,10 +794,10 @@ index 2aa5ad58..aa50f70d 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
-index 1f544f26..cf50f581 100644
+index 1f544f26..e6e1ecd2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
-@@ -21,11 +21,23 @@ public class Respawn extends DefinedPacket
+@@ -21,11 +21,25 @@ public class Respawn extends DefinedPacket
      private short difficulty;
      private short gameMode;
      private String levelType;
@@ -788,6 +805,7 @@ index 1f544f26..cf50f581 100644
 +    private boolean isDebug; // Waterfall (1.16: 20w20a+)
 +    private boolean isFlat; // Waterfall (1.16: 20w20a+)
 +    private String dimensionCodecName; // Waterfall (1.16: 20w21a+)
++    private String world; // Waterfall (1.16: 20w22a+)
  
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
@@ -797,6 +815,7 @@ index 1f544f26..cf50f581 100644
 +        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
 +        {
 +            dimensionCodecName = readString( buf );
++            world = readString( buf ); // Waterfall (1.16: 20w22a+)
 +        } else
 +        {
 +            dimension = buf.readInt();
@@ -805,7 +824,7 @@ index 1f544f26..cf50f581 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_15 )
          {
              seed = buf.readLong();
-@@ -35,13 +47,31 @@ public class Respawn extends DefinedPacket
+@@ -35,13 +49,32 @@ public class Respawn extends DefinedPacket
              difficulty = buf.readUnsignedByte();
          }
          gameMode = buf.readUnsignedByte();
@@ -831,6 +850,7 @@ index 1f544f26..cf50f581 100644
 +        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
 +        {
 +           writeString( dimensionCodecName, buf );
++           writeString( world, buf ); // Waterfall (1.16: 20w22a+)
 +        } else
 +        {
 +            buf.writeInt( dimension );
@@ -839,7 +859,7 @@ index 1f544f26..cf50f581 100644
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_15 )
          {
              buf.writeLong( seed );
-@@ -51,7 +81,17 @@ public class Respawn extends DefinedPacket
+@@ -51,7 +84,17 @@ public class Respawn extends DefinedPacket
              buf.writeByte( difficulty );
          }
          buf.writeByte( gameMode );
@@ -859,7 +879,7 @@ index 1f544f26..cf50f581 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/PacketConstants.java b/proxy/src/main/java/net/md_5/bungee/PacketConstants.java
-index 000c450e..df2d9ce2 100644
+index 000c450e..5f372766 100644
 --- a/proxy/src/main/java/net/md_5/bungee/PacketConstants.java
 +++ b/proxy/src/main/java/net/md_5/bungee/PacketConstants.java
 @@ -7,8 +7,8 @@ import net.md_5.bungee.protocol.packet.Respawn;
@@ -868,13 +888,13 @@ index 000c450e..df2d9ce2 100644
  
 -    public static final Respawn DIM1_SWITCH = new Respawn( (byte) 1, 0, (byte) 0, (byte) 0, "default" );
 -    public static final Respawn DIM2_SWITCH = new Respawn( (byte) -1, 0, (byte) 0, (byte) 0, "default" );
-+    public static final Respawn DIM1_SWITCH = new Respawn( (byte) 1, 0, (byte) 0, (byte) 0, "default", false, /* Waterfall (1.16: 20w18a+) */ false, false, /* Waterfall 1.16 (20w20a+)*/ "minecraft:overworld" /* Waterfall 1.16 (20w21a+)*/ );
-+    public static final Respawn DIM2_SWITCH = new Respawn( (byte) -1, 0, (byte) 0, (byte) 0, "default", false, /* Waterfall (1.16: 20w18a+) */ false, false, /* Waterfall 1.16 (20w20a+)*/ "minecraft:overworld" /* Waterfall 1.16 (20w21a+)*/ );
++    public static final Respawn DIM1_SWITCH = new Respawn( (byte) 1, 0, (byte) 0, (byte) 0, "default", false, /* Waterfall (1.16: 20w18a+) */ false, false, /* Waterfall 1.16 (20w20a+)*/ "minecraft:overworld", /* Waterfall 1.16 (20w21a+)*/ "bungeecord:dimension_switch1" /* Waterfall 1.16 (20w22a+)*/ );
++    public static final Respawn DIM2_SWITCH = new Respawn( (byte) -1, 0, (byte) 0, (byte) 0, "default", false, /* Waterfall (1.16: 20w18a+) */ false, false, /* Waterfall 1.16 (20w20a+)*/ "minecraft:overworld", /* Waterfall 1.16 (20w21a+)*/ "bungeecord:dimension_switch1" /* Waterfall 1.16 (20w22a+)*/ );
      public static final ClientStatus CLIENT_LOGIN = new ClientStatus( (byte) 0 );
      public static final PluginMessage FORGE_MOD_REQUEST = new PluginMessage( "FML", new byte[]
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 35a19224..eb538a7a 100644
+index 35a19224..1e8dfe09 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -246,7 +246,7 @@ public class ServerConnector extends PacketHandler
@@ -882,7 +902,7 @@ index 35a19224..eb538a7a 100644
              // Set tab list size, TODO: what shall we do about packet mutability
              Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) login.getDimension(), login.getSeed(), login.getDifficulty(),
 -                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn() );
-+                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), login.getCodecTag() /* Waterfall 1.16 (20w21a+)*/);
++                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), login.getCodecTag(), /* Waterfall 1.16 (20w21a+)*/ login.getWorlds(), login.getWorld() /* Waterfall 1.16 (20w22a+)*/ );
  
              user.unsafe().sendPacket( modLogin );
  
@@ -891,7 +911,7 @@ index 35a19224..eb538a7a 100644
              if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
              {
 -                user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
-+                user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName() /* Waterfall 1.16 (20w21a+)*/) );
++                user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), /* Waterfall 1.16 (20w21a+)*/ login.getWorld() /* Waterfall 1.16 (20w22a+)*/ ) );
              }
  
              user.setServerEntityId( login.getEntityId() );
@@ -900,23 +920,23 @@ index 35a19224..eb538a7a 100644
                  // Only send if we are not in the same dimension
                  if (user.getDimension() != login.getDimension()) {
 -                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
-+                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(),  /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName() /* Waterfall 1.16 (20w21a+)*/ ));
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(),  /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), /* Waterfall 1.16 (20w21a+)*/ login.getWorld() /* Waterfall 1.16 (20w22a+)*/  ));
                  }
  
                  Login modLogin = new Login( login.getEntityId(),login.getGameMode(), login.getDimension(), login.getSeed(),
 -                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn() );
-+                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), login.getCodecTag() /* Waterfall 1.16 (20w21a+)*/);
++                        login.getDifficulty(), login.getMaxPlayers(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), login.getCodecTag(), /* Waterfall 1.16 (20w21a+)*/ login.getWorlds(), login.getWorld() /* Waterfall 1.16 (20w22a+)*/ );
                  user.unsafe().sendPacket(modLogin);
  
                  // Only send if we're in the same dimension
                  if (user.getDimension() == login.getDimension()) {
 -                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
-+                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(),  /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName() /* Waterfall 1.16 (20w21a+)*/ ));
++                    user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(),  /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), /* Waterfall 1.16 (20w21a+)*/ login.getWorld() /* Waterfall 1.16 (20w22a+)*/ ));
                  }
              }
              // Waterfall end
 -            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
-+            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName() /* Waterfall 1.16 (20w21a+)*/) );
++            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType(), false,  /* Waterfall (1.16: 20w18a+) */ login.isDebug(), login.isFlat(), /* Waterfall 1.16 (20w20a+)*/ login.getDimensionCodecName(), /* Waterfall 1.16 (20w21a+)*/ login.getWorld() /* Waterfall 1.16 (20w22a+)*/ ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
