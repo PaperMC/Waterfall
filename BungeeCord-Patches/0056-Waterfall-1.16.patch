@@ -1,11 +1,11 @@
-From b3d3bae6ec02dfe1194e96ea8ba9f07176d3bc5b Mon Sep 17 00:00:00 2001
+From eb381bcb078013ecccad4c95d9d0a2e3bd7977f3 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
 Subject: [PATCH] Waterfall 1.16
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index e56bfccb..26513a6e 100644
+index 68c716b9..e91c3572 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -1,15 +1,98 @@
@@ -105,8 +105,8 @@ index e56bfccb..26513a6e 100644
 +    }
 +    // Waterfall end
  
-     public static void writeString(String s, ByteBuf buf)
-     {
+     private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
+     private static final BadPacketException OVERSIZED_VAR_INT_EXCEPTION = new BadPacketException( "VarInt too big" );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 index aa1515f4..6dd261aa 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
