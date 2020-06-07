@@ -1,4 +1,4 @@
-From eb381bcb078013ecccad4c95d9d0a2e3bd7977f3 Mon Sep 17 00:00:00 2001
+From 00853089c4957f32a92988cb4b5104bdfaeed1e3 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
 Subject: [PATCH] Waterfall 1.16
@@ -108,50 +108,171 @@ index 68c716b9..e91c3572 100644
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
      private static final BadPacketException OVERSIZED_VAR_INT_EXCEPTION = new BadPacketException( "VarInt too big" );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index aa1515f4..6dd261aa 100644
+index aa1515f4..080be27e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -158,7 +158,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x42 ),
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x45 ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x49 ),
--                    map( ProtocolConstants.MINECRAFT_1_15, 0x4A )
-+                    map( ProtocolConstants.MINECRAFT_1_15, 0x4A ),
-+                    map( ProtocolConstants.MINECRAFT_1_16, 0x4B ) // Waterfall (1.16: 20w12a+ 0x4A -> 0x4B)
+@@ -71,7 +71,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1F ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x21 ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x20 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x21 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x21 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x20 ) // Waterfall (1.16: 1.16-pre1+ 0x21 -> 0x20)
              );
              TO_CLIENT.registerPacket(
-                     ScoreboardScore.class,
-@@ -169,7 +170,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x45 ),
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x48 ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x4C ),
--                    map( ProtocolConstants.MINECRAFT_1_15, 0x4D )
-+                    map( ProtocolConstants.MINECRAFT_1_15, 0x4D ),
-+                    map( ProtocolConstants.MINECRAFT_1_16, 0x4E ) // Waterfall (1.16: 20w12a+ 0x4D -> 0x4E)
+                     Login.class,
+@@ -79,7 +80,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x23 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x25 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x26 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x26 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x25 ) // Waterfall (1.16: 1.16-pre1+ 0x26 -> 0x25)
              );
              TO_CLIENT.registerPacket(
-                     ScoreboardDisplay.class,
-@@ -180,7 +182,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x3B ),
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x3E ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x42 ),
--                    map( ProtocolConstants.MINECRAFT_1_15, 0x43 )
-+                    map( ProtocolConstants.MINECRAFT_1_15, 0x43 ),
-+                    map( ProtocolConstants.MINECRAFT_1_16, 0x44 ) // Waterfall (1.16: 20w12a+ 0x43 -> 0x44)
+                     Chat.class,
+@@ -87,7 +89,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x02 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0F ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x0E ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x0F )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x0F ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x0E ) // Waterfall (1.16: 1.16-pre1+ 0x0F -> 0x0E)
              );
              TO_CLIENT.registerPacket(
-                     Team.class,
-@@ -191,7 +194,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x44 ),
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x47 ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x4B ),
--                    map( ProtocolConstants.MINECRAFT_1_15, 0x4C )
-+                    map( ProtocolConstants.MINECRAFT_1_15, 0x4C ),
-+                    map( ProtocolConstants.MINECRAFT_1_16, 0x4D ) // Waterfall (1.16: 20w12a+ 0x4C -> 0x4D)
+                     Respawn.class,
+@@ -98,13 +101,15 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x35 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x38 ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x3A ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x3B )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x3B ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x3A ) // Waterfall (1.16: 1.16-pre1+ 0x3B -> 0x3A)
              );
              TO_CLIENT.registerPacket(
-                     PluginMessage.class,
-@@ -268,7 +272,8 @@ public enum Protocol
+                     BossBar.class,
+                     BossBar::new, // Waterfall - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x0D )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x0C ) // Waterfall (1.16: 1.16-pre1+ 0x0D -> 0x0C)
+             );
+             // Waterfall start
+             TO_CLIENT.registerPacket(
+@@ -117,7 +122,8 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_12_1, 0x4F),
+                     map(ProtocolConstants.MINECRAFT_1_13, 0x53),
+                     map(ProtocolConstants.MINECRAFT_1_14, 0x59),
+-                    map(ProtocolConstants.MINECRAFT_1_15, 0x5A)
++                    map(ProtocolConstants.MINECRAFT_1_15, 0x5A),
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x59) // Waterfall (1.16: 1.16-pre1+ 0x5A -> 0x59)
+             );
+             TO_CLIENT.registerPacket(
+                     EntityRemoveEffect.class,
+@@ -128,7 +134,8 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_12_1, 0x33),
+                     map(ProtocolConstants.MINECRAFT_1_13, 0x36),
+                     map(ProtocolConstants.MINECRAFT_1_14, 0x38),
+-                    map(ProtocolConstants.MINECRAFT_1_15, 0x39)
++                    map(ProtocolConstants.MINECRAFT_1_15, 0x39),
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x38) // Waterfall (1.16: 1.16-pre1+ 0x39 -> 0x38)
+             );
+             // Waterfall end
+             TO_CLIENT.registerPacket(
+@@ -139,7 +146,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x2E ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x30 ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x33 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x34 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x34 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x33 ) // Waterfall (1.16: 1.16-pre1+ 0x34 -> 0x33)
+             );
+             TO_CLIENT.registerPacket(
+                     TabCompleteResponse.class,
+@@ -147,7 +155,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3A ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x10 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x11 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x10 ) // Waterfall (1.16: 1.16-pre1+ 0x11 -> 0x10)
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardObjective.class,
+@@ -200,7 +209,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x18 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x19 ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x18 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x19 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x19 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x18 ) // Waterfall (1.16: 1.16-pre1+ 0x19 -> 0x18)
+             );
+             TO_CLIENT.registerPacket(
+                     Kick.class,
+@@ -209,7 +219,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1A ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1B ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x1A ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x1B )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x1B ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x1A )
+             );
+             TO_CLIENT.registerPacket(
+                     Title.class,
+@@ -219,7 +230,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x48 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x4B ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x4F ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x50 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x50 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x4F ) // Waterfall (1.16: 1.16-pre1+ 0x50 -> 0x4F)
+             );
+             TO_CLIENT.registerPacket(
+                     PlayerListHeaderFooter.class,
+@@ -231,7 +243,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x4A ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x4E ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x53 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x54 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x54 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x53 ) // Waterfall (1.16: 1.16-pre1+ 0x54 -> 0x53)
+             );
+             TO_CLIENT.registerPacket(
+                     EntityStatus.class,
+@@ -240,24 +253,28 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1B ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x1B ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x1C )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x1C ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x1B ) // Waterfall (1.16: 1.16-pre1+ 0x1C -> 0x1B)
+             );
+             TO_CLIENT.registerPacket(
+                     Commands.class,
+                     Commands::new, // Waterfall - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x12 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x12 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x11 ) // Waterfall (1.16: 1.16-pre1+ 0x12 -> 0x11)
+             );
+             TO_CLIENT.registerPacket(
+                     GameState.class,
+                     GameState::new, // Waterfall - speed up packet construction
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x1F )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x1F ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x1E ) // Waterfall (1.16: 1.16-pre1+ 0x1F -> 0x1E)
+             );
+             TO_CLIENT.registerPacket(
+                     ViewDistance.class,
+                     ViewDistance::new, // Waterfall - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x41 ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x42 )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x42 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x41 ) // Waterfall (1.16: 1.16-pre1+ 0x42 -> 0x41)
+             );
+ 
+             TO_SERVER.registerPacket(
+@@ -268,7 +285,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0E ),
@@ -162,14 +283,14 @@ index aa1515f4..6dd261aa 100644
              TO_SERVER.registerPacket(
                      Chat.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index cd987c8a..23d57c71 100644
+index cd987c8a..fd53a440 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -28,6 +28,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_15 = 573;
      public static final int MINECRAFT_1_15_1 = 575;
      public static final int MINECRAFT_1_15_2 = 578;
-+    public static final int MINECRAFT_1_16 = 719; // Waterfall (1.16 - 20w22a)
++    public static final int MINECRAFT_1_16 = 722; // Waterfall (1.16 - 1.16-pre2)
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
              "1.8.x",
              "1.9.x",
@@ -193,6 +314,54 @@ index cd987c8a..23d57c71 100644
      );
  
      public static final boolean isBeforeOrEq(int before, int other)
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ByteTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ByteTag.java
+new file mode 100644
+index 00000000..ffd82469
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ByteTag.java
+@@ -0,0 +1,42 @@
++package net.md_5.bungee.protocol.nbt;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++
++/*
++ * Waterfall NBT-Library substitute module
++ * Minecraft 1.16 - 20w21a+
++ * by Xernium (Five)
++ * */
++
++public class ByteTag extends NBTTag {
++
++    private byte value;
++
++    @Override
++    public int getTagIndex()
++    {
++        return 1;
++    }
++
++    @Override
++    public void write( DataOutput to ) throws IOException
++    {
++        to.writeByte( value );
++    }
++
++    @Override
++    public void read( DataInput from ) throws IOException
++    {
++        value = from.readByte();
++    }
++
++    @Override
++    public String toString()
++    {
++        return "value: '" + value + "'\n";
++    }
++
++
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/CompoundTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/CompoundTag.java
 new file mode 100644
 index 00000000..7c289085
@@ -306,6 +475,54 @@ index 00000000..1b763a05
 +        return "EndTag\n";
 +    }
 +}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/FloatTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/FloatTag.java
+new file mode 100644
+index 00000000..93f062ce
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/FloatTag.java
+@@ -0,0 +1,42 @@
++package net.md_5.bungee.protocol.nbt;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++
++/*
++ * Waterfall NBT-Library substitute module
++ * Minecraft 1.16 - 20w21a+
++ * by Xernium (Five)
++ * */
++
++public class FloatTag extends NBTTag {
++
++    private float value;
++
++    @Override
++    public int getTagIndex()
++    {
++        return 5;
++    }
++
++    @Override
++    public void write( DataOutput to ) throws IOException
++    {
++        to.writeFloat( value );
++    }
++
++    @Override
++    public void read( DataInput from ) throws IOException
++    {
++        value = from.readFloat();
++    }
++
++    @Override
++    public String toString()
++    {
++        return "value: '" + value + "'\n";
++    }
++
++
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ListTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ListTag.java
 new file mode 100644
 index 00000000..66075d87
@@ -390,6 +607,54 @@ index 00000000..66075d87
 +        return ret;
 +    }
 +}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/LongTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/LongTag.java
+new file mode 100644
+index 00000000..f66acb55
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/LongTag.java
+@@ -0,0 +1,42 @@
++package net.md_5.bungee.protocol.nbt;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++
++/*
++ * Waterfall NBT-Library substitute module
++ * Minecraft 1.16 - 20w21a+
++ * by Xernium (Five)
++ * */
++
++public class LongTag extends NBTTag {
++
++    private long value;
++
++    @Override
++    public int getTagIndex()
++    {
++        return 4;
++    }
++
++    @Override
++    public void write( DataOutput to ) throws IOException
++    {
++        to.writeLong( value );
++    }
++
++    @Override
++    public void read( DataInput from ) throws IOException
++    {
++        value = from.readLong();
++    }
++
++    @Override
++    public String toString()
++    {
++        return "value: '" + value + "'\n";
++    }
++
++
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTag.java
 new file mode 100644
 index 00000000..f7524c42
@@ -421,10 +686,10 @@ index 00000000..f7524c42
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java
 new file mode 100644
-index 00000000..112ce81f
+index 00000000..b18eac30
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,37 @@
 +package net.md_5.bungee.protocol.nbt;
 +
 +import java.io.IOException;
@@ -444,6 +709,12 @@ index 00000000..112ce81f
 +        {
 +            case 0:
 +                return new EndTag();
++            case 1:
++                return new ByteTag();
++            case 4:
++                return new LongTag();
++            case 5:
++                return new FloatTag();
 +            case 8:
 +                return new StringTag();
 +            case 9:
@@ -981,7 +1252,7 @@ index bc1de55a..ef2a66fa 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 new file mode 100644
-index 00000000..e87d2632
+index 00000000..9dd0bdc7
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 @@ -0,0 +1,194 @@
@@ -1007,28 +1278,28 @@ index 00000000..e87d2632
 +    {
 +        addRewrite( 0x00, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Object : PacketPlayOutSpawnEntity
 +        addRewrite( 0x01, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Experience Orb : PacketPlayOutSpawnEntityExperienceOrb
-+        addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
-+        addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
-+        addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
-+        addRewrite( 0x06, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
-+        addRewrite( 0x09, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
-+        addRewrite( 0x1C, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
-+        addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
-+        addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
-+        addRewrite( 0x2B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
-+        addRewrite( 0x2C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
-+        addRewrite( 0x39, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
-+        addRewrite( 0x3C, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
-+        addRewrite( 0x3F, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
-+        /* Waterfall (1.16: 20w12a+ 0x44 -> 0x45) */ addRewrite( 0x45, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
-+        /* Waterfall (1.16: 20w12a+ 0x45 -> 0x46) */ addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
-+        /* Waterfall (1.16: 20w12a+ 0x46 -> 0x47) */ addRewrite( 0x47, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
-+        /* Waterfall (1.16: 20w12a+ 0x47 -> 0x48) */ addRewrite( 0x48, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
-+        /* Waterfall (1.16: 20w12a+ 0x4B -> 0x4C) */ addRewrite( 0x4C, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
-+        addRewrite( 0x56, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
-+        addRewrite( 0x57, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
-+        addRewrite( 0x59, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
-+        addRewrite( 0x5A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
++        /* Waterfall (1.16: 1.16-pre1+ 0x03 -> 0x02) */  addRewrite( 0x02, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Mob : PacketPlayOutSpawnEntityLiving
++        /* Waterfall (1.16: 1.16-pre1+ 0x04 -> 0x03) */  addRewrite( 0x03, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Painting : PacketPlayOutSpawnEntityPainting
++        /* Waterfall (1.16: 1.16-pre1+ 0x05 -> 0x04) */  addRewrite( 0x04, ProtocolConstants.Direction.TO_CLIENT, true ); // Spawn Player : PacketPlayOutNamedEntitySpawn
++        /* Waterfall (1.16: 1.16-pre1+ 0x06 -> 0x05) */  addRewrite( 0x05, ProtocolConstants.Direction.TO_CLIENT, true ); // Animation : PacketPlayOutAnimation
++        /* Waterfall (1.16: 1.16-pre1+ 0x09 -> 0x08) */  addRewrite( 0x08, ProtocolConstants.Direction.TO_CLIENT, true ); // Block Break Animation : PacketPlayOutBlockBreakAnimation
++        /* Waterfall (1.16: 1.16-pre1+ 0x01C -> 0x1B) */  addRewrite( 0x1B, ProtocolConstants.Direction.TO_CLIENT, false ); // Entity Status : PacketPlayOutEntityStatus
++        /* Waterfall (1.16: 1.16-pre1+ 0x029 -> 0x28) */  addRewrite( 0x28, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Relative Move : PacketPlayOutRelEntityMove
++        /* Waterfall (1.16: 1.16-pre1+ 0x3A -> 0x29) */  addRewrite( 0x29, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look and Relative Move : PacketPlayOutRelEntityMoveLook
++        /* Waterfall (1.16: 1.16-pre1+ 0x2B -> 0x2A) */  addRewrite( 0x2A, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Look : PacketPlayOutEntityLook
++        /* Waterfall (1.16: 1.16-pre1+ 0x2C -> 0x2B) */  addRewrite( 0x2B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity : PacketPlayOutEntity
++        /* Waterfall (1.16: 1.16-pre1+ 0x39 -> 0x38) */  addRewrite( 0x38, ProtocolConstants.Direction.TO_CLIENT, true ); // Remove Entity Effect : PacketPlayOutRemoveEntityEffect
++        /* Waterfall (1.16: 1.16-pre1+ 0x3C -> 0x3B) */  addRewrite( 0x3B, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Head Look : PacketPlayOutEntityHeadRotation
++        /* Waterfall (1.16: 1.16-pre1+ 0x3F -> 0x3D) */  addRewrite( 0x3D, ProtocolConstants.Direction.TO_CLIENT, true ); // Camera : PacketPlayOutCamera
++        addRewrite( 0x44, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Metadata : PacketPlayOutEntityMetadata
++        addRewrite( 0x45, ProtocolConstants.Direction.TO_CLIENT, false ); // Attach Entity : PacketPlayOutAttachEntity
++        addRewrite( 0x46, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Velocity : PacketPlayOutEntityVelocity
++        addRewrite( 0x47, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Equipment : PacketPlayOutEntityEquipment
++        addRewrite( 0x4B, ProtocolConstants.Direction.TO_CLIENT, true ); // Set Passengers : PacketPlayOutMount
++        /* Waterfall (1.16: 1.16-pre1+ 0x56 -> 0x55) */  addRewrite( 0x55, ProtocolConstants.Direction.TO_CLIENT, true ); // Collect Item : PacketPlayOutCollect
++        /* Waterfall (1.16: 1.16-pre1+ 0x57 -> 0x56) */  addRewrite( 0x56, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Teleport : PacketPlayOutEntityTeleport
++        /* Waterfall (1.16: 1.16-pre1+ 0x59 -> 0x58) */  addRewrite( 0x58, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Properties : PacketPlayOutUpdateAttributes
++        /* Waterfall (1.16: 1.16-pre1+ 0x5A -> 0x59) */  addRewrite( 0x59, ProtocolConstants.Direction.TO_CLIENT, true ); // Entity Effect : PacketPlayOutEntityEffect
 +
 +        addRewrite( 0x0E, ProtocolConstants.Direction.TO_SERVER, true ); // Use Entity : PacketPlayInUseEntity
 +        /* Waterfall (1.16: 20w16a+ 0x1B -> 0x1C) */  addRewrite( 0x1C, ProtocolConstants.Direction.TO_SERVER, true ); // Entity Action : PacketPlayInEntityAction
@@ -1047,18 +1318,18 @@ index 00000000..e87d2632
 +        int jumpIndex = packet.readerIndex();
 +        switch ( packetId )
 +        {
-+            /* Waterfall (1.16: 20w12a+ 0x45 -> 0x46) */ case 0x46 /* Attach Entity : PacketPlayOutAttachEntity */:
-+            rewriteInt( packet, oldId, newId, readerIndex + packetIdLength + 4 );
++            case 0x45 /* Attach Entity : PacketPlayOutAttachEntity */:
++                rewriteInt( packet, oldId, newId, readerIndex + packetIdLength + 4 );
 +            break;
-+            case 0x56 /* Collect Item : PacketPlayOutCollect */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x56 -> 0x55) */ case 0x55 /* Collect Item : PacketPlayOutCollect */:
 +                DefinedPacket.readVarInt( packet );
 +                rewriteVarInt( packet, oldId, newId, packet.readerIndex() );
 +                break;
-+            case 0x4C /* Set Passengers : PacketPlayOutMount */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x4C -> 0x4B) */ case 0x4B /* Set Passengers : PacketPlayOutMount */:
 +                DefinedPacket.readVarInt( packet );
 +                jumpIndex = packet.readerIndex();
 +                // Fall through on purpose to int array of IDs
-+            case 0x38 /* Destroy Entities : PacketPlayOutEntityDestroy */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x38 -> 0x37) */ case 0x37 /* Destroy Entities : PacketPlayOutEntityDestroy */:
 +                int count = DefinedPacket.readVarInt( packet );
 +                int[] ids = new int[ count ];
 +                for ( int i = 0; i < count; i++ )
@@ -1105,7 +1376,7 @@ index 00000000..e87d2632
 +                    }
 +                }
 +                break;
-+            case 0x05 /* Spawn Player : PacketPlayOutNamedEntitySpawn */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x05 -> 0x04) */ case 0x04 /* Spawn Player : PacketPlayOutNamedEntitySpawn */:
 +                DefinedPacket.readVarInt( packet ); // Entity ID
 +                int idLength = packet.readerIndex() - readerIndex - packetIdLength;
 +                UUID uuid = DefinedPacket.readUUID( packet );
@@ -1119,7 +1390,7 @@ index 00000000..e87d2632
 +                    packet.writerIndex( previous );
 +                }
 +                break;
-+            case 0x33 /* Combat Event : PacketPlayOutCombatEvent */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x33 -> 0x32) */ case 0x32 /* Combat Event : PacketPlayOutCombatEvent */:
 +                int event = packet.readUnsignedByte();
 +                if ( event == 1 /* End Combat*/ )
 +                {
@@ -1134,17 +1405,17 @@ index 00000000..e87d2632
 +                    rewriteInt( packet, oldId, newId, packet.readerIndex() );
 +                }
 +                break;
-+            /* Waterfall (1.16: 20w12a+ 0x44 -> 0x45) */ case 0x45 /* EntityMetadata : PacketPlayOutEntityMetadata */:
-+            DefinedPacket.readVarInt( packet ); // Entity ID
-+            rewriteMetaVarInt( packet, oldId + 1, newId + 1, 7, protocolVersion ); // fishing hook
-+            /*
-+            * Waterfall (1.16: 20w12a+)
-+            * metaVarInt was shifted to 8 from 16 and 16 omitted, previously:
-+            * rewriteMetaVarInt( packet, oldId, newId, 8, protocolVersion ); // fireworks (et al)
-+            * */
-+            rewriteMetaVarInt( packet, oldId, newId, 8, protocolVersion ); // guardian beam
-+            break;
-+            case 0x51 /* Entity Sound Effect : PacketPlayOutEntitySound */:
++            /* Waterfall (1.16: 1.16-pre1+ 0x45 -> 0x44) */ case 0x44 /* EntityMetadata : PacketPlayOutEntityMetadata */:
++                DefinedPacket.readVarInt( packet ); // Entity ID
++                rewriteMetaVarInt( packet, oldId + 1, newId + 1, 7, protocolVersion ); // fishing hook
++                /*
++                * Waterfall (1.16: 20w12a+)
++                * metaVarInt was shifted to 8 from 16 and 16 omitted, previously:
++                * rewriteMetaVarInt( packet, oldId, newId, 8, protocolVersion ); // fireworks (et al)
++                * */
++                rewriteMetaVarInt( packet, oldId, newId, 8, protocolVersion ); // guardian beam
++                break;
++            /* Waterfall (1.16: 1.16-pre1+ 0x51 -> 0x50) */ case 0x50 /* Entity Sound Effect : PacketPlayOutEntitySound */:
 +                DefinedPacket.readVarInt( packet );
 +                DefinedPacket.readVarInt( packet );
 +                rewriteVarInt( packet, oldId, newId, packet.readerIndex() );
@@ -1162,7 +1433,7 @@ index 00000000..e87d2632
 +        int packetId = DefinedPacket.readVarInt( packet );
 +        int packetIdLength = packet.readerIndex() - readerIndex;
 +
-+        if ( packetId == 0x2C /* Waterfall (1.16: 20w16a+ 0x2B -> 0x2C) Spectate : PacketPlayInSpectate */ && !BungeeCord.getInstance().getConfig().isIpForward() )
++        if ( packetId == 0x2B /* Spectate : PacketPlayInSpectate */ && !BungeeCord.getInstance().getConfig().isIpForward() )
 +        {
 +            UUID uuid = DefinedPacket.readUUID( packet );
 +            ProxiedPlayer player;
@@ -1181,5 +1452,5 @@ index 00000000..e87d2632
 +// Travertine end
 \ No newline at end of file
 -- 
-2.24.0
+2.13.2.windows.1
 
