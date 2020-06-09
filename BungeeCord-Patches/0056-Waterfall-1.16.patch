@@ -1,4 +1,4 @@
-From 00853089c4957f32a92988cb4b5104bdfaeed1e3 Mon Sep 17 00:00:00 2001
+From d4e93d22956f769bba7885eeb76c6962b517d035 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
 Subject: [PATCH] Waterfall 1.16
@@ -776,7 +776,7 @@ index 00000000..aefdd039
 +
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index 0ded6739..7bd9d1d6 100644
+index 0ded6739..1575e780 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -9,6 +9,8 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -788,11 +788,17 @@ index 0ded6739..7bd9d1d6 100644
  @Data
  @NoArgsConstructor
  @AllArgsConstructor
-@@ -18,10 +20,11 @@ public class Chat extends DefinedPacket
+@@ -18,10 +20,17 @@ public class Chat extends DefinedPacket
  
      private String message;
      private byte position;
 +    private UUID sender; // Waterfall (1.16: 20w21a+)
++
++    // Waterfall (1.16+ retain API)
++    public Chat(String message, byte position)
++    {
++        this( message, position, /* Waterfall (1.16: 20w21a+) */ new UUID( 0, 0 ) );
++    }
  
      public Chat(String message)
      {
@@ -801,7 +807,7 @@ index 0ded6739..7bd9d1d6 100644
      }
  
      @Override
-@@ -36,6 +39,12 @@ public class Chat extends DefinedPacket
+@@ -36,6 +45,12 @@ public class Chat extends DefinedPacket
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
              position = buf.readByte();
@@ -814,7 +820,7 @@ index 0ded6739..7bd9d1d6 100644
          }
      }
  
-@@ -51,6 +60,13 @@ public class Chat extends DefinedPacket
+@@ -51,6 +66,13 @@ public class Chat extends DefinedPacket
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
              buf.writeByte( position );
@@ -1252,7 +1258,7 @@ index bc1de55a..ef2a66fa 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 new file mode 100644
-index 00000000..9dd0bdc7
+index 00000000..a825c438
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 @@ -0,0 +1,194 @@
@@ -1433,7 +1439,7 @@ index 00000000..9dd0bdc7
 +        int packetId = DefinedPacket.readVarInt( packet );
 +        int packetIdLength = packet.readerIndex() - readerIndex;
 +
-+        if ( packetId == 0x2B /* Spectate : PacketPlayInSpectate */ && !BungeeCord.getInstance().getConfig().isIpForward() )
++        if ( packetId == 0x2C /* Waterfall (1.16: 20w16a+ 0x2B -> 0x2C) Spectate : PacketPlayInSpectate */ && !BungeeCord.getInstance().getConfig().isIpForward() )
 +        {
 +            UUID uuid = DefinedPacket.readUUID( packet );
 +            ProxiedPlayer player;
@@ -1452,5 +1458,5 @@ index 00000000..9dd0bdc7
 +// Travertine end
 \ No newline at end of file
 -- 
-2.13.2.windows.1
+2.25.0.windows.1
 
