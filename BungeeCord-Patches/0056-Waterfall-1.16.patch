@@ -1,4 +1,4 @@
-From d4e93d22956f769bba7885eeb76c6962b517d035 Mon Sep 17 00:00:00 2001
+From ced59380f38dceee24307cf6b1b75076c79dc5dc Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Wed, 29 Apr 2020 20:52:13 +0200
 Subject: [PATCH] Waterfall 1.16
@@ -283,14 +283,14 @@ index aa1515f4..080be27e 100644
              TO_SERVER.registerPacket(
                      Chat.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index cd987c8a..fd53a440 100644
+index cd987c8a..466faaa0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -28,6 +28,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_15 = 573;
      public static final int MINECRAFT_1_15_1 = 575;
      public static final int MINECRAFT_1_15_2 = 578;
-+    public static final int MINECRAFT_1_16 = 722; // Waterfall (1.16 - 1.16-pre2)
++    public static final int MINECRAFT_1_16 = 725; // Waterfall (1.16 - 1.16-pre2)
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
              "1.8.x",
              "1.9.x",
@@ -523,6 +523,54 @@ index 00000000..93f062ce
 +
 +
 +}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/IntTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/IntTag.java
+new file mode 100644
+index 00000000..8f7b991d
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/IntTag.java
+@@ -0,0 +1,42 @@
++package net.md_5.bungee.protocol.nbt;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++
++/*
++ * Waterfall NBT-Library substitute module
++ * Minecraft 1.16 - 20w21a+
++ * by Xernium (Five)
++ * */
++
++public class IntTag extends NBTTag {
++
++    private int value;
++
++    @Override
++    public int getTagIndex()
++    {
++        return 3;
++    }
++
++    @Override
++    public void write( DataOutput to ) throws IOException
++    {
++        to.writeInt( value );
++    }
++
++    @Override
++    public void read( DataInput from ) throws IOException
++    {
++        value = from.readInt();
++    }
++
++    @Override
++    public String toString()
++    {
++        return "value: '" + value + "'\n";
++    }
++
++
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ListTag.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/ListTag.java
 new file mode 100644
 index 00000000..66075d87
@@ -686,10 +734,10 @@ index 00000000..f7524c42
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java
 new file mode 100644
-index 00000000..b18eac30
+index 00000000..e0aab026
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/nbt/NBTTagTypes.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,39 @@
 +package net.md_5.bungee.protocol.nbt;
 +
 +import java.io.IOException;
@@ -711,6 +759,8 @@ index 00000000..b18eac30
 +                return new EndTag();
 +            case 1:
 +                return new ByteTag();
++            case 3:
++                return new IntTag();
 +            case 4:
 +                return new LongTag();
 +            case 5:
@@ -1458,5 +1508,5 @@ index 00000000..a825c438
 +// Travertine end
 \ No newline at end of file
 -- 
-2.25.0.windows.1
+2.24.0
 
