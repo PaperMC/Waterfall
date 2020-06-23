@@ -1,4 +1,4 @@
-From 65d5fb5b4c95876db09106773d3aeb3647422b3a Mon Sep 17 00:00:00 2001
+From 81432ed75386d3ab43b6b3caabf661020bf5a7a2 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index ac31e435..252389bd 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index fa34de48..ecf07c2e 100644
+index fa34de48..3214b30d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -17,6 +17,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -45,7 +45,7 @@ index fa34de48..ecf07c2e 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -103,6 +105,29 @@ public enum Protocol
+@@ -103,6 +105,31 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C )
              );
@@ -59,7 +59,8 @@ index fa34de48..ecf07c2e 100644
 +                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x4F),
 +                    map(ProtocolConstants.MINECRAFT_1_13, 0x53),
 +                    map(ProtocolConstants.MINECRAFT_1_14, 0x59),
-+                    map(ProtocolConstants.MINECRAFT_1_15, 0x5A)
++                    map(ProtocolConstants.MINECRAFT_1_15, 0x5A),
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x59)
 +            );
 +            TO_CLIENT.registerPacket(
 +                    EntityRemoveEffect.class,
@@ -69,7 +70,8 @@ index fa34de48..ecf07c2e 100644
 +                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x33),
 +                    map(ProtocolConstants.MINECRAFT_1_13, 0x36),
 +                    map(ProtocolConstants.MINECRAFT_1_14, 0x38),
-+                    map(ProtocolConstants.MINECRAFT_1_15, 0x39)
++                    map(ProtocolConstants.MINECRAFT_1_15, 0x39),
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x58)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
