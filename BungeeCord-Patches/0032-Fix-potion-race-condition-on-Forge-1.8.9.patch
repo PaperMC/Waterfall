@@ -1,4 +1,4 @@
-From 81432ed75386d3ab43b6b3caabf661020bf5a7a2 Mon Sep 17 00:00:00 2001
+From 50281584f56b0ea590bba53175658a819d48a6f6 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index ac31e435..252389bd 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index fa34de48..3214b30d 100644
+index fa34de48..346d8971 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -17,6 +17,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -71,7 +71,7 @@ index fa34de48..3214b30d 100644
 +                    map(ProtocolConstants.MINECRAFT_1_13, 0x36),
 +                    map(ProtocolConstants.MINECRAFT_1_14, 0x38),
 +                    map(ProtocolConstants.MINECRAFT_1_15, 0x39),
-+                    map(ProtocolConstants.MINECRAFT_1_16, 0x58)
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x38)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
