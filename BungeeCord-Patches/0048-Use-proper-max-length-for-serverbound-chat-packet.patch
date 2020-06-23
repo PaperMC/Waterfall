@@ -1,4 +1,4 @@
-From 81ac6733c88e10cc48f33239946d69219fe9abd1 Mon Sep 17 00:00:00 2001
+From d787491efd13f07ef27ced2319979b24b72847a0 Mon Sep 17 00:00:00 2001
 From: kashike <kashike@vq.lc>
 Date: Wed, 20 Mar 2019 21:39:12 -0700
 Subject: [PATCH] Use proper max length for serverbound chat packet
@@ -44,10 +44,10 @@ index 57155c3b..9951c1f9 100644
      {
          if ( b.length > Short.MAX_VALUE )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index ffcd815c..0ded6739 100644
+index b5615a9f..d2a4dea6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-@@ -27,6 +27,11 @@ public class Chat extends DefinedPacket
+@@ -35,6 +35,11 @@ public class Chat extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
@@ -59,7 +59,7 @@ index ffcd815c..0ded6739 100644
          message = readString( buf );
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
-@@ -37,6 +42,11 @@ public class Chat extends DefinedPacket
+@@ -49,6 +54,11 @@ public class Chat extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
@@ -72,5 +72,5 @@ index ffcd815c..0ded6739 100644
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
 -- 
-2.26.1
+2.27.0
 

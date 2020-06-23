@@ -1,4 +1,4 @@
-From 8682d0bf0119fff69a0dedd1470d4b678e07eec4 Mon Sep 17 00:00:00 2001
+From 344d0b1bdeda05ce18b39a90d5b0dc7866cc49e7 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 66ed2128..2876d8d6 100644
+index 65d4ea6b..c291560d 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 872f8fc1..c9531d39 100644
+index 6f2737e8..570b9ea1 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,7 +245,7 @@ index 872f8fc1..c9531d39 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 56a83e68..0341a6bc 100644
+index 7cc2b4f0..d84b7143 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -65,7 +65,7 @@
@@ -257,7 +257,7 @@ index 56a83e68..0341a6bc 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -105,6 +105,20 @@
+@@ -99,6 +99,20 @@
              <version>5.1.48</version>
              <scope>runtime</scope>
          </dependency>
@@ -458,5 +458,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.26.2
+2.27.0
 
