@@ -1,4 +1,4 @@
-From 8c32e83ee1f8f1f9107c065e9a091c03130c36b3 Mon Sep 17 00:00:00 2001
+From 3279685ad5222689075e15a104b7109ae96d1a96 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -492,7 +492,7 @@ index dee2199f..c5c1f9e3 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 4adbcf9a..a632ca09 100644
+index 4adbcf9a..8a2c105b 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -550,7 +550,7 @@ index 4adbcf9a..a632ca09 100644
          </developer>
      </developers>
  
-@@ -45,23 +64,27 @@
+@@ -45,28 +64,28 @@
      </modules>
  
      <scm>
@@ -573,19 +573,24 @@ index 4adbcf9a..a632ca09 100644
      </ciManagement>
  
      <distributionManagement>
-+        <repository>
-+            <id>papermc-releases</id>
-+            <url>https://papermc.io/repo/repository/maven-releases/</url>
-+        </repository>
-         <snapshotRepository>
+-        <snapshotRepository>
 -            <id>sonatype-nexus-snapshots</id>
 -            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+-        </snapshotRepository>
+         <repository>
+-            <id>sonatype-nexus-staging</id>
+-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
++            <id>papermc-releases</id>
++            <url>https://papermc.io/repo/repository/maven-releases/</url>
+         </repository>
++        <snapshotRepository>
 +            <id>papermc-snapshots</id>
 +            <url>https://papermc.io/repo/repository/maven-snapshots/</url>
-         </snapshotRepository>
-         <repository>
-             <id>sonatype-nexus-staging</id>
-@@ -122,7 +145,17 @@
++        </snapshotRepository>
+     </distributionManagement>
+ 
+     <properties>
+@@ -122,7 +141,17 @@
                      </execution>
                  </executions>
              </plugin>
@@ -603,7 +608,7 @@ index 4adbcf9a..a632ca09 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.1.0</version>
-@@ -147,6 +180,7 @@
+@@ -147,6 +176,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -611,7 +616,7 @@ index 4adbcf9a..a632ca09 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -240,5 +274,88 @@
+@@ -240,5 +270,88 @@
                  </plugins>
              </build>
          </profile>
