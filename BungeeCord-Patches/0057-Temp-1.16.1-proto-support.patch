@@ -1,0 +1,43 @@
+From 420a4a6d2cfe289d2d176d905355c821652db8b8 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Wed, 24 Jun 2020 18:25:43 +0100
+Subject: [PATCH] Temp 1.16.1 proto support
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 7da62425..e11076fd 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -29,6 +29,7 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_15_1 = 575;
+     public static final int MINECRAFT_1_15_2 = 578;
+     public static final int MINECRAFT_1_16 = 735;
++    public static final int MINECRAFT_1_16_1 = 736; // Waterfall
+     public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
+             "1.8.x",
+             "1.9.x",
+@@ -63,7 +64,8 @@ public class ProtocolConstants
+             ProtocolConstants.MINECRAFT_1_15,
+             ProtocolConstants.MINECRAFT_1_15_1,
+             ProtocolConstants.MINECRAFT_1_15_2,
+-            ProtocolConstants.MINECRAFT_1_16
++            ProtocolConstants.MINECRAFT_1_16, // Waterfall
++            ProtocolConstants.MINECRAFT_1_16_1 // Waterfall
+     );
+ 
+     public static final boolean isBeforeOrEq(int before, int other)
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index ef2a66fa..0e6395ba 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -68,6 +68,7 @@ public abstract class EntityMap
+             case ProtocolConstants.MINECRAFT_1_15_2:
+                 return EntityMap_1_15.INSTANCE;
+             case ProtocolConstants.MINECRAFT_1_16:
++            case ProtocolConstants.MINECRAFT_1_16_1: // Waterfall
+                 return EntityMap_1_16.INSTANCE;
+         }
+         throw new RuntimeException( "Version " + version + " has no entity map" );
+-- 
+2.27.0
+
