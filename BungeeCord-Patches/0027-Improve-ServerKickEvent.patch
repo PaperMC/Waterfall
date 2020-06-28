@@ -1,4 +1,4 @@
-From 806cb9fb4f30b81602e2174c59392dde0628f8b8 Mon Sep 17 00:00:00 2001
+From c370f55c114150f6218f0066a993c0b3cf076645 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -62,10 +62,10 @@ index 0e1ef5c4..ee63732d 100644
      @Deprecated
      public String getKickReason()
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index fa3094b0..f5e7ef7b 100644
+index 97b7f236..6ec13579 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -356,7 +356,7 @@ public class ServerConnector extends PacketHandler
+@@ -365,7 +365,7 @@ public class ServerConnector extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = user.updateAndGetNextServer( target );
@@ -146,5 +146,5 @@ index 6598781b..d1654bcc 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.27.0
+2.20.1.windows.1
 
