@@ -1,4 +1,4 @@
-From ce3a8dfbb8aebcb8ac12e8029e1b1a5a54ad4bae Mon Sep 17 00:00:00 2001
+From 9da4de19fb4ab9a7e82b613f9b97287aa703d41b Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6ec13579..51df8bb9 100644
+index 6ec13579..78401dae 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,7 +228,7 @@ public class ServerConnector extends PacketHandler
@@ -85,7 +85,7 @@ index 6ec13579..51df8bb9 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -311,12 +313,50 @@ public class ServerConnector extends PacketHandler
+@@ -311,12 +313,35 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -103,34 +103,19 @@ index 6ec13579..51df8bb9 100644
 +                user.setClientEntityId( login.getEntityId() );
 +
 +                // Only send if we are not in the same dimension
-+                if (!login.getDimension().equals( user.getDimension() ) ) // Waterfall - defer
++                if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
 +                {
-+                    Object newDim;
-+                    String worldName = login.getWorldName();
-+                    if (login.getDimension() instanceof Number) {
-+                        newDim = (((Number) login.getDimension()).intValue() >= 0 ? -1 : 0);
-+                    } else {
-+                        newDim = worldName = ("minecraft:overworld".equals(login.getDimension())) ? "minecraft:the_nether" : "minecraft:overworld";
-+                    }
-+                    user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
++                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
 +                }
-+
 +
 +                Login modLogin = new Login( login.getEntityId(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
 +                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
 +                user.unsafe().sendPacket(modLogin);
 +
 +                // Only send if we're in the same dimension
-+                if (login.getDimension().equals( user.getDimension() ) ) // Waterfall - defer
++                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
 +                {
-+                    Object newDim;
-+                    String worldName = login.getWorldName();
-+                    if (login.getDimension() instanceof Number) {
-+                        newDim = (((Number) login.getDimension()).intValue() >= 0 ? -1 : 0);
-+                    } else {
-+                        newDim = worldName = ("minecraft:overworld".equals(login.getDimension())) ? "minecraft:the_nether" : "minecraft:overworld";
-+                    }
-+                    user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
++                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
 +                }
 +            }
 +            // Waterfall end
