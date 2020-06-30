@@ -1,0 +1,49 @@
+From b04c724bde5a9e42576944c7928fc638affcad68 Mon Sep 17 00:00:00 2001
+From: Mariell Hoversholm <proximyst@proximyst.com>
+Date: Tue, 30 Jun 2020 18:05:16 +0200
+Subject: [PATCH] Add the MessageRaw channel
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index daac8604..381a9f17 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -31,6 +31,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent; // Waterfall
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -456,6 +457,27 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
++            // Waterfall start
++            if ( subChannel.equals( "MessageRaw" ) )
++            {
++                String target = in.readUTF();
++                BaseComponent[] message = ComponentSerializer.parse(in.readUTF());
++                if ( target.equals( "ALL" ) )
++                {
++                    for ( ProxiedPlayer player : bungee.getPlayers() )
++                    {
++                        player.sendMessage( message );
++                    }
++                } else
++                {
++                    ProxiedPlayer player = bungee.getPlayer( target );
++                    if ( player != null )
++                    {
++                        player.sendMessage( message );
++                    }
++                }
++            }
++            // Waterfall end
+             if ( subChannel.equals( "GetServer" ) )
+             {
+                 out.writeUTF( "GetServer" );
+-- 
+2.27.0
+
