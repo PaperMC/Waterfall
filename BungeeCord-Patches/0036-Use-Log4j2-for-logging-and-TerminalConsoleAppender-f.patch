@@ -1,4 +1,4 @@
-From 344d0b1bdeda05ce18b39a90d5b0dc7866cc49e7 Mon Sep 17 00:00:00 2001
+From 9731202a6ca2a028280fd53ce41faedd712fcee3 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 65d4ea6b..c291560d 100644
+index 15a829b6..9c1ec374 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 6f2737e8..570b9ea1 100644
+index ada53ad1..5b283b4b 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,7 +245,7 @@ index 6f2737e8..570b9ea1 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 7cc2b4f0..d84b7143 100644
+index f94c54ca..4c61d336 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -65,7 +65,7 @@
@@ -324,7 +324,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index eba0cbd1..1a5650a5 100644
+index 8c933123..d71556a7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -46,7 +46,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -350,7 +350,7 @@ index eba0cbd1..1a5650a5 100644
  import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
-@@ -96,7 +92,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -95,7 +91,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -358,7 +358,7 @@ index eba0cbd1..1a5650a5 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -157,8 +152,12 @@ public class BungeeCord extends ProxyServer
+@@ -156,8 +151,12 @@ public class BungeeCord extends ProxyServer
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
@@ -371,7 +371,7 @@ index eba0cbd1..1a5650a5 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -209,6 +208,8 @@ public class BungeeCord extends ProxyServer
+@@ -208,6 +207,8 @@ public class BungeeCord extends ProxyServer
          // BungeeCord. This version is only used when extracting the libraries to their temp folder.
          System.setProperty( "library.jansi.version", "BungeeCord" );
  
@@ -380,7 +380,7 @@ index eba0cbd1..1a5650a5 100644
          AnsiConsole.systemInstall();
          consoleReader = new ConsoleReader();
          consoleReader.setExpandEvents( false );
-@@ -217,6 +218,9 @@ public class BungeeCord extends ProxyServer
+@@ -216,6 +217,9 @@ public class BungeeCord extends ProxyServer
          logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );

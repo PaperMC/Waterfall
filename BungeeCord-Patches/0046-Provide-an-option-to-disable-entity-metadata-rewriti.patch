@@ -1,4 +1,4 @@
-From 9da4de19fb4ab9a7e82b613f9b97287aa703d41b Mon Sep 17 00:00:00 2001
+From 0262fa3c59530531670606fb65d346634019a360 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,7 +123,7 @@ index 6ec13579..78401dae 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a254d998..4826f0d5 100644
+index fae9805c..b0125245 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -745,4 +745,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -138,10 +138,10 @@ index a254d998..4826f0d5 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index cfd25859..f845da09 100644
+index 2e1c6a4c..09bbe594 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -601,6 +601,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -621,6 +621,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -149,7 +149,7 @@ index cfd25859..f845da09 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -612,6 +613,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -632,6 +633,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.20.1.windows.1
+2.27.0
 

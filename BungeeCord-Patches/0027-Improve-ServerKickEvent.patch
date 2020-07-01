@@ -1,4 +1,4 @@
-From c370f55c114150f6218f0066a993c0b3cf076645 Mon Sep 17 00:00:00 2001
+From 816a1028af26164e49617c2d532fcc7998dcf537 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,7 +75,7 @@ index 97b7f236..6ec13579 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6598781b..d1654bcc 100644
+index d9a52c88..b83903df 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -12,6 +12,7 @@ import com.mojang.brigadier.context.StringRange;
@@ -86,7 +86,7 @@ index 6598781b..d1654bcc 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import io.netty.buffer.Unpooled;
-@@ -78,16 +79,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -79,16 +80,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -111,7 +111,7 @@ index 6598781b..d1654bcc 100644
      }
  
      @Override
-@@ -102,7 +106,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -103,7 +107,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -132,7 +132,7 @@ index 6598781b..d1654bcc 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -494,7 +510,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -514,7 +530,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -146,5 +146,5 @@ index 6598781b..d1654bcc 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.20.1.windows.1
+2.27.0
 
