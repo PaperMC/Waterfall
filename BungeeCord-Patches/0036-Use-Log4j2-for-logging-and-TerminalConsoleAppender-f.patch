@@ -1,4 +1,4 @@
-From 9731202a6ca2a028280fd53ce41faedd712fcee3 Mon Sep 17 00:00:00 2001
+From 01d375838823addacb356489795bf886c31565f3 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 15a829b6..9c1ec374 100644
+index 3f3aaef4..3730c14c 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index 15a829b6..9c1ec374 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..a044119e
+index 00000000..5fbc5af6
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..a044119e
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.15-SNAPSHOT</version>
++        <version>1.16-R0.3-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.15-SNAPSHOT</version>
++    <version>1.16-R0.3-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log</name>
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index ada53ad1..5b283b4b 100644
+index c5b8e7f3..97908819 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,7 +245,7 @@ index ada53ad1..5b283b4b 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index f94c54ca..4c61d336 100644
+index d52692f2..fca4d609 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -65,7 +65,7 @@
