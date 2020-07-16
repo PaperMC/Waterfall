@@ -1,0 +1,67 @@
+From 8126691800a7ed841c85871095dd29fbf2e2c90e Mon Sep 17 00:00:00 2001
+From: Andrew Steinborn <git@steinborn.me>
+Date: Thu, 16 Jul 2020 15:23:20 -0400
+Subject: [PATCH] Apply SpigotMC/BungeeCord#2908 (Don't frame packets for dead
+ connections)
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/LegacyDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/LegacyDecoder.java
+index 334a8eab..5518bf26 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/LegacyDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/LegacyDecoder.java
+@@ -14,6 +14,13 @@ public class LegacyDecoder extends ByteToMessageDecoder
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+     {
++        // See check in Varint21FrameDecoder for more details
++        if ( !ctx.channel().isActive() )
++        {
++            in.skipBytes( in.readableBytes() );
++            return;
++        }
++
+         if ( !in.isReadable() )
+         {
+             return;
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 6c3c7ab8..1a647f2b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -30,6 +30,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+     {
++        // See Varint21FrameDecoder for the general reasoning. We add this here as ByteToMessageDecoder#handlerRemoved()
++        // will fire any cumulated data through the pipeline, so we want to try and stop it here.
++        if ( !ctx.channel().isActive() )
++        {
++            return;
++        }
++
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index 743d65e4..c0d37142 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -15,6 +15,16 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+     {
++        // If we decode an invalid packet and an exception is thrown (thus triggering a close of the connection),
++        // the Netty ByteToMessageDecoder will continue to frame more packets and potentially call fireChannelRead()
++        // on them, likely with more invalid packets. Therefore, check if the connection is no longer active and if so
++        // sliently discard the packet.
++        if ( !ctx.channel().isActive() )
++        {
++            in.skipBytes( in.readableBytes() );
++            return;
++        }
++
+         in.markReaderIndex();
+ 
+         for ( int i = 0; i < 3; i++ ) // Waterfall
+-- 
+2.26.2
+
