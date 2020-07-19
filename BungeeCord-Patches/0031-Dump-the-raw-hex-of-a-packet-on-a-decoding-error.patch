@@ -1,11 +1,11 @@
-From c59995528d7529b70f4c8b323762b6afb01da957 Mon Sep 17 00:00:00 2001
+From 5622d256e0495063202405cc950979edbd464bde Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 4 Aug 2016 19:30:49 -0700
 Subject: [PATCH] Dump the raw hex of a packet on a decoding error
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 5b32effe..9e9ea49c 100644
+index 5e03e175..961887c9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,7 +1,9 @@
@@ -18,7 +18,7 @@ index 5b32effe..9e9ea49c 100644
  import io.netty.handler.codec.MessageToMessageDecoder;
  import java.util.List;
  import lombok.AllArgsConstructor;
-@@ -31,13 +33,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -38,13 +40,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
          Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
          ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
  
@@ -35,7 +35,7 @@ index 5b32effe..9e9ea49c 100644
                  packet.read( in, prot.getDirection(), protocolVersion );
  
                  if ( in.isReadable() )
-@@ -51,6 +56,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -58,6 +63,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
  
              out.add( new PacketWrapper( packet, slice ) );
              slice = null;
@@ -53,5 +53,5 @@ index 5b32effe..9e9ea49c 100644
          {
              if ( slice != null )
 -- 
-2.26.1
+2.25.1
 

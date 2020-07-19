@@ -1,4 +1,4 @@
-From de6f03073252328849c1525aabcccf334dd897ae Mon Sep 17 00:00:00 2001
+From a8b84c461be62c15ce5fd104cb2938318388e5e9 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -9,7 +9,7 @@ Vanilla servers still error on negative/invalid packets.
 Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index ea44573d..5b32effe 100644
+index d36b7f3c..5e03e175 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -16,6 +16,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -27,7 +27,7 @@ index ea44573d..5b32effe 100644
  
      @Override
      protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
-@@ -27,7 +35,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -34,7 +42,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
          {
              int packetId = DefinedPacket.readVarInt( in );
  
@@ -93,7 +93,7 @@ index 1bf5e34c..7ef80bf5 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 53b12482..001ee1c2 100644
+index 99af41b3..69a44db1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -122,5 +122,5 @@ index 2622b738..3c4ecf0e 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.20.1.windows.1
+2.25.1
 

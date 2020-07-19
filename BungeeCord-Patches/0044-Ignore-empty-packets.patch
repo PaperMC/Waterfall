@@ -1,4 +1,4 @@
-From c409a5ecb881ba5ef02c8ab7ebc5de55a23755b0 Mon Sep 17 00:00:00 2001
+From 25d644ee21e0ebfc53376a8da62c5079c2d55a32 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Ignore empty packets
@@ -8,10 +8,10 @@ packets will be ignored. While empty packets are a sign of bad plugins,
 they are effectivly harmless vs the cost of the exception in general
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 9e9ea49c..71ddf022 100644
+index 961887c9..a2c72c9b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -36,6 +36,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -43,6 +43,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
          Object packetTypeInfo = null;
          try
          {
@@ -25,10 +25,10 @@ index 9e9ea49c..71ddf022 100644
              packetTypeInfo = packetId;
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index e903fd09..25ee2027 100644
+index 647394ba..f297620c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-@@ -30,7 +30,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -40,7 +40,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
              if ( buf[i] >= 0 )
              {
                  int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
@@ -38,5 +38,5 @@ index e903fd09..25ee2027 100644
                      throw new CorruptedFrameException( "Empty Packet!" );
                  }
 -- 
-2.26.1
+2.25.1
 
