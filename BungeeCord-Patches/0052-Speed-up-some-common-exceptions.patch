@@ -1,4 +1,4 @@
-From 8f9e65679651afff4a1feb974c76b532a09e821e Mon Sep 17 00:00:00 2001
+From 9439649fae593bf183d39fa3337457ef60a91acf Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -133,10 +133,10 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 71ddf022..6c3c7ab8 100644
+index a2c72c9b..1a647f2b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -71,7 +71,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -78,7 +78,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -167,5 +167,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.26.2
+2.25.1
 
