@@ -1,11 +1,11 @@
-From b2f913125509d043ae473a82077c301637002715 Mon Sep 17 00:00:00 2001
+From 8152c748ef09e71790fd22908b56e2385e711352 Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Sun, 19 Jul 2020 10:18:23 +1000
 Subject: [PATCH] Add auth url config
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4a198ee9..48c4dc77 100644
+index 4a198ee9..219393bf 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -255,4 +255,10 @@ public interface ProxyConfig
@@ -17,17 +17,17 @@ index 4a198ee9..48c4dc77 100644
 +     * Gets url to check mojang auth against
 +     * @return url
 +     */
-+    String getAuthUrl();
++    String getMojangAuthUrl();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e860214f..bb0869f0 100644
+index e860214f..2318393c 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -44,6 +44,8 @@ public class WaterfallConfiguration extends Configuration {
  
      private boolean disableEntityMetadataRewrite = false;
  
-+    private String authUrl = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%ENC_NAME%&serverId=%HASH%%PREVENT_PROXY%";
++    private String mojangAuthUrl = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%ENC_NAME%&serverId=%HASH%%PREVENT_PROXY%";
 +
      @Override
      public void load() {
@@ -36,7 +36,7 @@ index e860214f..bb0869f0 100644
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
          disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
-+        authUrl = config.getString("authUrl", authUrl);
++        mojangAuthUrl = config.getString("mojang_auth_url", mojangAuthUrl);
      }
  
      @Override
@@ -46,12 +46,12 @@ index e860214f..bb0869f0 100644
      }
 +
 +    @Override
-+    public String getAuthUrl() {
-+        return authUrl;
++    public String getMojangAuthUrl() {
++        return mojangAuthUrl;
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b848e451..2d2cf62b 100644
+index b848e451..583b6363 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -442,7 +442,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -59,7 +59,7 @@ index b848e451..2d2cf62b 100644
  
          String preventProxy = ( BungeeCord.getInstance().config.isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress ) ? "&ip=" + URLEncoder.encode( getAddress().getAddress().getHostAddress(), "UTF-8" ) : "";
 -        String authURL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + encName + "&serverId=" + encodedHash + preventProxy;
-+        String authURL = BungeeCord.getInstance().config.getAuthUrl().replace( "%ENC_NAME%", encName ).replace( "%HASH%", encodedHash ).replace( "%PREVENT_PROXY%", preventProxy );
++        String authURL = BungeeCord.getInstance().config.getMojangAuthUrl().replace( "%ENC_NAME%", encName ).replace( "%HASH%", encodedHash ).replace( "%PREVENT_PROXY%", preventProxy );
  
          Callback<String> handler = new Callback<String>()
          {
