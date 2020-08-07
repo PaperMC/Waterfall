@@ -24,6 +24,44 @@ Download a copy of Waterfall.jar from our buildserver here: [Waterfall](https://
 
 Waterfall requires **Java 8** or above.
 
+## How To (Plugin Developers)
+------
+ * See our API patches [here](BungeeCord-Patches)
+ * Waterfall API javadocs here: [papermc.io/javadocs](https://papermc.io/javadocs/)
+ * Maven Repo (for waterfall-api):
+```xml
+<repository>
+    <id>papermc</id>
+    <url>https://papermc.io/repo/repository/maven-public/</url>
+</repository>
+```
+ * Artifact Information:
+```xml
+<dependency>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-api</artifactId>
+    <version>1.16-R0.4-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+ ```
+
+**Or alternatively, with Gradle:**
+
+ * Repository:
+```groovy
+repositories {
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+}
+```
+ * Artifact:
+```groovy
+dependencies {
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+}
+```
+
 ## How To (Compiling From Source)
 
 To compile Waterfall, you need JDK8, git, bash, maven, and an internet connection.
