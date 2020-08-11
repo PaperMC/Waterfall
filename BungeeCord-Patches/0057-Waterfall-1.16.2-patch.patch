@@ -1,11 +1,11 @@
-From e457f14a3f75dd24f6797a907adc22584bc89af7 Mon Sep 17 00:00:00 2001
+From 410bda8afddf6865905cf495afd65da36740f224 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Tue, 11 Aug 2020 20:03:28 +0200
 Subject: [PATCH] Waterfall 1.16.2-patch
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 546564fb..24d71c70 100644
+index 546564fb..e2a02360 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -72,7 +72,8 @@ public enum Protocol
@@ -38,7 +38,17 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      BossBar.class,
-@@ -147,7 +150,8 @@ public enum Protocol
+@@ -135,7 +138,8 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_13, 0x36),
+                     map(ProtocolConstants.MINECRAFT_1_14, 0x38),
+                     map(ProtocolConstants.MINECRAFT_1_15, 0x39),
+-                    map(ProtocolConstants.MINECRAFT_1_16, 0x38)
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x38),
++                    map(ProtocolConstants.MINECRAFT_1_16_2, 0x37)
+             );
+             // Waterfall end
+             TO_CLIENT.registerPacket(
+@@ -147,7 +151,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x30 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x33 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x34 ),
@@ -48,7 +58,7 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      TabCompleteResponse.class,
-@@ -156,7 +160,8 @@ public enum Protocol
+@@ -156,7 +161,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x10 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
@@ -58,7 +68,7 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
-@@ -210,7 +215,8 @@ public enum Protocol
+@@ -210,7 +216,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x19 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x19 ),
@@ -68,7 +78,7 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      Kick.class,
-@@ -220,7 +226,8 @@ public enum Protocol
+@@ -220,7 +227,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1A ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x1B ),
@@ -78,7 +88,16 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      Title.class,
-@@ -261,7 +268,8 @@ public enum Protocol
+@@ -254,21 +262,24 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x1B ),
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x1C ),
+-                    map( ProtocolConstants.MINECRAFT_1_16, 0x1B )
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x1B ),
++                    map( ProtocolConstants.MINECRAFT_1_16_2, 0x1A )
+             );
+             TO_CLIENT.registerPacket(
+                     Commands.class,
                      Commands::new, // Waterfall - speed up packet construction
                      map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x12 ),
@@ -88,6 +107,15 @@ index 546564fb..24d71c70 100644
              );
              TO_CLIENT.registerPacket(
                      GameState.class,
+                     GameState::new, // Waterfall - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x1F ),
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x1E ),
+-                    map( ProtocolConstants.MINECRAFT_1_15, 0x1F )
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x1F ),
++                    map( ProtocolConstants.MINECRAFT_1_16_2, 0x1E )
+             );
+             TO_CLIENT.registerPacket(
+                     ViewDistance.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 index a82f2ec8..aa1b770c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
