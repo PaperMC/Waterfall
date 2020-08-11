@@ -1,4 +1,4 @@
-From 2dcc1fc4c61923e8134d7bed90e537bd9c8fdd20 Mon Sep 17 00:00:00 2001
+From e457f14a3f75dd24f6797a907adc22584bc89af7 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@xernium.com>
 Date: Tue, 11 Aug 2020 20:03:28 +0200
 Subject: [PATCH] Waterfall 1.16.2-patch
@@ -239,7 +239,7 @@ index 6ca80e2b..8f02538e 100644
          {
              writeString( levelType, buf );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
-index 0d8068ea..2f8e1586 100644
+index 0d8068ea..ef78db16 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
 @@ -1,6 +1,8 @@
@@ -264,57 +264,44 @@ index 0d8068ea..2f8e1586 100644
  
  @Data
  @NoArgsConstructor
-@@ -26,14 +34,22 @@ public class Respawn extends DefinedPacket
-     private boolean debug;
-     private boolean flat;
-     private boolean copyMeta;
-+    private Tag currentDimension;
- 
-     @Override
-     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+@@ -32,7 +40,13 @@ public class Respawn extends DefinedPacket
      {
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
          {
 -            dimension = readString( buf );
--            worldName = readString( buf );
 +            if( protocolVersion >= ProtocolConstants.MINECRAFT_1_16_2 )
 +            {
-+                currentDimension = NamedTag.read( new DataInputStream( new ByteBufInputStream( buf ) ) );
-+                dimension = readString( buf );
++                dimension = NamedTag.read( new DataInputStream( new ByteBufInputStream( buf ) ) );
 +            } else
 +            {
 +                dimension = readString( buf );
-+                worldName = readString( buf );
 +            }
+             worldName = readString( buf );
          } else
          {
-             dimension = buf.readInt();
-@@ -64,8 +80,21 @@ public class Respawn extends DefinedPacket
+@@ -64,7 +78,19 @@ public class Respawn extends DefinedPacket
      {
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
          {
 -            writeString( (String) dimension, buf );
--            writeString( worldName, buf );
 +            if( protocolVersion >= ProtocolConstants.MINECRAFT_1_16_2 )
 +            {
 +                try
 +                {
-+                    currentDimension.write( new DataOutputStream( new ByteBufOutputStream( buf ) ) );
++                    ((Tag) dimension).write( new DataOutputStream( new ByteBufOutputStream( buf ) ) );
 +                } catch ( IOException ex )
 +                {
 +                    throw new RuntimeException( "Exception writing current Dimension (respawn)", ex );
 +                }
-+                writeString( (String) dimension, buf );
 +            } else
 +            {
 +                writeString( (String) dimension, buf );
-+                writeString( worldName, buf );
 +            }
+             writeString( worldName, buf );
          } else
          {
-             buf.writeInt( ( (Integer) dimension ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 78401dae..93c74e03 100644
+index 78401dae..c473acdb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.packet.SetCompression;
@@ -339,25 +326,11 @@ index 78401dae..93c74e03 100644
                  user.getSentBossBars().clear();
  
 -                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
-+                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDimension() instanceof Tag ? (Tag) login.getDimension() : null ) );
++                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false) );
                  user.getServer().disconnect( "Quitting" );
              } else
              {
-@@ -315,7 +316,7 @@ public class ServerConnector extends PacketHandler
-             user.setDimensionChange( true );
-             if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
-             {
--                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
-+                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false,login.getDimension() instanceof Tag ? (Tag) login.getDimension() : null ) );
-             }
- 
-             user.setServerEntityId( login.getEntityId() );
-@@ -328,21 +329,21 @@ public class ServerConnector extends PacketHandler
-                 // Only send if we are not in the same dimension
-                 if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
-                 {
--                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
-+                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false,login.getDimension() instanceof Tag ? (Tag) login.getDimension() : null ) );
+@@ -332,7 +333,7 @@ public class ServerConnector extends PacketHandler
                  }
  
                  Login modLogin = new Login( login.getEntityId(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
@@ -366,18 +339,6 @@ index 78401dae..93c74e03 100644
                  user.unsafe().sendPacket(modLogin);
  
                  // Only send if we're in the same dimension
-                 if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
-                 {
--                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
-+                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDimension() instanceof Tag ? (Tag) login.getDimension() : null ) );
-                 }
-             }
-             // Waterfall end
--            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
-+            user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDimension() instanceof Tag ? (Tag) login.getDimension() : null ) );
-             if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
-             {
-                 user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index e64a11b5..05947c40 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
