@@ -1,4 +1,4 @@
-From 1cc9e497d8065aef08929f237c693f8647b6f2d1 Mon Sep 17 00:00:00 2001
+From ccbd921b22378ca421f9820a40199ac4885b8ee6 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index ac31e435..252389bd 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 50a911c2..91896200 100644
+index 50a911c2..66c925d0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -17,6 +17,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -45,7 +45,7 @@ index 50a911c2..91896200 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -106,6 +108,31 @@ public enum Protocol
+@@ -106,6 +108,32 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C )
              );
@@ -71,7 +71,8 @@ index 50a911c2..91896200 100644
 +                    map(ProtocolConstants.MINECRAFT_1_13, 0x36),
 +                    map(ProtocolConstants.MINECRAFT_1_14, 0x38),
 +                    map(ProtocolConstants.MINECRAFT_1_15, 0x39),
-+                    map(ProtocolConstants.MINECRAFT_1_16, 0x38)
++                    map(ProtocolConstants.MINECRAFT_1_16, 0x38),
++                    map(ProtocolConstants.MINECRAFT_1_16_2, 0x37)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
