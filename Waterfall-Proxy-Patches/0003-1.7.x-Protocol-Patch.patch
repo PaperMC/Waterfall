@@ -1,4 +1,4 @@
-From 4110b114f9791959b1d0e42fd115b27a0b1b730d Mon Sep 17 00:00:00 2001
+From d0c1b725cdfa4e07a4a8f9bf6bb810290f4e361e Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1581,7 +1581,7 @@ index 44e6ed3f..585afa36 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b848e451..f4e0e9bc 100644
+index 4b40b465..13deb6c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,13 @@ import java.util.List;
@@ -1598,7 +1598,7 @@ index b848e451..f4e0e9bc 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -253,12 +260,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -255,12 +262,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -2038,5 +2038,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.24.0
+2.27.0
 
