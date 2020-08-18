@@ -1,7 +1,7 @@
 FlameCord
 =========
 
-FlameCord is a patch for Travertine to fix possible exploits on your BungeeCord proxy and add useful functionalities to it.
+FlameCord is a patch for Travertine to fix possible exploits and add useful functionalities.
 
 FlameCord is compiled like Travertine does; Please follow the CONTRIBUTING.md file. If you need help you can always contact us on Discord.
 
