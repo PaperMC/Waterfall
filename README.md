@@ -27,7 +27,7 @@ Waterfall requires **Java 8** or above.
 ## How To (Plugin Developers)
 ------
  * See our API patches [here](BungeeCord-Patches)
- * Waterfall API javadocs here: [papermc.io/javadocs](https://papermc.io/javadocs/)
+ * Waterfall API javadocs here: [papermc.io/javadocs/waterfall](https://papermc.io/javadocs/waterfall)
  * Maven Repo (for waterfall-api):
 ```xml
 <repository>
