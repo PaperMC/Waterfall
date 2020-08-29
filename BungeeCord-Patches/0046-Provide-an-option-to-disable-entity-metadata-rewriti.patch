@@ -1,4 +1,4 @@
-From a7048eccf962db2eb15adbbac1ce478622bf881a Mon Sep 17 00:00:00 2001
+From 4f9ac58287cdb55b2bcd935dfe4bbc4a2571fdc5 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -138,10 +138,10 @@ index fae9805c..b0125245 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4dab32b4..9ce48a40 100644
+index 033877fc..72b6e9be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -626,6 +626,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -645,6 +645,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -149,7 +149,7 @@ index 4dab32b4..9ce48a40 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -637,6 +638,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -656,6 +657,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.24.0
+2.28.0
 

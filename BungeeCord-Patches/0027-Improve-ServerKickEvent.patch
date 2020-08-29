@@ -1,4 +1,4 @@
-From 0ff39b86f3d2919ad03d26d9de587c2de8ce4692 Mon Sep 17 00:00:00 2001
+From d59223808d72f9b5f6b869a17a91260a6a3acaee Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,7 +75,7 @@ index 934ad406..2b762d4f 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 11bdceef..4e5b3541 100644
+index b9783a4c..757a595b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -12,6 +12,7 @@ import com.mojang.brigadier.context.StringRange;
@@ -132,7 +132,7 @@ index 11bdceef..4e5b3541 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -519,7 +535,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -538,7 +554,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -146,5 +146,5 @@ index 11bdceef..4e5b3541 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.24.0
+2.28.0
 

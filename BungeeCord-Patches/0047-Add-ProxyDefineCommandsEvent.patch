@@ -1,4 +1,4 @@
-From 63ae6c45b92d9913a10439b15c9c1af70472adfe Mon Sep 17 00:00:00 2001
+From f36d1c7e29ee37a364a530794c674bdab826e774 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,7 +54,7 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9ce48a40..4a60ba5b 100644
+index 72b6e9be..ace177ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -12,7 +12,8 @@ import com.mojang.brigadier.context.StringRange;
@@ -78,7 +78,7 @@ index 9ce48a40..4a60ba5b 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
-@@ -661,9 +664,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -680,9 +683,25 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -107,5 +107,5 @@ index 9ce48a40..4a60ba5b 100644
                  LiteralCommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() )
                          .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
 -- 
-2.24.0
+2.28.0
 

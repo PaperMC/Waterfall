@@ -1,4 +1,4 @@
-From ccbd921b22378ca421f9820a40199ac4885b8ee6 Mon Sep 17 00:00:00 2001
+From d1cae1a3697ae9bfa0599b0e4658a2cee7fbb07a Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -197,7 +197,7 @@ index 76ab1481..fae9805c 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4e5b3541..4dab32b4 100644
+index 757a595b..033877fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -52,6 +52,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
@@ -209,7 +209,7 @@ index 4e5b3541..4dab32b4 100644
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
-@@ -620,6 +622,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -639,6 +641,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -280,5 +280,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.24.0
+2.28.0
 
