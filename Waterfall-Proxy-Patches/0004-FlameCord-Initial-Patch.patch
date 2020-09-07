@@ -1,4 +1,4 @@
-From 016322bb87441fd19dec8ae7b125e23e9b7c8f1e Mon Sep 17 00:00:00 2001
+From c1a46ff74b7955ed43c52298aadf77fcb4aa388d Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Sat, 15 Aug 2020 15:19:22 -0300
 Subject: [PATCH] FlameCord Initial Patch
@@ -7866,7 +7866,7 @@ index 585afa36..b162d05f 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 13deb6c9..a8586706 100644
+index 13deb6c9..9bfd064b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -1,8 +1,5 @@
@@ -7954,7 +7954,7 @@ index 13deb6c9..a8586706 100644
          }
      };
      @Getter
-@@ -116,581 +116,572 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -116,581 +116,565 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      private String extraDataInHandshake = "";
  
      @Override
@@ -8189,6 +8189,16 @@ index 13deb6c9..a8586706 100644
 +
 +                        if (connectionThrottle != null) {
 +                            connectionThrottle.unthrottle(getSocketAddress());
++                        }
++
++                        // FlameCord - Close if response is null
++                        // FlameCord - Return if connection is closed
++                        final ServerPing response = pingResult.getResponse();
++                        if (response == null) {
++                            ch.close();
++                            return;
++                        } else if (ch.isClosed()) {
++                            return;
                          }
 +
                          // Travertine start
@@ -8204,12 +8214,6 @@ index 13deb6c9..a8586706 100644
 +                            // be on the
                              // safe side, always send legacy descriptions for < 1.9 clients.
 -                            JsonElement element = gson.toJsonTree(pingResult.getResponse());
-+                            // FlameCord - Use response instead of pingResult.getResponse()
-+                            // FlameCord - Return if the response is null
-+                            final ServerPing response = pingResult.getResponse();
-+                            if (response == null) {
-+                                return;
-+                            }
 +                            final JsonElement element = gson.toJsonTree(response);
                              Preconditions.checkArgument(element.isJsonObject(), "Response is not a JSON object");
 -                            JsonObject object = element.getAsJsonObject();
@@ -8222,12 +8226,6 @@ index 13deb6c9..a8586706 100644
 -                        {
 -                            unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
 +                        } else {
-+                            // FlameCord - Use response instead of pingResult.getResponse()
-+                            // FlameCord - Return if the response is null
-+                            final ServerPing response = pingResult.getResponse();
-+                            if (response == null) {
-+                                return;
-+                            }
 +                            unsafe.sendPacket(new StatusResponse(gson.toJson(response)));
                          }
                          // Travertine end
@@ -8324,15 +8322,11 @@ index 13deb6c9..a8586706 100644
          }
  
 -        this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
+-
+-        bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
 +        this.virtualHost = InetSocketAddress.createUnresolved(host, handshake.getPort());
 +        // FlameCord end - Changed "handshake.getHost()" to host
 +        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
- 
--        bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
-+        // FlameCord - Return if the connection is not connected anymore
-+        if (!InitialHandler.this.ch.isClosed()) {
-+            return;
-+        }
  
 -        switch ( handshake.getRequestedProtocol() )
 -        {
@@ -8526,11 +8520,11 @@ index 13deb6c9..a8586706 100644
  
 -        String preventProxy = ( BungeeCord.getInstance().config.isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress ) ? "&ip=" + URLEncoder.encode( getAddress().getAddress().getHostAddress(), "UTF-8" ) : "";
 -        String authURL = String.format( MOJANG_AUTH_URL, encName, encodedHash, preventProxy );
-+        final String preventProxy = (BungeeCord.getInstance().config.isPreventProxyConnections()
++        String preventProxy = (BungeeCord.getInstance().config.isPreventProxyConnections()
 +                && getSocketAddress() instanceof InetSocketAddress)
 +                        ? "&ip=" + URLEncoder.encode(getAddress().getAddress().getHostAddress(), "UTF-8")
 +                        : "";
-+        final String authURL = String.format(MOJANG_AUTH_URL, encName, encodedHash, preventProxy);
++        String authURL = String.format(MOJANG_AUTH_URL, encName, encodedHash, preventProxy);
  
 -        Callback<String> handler = new Callback<String>()
 -        {
@@ -8858,7 +8852,7 @@ index 13deb6c9..a8586706 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6cd71071..6048c2a1 100644
+index 6cd71071..22c9f19a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -1,7 +1,10 @@
@@ -8893,17 +8887,16 @@ index 6cd71071..6048c2a1 100644
  
      private final ServerInfo target;
      private final Callback<ServerPing> callback;
-@@ -33,49 +35,55 @@ public class PingHandler extends PacketHandler
+@@ -33,49 +35,54 @@ public class PingHandler extends PacketHandler
      private ChannelWrapper channel;
  
      @Override
 -    public void connected(ChannelWrapper channel) throws Exception
 -    {
-+    public void connected(final ChannelWrapper channel) throws Exception {
++    public void connected(ChannelWrapper channel) throws Exception {
          this.channel = channel;
 -        MinecraftEncoder encoder = new MinecraftEncoder( Protocol.HANDSHAKE, false, protocol );
 +        final MinecraftEncoder encoder = new MinecraftEncoder(Protocol.HANDSHAKE, false, protocol);
-+        // FlameCord - Use pipeline instead of channel.getHandle().pipeline()
 +        final ChannelPipeline pipeline = channel.getHandle().pipeline();
  
 -        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion() ) );
@@ -8925,7 +8918,7 @@ index 6cd71071..6048c2a1 100644
 -    public void exception(Throwable t) throws Exception
 -    {
 -        callback.done( null, t );
-+    public void exception(final Throwable t) throws Exception {
++    public void exception(Throwable t) throws Exception {
 +        callback.done(null, t);
      }
  
@@ -8935,7 +8928,7 @@ index 6cd71071..6048c2a1 100644
 -        if ( packet.packet == null )
 -        {
 -            throw new QuietException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
-+    public void handle(final PacketWrapper packet) throws Exception {
++    public void handle(PacketWrapper packet) throws Exception {
 +        if (packet.packet == null) {
 +            // FlameCord - Toggle Dumping packet info
 +            if (FlameCord.getInstance().getFlameCordConfiguration().isLoggerDump()) {
@@ -8957,10 +8950,10 @@ index 6cd71071..6048c2a1 100644
 -        ServerPing serverPing = gson.fromJson( statusResponse.getResponse(), ServerPing.class );
 -        ( (BungeeServerInfo) target ).cachePing( serverPing );
 -        callback.done( serverPing, null );
-+    public void handle(final StatusResponse statusResponse) throws Exception {
-+        final Gson gson = protocol == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy
++    public void handle(StatusResponse statusResponse) throws Exception {
++        Gson gson = protocol == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy
 +                : BungeeCord.getInstance().gson; // Travertine
-+        final ServerPing serverPing = gson.fromJson(statusResponse.getResponse(), ServerPing.class);
++        ServerPing serverPing = gson.fromJson(statusResponse.getResponse(), ServerPing.class);
 +        ((BungeeServerInfo) target).cachePing(serverPing);
 +        callback.done(serverPing, null);
          channel.close();
@@ -9798,7 +9791,7 @@ index 8c5cc949..de83bb2c 100644
  
          return null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f..bfe7e95c 100644
+index 6dc5633f..b2e84bd6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -5,6 +5,8 @@ import io.netty.channel.Channel;
@@ -9820,7 +9813,7 @@ index 6dc5633f..bfe7e95c 100644
  
      private final Channel ch;
      @Getter
-@@ -29,120 +30,112 @@ public class ChannelWrapper
+@@ -29,120 +30,110 @@ public class ChannelWrapper
      @Getter
      private volatile boolean closing;
  
@@ -9907,9 +9900,7 @@ index 6dc5633f..bfe7e95c 100644
 -            {
 -                ch.flush();
 +            if (packet != null && ch.isActive()) {
-+                // FlameCord - Dont fire exception on failure
-+                // ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE,
-+                // ChannelFutureListener.CLOSE);
++                // FlameCord - Remove "ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE" listener
 +                ch.writeAndFlush(packet).addListeners(ChannelFutureListener.CLOSE);
 +            } else {
 +                // FlameCord - Disable flushing as it's not really necessary
