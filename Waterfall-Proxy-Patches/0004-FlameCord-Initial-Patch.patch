@@ -1,4 +1,4 @@
-From c1a46ff74b7955ed43c52298aadf77fcb4aa388d Mon Sep 17 00:00:00 2001
+From 3cc284e2d4ed7f30a9b2e5987a949b2b1c0a9cb4 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Sat, 15 Aug 2020 15:19:22 -0300
 Subject: [PATCH] FlameCord Initial Patch
@@ -3347,7 +3347,7 @@ index e860214f..9f008a31 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a17ed68e..d6d4cd6e 100644
+index a17ed68e..b834c12a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -1,33 +1,10 @@
@@ -4107,7 +4107,7 @@ index a17ed68e..d6d4cd6e 100644
 +         * return (BungeeCord.class.getPackage().getImplementationVersion() == null) ?
 +         * "unknown" : BungeeCord.class.getPackage().getImplementationVersion();
 +         */
-+        return "0.4.0";
++        return "0.4.1";
 +    }
 +
 +    public void reloadMessages() {
@@ -6923,7 +6923,7 @@ index d4fad294..5454efad 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 585afa36..b162d05f 100644
+index 326de178..73a92c59 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -71,198 +71,179 @@ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
@@ -7215,7 +7215,7 @@ index 585afa36..b162d05f 100644
                      }
                  }
              }
-@@ -270,278 +251,229 @@ public class DownstreamBridge extends PacketHandler
+@@ -270,149 +251,126 @@ public class DownstreamBridge extends PacketHandler
      }
  
      @Override
@@ -7426,9 +7426,10 @@ index 585afa36..b162d05f 100644
 +                    out.writeInt(0);
                  }
              }
--            if ( subChannel.equals( "PlayerCount" ) )
--            {
-+            if (subChannel.equals("PlayerCount")) {
+             if ( subChannel.equals( "IPOther" ) )
+@@ -437,130 +395,105 @@ public class DownstreamBridge extends PacketHandler
+             if ( subChannel.equals( "PlayerCount" ) )
+             {
                  String target = in.readUTF();
 -                out.writeUTF( "PlayerCount" );
 -                if ( target.equals( "ALL" ) )
@@ -7626,7 +7627,7 @@ index 585afa36..b162d05f 100644
                  }
              }
  
-@@ -550,100 +482,89 @@ public class DownstreamBridge extends PacketHandler
+@@ -569,100 +502,89 @@ public class DownstreamBridge extends PacketHandler
      }
  
      @Override
@@ -7773,7 +7774,7 @@ index 585afa36..b162d05f 100644
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
              throw CancelSendSignal.INSTANCE;
-@@ -652,9 +573,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -671,9 +593,9 @@ public class DownstreamBridge extends PacketHandler
      }
  
      @Override
@@ -7786,7 +7787,7 @@ index 585afa36..b162d05f 100644
          con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
      }
  
-@@ -667,56 +588,52 @@ public class DownstreamBridge extends PacketHandler
+@@ -686,56 +608,52 @@ public class DownstreamBridge extends PacketHandler
      // Waterfall end
  
      @Override
