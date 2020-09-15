@@ -1,4 +1,4 @@
-From f7c69bedede5970d764bbd1e80f9849ffd63ff9e Mon Sep 17 00:00:00 2001
+From 625904bd6432d8424530b17e58f498acd862b60d Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1512,7 +1512,7 @@ index b0125245..8c2a743a 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 443d19bd..326de178 100644
+index 9e180c30..d54d8539 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -20,6 +20,7 @@ import io.netty.buffer.Unpooled;
@@ -1523,7 +1523,7 @@ index 443d19bd..326de178 100644
  import java.util.ArrayList;
  import java.util.HashMap; // Waterfall
  import java.util.List;
-@@ -173,7 +174,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -179,7 +180,7 @@ public class DownstreamBridge extends PacketHandler
          switch ( objective.getAction() )
          {
              case 0:
@@ -1532,7 +1532,7 @@ index 443d19bd..326de178 100644
                  break;
              case 1:
                  serverScoreboard.removeObjective( objective.getName() );
-@@ -183,7 +184,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -189,7 +190,7 @@ public class DownstreamBridge extends PacketHandler
                  if ( oldObjective != null )
                  {
                      oldObjective.setValue( objective.getValue() );
@@ -1541,7 +1541,7 @@ index 443d19bd..326de178 100644
                  }
                  break;
              default:
-@@ -280,16 +281,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -286,16 +287,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
@@ -1669,7 +1669,7 @@ index 4d7b1b23..ad3bdee5 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 45f4449c..77274ec4 100644
+index a5acf512..67b68a3b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -35,6 +35,10 @@ public abstract class EntityMap
