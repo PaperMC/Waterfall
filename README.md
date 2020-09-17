@@ -28,14 +28,14 @@ Waterfall requires **Java 8** or above.
 ------
  * See our API patches [here](BungeeCord-Patches)
  * Waterfall API javadocs here: [papermc.io/javadocs/waterfall](https://papermc.io/javadocs/waterfall)
- * Maven Repo (for waterfall-api):
+ * Maven repository (for `waterfall-api`):
 ```xml
 <repository>
     <id>papermc</id>
     <url>https://papermc.io/repo/repository/maven-public/</url>
 </repository>
 ```
- * Artifact Information:
+ * Artifact information:
 ```xml
 <dependency>
     <groupId>io.github.waterfallmc</groupId>
