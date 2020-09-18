@@ -1,4 +1,4 @@
-From 521d31ea5d5b86b30e0a46e3c6eea7b67259cc0c Mon Sep 17 00:00:00 2001
+From 548ab6001046830731ac6246fcd2160df7b07f5e Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Thu, 3 Sep 2020 18:37:43 -0300
 Subject: [PATCH] FlameCord Whitelist servers addresses
@@ -99,7 +99,7 @@ index a90c8426..8a474758 100644
              final String hostString = iNetSocketAddress.getHostString();
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b834c12a..98fbf119 100644
+index 4351b1f4..1ed2ffaf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -288,19 +288,30 @@ public class BungeeCord extends ProxyServer {
@@ -135,7 +135,7 @@ index b834c12a..98fbf119 100644
  
          if (config.isForgeSupport()) {
              registerChannel(ForgeConstants.FML_TAG);
-@@ -828,7 +839,14 @@ public class BungeeCord extends ProxyServer {
+@@ -823,7 +834,14 @@ public class BungeeCord extends ProxyServer {
                                  break;
                              }
                              case "reload": {
@@ -152,10 +152,10 @@ index b834c12a..98fbf119 100644
                                          .fromLegacyText(messagesConfiguration.getTranslation("flamecord_reload")));
                                  break;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 687bf518..0f6ac089 100644
+index 23a2028b..8e92f5e8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -146,11 +146,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
+@@ -147,11 +147,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
                  final SocketAddress remoteAddress = channel.remoteAddress();
  
                  if (remoteAddress != null) {
