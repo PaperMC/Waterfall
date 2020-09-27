@@ -1,4 +1,4 @@
-From 17dc40e613083bdbc436c7d7f075e09690fa1c58 Mon Sep 17 00:00:00 2001
+From 293ee98a7366dbfeca410cf05165a332620929ee Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -23,7 +23,7 @@ index bcb229c3..b9d624f8 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 653242f0..d1e57953 100644
+index 552b0b17..a859195e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -250,7 +250,6 @@ public class DownstreamBridge extends PacketHandler
@@ -42,6 +42,28 @@ index 653242f0..d1e57953 100644
              ByteArrayDataOutput out = ByteStreams.newDataOutput();
              String subChannel = in.readUTF();
  
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 2a79e62b..babaef52 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -11,7 +11,7 @@ lost_connection=[Proxy] Lost connection to server.
+ mojang_fail=Error occurred while contacting login servers, are they down?
+ no_permission=\u00a7cYou do not have permission to execute this command!
+ no_server=\u00a7cThe specified server does not exist.
+-no_server_permission=\u00a7cYou don''t have permission to access this server.
++no_server_permission=\u00a7cYou don't have permission to access this server.
+ outdated_client=Outdated client! Please use {0}
+ outdated_server=Outdated server! I''m still on {0}
+ proxy_full=Server is full!
+@@ -22,7 +22,7 @@ server_went_down=\u00a7cThe server you were previously on went down, you have be
+ total_players=Total players online: {0}
+ name_too_long=Cannot have username longer than 16 characters
+ name_invalid=Username contains invalid characters.
+-ping_cannot_connect=\u00a7c[Bungee] Can''t connect to server.
++ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
+ offline_mode_player=Not authenticated with Minecraft.net
+ message_needed=\u00a7cYou must supply a message.
+ error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
 -- 
-2.24.0
+2.25.1
 
