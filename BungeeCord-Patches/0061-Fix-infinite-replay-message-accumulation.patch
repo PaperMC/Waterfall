@@ -1,0 +1,22 @@
+From b02ff0cfd9d896b54a72188d6c45c3555dd7d134 Mon Sep 17 00:00:00 2001
+From: Gerrygames <gecam59@gmail.com>
+Date: Mon, 12 Oct 2020 11:11:26 +0200
+Subject: [PATCH] Fix infinite replay message accumulation
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 4d7b1b23..78aff245 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -269,7 +269,7 @@ public class UpstreamBridge extends PacketHandler
+         }
+ 
+         // TODO: Unregister as well?
+-        if ( PluginMessage.SHOULD_RELAY.apply( pluginMessage ) )
++        if ( PluginMessage.SHOULD_RELAY.apply( pluginMessage ) && !con.getPendingConnection().getRelayMessages().contains( pluginMessage ) ) // Waterfall - add contains check
+         {
+             con.getPendingConnection().getRelayMessages().add( pluginMessage );
+         }
+-- 
+2.20.1
+
