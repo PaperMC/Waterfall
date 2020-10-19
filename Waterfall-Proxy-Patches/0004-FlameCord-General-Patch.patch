@@ -1,32 +1,9 @@
-From b5fbd45e9ba865cb9af6f9aa4f75afb140db7647 Mon Sep 17 00:00:00 2001
+From de242ae5cc0aa9b3b86285cb38eee3a372c6312f Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
 
 
-diff --git a/api/.factorypath b/api/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/api/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
 index cf85ca06..8a945a99 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
@@ -71,97 +48,6 @@ index 2f7b38d9..e29b0ed3 100644
  
      /**
       * Connection attempting to login.
-diff --git a/bootstrap/.factorypath b/bootstrap/.factorypath
-new file mode 100644
-index 00000000..b9f2c65d
---- /dev/null
-+++ b/bootstrap/.factorypath
-@@ -0,0 +1,37 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-haproxy/4.1.52.Final/netty-codec-haproxy-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-http/4.1.52.Final/netty-codec-http-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver-dns/4.1.52.Final/netty-resolver-dns-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-dns/4.1.52.Final/netty-codec-dns-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-handler/4.1.52.Final/netty-handler-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-epoll/4.1.52.Final/netty-transport-native-epoll-4.1.52.Final-linux-x86_64.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-core/2.12.0/log4j-core-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-api/2.12.0/log4j-api-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-iostreams/2.12.0/log4j-iostreams-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-jul/2.12.0/log4j-jul-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-slf4j-impl/2.12.0/log4j-slf4j-impl-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/lmax/disruptor/3.4.2/disruptor-3.4.2.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/mysql/mysql-connector-java/5.1.48/mysql-connector-java-5.1.48.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/minecrell/terminalconsoleappender/1.2.0/terminalconsoleappender-1.2.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-reader/3.12.1/jline-reader-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal-jansi/3.12.1/jline-terminal-jansi-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/fusesource/jansi/jansi/1.18/jansi-1.18.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal/3.12.1/jline-terminal-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/chat/.factorypath b/chat/.factorypath
-new file mode 100644
-index 00000000..ed4e646c
---- /dev/null
-+++ b/chat/.factorypath
-@@ -0,0 +1,6 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/config/.factorypath b/config/.factorypath
-new file mode 100644
-index 00000000..6e60b565
---- /dev/null
-+++ b/config/.factorypath
-@@ -0,0 +1,7 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/event/.factorypath b/event/.factorypath
-new file mode 100644
-index 00000000..f398f41e
---- /dev/null
-+++ b/event/.factorypath
-@@ -0,0 +1,5 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/flamecord/.factorypath b/flamecord/.factorypath
-new file mode 100644
-index 00000000..ed4e646c
---- /dev/null
-+++ b/flamecord/.factorypath
-@@ -0,0 +1,6 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/flamecord/pom.xml b/flamecord/pom.xml
 new file mode 100644
 index 00000000..dd511dac
@@ -759,196 +645,6 @@ index 00000000..8a474758
 +    }
 +}
 \ No newline at end of file
-diff --git a/log/.factorypath b/log/.factorypath
-new file mode 100644
-index 00000000..542d5259
---- /dev/null
-+++ b/log/.factorypath
-@@ -0,0 +1,7 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/jline/jline/2.12.1/jline-2.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/log4j/.factorypath b/log4j/.factorypath
-new file mode 100644
-index 00000000..f08118bd
---- /dev/null
-+++ b/log4j/.factorypath
-@@ -0,0 +1,18 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-core/2.12.0/log4j-core-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-api/2.12.0/log4j-api-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-iostreams/2.12.0/log4j-iostreams-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-jul/2.12.0/log4j-jul-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-slf4j-impl/2.12.0/log4j-slf4j-impl-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/lmax/disruptor/3.4.2/disruptor-3.4.2.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/minecrell/terminalconsoleappender/1.0.0/terminalconsoleappender-1.0.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-reader/3.5.1/jline-reader-3.5.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal/3.5.1/jline-terminal-3.5.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal-jna/3.5.1/jline-terminal-jna-3.5.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/cmd-alert/.factorypath b/module/cmd-alert/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/cmd-alert/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/cmd-find/.factorypath b/module/cmd-find/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/cmd-find/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/cmd-list/.factorypath b/module/cmd-list/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/cmd-list/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/cmd-send/.factorypath b/module/cmd-send/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/cmd-send/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/cmd-server/.factorypath b/module/cmd-server/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/cmd-server/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/module/reconnect-yaml/.factorypath b/module/reconnect-yaml/.factorypath
-new file mode 100644
-index 00000000..29bce69c
---- /dev/null
-+++ b/module/reconnect-yaml/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
-diff --git a/native/.factorypath b/native/.factorypath
-new file mode 100644
-index 00000000..3ae914e6
---- /dev/null
-+++ b/native/.factorypath
-@@ -0,0 +1,9 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/pom.xml b/pom.xml
 index 61920717..2126cda1 100644
 --- a/pom.xml
@@ -963,26 +659,6 @@ index 61920717..2126cda1 100644
      </modules>
  
      <scm>
-diff --git a/protocol/.factorypath b/protocol/.factorypath
-new file mode 100644
-index 00000000..192c13a0
---- /dev/null
-+++ b/protocol/.factorypath
-@@ -0,0 +1,14 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
 index ba3ffe3d..9228f72a 100644
 --- a/protocol/pom.xml
@@ -1049,49 +725,6 @@ index ec932e92..0d9ed57d 100644
          } finally
          {
              if ( slice != null )
-diff --git a/proxy/.factorypath b/proxy/.factorypath
-new file mode 100644
-index 00000000..b9f2c65d
---- /dev/null
-+++ b/proxy/.factorypath
-@@ -0,0 +1,37 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-haproxy/4.1.52.Final/netty-codec-haproxy-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-http/4.1.52.Final/netty-codec-http-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver-dns/4.1.52.Final/netty-resolver-dns-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-dns/4.1.52.Final/netty-codec-dns-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-handler/4.1.52.Final/netty-handler-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-epoll/4.1.52.Final/netty-transport-native-epoll-4.1.52.Final-linux-x86_64.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-core/2.12.0/log4j-core-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-api/2.12.0/log4j-api-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-iostreams/2.12.0/log4j-iostreams-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-jul/2.12.0/log4j-jul-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/logging/log4j/log4j-slf4j-impl/2.12.0/log4j-slf4j-impl-2.12.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/lmax/disruptor/3.4.2/disruptor-3.4.2.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/dev/jna/jna/4.4.0/jna-4.4.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/mysql/mysql-connector-java/5.1.48/mysql-connector-java-5.1.48.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/minecrell/terminalconsoleappender/1.2.0/terminalconsoleappender-1.2.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-reader/3.12.1/jline-reader-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal-jansi/3.12.1/jline-terminal-jansi-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/fusesource/jansi/jansi/1.18/jansi-1.18.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jline/jline-terminal/3.12.1/jline-terminal-3.12.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
 index 4bda0d62..0018d6f8 100644
 --- a/proxy/pom.xml
@@ -1240,7 +873,7 @@ index 527f310e..a4ef6d3b 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a17ed68e..e051b9c7 100644
+index a17ed68e..d52a8878 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
@@ -1318,7 +951,26 @@ index a17ed68e..e051b9c7 100644
      }
  
      public void reloadMessages()
-@@ -815,4 +836,56 @@ public class BungeeCord extends ProxyServer
+@@ -573,16 +594,8 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getTranslation(String name, Object... args)
+     {
+-        String translation = "<translation '" + name + "' missing>";
+-        try
+-        {
+-            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
+-
+-            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
+-        } catch ( MissingResourceException ex )
+-        {
+-        }
+-        return translation;
++        // FlameCord - Use own translation system
++        return FlameCord.getInstance().getMessagesConfiguration().getTranslation(name, args);
+     }
+ 
+     @Override
+@@ -815,4 +828,56 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -2280,29 +1932,6 @@ index 9a39f69e..008b03cb 100644
      };
      public static final Base BASE = new Base();
      private static final KickStringWriter legacyKicker = new KickStringWriter();
-diff --git a/query/.factorypath b/query/.factorypath
-new file mode 100644
-index 00000000..7bec3430
---- /dev/null
-+++ b/query/.factorypath
-@@ -0,0 +1,17 @@
-+<factorypath>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.52.Final/netty-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.52.Final/netty-buffer-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/md-5/brigadier/1.0.16-SNAPSHOT/brigadier-1.0.16-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.52.Final/netty-codec-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/trove4j/core/3.1.0/core-3.1.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/se/llbit/jo-nbt/1.3.0/jo-nbt-1.3.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.52.Final/netty-transport-native-unix-common-4.1.52.Final.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/yaml/snakeyaml/1.25/snakeyaml-1.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/code/findbugs/findbugs-annotations/3.0.1/findbugs-annotations-3.0.1.jar" enabled="true" runInBatchMode="false"/>
-+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar" enabled="true" runInBatchMode="false"/>
-+</factorypath>
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 index 0c1ecfb8..b3bdfd05 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
