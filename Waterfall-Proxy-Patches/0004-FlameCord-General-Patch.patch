@@ -1,4 +1,4 @@
-From de242ae5cc0aa9b3b86285cb38eee3a372c6312f Mon Sep 17 00:00:00 2001
+From 6535669389c557bd88a9da0845802f41501eab75 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -873,7 +873,7 @@ index 527f310e..a4ef6d3b 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a17ed68e..d52a8878 100644
+index a17ed68e..9f8511fa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
@@ -918,7 +918,20 @@ index a17ed68e..d52a8878 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
-@@ -285,6 +296,16 @@ public class BungeeCord extends ProxyServer
+@@ -275,9 +286,10 @@ public class BungeeCord extends ProxyServer
+         bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
+         workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+ 
+-        File moduleDirectory = new File( "modules" );
++        // FlameCord - Use own module system
++        /* File moduleDirectory = new File( "modules" );
+         moduleManager.load( this, moduleDirectory );
+-        pluginManager.detectPlugins( moduleDirectory );
++        pluginManager.detectPlugins( moduleDirectory ); */
+ 
+         pluginsFolder.mkdir();
+         pluginManager.detectPlugins( pluginsFolder );
+@@ -285,6 +297,16 @@ public class BungeeCord extends ProxyServer
          pluginManager.loadPlugins();
          config.load();
  
@@ -935,7 +948,7 @@ index a17ed68e..d52a8878 100644
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -546,13 +567,13 @@ public class BungeeCord extends ProxyServer
+@@ -546,13 +568,13 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -951,7 +964,7 @@ index a17ed68e..d52a8878 100644
      }
  
      public void reloadMessages()
-@@ -573,16 +594,8 @@ public class BungeeCord extends ProxyServer
+@@ -573,16 +595,8 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getTranslation(String name, Object... args)
      {
@@ -970,7 +983,7 @@ index a17ed68e..d52a8878 100644
      }
  
      @Override
-@@ -815,4 +828,56 @@ public class BungeeCord extends ProxyServer
+@@ -815,4 +829,56 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
