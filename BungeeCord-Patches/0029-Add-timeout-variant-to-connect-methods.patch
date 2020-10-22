@@ -1,4 +1,4 @@
-From b7b31dfb797e512a5b58b730a2db3f29a05ba775 Mon Sep 17 00:00:00 2001
+From 003dd3ac51ed759dc58f9dd52a89fc54be9ff610 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -6,10 +6,10 @@ Subject: [PATCH] Add timeout variant to connect methods
 Also added more connect methods to ProxiedPlayer, in addition to the new method
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 867e4428..f7459860 100644
+index dadf089b..6e908b74 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -111,6 +111,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -127,6 +127,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback);
  
@@ -48,7 +48,7 @@ index 867e4428..f7459860 100644
      /**
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
-@@ -124,6 +156,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -140,6 +172,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
  
@@ -75,7 +75,7 @@ index 867e4428..f7459860 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ecde76ec..2c689edf 100644
+index b64d3f50..5e3c27a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -254,9 +254,20 @@ public final class UserConnection implements ProxiedPlayer
@@ -109,5 +109,5 @@ index ecde76ec..2c689edf 100644
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
 -- 
-2.26.1
+2.29.0.windows.1
 
