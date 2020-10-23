@@ -1,15 +1,15 @@
-From 928c66c38d8e49f7d7f94d88c75a52a8e0282057 Mon Sep 17 00:00:00 2001
+From 160c7c7c0ddf721253a40fb97aa4abdb6813510a Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 15228459..705b7279 100644
+index f72ac5c0..10db38b7 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -55,5 +55,11 @@
-             <version>1.25</version>
+             <version>1.26</version>
              <scope>compile</scope>
          </dependency>
 +        <!-- Waterfall - Add SLF4J -->
@@ -39,7 +39,7 @@ index 9660234d..3d1e9a3a 100644
       * Called when the plugin has just been loaded. Most of the proxy will not
       * be initialized, so only use it for registering
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index a044119e..f5267567 100644
+index e49a40ee..1cd12d6a 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -38,6 +38,12 @@
@@ -56,5 +56,5 @@ index a044119e..f5267567 100644
              <groupId>com.lmax</groupId>
              <artifactId>disruptor</artifactId>
 -- 
-2.26.1
+2.29.0.windows.1
 
