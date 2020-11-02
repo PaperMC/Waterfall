@@ -1,4 +1,4 @@
-From 625904bd6432d8424530b17e58f498acd862b60d Mon Sep 17 00:00:00 2001
+From 26a4a525e697ec23dde6a9009cabc122362988d5 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -462,7 +462,7 @@ index d372933d..1feee418 100644
  
              java.util.function.Supplier<? extends DefinedPacket> constructor = protocolData.packetConstructors[id]; // Waterfall - speed up packet construction
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index f33bb5c4..659382c0 100644
+index 30b4d059..e0400383 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -474,15 +474,15 @@ index f33bb5c4..659382c0 100644
      public static final int MINECRAFT_1_8 = 47;
      public static final int MINECRAFT_1_9 = 107;
      public static final int MINECRAFT_1_9_1 = 108;
-@@ -33,6 +35,7 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_16_2 = 751;
+@@ -34,6 +36,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_16_3 = 753;
+     public static final int MINECRAFT_1_16_4 = 754; // Waterfall
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
              "1.9.x",
              "1.10.x",
-@@ -44,6 +47,8 @@ public class ProtocolConstants
+@@ -45,6 +48,8 @@ public class ProtocolConstants
              "1.16.x"
      );
      public static final List<Integer> SUPPORTED_VERSION_IDS = Arrays.asList(
@@ -526,7 +526,7 @@ index c0d37142..a07e25b1 100644
  
                  if ( in.readableBytes() < length )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index d2a4dea6..ac47302b 100644
+index 828a5dbe..195ec088 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -1,5 +1,6 @@
@@ -535,20 +535,20 @@ index d2a4dea6..ac47302b 100644
 +import io.github.waterfallmc.travertine.protocol.MultiVersionPacketV17;
  import io.netty.buffer.ByteBuf;
  import java.util.UUID;
- import lombok.AllArgsConstructor;
-@@ -14,7 +15,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ import lombok.Data;
+@@ -12,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ @Data
  @NoArgsConstructor
- @AllArgsConstructor
  @EqualsAndHashCode(callSuper = false)
 -public class Chat extends DefinedPacket
 +public class Chat extends MultiVersionPacketV17
  {
  
      private static final UUID EMPTY_UUID = new UUID( 0L, 0L );
-@@ -32,6 +33,14 @@ public class Chat extends DefinedPacket
-         this( message, position, EMPTY_UUID );
+@@ -36,6 +37,13 @@ public class Chat extends DefinedPacket
+         this.position = position;
+         this.sender = sender == null ? EMPTY_UUID : sender;
      }
- 
 +    // Travertine start
 +    @Override
 +    public void v17Read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
@@ -556,11 +556,10 @@ index d2a4dea6..ac47302b 100644
 +        message = readString( buf );
 +    }
 +    // Travertine end
-+
+ 
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
-@@ -51,6 +60,14 @@ public class Chat extends DefinedPacket
+@@ -56,6 +64,14 @@ public class Chat extends DefinedPacket
          }
      }
  
@@ -1457,7 +1456,7 @@ index b486f2aa..c12085e1 100644
                  throw CancelSendSignal.INSTANCE;
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b0125245..8c2a743a 100644
+index 7ec119ea..986a9d05 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -193,6 +193,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -1468,7 +1467,7 @@ index b0125245..8c2a743a 100644
          displayName = name;
      }
  
-@@ -474,7 +475,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -497,7 +498,8 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -1478,16 +1477,7 @@ index b0125245..8c2a743a 100644
          {
              // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
              // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
-@@ -500,7 +502,7 @@ public final class UserConnection implements ProxiedPlayer
-         message = ChatComponentTransformer.getInstance().transform( this, true, message )[0];
- 
-         // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
--        if ( position == ChatMessageType.ACTION_BAR )
-+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // Travertine
-         {
-             sendMessage( position, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
-         } else
-@@ -685,6 +687,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -693,6 +695,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1495,7 +1485,7 @@ index b0125245..8c2a743a 100644
          header = ChatComponentTransformer.getInstance().transform( this, true, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, true, footer )[0];
  
-@@ -697,6 +700,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -705,6 +708,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1503,7 +1493,7 @@ index b0125245..8c2a743a 100644
          header = ChatComponentTransformer.getInstance().transform( this, true, header );
          footer = ChatComponentTransformer.getInstance().transform( this, true, footer );
  
-@@ -726,6 +730,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -734,6 +738,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1669,7 +1659,7 @@ index 4d7b1b23..ad3bdee5 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index a5acf512..67b68a3b 100644
+index 84c20c68..fa8fbf9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -35,6 +35,10 @@ public abstract class EntityMap
