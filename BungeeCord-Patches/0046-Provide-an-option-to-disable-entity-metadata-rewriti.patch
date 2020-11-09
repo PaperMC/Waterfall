@@ -1,4 +1,4 @@
-From e0314827c9cbf1d3ad1554bdf1a92928e420dc02 Mon Sep 17 00:00:00 2001
+From 8ae1e11318da696e5ef26a771ffad961adb17931 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -158,7 +158,7 @@ index 033877fc..72b6e9be 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index cb94fa4a..a5acf512 100644
+index 4a27148f..db93d883 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -6,6 +6,7 @@ import io.netty.buffer.ByteBufInputStream;
@@ -181,7 +181,7 @@ index cb94fa4a..a5acf512 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -283,7 +289,13 @@ public abstract class EntityMap
+@@ -284,7 +290,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.29.0.windows.1
+2.29.2
 
