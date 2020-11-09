@@ -2,19 +2,19 @@
 
 case "$1" in
     "rb" | "rbp" | "rebuild")
-        scripts/rebuildPatches.sh
+        scripts/rebuildPatches.sh || exit 1
     ;;
     "p" | "patch")
-        scripts/build.sh
+        scripts/build.sh || exit 1
     ;;
     "m" | "up" | "merge")
-        scripts/mergeUpstream.sh
+        scripts/mergeUpstream.sh || exit 1
     ;;
     "b" | "build")
-        scripts/build.sh --jar
+        scripts/build.sh --jar || exit 1
     ;;
     "e" | "edit")
-        scripts/edit.sh
+        scripts/edit.sh || exit 1
     ;;
     *)
         echo "WaterfallMC build tool command. This provides a variety of commands to control the WaterfallMC"
