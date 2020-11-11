@@ -1,11 +1,11 @@
-From e668a9c96543bd2b32e22682beb962123598664e Mon Sep 17 00:00:00 2001
+From ee960d5aafc5402b4ce30b107fbff9f3ffc7e2d3 Mon Sep 17 00:00:00 2001
 From: "Markus L. (FivePB)" <admin@fivepb.me>
 Date: Mon, 9 Nov 2020 09:47:50 +0100
 Subject: [PATCH] Preliminary 1.17 support
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 2202c4d3..e86780fa 100644
+index 2202c4d3..8d8c294b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -33,6 +33,14 @@ public class ProtocolConstants
@@ -16,7 +16,7 @@ index 2202c4d3..e86780fa 100644
 +    public static final int MINECRAFT_1_17 = 755; // Waterfall 1.17
 +
 +    private static final int SNAPSHOT_BIT = 30;
-+    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 5;
++    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 6;
 +
 +    // Waterfall 1.17 & snapshot/pre end
 +
@@ -61,5 +61,5 @@ index db93d883..b1fc22cb 100644
          throw new RuntimeException( "Version " + version + " has no entity map" );
      }
 -- 
-2.28.0.windows.1
+2.24.0
 
