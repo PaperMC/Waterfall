@@ -1,4 +1,4 @@
-From 26a4a525e697ec23dde6a9009cabc122362988d5 Mon Sep 17 00:00:00 2001
+From f9955fcb4091c2ede107ebc8a1c09848e933e839 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -462,7 +462,7 @@ index d372933d..1feee418 100644
  
              java.util.function.Supplier<? extends DefinedPacket> constructor = protocolData.packetConstructors[id]; // Waterfall - speed up packet construction
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 30b4d059..e0400383 100644
+index 2202c4d3..6600185b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -6,6 +6,8 @@ import java.util.List;
@@ -476,7 +476,7 @@ index 30b4d059..e0400383 100644
      public static final int MINECRAFT_1_9_1 = 108;
 @@ -34,6 +36,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_16_3 = 753;
-     public static final int MINECRAFT_1_16_4 = 754; // Waterfall
+     public static final int MINECRAFT_1_16_4 = 754;
      public static final List<String> SUPPORTED_VERSIONS = Arrays.asList(
 +            "1.7.x",
              "1.8.x",
@@ -1659,7 +1659,7 @@ index 4d7b1b23..ad3bdee5 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 84c20c68..fa8fbf9d 100644
+index db93d883..a3a12e19 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -35,6 +35,10 @@ public abstract class EntityMap
@@ -2028,5 +2028,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.28.0
+2.29.2
 
