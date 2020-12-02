@@ -1,4 +1,4 @@
-From f9955fcb4091c2ede107ebc8a1c09848e933e839 Mon Sep 17 00:00:00 2001
+From 682bb544387936931880d662162b2fe107a4289b Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1571,24 +1571,19 @@ index 9e180c30..d54d8539 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 7e6027aa..fe6ff143 100644
+index b7ecd828..3b82219d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -12,6 +12,13 @@ import java.util.List;
- import java.util.UUID;
- import java.util.logging.Level;
- import javax.crypto.SecretKey;
-+
-+import com.google.common.base.Charsets;
-+import com.google.common.base.Preconditions;
-+import com.google.gson.Gson;
-+
+@@ -3,6 +3,8 @@ package net.md_5.bungee.connection;
+ import com.google.common.base.Charsets;
+ import com.google.common.base.Preconditions;
+ import com.google.gson.Gson;
 +import com.google.gson.JsonElement;
 +import com.google.gson.JsonObject;
- import lombok.Getter;
- import lombok.RequiredArgsConstructor;
- import net.md_5.bungee.BungeeCord;
-@@ -255,12 +262,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ import java.math.BigInteger;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+@@ -257,12 +259,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
