@@ -1,4 +1,4 @@
-From 0512eeec0c47f8619716ff7aa0cf89684ddafb4a Mon Sep 17 00:00:00 2001
+From eebd97973aff4d2912fd7ee9ca362c1658ae8a6d Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -145,6 +145,34 @@ index a2c72c9b..1a647f2b 100644
          } finally
          {
              if ( slice != null )
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 3d3b2352..4b22b232 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -12,6 +12,8 @@ import java.util.List;
+ import java.util.UUID;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
++import javax.crypto.spec.SecretKeySpec;
++
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -424,6 +426,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+ 
+         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
++        // Waterfall start
++        if (sharedKey instanceof SecretKeySpec) {
++            if (sharedKey.getEncoded().length != 16) {
++             this.ch.close();
++             return;
++            }
++        }
++        // Waterfall end
+         BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
+         ch.addBefore( PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder( decrypt ) );
+         BungeeCipher encrypt = EncryptionUtil.getCipher( true, sharedKey );
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 index ac99d02c..0c1ecfb8 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
@@ -167,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.24.0
+2.29.2
 
