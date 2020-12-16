@@ -1,0 +1,23 @@
+From b8e427d68694e1af04e005b78f4c58e161c8ee35 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:14:02 +0800
+Subject: [PATCH] Default timeout to 10000
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index 85d2197a..1294495d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -35,7 +35,8 @@ public abstract class Configuration implements ProxyConfig
+     /**
+      * Time before users are disconnected due to no network activity.
+      */
+-    private int timeout = 30000;
++    // FlameCord - Default timeout to 10000
++    private int timeout = 10000;
+     /**
+      * UUID used for metrics.
+      */
+-- 
+2.20.1
+

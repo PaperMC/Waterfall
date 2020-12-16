@@ -1,0 +1,33 @@
+From ce3a53d84ba7dbe3a0f50817ccad80ae41176309 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:10:30 +0800
+Subject: [PATCH] Packet Checks
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index ec932e92..f1f34626 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -39,6 +39,19 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         }
+ 
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
++        
++        // FlameCord - Check size before decoding
++        if (prot == protocol.TO_SERVER) {
++            final int readableBytes = in.readableBytes();
++            final int capacity = in.capacity();
++
++            if (readableBytes > 2097152) {
++                throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
++            } else if (capacity > 2097152) {
++                throw new FastDecoderException("Error decoding packet with too big capacity: " + capacity);
++            }
++        }
++
+         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+ 
+         Object packetTypeInfo = null;
+-- 
+2.20.1
+

@@ -1,0 +1,139 @@
+From 40440185e64d394ef7bda875820891ebea847ca8 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:07:26 +0800
+Subject: [PATCH] Use elseIfs
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index d54d8539..1be39af0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -285,6 +285,7 @@ public class DownstreamBridge extends PacketHandler
+             throw CancelSendSignal.INSTANCE;
+         }
+ 
++        // FlameCord - Use elseIfs
+         if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
+         {
+             // Travertine start
+@@ -313,8 +314,7 @@ public class DownstreamBridge extends PacketHandler
+             con.unsafe().sendPacket( pluginMessage );
+             throw CancelSendSignal.INSTANCE;
+         }
+-
+-        if ( pluginMessage.getTag().equals( "BungeeCord" ) )
++        else if ( pluginMessage.getTag().equals( "BungeeCord" ) )
+         {
+             DataInput in = pluginMessage.getStream();
+             ByteArrayDataOutput out = ByteStreams.newDataOutput();
+@@ -343,7 +343,7 @@ public class DownstreamBridge extends PacketHandler
+                 // Null out stream, important as we don't want to send to ourselves
+                 out = null;
+             }
+-            if ( subChannel.equals( "Forward" ) )
++            else if ( subChannel.equals( "Forward" ) )
+             {
+                 // Read data from server
+                 String target = in.readUTF();
+@@ -388,7 +388,7 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "Connect" ) )
++            else if ( subChannel.equals( "Connect" ) )
+             {
+                 ServerInfo server = bungee.getServerInfo( in.readUTF() );
+                 if ( server != null )
+@@ -396,7 +396,7 @@ public class DownstreamBridge extends PacketHandler
+                     con.connect( server, ServerConnectEvent.Reason.PLUGIN_MESSAGE );
+                 }
+             }
+-            if ( subChannel.equals( "ConnectOther" ) )
++            else if ( subChannel.equals( "ConnectOther" ) )
+             {
+                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                 if ( player != null )
+@@ -408,7 +408,7 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "IP" ) )
++            else if ( subChannel.equals( "IP" ) )
+             {
+                 out.writeUTF( "IP" );
+                 if ( con.getSocketAddress() instanceof InetSocketAddress )
+@@ -421,7 +421,7 @@ public class DownstreamBridge extends PacketHandler
+                     out.writeInt( 0 );
+                 }
+             }
+-            if ( subChannel.equals( "IPOther" ) )
++            else if ( subChannel.equals( "IPOther" ) )
+             {
+                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                 if ( player != null )
+@@ -440,7 +440,7 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "PlayerCount" ) )
++            else if ( subChannel.equals( "PlayerCount" ) )
+             {
+                 String target = in.readUTF();
+                 out.writeUTF( "PlayerCount" );
+@@ -458,7 +458,7 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "PlayerList" ) )
++            else if ( subChannel.equals( "PlayerList" ) )
+             {
+                 String target = in.readUTF();
+                 out.writeUTF( "PlayerList" );
+@@ -476,12 +476,12 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "GetServers" ) )
++            else if ( subChannel.equals( "GetServers" ) )
+             {
+                 out.writeUTF( "GetServers" );
+                 out.writeUTF( Util.csv( bungee.getServers().keySet() ) );
+             }
+-            if ( subChannel.equals( "Message" ) )
++            else if ( subChannel.equals( "Message" ) )
+             {
+                 String target = in.readUTF();
+                 String message = in.readUTF();
+@@ -500,7 +500,7 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "MessageRaw" ) )
++            else if ( subChannel.equals( "MessageRaw" ) )
+             {
+                 String target = in.readUTF();
+                 BaseComponent[] message = ComponentSerializer.parse( in.readUTF() );
+@@ -519,17 +519,17 @@ public class DownstreamBridge extends PacketHandler
+                     }
+                 }
+             }
+-            if ( subChannel.equals( "GetServer" ) )
++            else if ( subChannel.equals( "GetServer" ) )
+             {
+                 out.writeUTF( "GetServer" );
+                 out.writeUTF( server.getInfo().getName() );
+             }
+-            if ( subChannel.equals( "UUID" ) )
++            else if ( subChannel.equals( "UUID" ) )
+             {
+                 out.writeUTF( "UUID" );
+                 out.writeUTF( con.getUUID() );
+             }
+-            if ( subChannel.equals( "UUIDOther" ) )
++            else if ( subChannel.equals( "UUIDOther" ) )
+             {
+                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                 if ( player != null )
+-- 
+2.20.1
+

@@ -1,0 +1,73 @@
+From f352e9224c1610b6047cc001a0555f4b940ff71d Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:06:17 +0800
+Subject: [PATCH] Close connections
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index c2ec12b4..3e7f6d00 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -197,6 +197,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+ 
+                 ServerPing legacy = result.getResponse();
++
++                // FlameCord - Close and return if legacy == null
++                if (legacy == null) {
++                    ch.close();
++                    return;
++                }
++
+                 String kickMessage;
+ 
+                 if ( v1_5 )
+@@ -267,6 +274,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         {
+                             bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
+                         }
++
++                        // FlameCord - Close if response is null
++                        // FlameCord - Return if connection is closed
++                        if (pingResult.getResponse() == null) {
++                            ch.close();
++                            return;
++                        } else if (ch.isClosed()) {
++                            return;
++                        }
++
+                         // Travertine start
+                         if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
+                         {
+@@ -307,11 +324,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void handle(PingPacket ping) throws Exception
+     {
+-        if (!ACCEPT_INVALID_PACKETS) {
+-            Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+-        }
++        // FlameCord - Never accept invalid packets
++        Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+         unsafe.sendPacket( ping );
+-        disconnect( "" );
++        // FlameCord - Close instead of disconnect
++        ch.close();
+     }
+ 
+     @Override
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index 0c1ecfb8..b3bdfd05 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+         {
+             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
++            // FlameCord - Close on incorrect magic
++            ctx.close();
+             return;
+         }
+ 
+-- 
+2.20.1
+
