@@ -1,4 +1,4 @@
-From aef48f2c46615cf285d05112a25300ee47475d81 Mon Sep 17 00:00:00 2001
+From a8c8e973a1767d1e5c01ebd8306f240c7de00ad0 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -899,7 +899,7 @@ index 6cc520c9..7c4c8f8a 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1f5492fb..138dffa0 100644
+index eecdc3bd..138dffa0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import com.google.gson.Gson;
@@ -975,34 +975,6 @@ index 1f5492fb..138dffa0 100644
                          finish();
                          return;
                      }
-@@ -524,6 +540,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
- 
-     private void finish()
-     {
-+        // FlameCord - Finish here to avoid multiple incoming packets
-+        thisState = State.FINISHED;
-+
-         if ( isOnlineMode() )
-         {
-             // Check for multiple connections
-@@ -605,8 +624,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                             }
- 
-                             userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
--
--                            thisState = State.FINISHED;
-                         }
-                     }
-                 } );
-@@ -698,7 +715,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     public void setUniqueId(UUID uuid)
-     {
-         Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
--        Preconditions.checkState( !onlineMode, "Can only set uuid when online mode is false" );
-+        // FlameCord - Allow custom uuids even if onlineMode is true
-         this.uniqueId = uuid;
-     }
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 index 6cd71071..09909bd9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
@@ -1039,45 +1011,8 @@ index 6cd71071..09909bd9 100644
          }
      }
  
-diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index f9493ff0..606866a5 100644
---- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-+++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -117,25 +117,27 @@ public class ChannelWrapper
- 
-     public void setCompressionThreshold(int compressionThreshold)
-     {
--        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold != -1 )
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        if ( pipeline.get( PacketCompressor.class ) == null && compressionThreshold != -1 )
-         {
-             addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
-         }
-         if ( compressionThreshold != -1 )
-         {
--            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
-+            pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold );
-         } else
-         {
--            ch.pipeline().remove( "compress" );
-+            pipeline.remove( "compress" );
-         }
- 
--        if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
-+        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
-         {
-             addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-         }
-         if ( compressionThreshold == -1 )
-         {
--            ch.pipeline().remove( "decompress" );
-+            pipeline.remove( "decompress" );
-         }
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 989bfd87..46e338ca 100644
+index 1351d5d5..46e338ca 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,9 @@
@@ -1120,13 +1055,8 @@ index 989bfd87..46e338ca 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
              }
-@@ -56,10 +68,12 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-     {
-         if ( handler != null )
-         {
--            channel.markClosed();
-+            // FlameCord - close instead of markClosed
-+            channel.close();
+@@ -60,7 +72,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel.close();
              handler.disconnected( channel );
  
 -            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
@@ -1135,7 +1065,7 @@ index 989bfd87..46e338ca 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
              }
-@@ -78,6 +92,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -79,6 +92,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      @Override
      public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
      {
@@ -1147,7 +1077,7 @@ index 989bfd87..46e338ca 100644
          if ( msg instanceof HAProxyMessage )
          {
              HAProxyMessage proxy = (HAProxyMessage) msg;
-@@ -124,7 +143,24 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -125,7 +143,24 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
@@ -1173,20 +1103,8 @@ index 989bfd87..46e338ca 100644
  
              if ( logExceptions )
              {
-@@ -180,8 +216,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-                     ProxyServer.getInstance().getLogger().log( Level.SEVERE, handler + " - exception processing exception", ex );
-                 }
-             }
--
--            ctx.close();
-         }
-+
-+        // FlameCord - Close even if the channel isn't active
-+        ctx.close();
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9a39f69e..008b03cb 100644
+index 7e407136..84302b32 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,10 +1,14 @@
@@ -1216,23 +1134,16 @@ index 9a39f69e..008b03cb 100644
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
                  ch.close();
-@@ -102,6 +111,16 @@ public class PipelineUtils
- 
-             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
-         }
-+
-+        // FlameCord - Close on exception caught
-+        @Override
-+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+@@ -106,7 +115,9 @@ public class PipelineUtils
+         // FlameCord - Close on exception caught
+         @Override
+         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
 +            if (FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions()) {
-+                cause.printStackTrace();
+             cause.printStackTrace();
 +            }
-+
-+            ctx.close();
-+        }
-     };
-     public static final Base BASE = new Base();
-     private static final KickStringWriter legacyKicker = new KickStringWriter();
+ 
+             ctx.close();
+         }
 -- 
 2.20.1
 
