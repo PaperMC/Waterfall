@@ -1,4 +1,4 @@
-From 2f459340f4f410e9f98660dd03f4d56900a45e44 Mon Sep 17 00:00:00 2001
+From 83dd5ab49ce6fcada7fb212a33db9c674fd66e63 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -1061,10 +1061,10 @@ index d68cc2ce..46e338ca 100644
              if ( logExceptions )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 7e407136..84302b32 100644
+index a54da9c3..84302b32 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -1,10 +1,14 @@
+@@ -1,6 +1,9 @@
  package net.md_5.bungee.netty;
  
  import com.google.common.base.Preconditions;
@@ -1074,12 +1074,7 @@ index 7e407136..84302b32 100644
  import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
-+import io.netty.channel.ChannelHandlerContext;
- import io.netty.channel.ChannelInitializer;
- import io.netty.channel.ChannelOption;
- import io.netty.channel.EventLoopGroup;
-@@ -60,6 +64,11 @@ public class PipelineUtils
+@@ -61,6 +64,11 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
@@ -1091,7 +1086,7 @@ index 7e407136..84302b32 100644
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
                  ch.close();
-@@ -106,7 +115,9 @@ public class PipelineUtils
+@@ -107,7 +115,9 @@ public class PipelineUtils
          // FlameCord - Close on exception caught
          @Override
          public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
