@@ -1,11 +1,11 @@
-From 40440185e64d394ef7bda875820891ebea847ca8 Mon Sep 17 00:00:00 2001
+From 8483549f243a6d8aad3574fc2d6235c3326e2740 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:07:26 +0800
 Subject: [PATCH] Use elseIfs
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d54d8539..1be39af0 100644
+index d54d8539..0dd2884d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -285,6 +285,7 @@ public class DownstreamBridge extends PacketHandler
@@ -131,6 +131,24 @@ index d54d8539..1be39af0 100644
              }
 -            if ( subChannel.equals( "UUIDOther" ) )
 +            else if ( subChannel.equals( "UUIDOther" ) )
+             {
+                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                 if ( player != null )
+@@ -539,7 +539,7 @@ public class DownstreamBridge extends PacketHandler
+                     out.writeUTF( player.getUUID() );
+                 }
+             }
+-            if ( subChannel.equals( "ServerIP" ) )
++            else if ( subChannel.equals( "ServerIP" ) )
+             {
+                 ServerInfo info = bungee.getServerInfo( in.readUTF() );
+                 if ( info != null && !info.getAddress().isUnresolved() )
+@@ -550,7 +550,7 @@ public class DownstreamBridge extends PacketHandler
+                     out.writeShort( info.getAddress().getPort() );
+                 }
+             }
+-            if ( subChannel.equals( "KickPlayer" ) )
++            else if ( subChannel.equals( "KickPlayer" ) )
              {
                  ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
                  if ( player != null )

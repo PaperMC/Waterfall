@@ -1,4 +1,4 @@
-From 1c6e0cad8181bf4807db81ddbbab9935245d593d Mon Sep 17 00:00:00 2001
+From aef48f2c46615cf285d05112a25300ee47475d81 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -898,39 +898,8 @@ index 6cc520c9..7c4c8f8a 100644
          }
          b.connect().addListener( listener );
      }
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1be39af0..474551d3 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -539,18 +539,21 @@ public class DownstreamBridge extends PacketHandler
-                     out.writeUTF( player.getUUID() );
-                 }
-             }
--            if ( subChannel.equals( "ServerIP" ) )
-+            else if ( subChannel.equals( "ServerIP" ) )
-             {
-                 ServerInfo info = bungee.getServerInfo( in.readUTF() );
--                if ( info != null && !info.getAddress().isUnresolved() )
-+                // FlameCord use address
-+                InetSocketAddress address = info.getAddress();
-+                if ( info != null && !address.isUnresolved() )
-                 {
-                     out.writeUTF( "ServerIP" );
-                     out.writeUTF( info.getName() );
--                    out.writeUTF( info.getAddress().getAddress().getHostAddress() );
--                    out.writeShort( info.getAddress().getPort() );
-+                    // FlameCord - Use getHostString
-+                    out.writeUTF( address.getHostString() );
-+                    out.writeShort( address.getPort() );
-                 }
-             }
--            if ( subChannel.equals( "KickPlayer" ) )
-+            else if ( subChannel.equals( "KickPlayer" ) )
-             {
-                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
-                 if ( player != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3e7f6d00..138dffa0 100644
+index 1f5492fb..138dffa0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import com.google.gson.Gson;
@@ -985,40 +954,7 @@ index 3e7f6d00..138dffa0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
-@@ -407,13 +418,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
-         this.loginRequest = loginRequest;
- 
--        if ( getName().contains( "." ) )
-+        // FlameCord - Use name
-+        final String name = getName();
-+
-+        if ( name.contains( "." ) )
-         {
-             disconnect( bungee.getTranslation( "name_invalid" ) );
-             return;
-         }
- 
--        if ( getName().length() > 16 )
-+        if ( name.length() > 16 )
-         {
-             disconnect( bungee.getTranslation( "name_too_long" ) );
-             return;
-@@ -452,11 +466,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 if ( onlineMode )
-                 {
-                     unsafe().sendPacket( request = EncryptionUtil.encryptRequest() );
-+                    // FlameCord - Change state to encrypt only if onlineMode is true
-+                    thisState = State.ENCRYPT;
-                 } else
-                 {
-                     finish();
-                 }
--                thisState = State.ENCRYPT;
-             }
-         };
- 
-@@ -468,6 +483,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -472,6 +483,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(final EncryptionResponse encryptResponse) throws Exception
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
@@ -1027,7 +963,7 @@ index 3e7f6d00..138dffa0 100644
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
-@@ -502,7 +519,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -506,7 +519,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      {
                          loginProfile = obj;
                          name = obj.getName();
@@ -1039,7 +975,7 @@ index 3e7f6d00..138dffa0 100644
                          finish();
                          return;
                      }
-@@ -520,6 +540,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -524,6 +540,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {
@@ -1049,7 +985,7 @@ index 3e7f6d00..138dffa0 100644
          if ( isOnlineMode() )
          {
              // Check for multiple connections
-@@ -601,8 +624,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -605,8 +624,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              }
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
@@ -1058,17 +994,7 @@ index 3e7f6d00..138dffa0 100644
                          }
                      }
                  } );
-@@ -636,7 +657,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     {
-         if ( canSendKickMessage() )
-         {
--            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
-+            // FlameCord - Changed delayedClose to close
-+            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
-         } else
-         {
-             ch.close();
-@@ -693,7 +715,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -698,7 +715,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void setUniqueId(UUID uuid)
      {
          Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
@@ -1114,90 +1040,10 @@ index 6cd71071..09909bd9 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f..606866a5 100644
+index f9493ff0..606866a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
- import io.netty.channel.ChannelFutureListener;
- import io.netty.channel.ChannelHandler;
- import io.netty.channel.ChannelHandlerContext;
-+import io.netty.channel.ChannelPipeline;
-+
- import java.net.SocketAddress;
- import java.util.concurrent.TimeUnit;
- import lombok.Getter;
-@@ -37,14 +39,18 @@ public class ChannelWrapper
- 
-     public void setProtocol(Protocol protocol)
-     {
--        ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
--        ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        pipeline.get( MinecraftDecoder.class ).setProtocol( protocol );
-+        pipeline.get( MinecraftEncoder.class ).setProtocol( protocol );
-     }
- 
-     public void setVersion(int protocol)
-     {
--        ch.pipeline().get( MinecraftDecoder.class ).setProtocolVersion( protocol );
--        ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        pipeline.get( MinecraftDecoder.class ).setProtocolVersion( protocol );
-+        pipeline.get( MinecraftEncoder.class ).setProtocolVersion( protocol );
-     }
- 
-     public void write(Object packet)
-@@ -80,40 +86,27 @@ public class ChannelWrapper
- 
-             if ( packet != null && ch.isActive() )
-             {
--                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE );
-+                // FlameCord - Remove the firing of exceptions on failure
-+                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.CLOSE );
-             } else
-             {
--                ch.flush();
-+                // FlameCord - Don't flush just close
-                 ch.close();
-             }
-         }
-     }
- 
-+    // FlameCord - Deprecate and "disable" delayedClose because it doesn't have a reason to exist
-+    @Deprecated
-     public void delayedClose(final Kick kick)
-     {
--        if ( !closing )
--        {
--            closing = true;
--
--            // Minecraft client can take some time to switch protocols.
--            // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
--            // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
--            ch.eventLoop().schedule( new Runnable()
--            {
--
--                @Override
--                public void run()
--                {
--                    close( kick );
--                }
--            }, 250, TimeUnit.MILLISECONDS );
--        }
-+        close(kick);
-     }
- 
-     public void addBefore(String baseName, String name, ChannelHandler handler)
-     {
-         Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
--        ch.pipeline().flush();
-+        // FlameCord - Don't flush if not necessary
-         ch.pipeline().addBefore( baseName, name, handler );
-     }
- 
-@@ -124,25 +117,27 @@ public class ChannelWrapper
+@@ -117,25 +117,27 @@ public class ChannelWrapper
  
      public void setCompressionThreshold(int compressionThreshold)
      {
