@@ -1,11 +1,11 @@
-From eab4ffe0121ef2790e2c1e37dd6b0229509eee38 Mon Sep 17 00:00:00 2001
+From 80f154666cf76da567c2eb963b6fb1f343da71dc Mon Sep 17 00:00:00 2001
 From: "Markus L. (FivePB)" <admin@fivepb.me>
 Date: Mon, 9 Nov 2020 09:47:50 +0100
 Subject: [PATCH] Preliminary 1.17 support
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d372933d..e70730b3 100644
+index d372933d..5eeb89d3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -73,7 +73,8 @@ public enum Protocol
@@ -24,7 +24,7 @@ index d372933d..e70730b3 100644
                      map( ProtocolConstants.MINECRAFT_1_16, 0x25 ),
 -                    map( ProtocolConstants.MINECRAFT_1_16_2, 0x24 )
 +                    map( ProtocolConstants.MINECRAFT_1_16_2, 0x24 ),
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x25 ) // Waterfall 20w49a 0x24 -> 0x24
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x25 ) // Waterfall 20w49a 0x24 -> 0x25
              );
              TO_CLIENT.registerPacket(
                      Chat.class,
@@ -216,7 +216,7 @@ index d372933d..e70730b3 100644
  
              TO_SERVER.registerPacket(
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 2202c4d3..01bb9ee0 100644
+index 2202c4d3..b6a5cf10 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -33,6 +33,14 @@ public class ProtocolConstants
@@ -227,7 +227,7 @@ index 2202c4d3..01bb9ee0 100644
 +    public static final int MINECRAFT_1_17 = 755; // Waterfall 1.17
 +
 +    private static final int SNAPSHOT_BIT = 30;
-+    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 8; // Snapshot 20w49a
++    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 9; // Snapshot 20w51a
 +
 +    // Waterfall 1.17 & snapshot/pre end
 +
