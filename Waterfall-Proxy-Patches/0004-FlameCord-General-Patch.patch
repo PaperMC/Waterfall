@@ -1,4 +1,4 @@
-From 6535669389c557bd88a9da0845802f41501eab75 Mon Sep 17 00:00:00 2001
+From 13ed2a8b62e2b6be02f4aa865d0b7b669755bdbb Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -498,10 +498,10 @@ index 00000000..e82c4844
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
 new file mode 100644
-index 00000000..aca06844
+index 00000000..6a661898
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,30 @@
 +package dev._2lstudios.flamecord.firewall;
 +
 +import java.net.SocketAddress;
@@ -519,6 +519,17 @@ index 00000000..aca06844
 +
 +    public FirewallException(final String string, final Throwable throwable) {
 +        super(string, throwable);
++    }
++
++    @Override
++    public synchronized Throwable initCause(final Throwable cause)
++    {
++        return this;
++    }
++
++    @Override
++    public synchronized Throwable fillInStackTrace() {
++        return this;
 +    }
 +}
 \ No newline at end of file
@@ -646,7 +657,7 @@ index 00000000..8a474758
 +}
 \ No newline at end of file
 diff --git a/pom.xml b/pom.xml
-index 61920717..2126cda1 100644
+index 1b773cc5..099e78d1 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -62,6 +62,9 @@
@@ -679,7 +690,7 @@ index ba3ffe3d..9228f72a 100644
      </dependencies>
  </project>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index ec932e92..0d9ed57d 100644
+index ec932e92..1ea85e18 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,5 +1,6 @@
@@ -700,9 +711,9 @@ index ec932e92..0d9ed57d 100644
 +            final int capacity = in.capacity();
 +
 +            if (readableBytes > 2097152) {
-+                throw new DecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
++                throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
 +            } else if (capacity > 2097152) {
-+                throw new DecoderException("Error decoding packet with too big capacity: " + capacity);
++                throw new FastDecoderException("Error decoding packet with too big capacity: " + capacity);
 +            }
 +        }
 +
@@ -718,9 +729,9 @@ index ec932e92..0d9ed57d 100644
 +            // FlameCord - Toggle Dumping packet info
 +            // FlameCord - Change from FastDecoderException to DecoderException
 +            if (FlameCord.getInstance().getFlameCordConfiguration().isLoggerDump()) {
-+                throw new DecoderException( "Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e ); // Waterfall
++                throw new FastDecoderException( "Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e ); // Waterfall
 +            } else {
-+                throw new DecoderException( "Error decoding packet " + packetTypeStr, e );
++                throw new FastDecoderException( "Error decoding packet " + packetTypeStr, e );
 +            }
          } finally
          {
@@ -873,7 +884,7 @@ index 527f310e..a4ef6d3b 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a17ed68e..9f8511fa 100644
+index a17ed68e..64249a00 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
@@ -1148,7 +1159,7 @@ index c12085e1..3cfef373 100644
              bungee.getLogger().warning( "No client connected for pending server!" );
              return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8c2a743a..26c0e560 100644
+index 986a9d05..7c4c8f8a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
