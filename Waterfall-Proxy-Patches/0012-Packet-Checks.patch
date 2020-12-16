@@ -1,4 +1,4 @@
-From ce3a53d84ba7dbe3a0f50817ccad80ae41176309 Mon Sep 17 00:00:00 2001
+From 7ff984d41446f889b790be1376acae78cddc2fe8 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:10:30 +0800
 Subject: [PATCH] Packet Checks
@@ -28,6 +28,22 @@ index ec932e92..f1f34626 100644
          ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
  
          Object packetTypeInfo = null;
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 1351d5d5..d68cc2ce 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -79,6 +79,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+     @Override
+     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
+     {
++        // FlameCord - Return if channel isn't active
++        if (!ctx.channel().isActive()) {
++            return;
++        }
++
+         if ( msg instanceof HAProxyMessage )
+         {
+             HAProxyMessage proxy = (HAProxyMessage) msg;
 -- 
 2.20.1
 

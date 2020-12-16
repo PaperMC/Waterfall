@@ -1,14 +1,23 @@
-From 057f0c8645075d20539e813e8932e344ba6fa2c8 Mon Sep 17 00:00:00 2001
+From 68c2b0ea3b16f7b571ff8c576f54042f4402e251 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:36:08 +0800
 Subject: [PATCH] Finish early to avoid multiple incoming packets
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b71d25dc..eecdc3bd 100644
+index b71d25dc..61f80012 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -524,6 +524,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -472,6 +472,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(final EncryptionResponse encryptResponse) throws Exception
+     {
+         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
++        // FlameCord - Finish here to avoid multiple incoming packets
++        thisState = State.FINISHED;
+ 
+         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
+         BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
+@@ -524,6 +526,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {
@@ -18,7 +27,7 @@ index b71d25dc..eecdc3bd 100644
          if ( isOnlineMode() )
          {
              // Check for multiple connections
-@@ -605,8 +608,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -605,8 +610,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              }
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
