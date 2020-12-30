@@ -1,11 +1,11 @@
-From f830225f2c26d8807de43f16843b5132f5c48c30 Mon Sep 17 00:00:00 2001
+From cd812233e8e74d5c0a7b753df0076a2a9baab06a Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 08:56:43 -0500
 Subject: [PATCH] POM Changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 87b279b8..d3016c10 100644
+index 10db38b7..1a378da2 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -5,41 +5,41 @@
@@ -58,7 +58,7 @@ index 87b279b8..d3016c10 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index a43db907..078c5b1a 100644
+index 0a890393..85b98651 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -5,18 +5,18 @@
@@ -129,7 +129,7 @@ index 8523d99a..29094871 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 5f4f2b33..18f0a14e 100644
+index 099a4643..babab703 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -5,18 +5,18 @@
@@ -452,7 +452,7 @@ index ec465dd3..28d1a02c 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 3ca7ca91..94e4aca2 100644
+index fd03c640..1b773cc5 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -5,19 +5,19 @@
@@ -602,18 +602,18 @@ index f0c36550..4bda0d62 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 9b20d0df..2637b9e2 100644
+index 338c30d3..c0499252 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -18,7 +18,7 @@ public class JenkinsModuleSource implements ModuleSource
-         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
-         try
+@@ -20,7 +20,7 @@ public class JenkinsModuleSource implements ModuleSource
          {
--            URL website = new URL( "https://papermc.io/ci/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+            URL website = new URL( "https://papermc.io/ci/job/Travertine/" + version.getBuild() + "/artifact/Travertine-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-             URLConnection con = website.openConnection();
-             // 15 second timeout at various stages
-             con.setConnectTimeout( 15000 );
+             final String url = String.format(
+                 "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
+-                "waterfall",
++                "travertine", // Travertine
+                 net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
+                 version.getBuild(),
+                 module.getName()
 diff --git a/query/pom.xml b/query/pom.xml
 index 1c845a6d..0f2ea00b 100644
 --- a/query/pom.xml
@@ -651,5 +651,5 @@ index 1c845a6d..0f2ea00b 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.25.1
+2.29.2
 
