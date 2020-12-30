@@ -1,12 +1,12 @@
-From 6b7dd2468dbdf6289bf10352dd4f96b70fa39483 Mon Sep 17 00:00:00 2001
+From 464a071b85e1669aa6dbdc1e1c2283807bbb5f0e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
-Subject: [PATCH] Fetch modules from the Waterfall CI
+Subject: [PATCH] Fetch modules from the Waterfall API endpoint
 
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2536435c..9b20d0df 100644
+index 2536435c..338c30d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 @@ -1,10 +1,10 @@
@@ -22,12 +22,19 @@ index 2536435c..9b20d0df 100644
  import lombok.Data;
  import net.md_5.bungee.Util;
  
-@@ -18,13 +18,14 @@ public class JenkinsModuleSource implements ModuleSource
+@@ -18,13 +18,21 @@ public class JenkinsModuleSource implements ModuleSource
          System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
          try
          {
 -            URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
-+            URL website = new URL( "https://papermc.io/ci/job/Waterfall/" + version.getBuild() + "/artifact/Waterfall-Proxy/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
++            final String url = String.format(
++                "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
++                "waterfall",
++                net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
++                version.getBuild(),
++                module.getName()
++            );
++            URL website = new URL( url );
              URLConnection con = website.openConnection();
              // 15 second timeout at various stages
              con.setConnectTimeout( 15000 );
@@ -40,5 +47,5 @@ index 2536435c..9b20d0df 100644
          } catch ( IOException ex )
          {
 -- 
-2.20.1
+2.29.2
 
