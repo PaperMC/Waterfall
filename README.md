@@ -1,4 +1,4 @@
-Waterfall [![Build Status](https://papermc.io/ci/job/Waterfall/badge/icon)](https://papermc.io/ci/job/Waterfall/)
+Waterfall
 =========
 
 Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
@@ -20,7 +20,7 @@ Waterfall will still track upstream BungeeCord and merge changes as needed.
 
 ## How To (Server Admins)
 
-Download a copy of Waterfall.jar from our buildserver here: [Waterfall](https://papermc.io/ci/job/Waterfall/)
+Download a copy of Waterfall.jar from our homepage here: [Waterfall](https://papermc.io/downloads#Waterfall)
 
 Waterfall requires **Java 8** or above.
 
