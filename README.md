@@ -1,4 +1,4 @@
-Travertine [![Build Status](https://papermc.io/ci/job/Travertine/badge/icon)](https://papermc.io/ci/job/Travertine/)
+Travertine
 =========
 
 Travertine is Waterfall with additional protocols. Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
@@ -23,7 +23,7 @@ Travertine will track upstream Waterfall and merge changes as needed.
 
 ## How to (Server Admins)
 
-Download a copy of Travertine.jar from our buildserver here: [Travertine](https://papermc.io/ci/job/Travertine/)
+Download a copy of Travertine.jar from our homepage here: [Travertine](https://papermc.io/downloads#Travertine)
 
 Travertine requires **Java 8** or above.
 
