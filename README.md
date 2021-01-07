@@ -71,7 +71,7 @@ Clone this repo, run `./waterfall b` from *bash*, get jar from Waterfall-Proxy/b
 ## Join us
 
 * Feel free to open a PR! We accept contributions.
-* Join us on IRC (irc.spi.gt #paper, [webchat](http://irc.spi.gt/iris/?nick=&channels=paper)).
+* Join us on IRC (irc.esper.net #waterfall, [webchat](https://webchat.esper.net/?channels=waterfall)) or [Discord](https://discord.gg/papermc).
 * Visit our forums (https://papermc.io/forums).
 
 ## Special Thanks To
