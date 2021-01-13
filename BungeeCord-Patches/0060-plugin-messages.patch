@@ -1,0 +1,26 @@
+From 2b0a98b436583e71ece823471eb61827494bc888 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Wed, 13 Jan 2021 19:54:04 +0000
+Subject: [PATCH] plugin messages
+
+Incremental work on maybe cleaning up plugin messaging handling
+- remove storing brand messages, server sends these on switch anyways
+- todo: Refactor plugin message relaying, only pre-join needs to be magically relayed, do we assume anything
+  sent after pre-join will always be resent?
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+index 17e12655..b62641a1 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+@@ -54,7 +54,7 @@ public class PluginMessage extends DefinedPacket
+         @Override
+         public boolean apply(PluginMessage input)
+         {
+-            return ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) || input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) ) && input.getData().length < Byte.MAX_VALUE;
++            return ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) /*|| input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" )*/ )  && input.getData().length < Byte.MAX_VALUE; // Waterfall
+         }
+     };
+ 
+-- 
+2.29.2
+
