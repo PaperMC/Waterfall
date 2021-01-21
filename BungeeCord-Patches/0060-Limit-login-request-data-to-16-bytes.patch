@@ -1,0 +1,22 @@
+From b6fab333e8186ca61c8b646910d0d8984fbb6ca3 Mon Sep 17 00:00:00 2001
+From: Linus Hochbaum <linus@hochbaum.dev>
+Date: Thu, 21 Jan 2021 11:59:51 +0100
+Subject: [PATCH] Limit login request data to 16 bytes
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+index 32ba098c..524e7b67 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+@@ -24,7 +24,7 @@ public class LoginRequest extends DefinedPacket
+     @Override
+     public void read(ByteBuf buf)
+     {
+-        data = readString( buf );
++        data = readString( buf, 16 ); // Waterfall - Limit max. name length to 16 bytes.
+     }
+ 
+     @Override
+-- 
+2.29.2
+
