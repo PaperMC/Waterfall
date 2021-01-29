@@ -1,15 +1,15 @@
-From 07d364ecda023268acd62962e90d9002359437d7 Mon Sep 17 00:00:00 2001
+From 4de2289a69e998b32e548dc57e4819cd138e1611 Mon Sep 17 00:00:00 2001
 From: kashike <kashike@vq.lc>
 Date: Wed, 20 Mar 2019 21:39:12 -0700
 Subject: [PATCH] Use proper max length for serverbound chat packet
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index f4470588..4b006833 100644
+index 0cef9430..d51a3142 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -45,6 +45,34 @@ public abstract class DefinedPacket
-         return new String( b, Charsets.UTF_8 );
+@@ -56,6 +56,20 @@ public abstract class DefinedPacket
+         return s;
      }
  
 +    // Waterfall start
@@ -23,20 +23,6 @@ index f4470588..4b006833 100644
 +        byte[] b = s.getBytes( Charsets.UTF_8 );
 +        writeVarInt( b.length, buf );
 +        buf.writeBytes( b );
-+    }
-+
-+    public static String readString(ByteBuf buf, final int maxLength)
-+    {
-+        int len = readVarInt( buf );
-+        if ( len > maxLength )
-+        {
-+            throw new OverflowPacketException( String.format( "Cannot receive string longer than %s (got %s characters)", maxLength, len ) );
-+        }
-+
-+        byte[] b = new byte[ len ];
-+        buf.readBytes( b );
-+
-+        return new String( b, Charsets.UTF_8 );
 +    }
 +    // Waterfall end
 +
@@ -72,5 +58,5 @@ index 7a0a1ce7..828a5dbe 100644
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
 -- 
-2.29.0.windows.1
+2.30.0
 
