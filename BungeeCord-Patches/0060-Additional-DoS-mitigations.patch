@@ -1,4 +1,4 @@
-From 950a31ea6e19266fb5d0a6e0f9d48d6a577e070c Mon Sep 17 00:00:00 2001
+From 0fd0bf29d77463349c44fc92f9ccdcae63af89db Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,7 +8,7 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index d10cf2ed..5cae447d 100644
+index d10cf2ed..31a95495 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -44,6 +44,7 @@ public abstract class DefinedPacket
@@ -34,11 +34,11 @@ index d10cf2ed..5cae447d 100644
 +
 +    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
 +    private static final OverflowPacketException STRING_TOO_LONG_EXCEPTION
-+            = new OverflowPacketException("A string was longer than allowed. If you are a "
-+            + "developer, launch Waterfall with -Dwaterfall.packet-decode-logging=true to see more.");
++            = new OverflowPacketException("A string was longer than allowed. For more "
++            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 +    private static final OverflowPacketException STRING_TOO_MANY_BYTES_EXCEPTION
-+            = new OverflowPacketException("A string had more data than allowed. If you are a "
-+            + "developer, launch Waterfall with -Dwaterfall.packet-decode-logging=true to see more.");
++            = new OverflowPacketException("A string had more data than allowed. For more "
++            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 +
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
 +        return -1;
@@ -50,7 +50,7 @@ index d10cf2ed..5cae447d 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 1a647f2b..1fb3110f 100644
+index 1a647f2b..ac9f114d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.protocol;
@@ -101,14 +101,14 @@ index 1a647f2b..1fb3110f 100644
 +
 +    // Cached Exceptions:
 +    private static final CorruptedFrameException PACKET_LENGTH_OVERSIZED =
-+            new CorruptedFrameException("A packet could not be decoded because it was too large. If you are a "
-+                    + "developer, launch Waterfall with -Dwaterfall.packet-decode-logging=true to see more.");
++            new CorruptedFrameException("A packet could not be decoded because it was too large. For more "
++                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 +    private static final CorruptedFrameException PACKET_LENGTH_UNDERSIZED =
-+            new CorruptedFrameException("A packet could not be decoded because it was smaller than allowed. If you are a "
-+                    + "developer, launch Waterfall with -Dwaterfall.packet-decode-logging=true to see more.");
++            new CorruptedFrameException("A packet could not be decoded because it was smaller than allowed. For more "
++                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 +    private static final BadPacketException PACKET_NOT_READ_TO_END =
-+            new BadPacketException("Couldn't read all bytes from a packet. If you are a "
-+                    + "developer, launch Waterfall with -Dwaterfall.packet-decode-logging=true to see more.");
++            new BadPacketException("Couldn't read all bytes from a packet. For more "
++                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 +
 +
 +    private void doLengthSanityChecks(ByteBuf buf, DefinedPacket packet,
