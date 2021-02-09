@@ -1,4 +1,4 @@
-From 0fd0bf29d77463349c44fc92f9ccdcae63af89db Mon Sep 17 00:00:00 2001
+From 009157dcf9d6f447ff1c0fb399e835c454b1a8bf Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -6,6 +6,11 @@ Subject: [PATCH] Additional DoS mitigations
 Some stricter length checks and cached exceptions to withstand more illegitimate connections
 Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
+
+Improved by Janmm14:
+Check the first 4 packet lengths already in Varint21FrameDecoder, Handshake packet got minimum and maximum limits as well.
+
+Co-authored-by: Janmm14 <gitconfig1@janmm14.de>
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 index d10cf2ed..31a95495 100644
@@ -165,8 +170,40 @@ index 388f6cdb..53575ce0 100644
 +    }
 +    // Waterfall end
  }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 70934a5b..b0a25b59 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+@@ -43,4 +44,19 @@ public class Handshake extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    // Waterfall start: Additional DoS mitigations
++    // newer protocol limits host string to 255 chars (also reasonable for older clients) + allow \0FML\0 afterwards
++    public static final int EXPECTED_MAX_LENGTH = 5 + ((255 * 4 + 3) + 5) + 2 + 1;
++
++    @Override
++    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return EXPECTED_MAX_LENGTH;
++    }
++
++    @Override
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 1 + 1 + 2 + 1;
++    }
++    // Waterfall end
+ }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index a691f962..a4c0a6a5 100644
+index a691f962..990d9a88 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
@@ -177,16 +214,18 @@ index a691f962..a4c0a6a5 100644
  
  @Data
  @NoArgsConstructor
-@@ -38,4 +39,12 @@ public class LoginRequest extends DefinedPacket
+@@ -38,4 +39,14 @@ public class LoginRequest extends DefinedPacket
      {
          handler.handle( this );
      }
 +
 +    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
++    public static final int EXPECTED_MAX_LENGTH = 1 + (16 * 4);
++
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
 +        // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
 +        // legal on the protocol level.
-+        return 1 + (16 * 4);
++        return EXPECTED_MAX_LENGTH;
 +    }
 +    // Waterfall end
  }
@@ -240,6 +279,151 @@ index 738f0c92..ec33d337 100644
 +    }
 +    // Waterfall end
  }
--- 
-2.30.0
-
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/protocol/LimitedVarint21FrameDecoder.java
+similarity index 38%
+copy from protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+copy to proxy/src/main/java/io/github/waterfallmc/waterfall/protocol/LimitedVarint21FrameDecoder.java
+index c0d37142..77ed13f5 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/protocol/LimitedVarint21FrameDecoder.java
+@@ -1,16 +1,41 @@
+-package net.md_5.bungee.protocol;
++package io.github.waterfallmc.waterfall.protocol;
+ 
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.Unpooled;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.ByteToMessageDecoder;
+ import io.netty.handler.codec.CorruptedFrameException;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.packet.Handshake;
++import net.md_5.bungee.protocol.packet.LoginRequest;
+ import java.util.List;
+ 
+-public class Varint21FrameDecoder extends ByteToMessageDecoder
++// Waterfall - class copied from Varint21FrameDecoder and limits for client->server data added
++public class LimitedVarint21FrameDecoder extends ByteToMessageDecoder
+ {
+ 
+-    private static boolean DIRECT_WARNING;
++    //private static boolean DIRECT_WARNING; // Waterfall - commented
++
++    // Waterfall start: Additional DoS mitigations
++    private int packetCount = 0; // add packet counter
++
++    public static final boolean DEBUG = Boolean.getBoolean("waterfall.packet-decode-logging");
++
++    // Cached Exceptions:
++    private static final CorruptedFrameException PACKET_LENGTH_OVERSIZED =
++            new CorruptedFrameException("A packet could not be framed because it was too large. For more "
++                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
++
++    private static Exception handleOverflow(int packetCount, int expected, int actual) {
++        if (DEBUG) {
++            throw new CorruptedFrameException( "Packet #" + packetCount + " could not be framed because was too large" +
++                    " (expected " + expected + " bytes, got " + actual + " bytes)");
++        } else {
++            return PACKET_LENGTH_OVERSIZED;
++        }
++    }
++    // Waterfall end
++
+ 
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+@@ -46,6 +71,36 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+                 {
+                     throw new CorruptedFrameException( "Empty Packet!" );
+                 }
++                // Waterfall start - length sanity checks for first packets in client connection (Additional DoS mitigations)
++                if (packetCount < 4) {
++                    int maxLength = 2097151; // max length of 21-bit varint
++                    switch (packetCount) {
++                        case 0:
++                            maxLength = Handshake.EXPECTED_MAX_LENGTH + 2;
++                            break;
++                        case 1:
++                            // in case of server list ping, the the packets we get after handshake are always smaller
++                            // than any of these, so no need for special casing
++                            maxLength = LoginRequest.EXPECTED_MAX_LENGTH + 1;
++                            break;
++                        case 2:
++                            // if offline mode we get minecraft:brand (bigger), otherwise we get EncryptionResponse
++                            // so we check for the bigger packet, we are still far below critical maximum sizes
++                            // minecraft:brand (16 bytes) followed by a 400 char long string should never be reached
++                            maxLength = 16 + (400 * 4 + 3);
++                            break;
++                        case 3:
++                            // if offline mode we get either teleport confirm or player pos&look
++                            // otherwise we get minecraft:brand (bigger max size)
++                            maxLength = 16 + (400 * 4 + 3);
++                            break;
++                    }
++                    if (length > maxLength) {
++                        throw handleOverflow(packetCount, maxLength, length);
++                    }
++                    packetCount++;
++                }
++                // Waterfall end
+ 
+                 if ( in.readableBytes() < length )
+                 {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 9a39f69e..bba3f250 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.netty;
+ 
+ import com.google.common.base.Preconditions;
+ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
++import io.github.waterfallmc.waterfall.protocol.LimitedVarint21FrameDecoder;
+ import io.netty.buffer.PooledByteBufAllocator;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelException;
+@@ -82,7 +83,7 @@ public class PipelineUtils
+ 
+ 
+             try {
+-            BASE.initChannel( ch );
++            LIMITED_BASE.initChannel( ch ); // Waterfall - Use LIMITED_BASE (Additional DoS mitigations)
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 ch.close();
+@@ -104,6 +105,7 @@ public class PipelineUtils
+         }
+     };
+     public static final Base BASE = new Base();
++    public static final Base LIMITED_BASE = new Base(true); // Waterfall - Add LIMITED_BASE for connections form clients (Additional DoS mitigations)
+     private static final KickStringWriter legacyKicker = new KickStringWriter();
+     private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
+     public static final String TIMEOUT_HANDLER = "timeout";
+@@ -175,6 +177,17 @@ public class PipelineUtils
+ 
+     public static final class Base extends ChannelInitializer<Channel>
+     {
++        // Waterfall start - know if this a handler is for a client or a server (Additional DoS mitigations)
++        private final boolean fromClient;
++
++        public Base() {
++            this( false );
++        }
++
++        public Base(boolean fromClient) {
++            this.fromClient = fromClient;
++        }
++        // Waterfall end
+ 
+         @Override
+         public void initChannel(Channel ch) throws Exception
+@@ -191,7 +204,7 @@ public class PipelineUtils
+             ch.config().setWriteBufferWaterMark( MARK );
+ 
+             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+-            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
++            ch.pipeline().addLast( FRAME_DECODER, fromClient ? new LimitedVarint21FrameDecoder() : new Varint21FrameDecoder() ); // Waterfall - limit decoding length for client packets (Additional DoS mitigations)
+             ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
+ 
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+---
+-2.30.0
+-
