@@ -1,4 +1,4 @@
-From 9c26e4b10ea29481fa1ce1d01b0ec77a9947cd29 Mon Sep 17 00:00:00 2001
+From fb04c1dec0a0fe645a2667101b8b207b9392ac00 Mon Sep 17 00:00:00 2001
 From: "Markus L. (FivePB)" <admin@fivepb.me>
 Date: Mon, 9 Nov 2020 09:47:50 +0100
 Subject: [PATCH] Preliminary 1.17 support
@@ -216,7 +216,7 @@ index d372933d..5eeb89d3 100644
  
              TO_SERVER.registerPacket(
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 2202c4d3..dc478b12 100644
+index 2202c4d3..283a9ff7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -33,6 +33,14 @@ public class ProtocolConstants
@@ -227,7 +227,7 @@ index 2202c4d3..dc478b12 100644
 +    public static final int MINECRAFT_1_17 = 755; // Waterfall 1.17
 +
 +    private static final int SNAPSHOT_BIT = 30;
-+    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 14; // Snapshot 21w06a
++    public static final int SNAPSHOT_PROTOCOL = (1 << SNAPSHOT_BIT) | 15; // Snapshot 21w07a
 +
 +    // Waterfall 1.17 & snapshot/pre end
 +
@@ -255,6 +255,42 @@ index 2202c4d3..dc478b12 100644
      );
  
      public static final boolean isBeforeOrEq(int before, int other)
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+index 9daf7a73..0c21e5ed 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+@@ -23,6 +23,7 @@ public class ClientSettings extends DefinedPacket
+     private byte difficulty;
+     private byte skinParts;
+     private int mainHand;
++    private boolean textFiltering; // Waterfall Added in 21w07a
+ 
+     @Override
+     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+@@ -35,6 +36,11 @@ public class ClientSettings extends DefinedPacket
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+         {
+             mainHand = DefinedPacket.readVarInt( buf );
++            // Waterfall Added in 21w07a:
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_17)
++            {
++                textFiltering = buf.readBoolean();
++            }
+         }
+     }
+ 
+@@ -55,6 +61,11 @@ public class ClientSettings extends DefinedPacket
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+         {
+             DefinedPacket.writeVarInt( mainHand, buf );
++            // Waterfall Added in 21w07a:
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_17)
++            {
++                buf.writeBoolean( textFiltering );
++            }
+         }
+     }
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index db93d883..b1fc22cb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
