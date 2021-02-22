@@ -1,4 +1,4 @@
-From 003dd3ac51ed759dc58f9dd52a89fc54be9ff610 Mon Sep 17 00:00:00 2001
+From 25186c0c59869f42e614e18822a1fe2c344e0009 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -6,10 +6,10 @@ Subject: [PATCH] Add timeout variant to connect methods
 Also added more connect methods to ProxiedPlayer, in addition to the new method
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index dadf089b..6e908b74 100644
+index 29a4716f..3dc32801 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -127,6 +127,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -126,6 +126,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback);
  
@@ -48,7 +48,7 @@ index dadf089b..6e908b74 100644
      /**
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
-@@ -140,6 +172,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -139,6 +171,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
  
@@ -109,5 +109,5 @@ index b64d3f50..5e3c27a3 100644
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
 -- 
-2.29.0.windows.1
+2.30.1
 
