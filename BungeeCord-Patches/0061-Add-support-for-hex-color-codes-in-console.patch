@@ -1,4 +1,4 @@
-From b7f679467cba1cb04945ab2c777b8020a2be03d9 Mon Sep 17 00:00:00 2001
+From 6f38a71e1ed6d0715ac9495c1ab4df78a6bc83ed Mon Sep 17 00:00:00 2001
 From: Josh Roy <10731363+JRoy@users.noreply.github.com>
 Date: Sun, 21 Feb 2021 23:52:11 -0500
 Subject: [PATCH] Add support for hex color codes in console
@@ -59,10 +59,10 @@ index 3b3525f0..a42d63fa 100644
              <Policies>
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java
 new file mode 100644
-index 00000000..eee3cdd6
+index 00000000..2236f9f8
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,186 @@
 +package io.github.waterfallmc.waterfall.console;
 +
 +import net.minecrell.terminalconsole.TerminalConsoleAppender;
@@ -74,7 +74,6 @@ index 00000000..eee3cdd6
 +import org.apache.logging.log4j.util.PerformanceSensitive;
 +import org.apache.logging.log4j.util.PropertiesUtil;
 +
-+import java.awt.*;
 +import java.util.List;
 +import java.util.regex.Matcher;
 +import java.util.regex.Pattern;
@@ -163,10 +162,10 @@ index 00000000..eee3cdd6
 +    StringBuffer buffer = new StringBuffer();
 +    while (matcher.find()) {
 +      String s = matcher.group().replace(String.valueOf(COLOR_CHAR), "").replace('x', '#');
-+      Color color = Color.decode(s);
-+      int red = color.getRed();
-+      int blue = color.getBlue();
-+      int green = color.getGreen();
++      int hex = Integer.decode(s);
++      int red = (hex >> 16) & 0xFF;
++      int green = (hex >> 8) & 0xFF;
++      int blue = hex & 0xFF;
 +      String replacement = String.format(RGB_ANSI, red, green, blue);
 +      matcher.appendReplacement(buffer, replacement);
 +    }
@@ -188,6 +187,11 @@ index 00000000..eee3cdd6
 +    int next = s.indexOf(COLOR_CHAR);
 +    int last = s.length() - 1;
 +    if (next == -1 || next == last) {
++      result.setLength(start);
++      result.append(s);
++      if (ansi) {
++        result.append(ANSI_RESET);
++      }
 +      return;
 +    }
 +
