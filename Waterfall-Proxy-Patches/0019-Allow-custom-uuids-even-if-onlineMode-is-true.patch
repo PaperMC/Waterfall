@@ -1,0 +1,22 @@
+From ce563b65a254311d942f69311fa5e675cbedd48e Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:35:33 +0800
+Subject: [PATCH] Allow custom uuids even if onlineMode is true
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 1f5492fb..b71d25dc 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -698,7 +698,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void setUniqueId(UUID uuid)
+     {
+         Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
+-        Preconditions.checkState( !onlineMode, "Can only set uuid when online mode is false" );
++        // FlameCord - Allow custom uuids even if onlineMode is true
+         this.uniqueId = uuid;
+     }
+ 
+-- 
+2.20.1
+

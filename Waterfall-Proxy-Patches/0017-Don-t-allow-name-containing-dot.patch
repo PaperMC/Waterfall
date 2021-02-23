@@ -1,0 +1,32 @@
+From 69632ee3a5f3963b39c933c2dba4d0c3ecf05f6c Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:25:51 +0800
+Subject: [PATCH] Don't allow name containing dot
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 93486904..1f5492fb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -407,13 +407,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
+         this.loginRequest = loginRequest;
+ 
+-        if ( getName().contains( "." ) )
++        // FlameCord - Use name
++        final String name = getName();
++
++        if ( name.contains( "." ) )
+         {
+             disconnect( bungee.getTranslation( "name_invalid" ) );
+             return;
+         }
+ 
+-        if ( getName().length() > 16 )
++        if ( name.length() > 16 )
+         {
+             disconnect( bungee.getTranslation( "name_too_long" ) );
+             return;
+-- 
+2.20.1
+

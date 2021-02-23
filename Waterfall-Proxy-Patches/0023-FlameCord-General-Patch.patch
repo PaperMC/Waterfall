@@ -1,103 +1,9 @@
-From 13ed2a8b62e2b6be02f4aa865d0b7b669755bdbb Mon Sep 17 00:00:00 2001
+From 83dd5ab49ce6fcada7fb212a33db9c674fd66e63 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
 
 
-diff --git a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
-index cf85ca06..8a945a99 100644
---- a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
-+++ b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
-@@ -25,7 +25,8 @@ import net.md_5.bungee.api.plugin.Plugin;
- @EqualsAndHashCode(callSuper = true)
- public class AsyncEvent<T> extends Event
- {
--
-+    // FlameCord - Make a getter for the callback
-+    @Getter
-     private final Callback<T> done;
-     private final Map<Plugin, AtomicInteger> intents = new ConcurrentHashMap<>();
-     private final AtomicBoolean fired = new AtomicBoolean();
-diff --git a/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
-index 2f7b38d9..e29b0ed3 100644
---- a/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
-+++ b/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
-@@ -2,8 +2,11 @@ package net.md_5.bungee.api.event;
- 
- import lombok.Data;
- import lombok.EqualsAndHashCode;
-+import lombok.Getter;
-+import lombok.Setter;
- import lombok.ToString;
- import net.md_5.bungee.api.connection.PendingConnection;
-+import net.md_5.bungee.api.plugin.Cancellable;
- import net.md_5.bungee.api.plugin.Event;
- import net.md_5.bungee.protocol.packet.Handshake;
- 
-@@ -14,8 +17,11 @@ import net.md_5.bungee.protocol.packet.Handshake;
- @Data
- @ToString(callSuper = false)
- @EqualsAndHashCode(callSuper = false)
--public class PlayerHandshakeEvent extends Event
--{
-+// FlameCord - Implement cancellable
-+public class PlayerHandshakeEvent extends Event implements Cancellable {
-+    @Getter
-+    @Setter
-+    private boolean cancelled = false;
- 
-     /**
-      * Connection attempting to login.
-diff --git a/flamecord/pom.xml b/flamecord/pom.xml
-new file mode 100644
-index 00000000..dd511dac
---- /dev/null
-+++ b/flamecord/pom.xml
-@@ -0,0 +1,44 @@
-+<project xmlns="http://maven.apache.org/POM/4.0.0"
-+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-+    <modelVersion>4.0.0</modelVersion>
-+
-+    <parent>
-+        <groupId>io.github.waterfallmc</groupId>
-+        <artifactId>travertine-parent</artifactId>
-+        <version>1.16-R0.4-SNAPSHOT</version>
-+        <relativePath>../pom.xml</relativePath>
-+    </parent>
-+
-+    <groupId>dev._2lstudios</groupId>
-+    <artifactId>travertine-flamecord</artifactId>
-+    <version>1.16-R0.4-SNAPSHOT</version>
-+    <packaging>jar</packaging>
-+
-+    <name>Travertine-FlameCord</name>
-+    <description>FlameCord adds security essentials and new configuration options</description>
-+
-+    <dependencies>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-config</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-chat</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+    </dependencies>
-+
-+    <build>
-+        <finalName>${project.name}</finalName>
-+        <resources>
-+            <resource>
-+                <filtering>true</filtering>
-+                <directory>${basedir}/src/main/resources</directory>
-+            </resource>
-+        </resources>
-+    </build>
-+</project>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 new file mode 100644
 index 00000000..fd889644
@@ -656,41 +562,8 @@ index 00000000..8a474758
 +    }
 +}
 \ No newline at end of file
-diff --git a/pom.xml b/pom.xml
-index 1b773cc5..099e78d1 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -62,6 +62,9 @@
-         <module>proxy</module>
-         <module>query</module>
-         <module>native</module>
-+        <!-- FlameCord start - Add modules -->
-+        <module>flamecord</module>
-+        <!-- FlameCord end -->
-     </modules>
- 
-     <scm>
-diff --git a/protocol/pom.xml b/protocol/pom.xml
-index ba3ffe3d..9228f72a 100644
---- a/protocol/pom.xml
-+++ b/protocol/pom.xml
-@@ -64,5 +64,14 @@
-             <version>1.3.0</version>
-             <scope>compile</scope>
-         </dependency>
-+
-+        <!-- FlameCord start - Add our dependencies -->
-+        <dependency>
-+            <groupId>dev._2lstudios</groupId>
-+            <artifactId>travertine-flamecord</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <!-- FlameCord end -->
-     </dependencies>
- </project>
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index ec932e92..1ea85e18 100644
+index f1f34626..1ea85e18 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,5 +1,6 @@
@@ -700,27 +573,7 @@ index ec932e92..1ea85e18 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufUtil;
  import io.netty.channel.ChannelHandlerContext;
-@@ -39,6 +40,19 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-         }
- 
-         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
-+        
-+        // FlameCord - Check size before decoding
-+        if (prot == protocol.TO_SERVER) {
-+            final int readableBytes = in.readableBytes();
-+            final int capacity = in.capacity();
-+
-+            if (readableBytes > 2097152) {
-+                throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
-+            } else if (capacity > 2097152) {
-+                throw new FastDecoderException("Error decoding packet with too big capacity: " + capacity);
-+            }
-+        }
-+
-         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
- 
-         Object packetTypeInfo = null;
-@@ -79,7 +93,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -92,7 +93,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -736,62 +589,6 @@ index ec932e92..1ea85e18 100644
          } finally
          {
              if ( slice != null )
-diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 4bda0d62..0018d6f8 100644
---- a/proxy/pom.xml
-+++ b/proxy/pom.xml
-@@ -113,6 +113,51 @@
-             <scope>runtime</scope>
-         </dependency>
-         <!-- Waterfall end -->
-+        
-+        <!-- FlameCord start - Add our dependencies -->
-+        <dependency>
-+            <groupId>dev._2lstudios</groupId>
-+            <artifactId>travertine-flamecord</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-cmd-alert</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-cmd-find</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-cmd-list</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-cmd-send</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-cmd-server</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>travertine-module-reconnect-yaml</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-+        <!-- FlameCord end -->
-     </dependencies>
- 
-     <build>
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 new file mode 100644
 index 00000000..fa0b59c2
@@ -869,22 +666,8 @@ index 00000000..fa0b59c2
 +        }
 +    }
 +}
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 527f310e..a4ef6d3b 100644
---- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -51,7 +51,8 @@ public class WaterfallConfiguration extends Configuration {
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
-         config.load(false); // Load, but no permissions
-         logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
--        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
-+        // FlameCord - Make the version look better
-+        gameVersion = config.getString("game_version", "").isEmpty() ? ProtocolConstants.SUPPORTED_VERSIONS.get(0) + "-" + ProtocolConstants.SUPPORTED_VERSIONS.get(ProtocolConstants.SUPPORTED_VERSIONS.size() - 1) : config.getString("game_version", "");
-         useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
-         // Throttling options
-         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a17ed68e..64249a00 100644
+index 3e4ebfc5..316790ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
@@ -959,22 +742,6 @@ index a17ed68e..64249a00 100644
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -546,13 +568,13 @@ public class BungeeCord extends ProxyServer
-     @Override
-     public String getName()
-     {
--        return "Travertine";
-+        return "FlameCord";
-     }
- 
-     @Override
-     public String getVersion()
-     {
--        return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "unknown" : BungeeCord.class.getPackage().getImplementationVersion();
-+        return "0.4.6";
-     }
- 
-     public void reloadMessages()
 @@ -573,16 +595,8 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getTranslation(String name, Object... args)
@@ -1051,41 +818,8 @@ index a17ed68e..64249a00 100644
 +        pluginManager.registerCommand(null, new FlameCordCommand(this));
 +    }
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index ad9a6d0c..ad8f8733 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -40,25 +40,12 @@ public class BungeeCordLauncher
-             return;
-         }
- 
--        if ( BungeeCord.class.getPackage().getSpecificationVersion() != null && System.getProperty( "IReallyKnowWhatIAmDoingISwear" ) == null )
--        {
--            Date buildDate = new SimpleDateFormat( "yyyyMMdd" ).parse( BungeeCord.class.getPackage().getSpecificationVersion() );
--
--            Calendar deadline = Calendar.getInstance();
--            deadline.add( Calendar.WEEK_OF_YEAR, -8 );
--            if ( buildDate.before( deadline.getTime() ) )
--            {
--                System.err.println( "*** Hey! This build is potentially outdated :( ***" );
--                System.err.println( "*** Please check for a new build from https://papermc.io/ci/job/Travertine/ ***" );
--                System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
--                System.err.println( "*** Server will start in 10 seconds ***" );
--                Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
--            }
--        }
-+        // FlameCord - Disable update checker
- 
-         BungeeCord bungee = new BungeeCord();
-         ProxyServer.setInstance( bungee );
--        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
-+        // FlameCord - Use bungee name
-+        bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() );
-         bungee.start();
- 
-         if ( !options.has( "noconsole" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c12085e1..3cfef373 100644
+index e90237ac..3cfef373 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,8 @@
@@ -1105,17 +839,7 @@ index c12085e1..3cfef373 100644
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.MinecraftDecoder;
  import net.md_5.bungee.protocol.PacketWrapper;
-@@ -125,7 +128,8 @@ public class ServerConnector extends PacketHandler
-                 newp[newp.length - 2] = new LoginResult.Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
- 
-                 // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
--                newp[newp.length - 1] = new LoginResult.Property( ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
-+                // FlameCord - Change replaceAll() to replace()
-+                newp[newp.length - 1] = new LoginResult.Property( ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replace( "\0", "\1"), "" );
- 
-                 // All done.
-                 properties = newp;
-@@ -160,7 +164,13 @@ public class ServerConnector extends PacketHandler
+@@ -161,7 +164,13 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
@@ -1130,36 +854,8 @@ index c12085e1..3cfef373 100644
          }
      }
  
-@@ -266,7 +276,8 @@ public class ServerConnector extends PacketHandler
-                 user.getSentBossBars().clear();
- 
-                 user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
--                user.getServer().disconnect( "Quitting" );
-+                // FlameCord - Remove "Quitting" reason
-+                user.getServer().disconnect();
-             } else
-             {
-                 // Travertine start
-@@ -361,13 +372,15 @@ public class ServerConnector extends PacketHandler
-             user.setDimension( login.getDimension() );
- 
-             // Remove from old servers
--            user.getServer().disconnect( "Quitting" );
-+            // FlameCord - Remove "Quitting" reason
-+            user.getServer().disconnect();
-         }
- 
-         // TODO: Fix this?
-         if ( !user.isActive() )
-         {
--            server.disconnect( "Quitting" );
-+            // FlameCord - Remove "Quitting" reason
-+            server.disconnect();
-             // Silly server admins see stack trace and die
-             bungee.getLogger().warning( "No client connected for pending server!" );
-             return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 986a9d05..7c4c8f8a 100644
+index 159119c1..7c4c8f8a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -1178,17 +874,7 @@ index 986a9d05..7c4c8f8a 100644
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -307,7 +309,8 @@ public final class UserConnection implements ProxiedPlayer
- 
-             if ( getServer() == null && !ch.isClosing() )
-             {
--                throw new IllegalStateException( "Cancelled ServerConnectEvent with no server or disconnect." );
-+                // FlameCord - Change IllegalStateException to QuietException and explain that is a plugin
-+                throw new QuietException("A plugin cancelled ServerConnectEvent with no server or disconnect.");
-             }
-             return;
-         }
-@@ -386,9 +389,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -387,9 +389,11 @@ public final class UserConnection implements ProxiedPlayer
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
                  .remoteAddress( target.getAddress() );
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
@@ -1202,234 +888,8 @@ index 986a9d05..7c4c8f8a 100644
          }
          b.connect().addListener( listener );
      }
-@@ -425,7 +430,8 @@ public final class UserConnection implements ProxiedPlayer
-             if ( server != null )
-             {
-                 server.setObsolete( true );
--                server.disconnect( "Quitting" );
-+                // FlameCord - Remove "Quitting" reason
-+                server.disconnect();
-             }
-         }
-     }
-diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 4e2c6129..aeda7963 100644
---- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-+++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-@@ -16,6 +16,7 @@ public class CommandBungee extends Command
-     @Override
-     public void execute(CommandSender sender, String[] args)
-     {
--        sender.sendMessage( ChatColor.BLUE + "This server is running Travertine version " + ProxyServer.getInstance().getVersion() + " by md_5" );
-+        // FlameCord - Use custom version message
-+        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bLinsaFTW & Sammwy&e." ) );
-     }
- }
-diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 85d2197a..1294495d 100644
---- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-@@ -35,7 +35,8 @@ public abstract class Configuration implements ProxyConfig
-     /**
-      * Time before users are disconnected due to no network activity.
-      */
--    private int timeout = 30000;
-+    // FlameCord - Default timeout to 10000
-+    private int timeout = 10000;
-     /**
-      * UUID used for metrics.
-      */
-diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index d4fad294..7994c1c1 100644
---- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-+++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -22,6 +22,7 @@ import java.util.Locale;
- import java.util.Map;
- import java.util.logging.Level;
- import lombok.RequiredArgsConstructor;
-+import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.Util;
- import net.md_5.bungee.api.ChatColor;
- import net.md_5.bungee.api.ProxyServer;
-@@ -227,7 +228,8 @@ public class YamlConfig implements ConfigurationAdapter
-             Map<String, Object> val = entry.getValue();
-             String name = entry.getKey();
-             String addr = get( "address", "localhost:25565", val );
--            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Travertine - Forced Host", val ) );
-+            // FlameCord - Use Bungee name instead
-+            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another " +  BungeeCord.getInstance().getName() + " - Forced Host", val ) );
-             boolean restricted = get( "restricted", false, val );
-             SocketAddress address = Util.getAddr( addr );
-             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
-@@ -253,7 +255,8 @@ public class YamlConfig implements ConfigurationAdapter
- 
-         for ( Map<String, Object> val : base )
-         {
--            String motd = get( "motd", "&1Another Bungee server", val );
-+            // FlameCord - Use Bungee name instead
-+            String motd = get( "motd", "&1Another " + BungeeCord.getInstance().getName() + " server", val );
-             motd = ChatColor.translateAlternateColorCodes( '&', motd );
- 
-             int maxPlayers = get( "max_players", 1, val );
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d54d8539..474551d3 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -285,6 +285,7 @@ public class DownstreamBridge extends PacketHandler
-             throw CancelSendSignal.INSTANCE;
-         }
- 
-+        // FlameCord - Use elseIfs
-         if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
-         {
-             // Travertine start
-@@ -313,8 +314,7 @@ public class DownstreamBridge extends PacketHandler
-             con.unsafe().sendPacket( pluginMessage );
-             throw CancelSendSignal.INSTANCE;
-         }
--
--        if ( pluginMessage.getTag().equals( "BungeeCord" ) )
-+        else if ( pluginMessage.getTag().equals( "BungeeCord" ) )
-         {
-             DataInput in = pluginMessage.getStream();
-             ByteArrayDataOutput out = ByteStreams.newDataOutput();
-@@ -343,7 +343,7 @@ public class DownstreamBridge extends PacketHandler
-                 // Null out stream, important as we don't want to send to ourselves
-                 out = null;
-             }
--            if ( subChannel.equals( "Forward" ) )
-+            else if ( subChannel.equals( "Forward" ) )
-             {
-                 // Read data from server
-                 String target = in.readUTF();
-@@ -388,7 +388,7 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "Connect" ) )
-+            else if ( subChannel.equals( "Connect" ) )
-             {
-                 ServerInfo server = bungee.getServerInfo( in.readUTF() );
-                 if ( server != null )
-@@ -396,7 +396,7 @@ public class DownstreamBridge extends PacketHandler
-                     con.connect( server, ServerConnectEvent.Reason.PLUGIN_MESSAGE );
-                 }
-             }
--            if ( subChannel.equals( "ConnectOther" ) )
-+            else if ( subChannel.equals( "ConnectOther" ) )
-             {
-                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
-                 if ( player != null )
-@@ -408,7 +408,7 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "IP" ) )
-+            else if ( subChannel.equals( "IP" ) )
-             {
-                 out.writeUTF( "IP" );
-                 if ( con.getSocketAddress() instanceof InetSocketAddress )
-@@ -421,7 +421,7 @@ public class DownstreamBridge extends PacketHandler
-                     out.writeInt( 0 );
-                 }
-             }
--            if ( subChannel.equals( "IPOther" ) )
-+            else if ( subChannel.equals( "IPOther" ) )
-             {
-                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
-                 if ( player != null )
-@@ -440,7 +440,7 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "PlayerCount" ) )
-+            else if ( subChannel.equals( "PlayerCount" ) )
-             {
-                 String target = in.readUTF();
-                 out.writeUTF( "PlayerCount" );
-@@ -458,7 +458,7 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "PlayerList" ) )
-+            else if ( subChannel.equals( "PlayerList" ) )
-             {
-                 String target = in.readUTF();
-                 out.writeUTF( "PlayerList" );
-@@ -476,12 +476,12 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "GetServers" ) )
-+            else if ( subChannel.equals( "GetServers" ) )
-             {
-                 out.writeUTF( "GetServers" );
-                 out.writeUTF( Util.csv( bungee.getServers().keySet() ) );
-             }
--            if ( subChannel.equals( "Message" ) )
-+            else if ( subChannel.equals( "Message" ) )
-             {
-                 String target = in.readUTF();
-                 String message = in.readUTF();
-@@ -500,7 +500,7 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "MessageRaw" ) )
-+            else if ( subChannel.equals( "MessageRaw" ) )
-             {
-                 String target = in.readUTF();
-                 BaseComponent[] message = ComponentSerializer.parse( in.readUTF() );
-@@ -519,17 +519,17 @@ public class DownstreamBridge extends PacketHandler
-                     }
-                 }
-             }
--            if ( subChannel.equals( "GetServer" ) )
-+            else if ( subChannel.equals( "GetServer" ) )
-             {
-                 out.writeUTF( "GetServer" );
-                 out.writeUTF( server.getInfo().getName() );
-             }
--            if ( subChannel.equals( "UUID" ) )
-+            else if ( subChannel.equals( "UUID" ) )
-             {
-                 out.writeUTF( "UUID" );
-                 out.writeUTF( con.getUUID() );
-             }
--            if ( subChannel.equals( "UUIDOther" ) )
-+            else if ( subChannel.equals( "UUIDOther" ) )
-             {
-                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
-                 if ( player != null )
-@@ -539,18 +539,21 @@ public class DownstreamBridge extends PacketHandler
-                     out.writeUTF( player.getUUID() );
-                 }
-             }
--            if ( subChannel.equals( "ServerIP" ) )
-+            else if ( subChannel.equals( "ServerIP" ) )
-             {
-                 ServerInfo info = bungee.getServerInfo( in.readUTF() );
--                if ( info != null && !info.getAddress().isUnresolved() )
-+                // FlameCord use address
-+                InetSocketAddress address = info.getAddress();
-+                if ( info != null && !address.isUnresolved() )
-                 {
-                     out.writeUTF( "ServerIP" );
-                     out.writeUTF( info.getName() );
--                    out.writeUTF( info.getAddress().getAddress().getHostAddress() );
--                    out.writeShort( info.getAddress().getPort() );
-+                    // FlameCord - Use getHostString
-+                    out.writeUTF( address.getHostString() );
-+                    out.writeShort( address.getPort() );
-                 }
-             }
--            if ( subChannel.equals( "KickPlayer" ) )
-+            else if ( subChannel.equals( "KickPlayer" ) )
-             {
-                 ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
-                 if ( player != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index fe6ff143..138dffa0 100644
+index 502e0ae1..138dffa0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import com.google.gson.Gson;
@@ -1464,65 +924,7 @@ index fe6ff143..138dffa0 100644
          }
      }
  
-@@ -197,6 +206,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 }
- 
-                 ServerPing legacy = result.getResponse();
-+
-+                // FlameCord - Close and return if legacy == null
-+                if (legacy == null) {
-+                    ch.close();
-+                    return;
-+                }
-+
-                 String kickMessage;
- 
-                 if ( v1_5 )
-@@ -267,6 +283,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                         {
-                             bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
-                         }
-+
-+                        // FlameCord - Close if response is null
-+                        // FlameCord - Return if connection is closed
-+                        if (pingResult.getResponse() == null) {
-+                            ch.close();
-+                            return;
-+                        } else if (ch.isClosed()) {
-+                            return;
-+                        }
-+
-                         // Travertine start
-                         if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
-                         {
-@@ -307,11 +333,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     @Override
-     public void handle(PingPacket ping) throws Exception
-     {
--        if (!ACCEPT_INVALID_PACKETS) {
--            Preconditions.checkState(thisState == State.PING, "Not expecting PING");
--        }
-+        // FlameCord - Never accept invalid packets
-+        Preconditions.checkState(thisState == State.PING, "Not expecting PING");
-         unsafe.sendPacket( ping );
--        disconnect( "" );
-+        // FlameCord - Close instead of disconnect
-+        ch.close();
-     }
- 
-     @Override
-@@ -341,13 +367,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
- 
-         this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
- 
--        bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
-+        // FlameCord - Make PlayerHandshakeEvent cancellable
-+        if (bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake)).isCancelled()) {
-+            ch.close();
-+            return;
-+        }
- 
-         switch ( handshake.getRequestedProtocol() )
+@@ -368,7 +377,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -1532,7 +934,7 @@ index fe6ff143..138dffa0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -356,7 +387,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -377,7 +387,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -1542,98 +944,6 @@ index fe6ff143..138dffa0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
-@@ -386,13 +418,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
-         this.loginRequest = loginRequest;
- 
--        if ( getName().contains( "." ) )
-+        // FlameCord - Use name
-+        final String name = getName();
-+
-+        if ( name.contains( "." ) )
-         {
-             disconnect( bungee.getTranslation( "name_invalid" ) );
-             return;
-         }
- 
--        if ( getName().length() > 16 )
-+        if ( name.length() > 16 )
-         {
-             disconnect( bungee.getTranslation( "name_too_long" ) );
-             return;
-@@ -431,11 +466,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 if ( onlineMode )
-                 {
-                     unsafe().sendPacket( request = EncryptionUtil.encryptRequest() );
-+                    // FlameCord - Change state to encrypt only if onlineMode is true
-+                    thisState = State.ENCRYPT;
-                 } else
-                 {
-                     finish();
-                 }
--                thisState = State.ENCRYPT;
-             }
-         };
- 
-@@ -447,6 +483,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     public void handle(final EncryptionResponse encryptResponse) throws Exception
-     {
-         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
-+        // FlameCord - Finish here to avoid multiple incoming packets
-+        thisState = State.FINISHED;
- 
-         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
-         BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
-@@ -481,7 +519,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                     {
-                         loginProfile = obj;
-                         name = obj.getName();
--                        uniqueId = Util.getUUID( obj.getId() );
-+                        // FlameCord - Don't declare uuid unless it's null
-+                        if (uniqueId == null) {
-+                            uniqueId = Util.getUUID(obj.getId());
-+                        }
-                         finish();
-                         return;
-                     }
-@@ -499,6 +540,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
- 
-     private void finish()
-     {
-+        // FlameCord - Finish here to avoid multiple incoming packets
-+        thisState = State.FINISHED;
-+
-         if ( isOnlineMode() )
-         {
-             // Check for multiple connections
-@@ -580,8 +624,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                             }
- 
-                             userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
--
--                            thisState = State.FINISHED;
-                         }
-                     }
-                 } );
-@@ -615,7 +657,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     {
-         if ( canSendKickMessage() )
-         {
--            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
-+            // FlameCord - Changed delayedClose to close
-+            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
-         } else
-         {
-             ch.close();
-@@ -672,7 +715,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     public void setUniqueId(UUID uuid)
-     {
-         Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
--        Preconditions.checkState( !onlineMode, "Can only set uuid when online mode is false" );
-+        // FlameCord - Allow custom uuids even if onlineMode is true
-         this.uniqueId = uuid;
-     }
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 index 6cd71071..09909bd9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
@@ -1670,137 +980,8 @@ index 6cd71071..09909bd9 100644
          }
      }
  
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index ad3bdee5..c05714ba 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -92,6 +92,7 @@ public class UpstreamBridge extends PacketHandler
-                 }
-                 // Travertine end
-             }
-+            // FlameCord - Remove "Quitting" reason
-             con.getServer().disconnect( "Quitting" );
-         }
-     }
-diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f..606866a5 100644
---- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-+++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
- import io.netty.channel.ChannelFutureListener;
- import io.netty.channel.ChannelHandler;
- import io.netty.channel.ChannelHandlerContext;
-+import io.netty.channel.ChannelPipeline;
-+
- import java.net.SocketAddress;
- import java.util.concurrent.TimeUnit;
- import lombok.Getter;
-@@ -37,14 +39,18 @@ public class ChannelWrapper
- 
-     public void setProtocol(Protocol protocol)
-     {
--        ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
--        ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        pipeline.get( MinecraftDecoder.class ).setProtocol( protocol );
-+        pipeline.get( MinecraftEncoder.class ).setProtocol( protocol );
-     }
- 
-     public void setVersion(int protocol)
-     {
--        ch.pipeline().get( MinecraftDecoder.class ).setProtocolVersion( protocol );
--        ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        pipeline.get( MinecraftDecoder.class ).setProtocolVersion( protocol );
-+        pipeline.get( MinecraftEncoder.class ).setProtocolVersion( protocol );
-     }
- 
-     public void write(Object packet)
-@@ -80,40 +86,27 @@ public class ChannelWrapper
- 
-             if ( packet != null && ch.isActive() )
-             {
--                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE );
-+                // FlameCord - Remove the firing of exceptions on failure
-+                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.CLOSE );
-             } else
-             {
--                ch.flush();
-+                // FlameCord - Don't flush just close
-                 ch.close();
-             }
-         }
-     }
- 
-+    // FlameCord - Deprecate and "disable" delayedClose because it doesn't have a reason to exist
-+    @Deprecated
-     public void delayedClose(final Kick kick)
-     {
--        if ( !closing )
--        {
--            closing = true;
--
--            // Minecraft client can take some time to switch protocols.
--            // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
--            // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
--            ch.eventLoop().schedule( new Runnable()
--            {
--
--                @Override
--                public void run()
--                {
--                    close( kick );
--                }
--            }, 250, TimeUnit.MILLISECONDS );
--        }
-+        close(kick);
-     }
- 
-     public void addBefore(String baseName, String name, ChannelHandler handler)
-     {
-         Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
--        ch.pipeline().flush();
-+        // FlameCord - Don't flush if not necessary
-         ch.pipeline().addBefore( baseName, name, handler );
-     }
- 
-@@ -124,25 +117,27 @@ public class ChannelWrapper
- 
-     public void setCompressionThreshold(int compressionThreshold)
-     {
--        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold != -1 )
-+        // FlameCord - Use pipeline to reduce redundancy
-+        final ChannelPipeline pipeline = ch.pipeline();
-+        if ( pipeline.get( PacketCompressor.class ) == null && compressionThreshold != -1 )
-         {
-             addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
-         }
-         if ( compressionThreshold != -1 )
-         {
--            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
-+            pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold );
-         } else
-         {
--            ch.pipeline().remove( "compress" );
-+            pipeline.remove( "compress" );
-         }
- 
--        if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
-+        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
-         {
-             addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-         }
-         if ( compressionThreshold == -1 )
-         {
--            ch.pipeline().remove( "decompress" );
-+            pipeline.remove( "decompress" );
-         }
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 989bfd87..46e338ca 100644
+index d68cc2ce..46e338ca 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,9 @@
@@ -1843,13 +1024,8 @@ index 989bfd87..46e338ca 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
              }
-@@ -56,10 +68,12 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-     {
-         if ( handler != null )
-         {
--            channel.markClosed();
-+            // FlameCord - close instead of markClosed
-+            channel.close();
+@@ -60,7 +72,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel.close();
              handler.disconnected( channel );
  
 -            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
@@ -1858,19 +1034,7 @@ index 989bfd87..46e338ca 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
              }
-@@ -78,6 +92,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-     @Override
-     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
-     {
-+        // FlameCord - Return if channel isn't active
-+        if (!ctx.channel().isActive()) {
-+            return;
-+        }
-+
-         if ( msg instanceof HAProxyMessage )
-         {
-             HAProxyMessage proxy = (HAProxyMessage) msg;
-@@ -124,7 +143,24 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -130,7 +143,24 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
@@ -1896,23 +1060,11 @@ index 989bfd87..46e338ca 100644
  
              if ( logExceptions )
              {
-@@ -180,8 +216,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-                     ProxyServer.getInstance().getLogger().log( Level.SEVERE, handler + " - exception processing exception", ex );
-                 }
-             }
--
--            ctx.close();
-         }
-+
-+        // FlameCord - Close even if the channel isn't active
-+        ctx.close();
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9a39f69e..008b03cb 100644
+index a54da9c3..84302b32 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -1,10 +1,14 @@
+@@ -1,6 +1,9 @@
  package net.md_5.bungee.netty;
  
  import com.google.common.base.Preconditions;
@@ -1922,12 +1074,7 @@ index 9a39f69e..008b03cb 100644
  import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
-+import io.netty.channel.ChannelHandlerContext;
- import io.netty.channel.ChannelInitializer;
- import io.netty.channel.ChannelOption;
- import io.netty.channel.EventLoopGroup;
-@@ -60,6 +64,11 @@ public class PipelineUtils
+@@ -61,6 +64,11 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
@@ -1939,36 +1086,16 @@ index 9a39f69e..008b03cb 100644
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
                  ch.close();
-@@ -102,6 +111,16 @@ public class PipelineUtils
- 
-             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
-         }
-+
-+        // FlameCord - Close on exception caught
-+        @Override
-+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+@@ -107,7 +115,9 @@ public class PipelineUtils
+         // FlameCord - Close on exception caught
+         @Override
+         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
 +            if (FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions()) {
-+                cause.printStackTrace();
+             cause.printStackTrace();
 +            }
-+
-+            ctx.close();
-+        }
-     };
-     public static final Base BASE = new Base();
-     private static final KickStringWriter legacyKicker = new KickStringWriter();
-diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 0c1ecfb8..b3bdfd05 100644
---- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-+++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-@@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
-         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
-         {
-             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
-+            // FlameCord - Close on incorrect magic
-+            ctx.close();
-             return;
-         }
  
+             ctx.close();
+         }
 -- 
-2.27.0.windows.1
+2.20.1
 
