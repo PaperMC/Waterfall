@@ -12,11 +12,11 @@ index b71d25dc..61f80012 100644
      public void handle(final EncryptionResponse encryptResponse) throws Exception
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+
 +        // FlameCord - Finish here to avoid multiple incoming packets
 +        thisState = State.FINISHED;
- 
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
-         BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
+         // Waterfall start
 @@ -524,6 +526,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
