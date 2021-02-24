@@ -1,4 +1,4 @@
-From 233bdfc84602018866f1734a59acd7283cff9637 Mon Sep 17 00:00:00 2001
+From 137ac0179db533a6f030c034a467af2f129848ea Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Mon, 6 Jun 2016 13:47:46 -0600
 Subject: [PATCH] Rename references from Waterfall to Travertine
@@ -53,18 +53,9 @@ index 2938f2f1..f7f1e7cc 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index dc2c584d..ad9a6d0c 100644
+index e830198d..cc05b1fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -49,7 +49,7 @@ public class BungeeCordLauncher
-             if ( buildDate.before( deadline.getTime() ) )
-             {
-                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
--                System.err.println( "*** Please check for a new build from https://papermc.io/ci/job/Waterfall/ ***" );
-+                System.err.println( "*** Please check for a new build from https://papermc.io/ci/job/Travertine/ ***" );
-                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
-                 System.err.println( "*** Server will start in 10 seconds ***" );
-                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 @@ -58,7 +58,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
@@ -114,5 +105,5 @@ index 65121ba2..d4fad294 100644
              SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.27.0.windows.1
+2.29.2
 
