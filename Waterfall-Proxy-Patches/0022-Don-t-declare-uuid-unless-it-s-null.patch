@@ -1,14 +1,14 @@
-From 67efa4ede50e4b1fbf0d5dc8528b8543424a289b Mon Sep 17 00:00:00 2001
+From 1d113c7643f8d333cd70d8e6ddd64e78c1ab73be Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:43:17 +0800
 Subject: [PATCH] Don't declare uuid unless it's null
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 61f80012..502e0ae1 100644
+index f7ed1f46..e7542b1c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -508,7 +508,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -513,7 +513,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      {
                          loginProfile = obj;
                          name = obj.getName();

@@ -1,14 +1,14 @@
-From 69632ee3a5f3963b39c933c2dba4d0c3ecf05f6c Mon Sep 17 00:00:00 2001
+From 355853706ca50aba3dc231b6adee5f5e8bd58548 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:51 +0800
 Subject: [PATCH] Don't allow name containing dot
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 93486904..1f5492fb 100644
+index 037a305b..c6dfa00f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -407,13 +407,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -404,13 +404,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          this.loginRequest = loginRequest;
  
