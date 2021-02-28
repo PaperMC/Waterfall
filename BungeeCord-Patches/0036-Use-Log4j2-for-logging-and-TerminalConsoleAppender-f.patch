@@ -1,4 +1,4 @@
-From 272eec6293195f696c8612be5139afcdc2535b63 Mon Sep 17 00:00:00 2001
+From 4c550fb65f1bcf822f8f391688d7a669a51aab28 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 7e6a4f39..c51531eb 100644
+index 1bea329d..37c0880c 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index 7e6a4f39..c51531eb 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..b099b20c
+index 00000000..84039f14
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -63,7 +63,7 @@ index 00000000..b099b20c
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
-+        <log4j2.version>2.12.0</log4j2.version>
++        <log4j2.version>2.14.0</log4j2.version>
 +    </properties>
 +
 +    <dependencies>
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index cc177f38..fa4dd98d 100644
+index 337a87da..bfec1abc 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -458,5 +458,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.25.1
+2.30.1
 
