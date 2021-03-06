@@ -1,4 +1,4 @@
-From 9a7e67bef272c161ca784e54492e95e50140f384 Mon Sep 17 00:00:00 2001
+From 52968afed745e49517f2eefa5aae6be6a36aa714 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 17:57:23 +0800
 Subject: [PATCH] Make PlayerHandshakeEvent cancellable
@@ -35,10 +35,10 @@ index 2f7b38d9..e29b0ed3 100644
      /**
       * Connection attempting to login.
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index fe6ff143..c2ec12b4 100644
+index 3b82219d..5407c20a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -341,7 +341,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -338,7 +338,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
  
