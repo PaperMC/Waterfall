@@ -1,0 +1,433 @@
+From 70c35798c174ad82481c381369bb613f26e200e7 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <LinsaFTW@users.noreply.github.com>
+Date: Sat, 20 Mar 2021 12:36:25 -0300
+Subject: [PATCH] Fix ByteBuf memory leaks
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 3cfef373..5b32cec7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -289,9 +289,15 @@ public class ServerConnector extends PacketHandler
+                 } else
+                 {
+                     ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-                    DefinedPacket.writeString(brandString, brand);
+-                    user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+-                    brand.release();
++
++                    try
++                    {
++                        DefinedPacket.writeString(brandString, brand);
++                        user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
++                    } finally
++                    {
++                        brand.release();
++                    }
+                 }
+                 // Travertine end
+             }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 474551d3..8716d0c8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -294,12 +294,21 @@ public class DownstreamBridge extends PacketHandler
+                 try
+                 {
+                     ByteBuf brand = Unpooled.wrappedBuffer(pluginMessage.getData());
+-                    String serverBrand = DefinedPacket.readString(brand);
+-                    brand.release();
+-                    brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-                    DefinedPacket.writeString(bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
+-                    pluginMessage.setData(brand);
+-                    brand.release();
++                    String serverBrand = null;
++
++                    try {
++                        serverBrand = DefinedPacket.readString(brand);
++                    } finally {
++                        brand.release();
++                    }
++
++                    try {
++                        brand = ByteBufAllocator.DEFAULT.heapBuffer();
++                        DefinedPacket.writeString(bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
++                        pluginMessage.setData(brand);
++                    } finally {
++                        brand.release();
++                    }
+                 } catch (Exception ProtocolHacksSuck)
+                 {
+                     return;
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index a3a12e19..214a1fd0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -143,11 +143,17 @@ public abstract class EntityMap
+         if ( readId == oldId || readId == newId )
+         {
+             ByteBuf data = packet.copy();
+-            packet.readerIndex( offset );
+-            packet.writerIndex( offset );
+-            DefinedPacket.writeVarInt( readId == oldId ? newId : oldId, packet );
+-            packet.writeBytes( data );
+-            data.release();
++
++            try
++            {
++                packet.readerIndex( offset );
++                packet.writerIndex( offset );
++                DefinedPacket.writeVarInt( readId == oldId ? newId : oldId, packet );
++                packet.writeBytes( data );
++            } finally
++            {
++                data.release();
++            }
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+index 6755fe84..21871d14 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+@@ -39,19 +39,27 @@ class EntityMap_1_7_6 extends EntityMap_1_7_2
+                             && profile.getProperties().length >= 1 )
+                     {
+                         ByteBuf rest = packet.copy();
+-                        packet.readerIndex( readerIndex );
+-                        packet.writerIndex( readerIndex + packetIdLength + idLength );
+-                        DefinedPacket.writeString( player.getUniqueId().toString(), packet );
+-                        DefinedPacket.writeString( username, packet );
+-                        DefinedPacket.writeVarInt( profile.getProperties().length, packet );
+-                        for ( LoginResult.Property property : profile.getProperties() )
++
++                        try
++                        {
++                            packet.readerIndex( readerIndex );
++                            packet.writerIndex( readerIndex + packetIdLength + idLength );
++                            DefinedPacket.writeString( player.getUniqueId().toString(), packet );
++                            DefinedPacket.writeString( username, packet );
++                            DefinedPacket.writeVarInt( profile.getProperties().length, packet );
++
++                            for ( LoginResult.Property property : profile.getProperties() )
++                            {
++                                DefinedPacket.writeString( property.getName(), packet );
++                                DefinedPacket.writeString( property.getValue(), packet );
++                                DefinedPacket.writeString( property.getSignature(), packet );
++                            }
++
++                            packet.writeBytes( rest );
++                        } finally
+                         {
+-                            DefinedPacket.writeString( property.getName(), packet );
+-                            DefinedPacket.writeString( property.getValue(), packet );
+-                            DefinedPacket.writeString( property.getSignature(), packet );
++                            rest.release();
+                         }
+-                        packet.writeBytes( rest );
+-                        rest.release();
+                     }
+                 }
+             }
+diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
+index cefa0206..2cd5740c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
+@@ -38,15 +38,27 @@ public class ForgeUtils
+     {
+         Map<String, String> modTags = new HashMap<>();
+         ByteBuf payload = Unpooled.wrappedBuffer( pluginMessage.getData() );
+-        byte discriminator = payload.readByte();
+-        if ( discriminator == 2 ) // ModList
++
++        try
+         {
+-            ByteBuf buffer = payload.slice();
+-            int modCount = DefinedPacket.readVarInt( buffer, 2 );
+-            for ( int i = 0; i < modCount; i++ )
++            byte discriminator = payload.readByte();
++            if ( discriminator == 2 ) // ModList
+             {
+-                modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
++                ByteBuf buffer = payload.slice();
++
++                try {
++                    int modCount = DefinedPacket.readVarInt( buffer, 2 );
++                    for ( int i = 0; i < modCount; i++ )
++                    {
++                        modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
++                    }
++                } finally
++                {
++                    buffer.release();
++                }
+             }
++        } finally {
++            payload.release();
+         }
+         return modTags;
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 46e338ca..048ac826 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -100,23 +100,32 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+         if ( msg instanceof HAProxyMessage )
+         {
+             HAProxyMessage proxy = (HAProxyMessage) msg;
+-            InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
+ 
+-            ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
++            try
+             {
+-                channel.getRemoteAddress(), newAddress
+-            } );
++                InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
++
++                ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
++                {
++                    channel.getRemoteAddress(), newAddress
++                } );
+ 
+-            channel.setRemoteAddress( newAddress );
++                channel.setRemoteAddress( newAddress );
++            } finally 
++            {
++            proxy.release();
++            }
+             return;
+         }
+ 
+         if ( handler != null )
+         {
+             PacketWrapper packet = (PacketWrapper) msg;
+-            boolean sendPacket = handler.shouldHandle( packet );
++
+             try
+             {
++                boolean sendPacket = handler.shouldHandle( packet );
++
+                 if ( sendPacket && packet.packet != null )
+                 {
+                     try
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index b3bdfd05..0c5d8488 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -67,109 +67,125 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+ 
+     private void handleMessage(ChannelHandlerContext ctx, DatagramPacket msg)
+     {
++        AddressedEnvelope response = null;
+         ByteBuf in = msg.content();
+-        if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+-        {
+-            bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
+-            // FlameCord - Close on incorrect magic
+-            ctx.close();
+-            return;
+-        }
+-
+-        ByteBuf out = ctx.alloc().buffer();
+-        AddressedEnvelope response = new DatagramPacket( out, msg.sender() );
+-
+-        byte type = in.readByte();
+-        int sessionId = in.readInt();
+-
+-        if ( type == 0x09 )
+-        {
+-            out.writeByte( 0x09 );
+-            out.writeInt( sessionId );
+-
+-            int challengeToken = random.nextInt();
+-            sessions.put( msg.sender().getAddress(), new QuerySession( challengeToken, System.currentTimeMillis() ) );
+ 
+-            writeNumber( out, challengeToken );
+-        }
+-
+-        if ( type == 0x00 )
+-        {
+-            int challengeToken = in.readInt();
+-            QuerySession session = sessions.getIfPresent( msg.sender().getAddress() );
+-            if ( session == null || session.getToken() != challengeToken )
++        try {
++            if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+             {
+-                throw cachedNoSessionException; // Waterfall
++                bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
++                // FlameCord - Close on incorrect magic
++                ctx.close();
++                return;
+             }
+ 
+-            // Waterfall start
+-            List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
++            ByteBuf out = ctx.alloc().buffer();
+ 
+-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
+-                    bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
+-                    listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
+-            QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
+-            // Waterfall end
++            try {
++                response = new DatagramPacket( out, msg.sender() );
+ 
+-            out.writeByte( 0x00 );
+-            out.writeInt( sessionId );
++                byte type = in.readByte();
++                int sessionId = in.readInt();
+ 
+-            if ( in.readableBytes() == 0 )
+-            {
+-                // Short response
+-                // Waterfall start
+-                writeString( out, result.getMotd() ); // MOTD
+-                writeString( out, result.getGameType() ); // Game Type
+-                writeString( out, result.getWorldName() ); // World Name
+-                writeNumber( out, result.getOnlinePlayers() ); // Online Count
+-                writeNumber( out, result.getMaxPlayers() ); // Max Players
+-                writeShort( out, result.getPort() ); // Port
+-                writeString( out, result.getAddress() ); // IP
+-                // Waterfall end
+-            } else if ( in.readableBytes() == 4 )
+-            {
+-                // Long Response
+-                out.writeBytes( new byte[]
++                if ( type == 0x09 )
+                 {
+-                    0x73, 0x70, 0x6C, 0x69, 0x74, 0x6E, 0x75, 0x6D, 0x00, (byte) 0x80, 0x00
+-                } );
+-                Map<String, String> data = new LinkedHashMap<>();
+-
+-                // Waterfall start
+-                data.put( "hostname", result.getMotd() );
+-                data.put( "gametype", result.getGameType() );
+-                // Start Extra Info
+-                data.put( "game_id", result.getGameId() );
+-                data.put( "version", result.getVersion() );
+-                data.put( "plugins", "" ); // TODO: Allow population?
+-                // End Extra Info
+-                data.put( "map", result.getWorldName() );
+-                data.put( "numplayers", Integer.toString( result.getOnlinePlayers() ) );
+-                data.put( "maxplayers", Integer.toString( result.getMaxPlayers() ) );
+-                data.put( "hostport", Integer.toString( result.getPort() ) );
+-                data.put( "hostip", result.getAddress() );
+-                // Waterfall end
+-
+-                for ( Map.Entry<String, String> entry : data.entrySet() )
++                    out.writeByte( 0x09 );
++                    out.writeInt( sessionId );
++
++                    int challengeToken = random.nextInt();
++                    sessions.put( msg.sender().getAddress(), new QuerySession( challengeToken, System.currentTimeMillis() ) );
++
++                    writeNumber( out, challengeToken );
++                }
++
++                if ( type == 0x00 )
+                 {
+-                    writeString( out, entry.getKey() );
+-                    writeString( out, entry.getValue() );
++                    int challengeToken = in.readInt();
++                    QuerySession session = sessions.getIfPresent( msg.sender().getAddress() );
++                    if ( session == null || session.getToken() != challengeToken )
++                    {
++                        throw cachedNoSessionException; // Waterfall
++                    }
++
++                    // Waterfall start
++                    List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
++
++                    ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
++                            bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
++                            listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
++                    QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
++                    // Waterfall end
++
++                    out.writeByte( 0x00 );
++                    out.writeInt( sessionId );
++
++                    if ( in.readableBytes() == 0 )
++                    {
++                        // Short response
++                        // Waterfall start
++                        writeString( out, result.getMotd() ); // MOTD
++                        writeString( out, result.getGameType() ); // Game Type
++                        writeString( out, result.getWorldName() ); // World Name
++                        writeNumber( out, result.getOnlinePlayers() ); // Online Count
++                        writeNumber( out, result.getMaxPlayers() ); // Max Players
++                        writeShort( out, result.getPort() ); // Port
++                        writeString( out, result.getAddress() ); // IP
++                        // Waterfall end
++                    } else if ( in.readableBytes() == 4 )
++                    {
++                        // Long Response
++                        out.writeBytes( new byte[]
++                        {
++                            0x73, 0x70, 0x6C, 0x69, 0x74, 0x6E, 0x75, 0x6D, 0x00, (byte) 0x80, 0x00
++                        } );
++                        Map<String, String> data = new LinkedHashMap<>();
++
++                        // Waterfall start
++                        data.put( "hostname", result.getMotd() );
++                        data.put( "gametype", result.getGameType() );
++                        // Start Extra Info
++                        data.put( "game_id", result.getGameId() );
++                        data.put( "version", result.getVersion() );
++                        data.put( "plugins", "" ); // TODO: Allow population?
++                        // End Extra Info
++                        data.put( "map", result.getWorldName() );
++                        data.put( "numplayers", Integer.toString( result.getOnlinePlayers() ) );
++                        data.put( "maxplayers", Integer.toString( result.getMaxPlayers() ) );
++                        data.put( "hostport", Integer.toString( result.getPort() ) );
++                        data.put( "hostip", result.getAddress() );
++                        // Waterfall end
++
++                        for ( Map.Entry<String, String> entry : data.entrySet() )
++                        {
++                            writeString( out, entry.getKey() );
++                            writeString( out, entry.getValue() );
++                        }
++                        out.writeByte( 0x00 ); // Null
++
++                        // Padding
++                        writeString( out, "\01player_\00" );
++                        // Player List
++                        result.getPlayers().stream().forEach(p -> writeString(out, p)); // Waterfall
++                        out.writeByte( 0x00 ); // Null
++                    } else
++                    {
++                        // Error!
++                        throw new IllegalStateException( "Invalid data request packet" );
++                    }
+                 }
+-                out.writeByte( 0x00 ); // Null
+-
+-                // Padding
+-                writeString( out, "\01player_\00" );
+-                // Player List
+-                result.getPlayers().stream().forEach(p -> writeString(out, p)); // Waterfall
+-                out.writeByte( 0x00 ); // Null
+-            } else
++            } finally
+             {
+-                // Error!
+-                throw new IllegalStateException( "Invalid data request packet" );
++                out.release();
+             }
++        } finally
++        {
++            in.release();
+         }
+ 
+-        ctx.writeAndFlush( response );
++        if (response != null)
++        {
++            ctx.writeAndFlush( response );
++        }
+     }
+ 
+     @Override
+-- 
+2.31.0.windows.1
+
