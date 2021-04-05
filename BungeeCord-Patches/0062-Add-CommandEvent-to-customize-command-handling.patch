@@ -1,0 +1,212 @@
+From 46f1a095b8d99feceffd9906fdefd5844f7c850a Mon Sep 17 00:00:00 2001
+From: dementisimus <dementisimus@gmail.com>
+Date: Mon, 5 Apr 2021 19:11:51 +0200
+Subject: [PATCH] Add CommandEvent to customize command handling
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java b/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java
+new file mode 100644
+index 00000000..39602374
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java
+@@ -0,0 +1,60 @@
++package net.md_5.bungee.api.event;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.plugin.Event;
++
++// Waterfall start - Add CommandEvent to customize command handling
++/**
++ * Event called when a command has been executed
++ */
++@Data
++@ToString
++@EqualsAndHashCode(callSuper = false)
++public class CommandEvent extends Event
++{
++
++    /**
++     * CommandSender who issued the command.
++     */
++    private final CommandSender commandSender;
++
++    /**
++     * Issued command.
++     */
++    private final String command;
++
++    /**
++     * Message which will be sent to sender when executed command is cancelled.
++     */
++    private String commandCancelledMessage = "Command not found";
++
++    /**
++     * Message which will be sent to the sender when executed command is forbidden.
++     */
++    private String notPermittedMessage;
++
++    /**
++     * Message which will be sent to the sender when executed command is unknown.
++     */
++    private String notFoundMessage = "Command not found";
++
++    /**
++     * Suppress messages state.
++     */
++    private boolean suppressMessages = false;
++
++    /**
++     * Cancelled state.
++     */
++    private boolean isCancelled = false;
++
++    public CommandEvent(CommandSender commandSender, String command)
++    {
++        this.commandSender = commandSender;
++        this.command = command;
++    }
++}
++// Waterfall end
+\ No newline at end of file
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 969533df..6a198cce 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ArrayListMultimap;
+ import com.google.common.collect.Multimap;
+ import com.google.common.eventbus.Subscribe;
++import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
++import io.github.waterfallmc.waterfall.exception.ProxyCommandException;
++import io.github.waterfallmc.waterfall.exception.ProxyEventException;
++import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
++import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException;
+ import java.io.File;
+ import java.io.InputStream;
+ import java.lang.reflect.Method;
+@@ -24,19 +29,16 @@ import java.util.Stack;
+ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
+ import java.util.logging.Level;
+-import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Waterfall
+-import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Waterfall
+-import io.github.waterfallmc.waterfall.exception.ProxyEventException; // Waterfall
+-import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException; // Waterfall
+-import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException; // Waterfall
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.CommandEvent;
+ import net.md_5.bungee.event.EventBus;
+ import net.md_5.bungee.event.EventHandler;
+-import net.md_5.bungee.event.EventHandlerMethod; //Waterfall - Exception event
++import net.md_5.bungee.event.EventHandlerMethod;
+ import org.yaml.snakeyaml.Yaml;
+ import org.yaml.snakeyaml.constructor.Constructor;
+ import org.yaml.snakeyaml.introspector.PropertyUtils;
+@@ -161,24 +163,51 @@ public final class PluginManager
+      */
+     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
+     {
++
++        // Waterfall - Add CommandEvent to customize command handling
++        CommandEvent commandEvent = new CommandEvent( sender, commandLine );
++
+         String[] split = commandLine.split( " ", -1 );
+         // Check for chat that only contains " "
+         if ( split.length == 0 || split[0].isEmpty() )
+         {
++            // Waterfall - Add CommandEvent to customize command handling
++            handleCommandNotFound( commandEvent, sender );
+             return false;
+         }
+ 
+         Command command = getCommandIfEnabled( split[0], sender );
+         if ( command == null )
+         {
++            // Waterfall - Add CommandEvent to customize command handling
++            handleCommandNotFound( commandEvent, sender );
+             return false;
+         }
+ 
++        // Waterfall start - Add CommandEvent to customize command handling
++
++        commandEvent = this.callEvent( commandEvent );
++
++        if ( commandEvent.isCancelled() )
++        {
++            if ( commandEvent.getCommandCancelledMessage() != null && !commandEvent.isSuppressMessages() )
++                sender.sendMessage( new ComponentBuilder( commandEvent.getCommandCancelledMessage() ).create() );
++            return true;
++        }
++
++        // Waterfall end
++
+         if ( !command.hasPermission( sender ) )
+         {
+             if ( tabResults == null )
+             {
+-                sender.sendMessage( ( command.getPermissionMessage() == null ) ? proxy.getTranslation( "no_permission" ) : command.getPermissionMessage() );
++                // Waterfall start - Add CommandEvent to customize command handling
++                if ( commandEvent.getNotPermittedMessage() != null && !commandEvent.isSuppressMessages() )
++                {
++                    String notPermittedMessage = commandEvent.getNotPermittedMessage() == null ? proxy.getTranslation( "no_permission" ) : commandEvent.getNotPermittedMessage();
++                    sender.sendMessage( new ComponentBuilder( ( command.getPermissionMessage() == null ) ? notPermittedMessage : command.getPermissionMessage() ).create() );
++                }
++                // Waterfall end
+             }
+             return true;
+         }
+@@ -220,6 +249,18 @@ public final class PluginManager
+         return true;
+     }
+ 
++    // Waterfall start - Add CommandEvent to customize command handling
++    private void handleCommandNotFound(CommandEvent commandEvent, CommandSender sender)
++    {
++        commandEvent = this.callEvent( commandEvent );
++        if ( !( sender instanceof ProxiedPlayer ) )
++        {
++            if ( commandEvent.getNotFoundMessage() != null && !commandEvent.isSuppressMessages() )
++                sender.sendMessage( new ComponentBuilder( commandEvent.getNotFoundMessage() ).create() );
++        }
++    }
++    // Waterfall end
++
+     // Waterfall start - Add method to tab-complete command names
+     /**
+      * Searches for tab-complete suggestions for the given command line.
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+index 6cec0b5a..608edb68 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+@@ -1,9 +1,7 @@
+ package io.github.waterfallmc.waterfall.console;
+ 
+ import net.md_5.bungee.BungeeCord;
+-import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+-import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.minecrell.terminalconsole.SimpleTerminalConsole;
+ import org.jline.reader.LineReader;
+ import org.jline.reader.LineReaderBuilder;
+@@ -27,9 +25,7 @@ public final class WaterfallConsole extends SimpleTerminalConsole {
+     @Override
+     protected void runCommand(String command) {
+         ProxyServer proxy = ProxyServer.getInstance();
+-        if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
+-            proxy.getConsole().sendMessage(new ComponentBuilder("Command not found").color(ChatColor.RED).create());
+-        }
++        proxy.getPluginManager().dispatchCommand( proxy.getConsole(), command );
+     }
+ 
+     @Override
+-- 
+2.23.0.windows.1
+
