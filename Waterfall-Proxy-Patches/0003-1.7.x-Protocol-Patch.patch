@@ -1,4 +1,4 @@
-From 645dd7b625e6cda74114262e66edec565f7fda58 Mon Sep 17 00:00:00 2001
+From 891ed926bf9e31d97a3c1b166c55666d32531d37 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1382,7 +1382,7 @@ index 491cf1a1..299a216c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index b486f2aa..c12085e1 100644
+index 2d9c0cda..a4c25575 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -6,6 +6,7 @@ import io.netty.buffer.ByteBufAllocator;
@@ -1393,7 +1393,7 @@ index b486f2aa..c12085e1 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -268,10 +269,20 @@ public class ServerConnector extends PacketHandler
+@@ -270,10 +271,20 @@ public class ServerConnector extends PacketHandler
                  user.getServer().disconnect( "Quitting" );
              } else
              {
@@ -1418,7 +1418,7 @@ index b486f2aa..c12085e1 100644
              }
  
              user.setDimension( login.getDimension() );
-@@ -284,7 +295,7 @@ public class ServerConnector extends PacketHandler
+@@ -286,7 +297,7 @@ public class ServerConnector extends PacketHandler
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
@@ -1427,7 +1427,7 @@ index b486f2aa..c12085e1 100644
              }
              for ( Score score : serverScoreboard.getScores() )
              {
-@@ -454,6 +465,14 @@ public class ServerConnector extends PacketHandler
+@@ -456,6 +467,14 @@ public class ServerConnector extends PacketHandler
              {
                  this.handshakeHandler.handle( pluginMessage );
  
@@ -2010,5 +2010,5 @@ index daf12f74..e33861ab 100644
  
      @Override
 -- 
-2.30.0
+2.25.1
 
