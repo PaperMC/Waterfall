@@ -1,4 +1,4 @@
-From 4c550fb65f1bcf822f8f391688d7a669a51aab28 Mon Sep 17 00:00:00 2001
+From a2c4daae4702f17b028c5225ae0bf5cabe696e9d Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 337a87da..bfec1abc 100644
+index 12c285f2..56bb4a7a 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,6 +56,7 @@
@@ -245,7 +245,7 @@ index 337a87da..bfec1abc 100644
          <module>protocol</module>
          <module>proxy</module>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 168eab5c..7a872a54 100644
+index 97cb9e03..fef13cbf 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -65,7 +65,7 @@
@@ -257,11 +257,10 @@ index 168eab5c..7a872a54 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -99,6 +99,20 @@
-             <version>5.1.49</version>
-             <scope>runtime</scope>
+@@ -124,6 +124,19 @@
+             <version>1.7.30</version>
+             <scope>compile</scope>
          </dependency>
-+
 +        <!-- Waterfall start - Console improvements -->
 +        <dependency>
 +            <groupId>net.minecrell</groupId>
@@ -458,5 +457,5 @@ index 10366c88..8c5cc949 100644
          }
  
 -- 
-2.30.1
+2.31.0
 
