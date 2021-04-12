@@ -1,4 +1,4 @@
-From 5baa001a554607a1b2dd10e182e533c9b9e4d9cb Mon Sep 17 00:00:00 2001
+From d1bbde9308d3535bd830daf15e230b03a121e043 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -24,10 +24,10 @@ index 749059ab..6141128b 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 15ce6884..56a83e68 100644
+index f5610a53..31e172c7 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -36,6 +36,14 @@
+@@ -36,6 +36,20 @@
              <version>${netty.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -37,6 +37,12 @@ index 15ce6884..56a83e68 100644
 +            <artifactId>netty-resolver-dns</artifactId>
 +            <version>${netty.version}</version>
 +            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.netty</groupId>
++            <artifactId>netty-resolver-dns-native-macos</artifactId>
++            <version>${netty.version}</version>
++            <classifier>osx-x86_64</classifier>
 +        </dependency>
 +        <!-- Waterfall End -->
          <dependency>
@@ -171,5 +177,5 @@ index e0c52f21..37337429 100644
 +    // Waterfall End
  }
 -- 
-2.26.2
+2.31.0
 
