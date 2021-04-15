@@ -14,7 +14,7 @@ index dd089abd..b3de7a7b 100644
              packetTypeInfo = packetId;
 -
 +            // FlameCord Start - Check if packetId is invalid.
-+            if (packetId < 0 || packetId > 255)
++            if (packetId < 0 || packetId > Protocol.MAX_PACKET_ID)
 +                throw new BadPacketException("[" + ctx.channel().remoteAddress() + "] <-> MinecraftDecoder received invalid packet #1, id " + packetId);
 +            // Flamecord End
              DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
