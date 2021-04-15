@@ -65,7 +65,7 @@ basedir=$basedir/Waterfall
 pushd Waterfall
 applyPatch BungeeCord Waterfall-Proxy HEAD
 popd
-basedir=$(dirname $basedir)
+basedir=$(dirname "$basedir")
 
 # Apply travertine patches
 applyPatch Waterfall/Waterfall-Proxy Travertine-Proxy HEAD
