@@ -1,0 +1,26 @@
+From 72272ddcfe296b6f1a161d005f54c3ae478be009 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Wed, 14 Apr 2021 14:54:37 +0200
+Subject: [PATCH] Put ReadTimeoutHandler after frame decoder.
+
+This reduces the impact of attacks that send a large packet size first and then send data very slowly but frequently enough to not trigger a timeout (as the timeout handler was before the Varint21FrameDecoder). This causes connections to stay open for a long time without much effort from an attacker, while the packet never leaves the Varint21FrameDecpder stage of the netty pipeline (causing no additional checks to happen and no logs of the connection to be created).
+
+This will not have an impact on bad connections as without recieving full packets the underlying spigot server would timeout instead.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 9a39f69e..96704d5e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -190,8 +190,8 @@ public class PipelineUtils
+             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+             ch.config().setWriteBufferWaterMark( MARK );
+ 
+-            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+             ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
++            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+             ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
+ 
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+-- 
+2.31.0
+
