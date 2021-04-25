@@ -1,4 +1,4 @@
-From 46f1a095b8d99feceffd9906fdefd5844f7c850a Mon Sep 17 00:00:00 2001
+From 886181f5a88666227d2d0b36b98e0d5f06a4a085 Mon Sep 17 00:00:00 2001
 From: dementisimus <dementisimus@gmail.com>
 Date: Mon, 5 Apr 2021 19:11:51 +0200
 Subject: [PATCH] Add CommandEvent to customize command handling
@@ -6,7 +6,7 @@ Subject: [PATCH] Add CommandEvent to customize command handling
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java b/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java
 new file mode 100644
-index 00000000..39602374
+index 00000000..ba00af8d
 --- /dev/null
 +++ b/api/src/main/java/net/md_5/bungee/api/event/CommandEvent.java
 @@ -0,0 +1,60 @@
@@ -41,7 +41,7 @@ index 00000000..39602374
 +    /**
 +     * Message which will be sent to sender when executed command is cancelled.
 +     */
-+    private String commandCancelledMessage = "Command not found";
++    private String commandCancelledMessage = "The command may not be executed";
 +
 +    /**
 +     * Message which will be sent to the sender when executed command is forbidden.
