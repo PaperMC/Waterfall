@@ -1,0 +1,1874 @@
+From d5c909341edc81b0a3417e989a2a6253c5f7f0ab Mon Sep 17 00:00:00 2001
+From: Callum Seabrook <callum.seabrook@prevarinite.com>
+Date: Wed, 28 Apr 2021 17:02:18 +0100
+Subject: [PATCH] Adventure
+
+
+diff --git a/api/pom.xml b/api/pom.xml
+index ca1ed881..215f89bb 100644
+--- a/api/pom.xml
++++ b/api/pom.xml
+@@ -18,6 +18,28 @@
+     <name>Waterfall-API</name>
+     <description>API implemented by the Elastic Portal Suite</description>
+ 
++    <!-- Waterfall start - add snapshot repository for Adventure's BungeeCord serializer and add BOM -->
++    <repositories>
++        <!-- Waterfall - Add repository required for Adventure's BungeeCord serializer -->
++        <repository>
++            <id>sonatype-oss-snapshots</id>
++            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
++        </repository>
++    </repositories>
++
++    <dependencyManagement>
++        <dependencies>
++            <dependency>
++                <groupId>net.kyori</groupId>
++                <artifactId>adventure-bom</artifactId>
++                <version>4.7.0</version>
++                <type>pom</type>
++                <scope>import</scope>
++            </dependency>
++        </dependencies>
++    </dependencyManagement>
++    <!-- Waterfall end -->
++
+     <dependencies>
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+@@ -82,5 +104,23 @@
+             <artifactId>slf4j-api</artifactId>
+             <version>1.7.25</version>
+         </dependency>
++        <!-- Waterfall - Add Adventure -->
++        <dependency>
++            <groupId>net.kyori</groupId>
++            <artifactId>adventure-api</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>net.kyori</groupId>
++            <artifactId>adventure-text-serializer-gson</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>net.kyori</groupId>
++            <artifactId>adventure-text-serializer-legacy</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>net.kyori</groupId>
++            <artifactId>adventure-text-serializer-bungeecord</artifactId>
++            <version>4.0.0-SNAPSHOT</version>
++        </dependency>
+     </dependencies>
+ </project>
+diff --git a/api/src/main/java/net/md_5/bungee/api/CommandSender.java b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
+index d5888311..a8224a9f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/CommandSender.java
++++ b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
+@@ -1,9 +1,13 @@
+ package net.md_5.bungee.api;
+ 
+ import java.util.Collection;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.Audience;
++import net.kyori.adventure.text.Component;
++// Waterfall end
+ import net.md_5.bungee.api.chat.BaseComponent;
+ 
+-public interface CommandSender
++public interface CommandSender extends Audience // Waterfall - we're going on an adventure!
+ {
+ 
+     /**
+@@ -34,14 +38,18 @@ public interface CommandSender
+      * Send a message to this sender.
+      *
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(BaseComponent... message);
+ 
+     /**
+      * Send a message to this sender.
+      *
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(BaseComponent message);
+ 
+     /**
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index a4011335..f20f401b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -4,11 +4,19 @@ import com.google.common.base.Preconditions;
+ import java.io.File;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
++import java.text.MessageFormat;
+ import java.util.Collection;
++import java.util.Locale;
+ import java.util.Map;
+ import java.util.UUID;
+ import java.util.logging.Logger;
+ import lombok.Getter;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.Audience;
++import net.kyori.adventure.audience.ForwardingAudience;
++import net.kyori.adventure.text.Component;
++// Waterfall end
++import net.kyori.adventure.text.TranslatableComponent;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
+ import net.md_5.bungee.api.config.ServerInfo;
+@@ -16,8 +24,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.plugin.Plugin;
+ import net.md_5.bungee.api.plugin.PluginManager;
+ import net.md_5.bungee.api.scheduler.TaskScheduler;
++import org.checkerframework.checker.nullness.qual.NonNull;
+ 
+-public abstract class ProxyServer
++public abstract class ProxyServer implements ForwardingAudience // Waterfall - We're going on an adventure!
+ {
+ 
+     @Getter
+@@ -170,9 +179,20 @@ public abstract class ProxyServer
+      * Gracefully mark this instance for shutdown.
+      *
+      * @param reason the reason for stopping. This will be shown to players.
++     * @deprecated in favour of {@link ProxyServer#stop(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public abstract void stop(String reason);
+ 
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Gracefully mark this instance for shutdown.
++     *
++     * @param reason the reason for stopping. This will be shown to players.
++     */
++    public abstract void stop(final @NonNull Component reason);
++    // Waterfall end
++
+     /**
+      * Register a channel for use with plugin messages. This is required by some
+      * server / client implementations.
+@@ -220,9 +240,23 @@ public abstract class ProxyServer
+      * @param motd the motd when used as a forced server
+      * @param restricted whether the server info restricted property will be set
+      * @return the constructed instance
++     * @deprecated in favour of {@link #constructServerInfo(String, InetSocketAddress, Component, boolean)}
+      */
++    @Deprecated
+     public abstract ServerInfo constructServerInfo(String name, InetSocketAddress address, String motd, boolean restricted);
+ 
++    /**
++     * Factory method to construct an implementation specific server info
++     * instance.
++     *
++     * @param name the name of the server
++     * @param address the address that can be used to connect to the server
++     * @param motd the motd when used as a forced host
++     * @param restricted whether the server will be restricted or not
++     * @return the constructed instance
++     */
++    public abstract ServerInfo constructServerInfo(final @NonNull String name, final @NonNull InetSocketAddress address, final @NonNull Component motd, final boolean restricted);
++
+     /**
+      * Factory method to construct an implementation specific server info
+      * instance.
+@@ -232,9 +266,23 @@ public abstract class ProxyServer
+      * @param motd the motd when used as a forced server
+      * @param restricted whether the server info restricted property will be set
+      * @return the constructed instance
++     * @deprecated in favour of {@link #constructServerInfo(String, SocketAddress, Component, boolean)}
+      */
++    @Deprecated
+     public abstract ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted);
+ 
++    /**
++     * Factory method to construct an implementation specific server info
++     * instance.
++     *
++     * @param name the name of the server
++     * @param address the address that can be used to connect to the server
++     * @param motd the motd when used as a forced host
++     * @param restricted whether the server will be restricted or not
++     * @return the constructed instance
++     */
++    public abstract ServerInfo constructServerInfo(final @NonNull String name, final @NonNull SocketAddress address, final @NonNull Component motd, final boolean restricted);
++
+     /**
+      * Returns the console overlord for this proxy. Being the console, this
+      * command server cannot have permissions or groups, and will be able to
+@@ -279,14 +327,18 @@ public abstract class ProxyServer
+      * Send the specified message to the console and all connected players.
+      *
+      * @param message the message to broadcast
++     * @deprecated in favor of {@link Audience#sendMessage(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public abstract void broadcast(BaseComponent... message);
+ 
+     /**
+      * Send the specified message to the console and all connected players.
+      *
+      * @param message the message to broadcast
++     * @deprecated in favour of {@link Audience#sendMessage(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public abstract void broadcast(BaseComponent message);
+ 
+     /**
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+index fc92a7b5..2a11c371 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
+@@ -3,6 +3,11 @@ package net.md_5.bungee.api;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.UUID;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.NoArgsConstructor;
+@@ -78,7 +83,10 @@ public class ServerPing
+         }
+     }
+ 
+-    private BaseComponent description;
++    // Waterfall start - we're going on an adventure!
++//    private BaseComponent description;
++    private Component description;
++    // Waterfall end
+     private Favicon favicon;
+ 
+     @Data
+@@ -114,6 +122,13 @@ public class ServerPing
+         this( version, players, new TextComponent( TextComponent.fromLegacyText( description ) ), favicon );
+     }
+ 
++    // Waterfall start - write out the previously Lombok-generated constructor - we're going on an adventure!
++    @Deprecated
++    public ServerPing(final Protocol version, final Players players, final BaseComponent description, final Favicon favicon) {
++        this(version, players, BungeeComponentSerializer.get().deserialize(new BaseComponent[]{description}), favicon);
++    }
++    // Waterfall end
++
+     @Deprecated
+     public String getFavicon()
+     {
+@@ -139,22 +154,50 @@ public class ServerPing
+     @Deprecated
+     public void setDescription(String description)
+     {
+-        this.description = new TextComponent( TextComponent.fromLegacyText( description ) );
++        // Waterfall start - we're going on an adventure!
++//        this.description = TextComponent.fromLegacyText( description );
++        this.description = LegacyComponentSerializer.legacySection().deserialize(description);
++        // Waterfall end
+     }
+ 
+     @Deprecated
+     public String getDescription()
+     {
+-        return BaseComponent.toLegacyText( description );
++        // Waterfall start - we're going on an adventure!
++        // return BaseComponent.toLegacyText( description );
++        return LegacyComponentSerializer.legacySection().serialize(description);
++        // Waterfall end
+     }
+ 
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void setDescriptionComponent(BaseComponent description)
+     {
+-        this.description = description;
++        // Waterfall start - we're going on an adventure!
++        // this.description = description;
++        this.description = BungeeComponentSerializer.get().deserialize(new BaseComponent[]{description});
++        // Waterfall end
+     }
+ 
++    @Deprecated // Waterfall - we're going on an adventure!
+     public BaseComponent getDescriptionComponent()
+     {
++        // Waterfall start - rewrite component return to return the first element if not empty, or null if is - we're going on an adventure!
++        final BaseComponent[] result = BungeeComponentSerializer.get().serialize(description);
++        if (result.length > 0) {
++            return result[0];
++        }
++        return null;
++//        return description;
++        // Waterfall end
++    }
++
++    // Waterfall start - we're going on an adventure!
++    public Component description() {
+         return description;
+     }
++
++    public void description(final Component description) {
++        this.description = description;
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/Title.java b/api/src/main/java/net/md_5/bungee/api/Title.java
+index 4717f40d..a7b861bf 100644
+--- a/api/src/main/java/net/md_5/bungee/api/Title.java
++++ b/api/src/main/java/net/md_5/bungee/api/Title.java
+@@ -12,7 +12,10 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
+  * <p>
+  * You can create a new configuration by calling
+  * {@link ProxyServer#createTitle()}.
++ *
++ * @deprecated in favour of Adventure's {@link net.kyori.adventure.title.Title}
+  */
++@Deprecated // Waterfall - we're going on an adventure!
+ public interface Title
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
+index 71abdc87..4d4c8b10 100644
+--- a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
++++ b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
+@@ -6,6 +6,10 @@ import java.util.List;
+ import java.util.Map;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ 
+ /**
+  * Class representing the configuration of a server listener. Used for allowing
+@@ -23,7 +27,10 @@ public class ListenerInfo
+     /**
+      * Displayed MOTD.
+      */
+-    private final String motd;
++    // Waterfall start - we're going on an adventure!
++//    private final String motd;
++    private final Component motd;
++    // Waterfall end
+     /**
+      * Max amount of slots displayed on the ping page.
+      */
+@@ -76,9 +83,33 @@ public class ListenerInfo
+     @Deprecated
+     public ListenerInfo(InetSocketAddress host, String motd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled)
+     {
+-        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
++        // Waterfall start - we're going on an adventure!
++//        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
++        this( host, LegacyComponentSerializer.legacySection().deserialize(motd), maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
++        // Waterfall end
+     }
+ 
++    // Waterfall start - rewrite previously Lombok-generated constructor - we're going on an adventure!
++    @Deprecated
++    public ListenerInfo(
++        final InetSocketAddress host,
++        final String motd,
++        final int maxPlayers,
++        final int tabListSize,
++        final List<String> serverPriority,
++        final boolean forceDefault,
++        final Map<String, String> forcedHosts,
++        final String tabListType,
++        final boolean setLocalAddress,
++        final boolean pingPassthrough,
++        final int queryPort,
++        final boolean queryEnabled,
++        final boolean proxyProtocol
++    ) {
++        this(host, LegacyComponentSerializer.legacySection().deserialize(motd), maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, proxyProtocol);
++    }
++    // Waterfall end
++
+     /**
+      * Gets the highest priority server to join.
+      *
+@@ -115,4 +146,16 @@ public class ListenerInfo
+     {
+         return (InetSocketAddress) socketAddress;
+     }
++
++    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
++    public String getMotd() {
++        return LegacyComponentSerializer.legacySection().serialize(motd);
++    }
++    // Waterfall end
++
++    // Waterfall start - we're going on an adventure!
++    public Component motd() {
++        return motd;
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
+index b0fc000a..c889c034 100644
+--- a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
++++ b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
+@@ -3,6 +3,7 @@ package net.md_5.bungee.api.config;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.util.Collection;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ServerPing;
+@@ -51,9 +52,20 @@ public interface ServerInfo
+      * Returns the MOTD which should be used when this server is a forced host.
+      *
+      * @return the motd
++     * @deprecated in favour of {@link ServerInfo#motd()}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     String getMotd();
+ 
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Returns the MOTD of the server, which should be used when this server is a forced host.
++     *
++     * @return the motd
++     */
++    Component motd();
++    // Waterfall end
++
+     /**
+      * Whether this server is restricted and therefore only players with the
+      * given permission can access it.
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
+index f59b49c7..411eb9a9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.api.connection;
+ 
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ 
+@@ -47,7 +48,9 @@ public interface Connection
+      *
+      * @param reason the reason shown to the player / sent to the server on
+      * disconnect
++     * @deprecated in favour of {@link Connection#disconnect(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void disconnect(BaseComponent... reason);
+ 
+     /**
+@@ -57,9 +60,23 @@ public interface Connection
+      *
+      * @param reason the reason shown to the player / sent to the server on
+      * disconnect
++     * @deprecated in favour of {@link Connection#disconnect(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void disconnect(BaseComponent reason);
+ 
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Disconnects this end of the connection for the specified reason. If this
++     * is a {@link ProxiedPlayer} the respective server connection will be
++     * closed too.
++     *
++     * @param reason the reason shown to the player / sent to the server on
++     * disconnect
++     */
++    void disconnect(final Component reason);
++    // Waterfall end
++
+     /**
+      * Gets whether this connection is currently open, ie: not disconnected, and
+      * able to send / receive data.
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 3dc32801..c2b09182 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -3,6 +3,10 @@ package net.md_5.bungee.api.connection;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.UUID;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.Audience;
++import net.kyori.adventure.text.Component;
++// Waterfall end
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.ChatMessageType;
+ import net.md_5.bungee.api.CommandSender;
+@@ -18,7 +22,7 @@ import net.md_5.bungee.api.score.Scoreboard;
+  * Represents a player who's connection is being connected to somewhere else,
+  * whether it be a remote or embedded server.
+  */
+-public interface ProxiedPlayer extends Connection, CommandSender
++public interface ProxiedPlayer extends Connection, CommandSender, Audience // Waterfall - we're going on an adventure!
+ {
+ 
+     /**
+@@ -53,22 +57,44 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * Gets this player's display name.
+      *
+      * @return the players current display name
++     * @deprecated in favour of {@link ProxiedPlayer#displayName()}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     String getDisplayName();
+ 
+     /**
+      * Sets this players display name to be used by bungeecord commands and plugins.
+      *
+      * @param name the name to set
++     * @deprecated in favour of {@link ProxiedPlayer#displayName(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void setDisplayName(String name);
+ 
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Gets this player's display name.
++     *
++     * @return the player's current display name
++     */
++    Component displayName();
++
++    /**
++     * Sets this player's display name to be used by BungeeCord commands and plugins.
++     *
++     * @param name the new name to set the display name to
++     */
++    void displayName(final Component name);
++    // Waterfall end
++
+     /**
+      * Send a message to the specified screen position of this player.
+      *
+      * @param position the screen position
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(ChatMessageType position, BaseComponent... message);
+ 
+     /**
+@@ -76,7 +102,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param position the screen position
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(ChatMessageType position, BaseComponent message);
+ 
+     /**
+@@ -84,7 +112,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param sender the sender of the message
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(UUID sender, BaseComponent... message);
+ 
+     /**
+@@ -92,7 +122,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param sender the sender of the message
+      * @param message the message to send
++     * @deprecated in favour of {@link Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public void sendMessage(UUID sender, BaseComponent message);
+ 
+     /**
+@@ -236,9 +268,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * Make this player chat (say something), to the server he is currently on.
+      *
+      * @param message the message to say
++     * @deprecated in favour of {@link ProxiedPlayer#chat(Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void chat(String message);
+ 
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Make this player chat (say something) on the server they are currently on.
++     *
++     * @param message the message to make this player say
++     */
++    void chat(final Component message);
++    // Waterfall end
++
+     /**
+      * Get the server which this player will be sent to next time the log in.
+      *
+@@ -316,7 +359,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param header The header for the tab player list, null to clear it.
+      * @param footer The footer for the tab player list, null to clear it.
++     * @deprecated in favour of {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void setTabHeader(BaseComponent header, BaseComponent footer);
+ 
+     /**
+@@ -324,12 +369,17 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param header The header for the tab player list, null to clear it.
+      * @param footer The footer for the tab player list, null to clear it.
++     * @deprecated in favour of {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void setTabHeader(BaseComponent[] header, BaseComponent[] footer);
+ 
+     /**
+      * Clears the header and footer displayed in the tab player list.
++     *
++     * @deprecated in favour of using empty components with {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void resetTabHeader();
+ 
+     /**
+@@ -338,7 +388,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      *
+      * @param title The title to send to the player.
+      * @see Title
++     * @deprecated in favour of {@link Audience#showTitle(net.kyori.adventure.title.Title)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     void sendTitle(Title title);
+ 
+     /**
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
+index a13eba79..bd6e2dad 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
+@@ -5,6 +5,11 @@ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.Setter;
+ import lombok.ToString;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
+@@ -29,7 +34,10 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
+      * Message to use when kicking if this event is canceled.
+      */
+     @Setter(AccessLevel.NONE)
+-    private BaseComponent[] cancelReasonComponents;
++    // Waterfall start - we're going on an adventure!
++//    private BaseComponent[] cancelReasonComponents;
++    private Component cancelReason;
++    // Waterfall end
+ 
+     // Waterfall start - adding the LoginResult variable to provide access to it, when calling the login event
+     /**
+@@ -65,8 +73,15 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
+     @Deprecated
+     public String getCancelReason()
+     {
+-        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++//        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++        return LegacyComponentSerializer.legacySection().serialize(cancelReason);
++    }
++
++    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
++    public BaseComponent[] getCancelReasonComponents() {
++        return BungeeComponentSerializer.get().serialize(cancelReason);
+     }
++    // Waterfall end
+ 
+     /**
+      * @param cancelReason reason to be displayed
+@@ -77,11 +92,42 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
+     @Deprecated
+     public void setCancelReason(String cancelReason)
+     {
+-        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
++        // Waterfall start - we're going on an adventure!
++//        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
++        cancelReason(LegacyComponentSerializer.legacySection().deserialize(cancelReason));
++        // Waterfall end
+     }
+ 
++    /**
++     * @param cancelReason reason to be displayed
++     * @deprecated in favour of {@link #cancelReason(Component)}
++     */
++    @Deprecated // Waterfall start - we're going on an adventure!
+     public void setCancelReason(BaseComponent... cancelReason)
+     {
+-        this.cancelReasonComponents = cancelReason;
++        // Waterfall start - we're going on an adventure!
++//        this.cancelReasonComponents = cancelReason;
++        this.cancelReason = BungeeComponentSerializer.get().deserialize(cancelReason);
++        // Waterfall end
++    }
++
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Gets the reason why this event was cancelled. May be empty.
++     *
++     * @return the reason why this event was cancelled
++     */
++    public Component cancelReason() {
++        return cancelReason;
++    }
++
++    /**
++     * Sets the reason why this event was cancelled to the specified reason.
++     *
++     * @param cancelReason the new reason why this event was cancelled
++     */
++    public void cancelReason(final Component cancelReason) {
++        this.cancelReason = cancelReason;
+     }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
+index 87040d30..8d2db6a0 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
+@@ -5,6 +5,9 @@ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.Setter;
+ import lombok.ToString;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
+@@ -33,7 +36,10 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
+      * Message to use when kicking if this event is canceled.
+      */
+     @Setter(AccessLevel.NONE)
+-    private BaseComponent[] cancelReasonComponents;
++    // Waterfall start - we're going on an adventure!
++//    private BaseComponent[] cancelReasonComponents;
++    private Component cancelReason;
++    // Waterfall end
+     /**
+      * Connection attempting to login.
+      */
+@@ -52,9 +58,16 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
+     @Deprecated
+     public String getCancelReason()
+     {
+-        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++//        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++        return LegacyComponentSerializer.legacySection().serialize(cancelReason);
+     }
+ 
++    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
++    public BaseComponent[] getCancelReasonComponents() {
++        return BungeeComponentSerializer.get().serialize(cancelReason);
++    }
++    // Waterfall end
++
+     /**
+      * @param cancelReason reason to be displayed
+      * @deprecated Use
+@@ -64,11 +77,42 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
+     @Deprecated
+     public void setCancelReason(String cancelReason)
+     {
+-        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
++        // Waterfall start - we're going on an adventure!
++//        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
++        cancelReason(LegacyComponentSerializer.legacySection().deserialize(cancelReason));
++        // Waterfall end
+     }
+ 
++    /**
++     * @param cancelReason reason to be displayed
++     * @deprecated in favour of {@link #cancelReason(Component)}
++     */
++    @Deprecated // Waterfall start - we're going on an adventure!
+     public void setCancelReason(BaseComponent... cancelReason)
+     {
+-        this.cancelReasonComponents = cancelReason;
++        // Waterfall start - we're going on an adventure!
++//        this.cancelReasonComponents = cancelReason;
++        this.cancelReason = BungeeComponentSerializer.get().deserialize(cancelReason);
++        // Waterfall end
++    }
++
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Gets the reason why this event was cancelled. May be empty.
++     *
++     * @return the reason why this event was cancelled
++     */
++    public Component cancelReason() {
++        return cancelReason;
++    }
++
++    /**
++     * Sets the reason why this event was cancelled to the specified reason.
++     *
++     * @param cancelReason the new reason why this event was cancelled
++     */
++    public void cancelReason(final Component cancelReason) {
++        this.cancelReason = cancelReason;
+     }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
+index ee63732d..8c1becb7 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
+@@ -3,6 +3,11 @@ package net.md_5.bungee.api.event;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
+ import lombok.ToString;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+@@ -35,7 +40,10 @@ public class ServerKickEvent extends Event implements Cancellable
+     /**
+      * Kick reason.
+      */
+-    private BaseComponent[] kickReasonComponent;
++    // Waterfall start - we're going on an adventure!
++//    private BaseComponent[] kickReasonComponent;
++    private Component kickReason;
++    // Waterfall end
+     /**
+      * Server to send player to if this event is cancelled.
+      */
+@@ -84,11 +92,15 @@ public class ServerKickEvent extends Event implements Cancellable
+         this( player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN );
+     }
+ 
++    @Deprecated // Waterfall - we're going on an adventure!
+     public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause)
+     {
+         this.player = player;
+         this.kickedFrom = kickedFrom;
+-        this.kickReasonComponent = kickReasonComponent;
++        // Waterfall start - we're going on an adventure!
++//        this.kickReasonComponent = kickReasonComponent;
++        this.kickReason = BungeeComponentSerializer.get().deserialize(kickReasonComponent);
++        // Waterfall end
+         this.cancelServer = cancelServer;
+         this.state = state;
+         this.cause = cause;
+@@ -98,12 +110,38 @@ public class ServerKickEvent extends Event implements Cancellable
+     @Deprecated
+     public String getKickReason()
+     {
+-        return BaseComponent.toLegacyText( kickReasonComponent );
++        // Waterfall start - we're going on an adventure!
++//        return BaseComponent.toLegacyText( kickReasonComponent );
++        return LegacyComponentSerializer.legacySection().serialize(kickReason);
++        // Waterfall end
+     }
+ 
+     @Deprecated
+     public void setKickReason(String reason)
+     {
+-        kickReasonComponent = TextComponent.fromLegacyText( reason );
++        // Waterfall start - we're going on an adventure!
++//        kickReasonComponent = TextComponent.fromLegacyText( reason );
++        kickReason = LegacyComponentSerializer.legacySection().deserialize(reason);
++        // Waterfall end
++    }
++
++    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
++    public BaseComponent[] getKickReasonComponent() {
++        return BungeeComponentSerializer.get().serialize(kickReason);
+     }
++
++    public void setKickReasonComponent(final BaseComponent[] kickReasonComponent) {
++        this.kickReason = BungeeComponentSerializer.get().deserialize(kickReasonComponent);
++    }
++    // Waterfall end
++
++    // Waterfall start - we're going on an adventure!
++    public Component kickReason() {
++        return kickReason;
++    }
++
++    public void kickReason(final Component kickReason) {
++        this.kickReason = kickReason;
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
+index b4566327..202a901d 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
+@@ -5,6 +5,8 @@ import lombok.AccessLevel;
+ import lombok.Data;
+ import lombok.RequiredArgsConstructor;
+ import lombok.Setter;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+ import net.md_5.bungee.api.CommandSender;
+ 
+ /**
+@@ -18,8 +20,11 @@ public abstract class Command
+     private final String name;
+     private final String permission;
+     private final String[] aliases;
+-    @Setter(AccessLevel.PROTECTED)
+-    private String permissionMessage;
++    // Waterfall start - we're going on an adventure!
++//    @Setter(AccessLevel.PROTECTED)
++//    private String permissionMessage;
++    private Component permissionMessage;
++    // Waterfall end
+ 
+     /**
+      * Construct a new command with no permissions or aliases.
+@@ -66,4 +71,24 @@ public abstract class Command
+     {
+         return permission == null || permission.isEmpty() || sender.hasPermission( permission );
+     }
++
++    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
++    public String getPermissionMessage() {
++        return LegacyComponentSerializer.legacySection().serialize(permissionMessage);
++    }
++
++    protected void setPermissionMessage(final String permissionMessage) {
++        this.permissionMessage = LegacyComponentSerializer.legacySection().deserialize(permissionMessage);
++    }
++    // Waterfall end
++
++    // Waterfall start - we're going on an adventure!
++    public Component permissionMessage() {
++        return permissionMessage;
++    }
++
++    protected void permissionMessage(final Component permissionMessage) {
++        this.permissionMessage = permissionMessage;
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Objective.java b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
+index 0dd25646..f96ef1e4 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Objective.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.api.score;
+ 
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+ 
+ /**
+  * Represents an objective entry.
+@@ -15,6 +16,12 @@ public class Objective
+      * Name of the objective.
+      */
+     private final String name;
++    // Waterfall start - we're going on an adventure!
++    /**
++     * Display name of the objective.
++     */
++    private final Component displayName;
++    // Waterfall end
+     /**
+      * Value of the objective.
+      */
+@@ -23,4 +30,10 @@ public class Objective
+      * Type; integer or hearts
+      */
+     private String type;
++
++    // Waterfall start - write previously Lombok-generated constructor - we're going on an adventure!
++    public Objective(final String name, final String value, final String type) {
++        this(name, Component.empty(), value, type);
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
+index 849ba1cf..db3f95b0 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Team.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Team.java
+@@ -6,6 +6,10 @@ import java.util.HashSet;
+ import java.util.Set;
+ import lombok.Data;
+ import lombok.NonNull;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ 
+ @Data
+ public class Team
+@@ -13,9 +17,14 @@ public class Team
+ 
+     @NonNull
+     private final String name;
+-    private String displayName;
+-    private String prefix;
+-    private String suffix;
++    // Waterfall start - we're going on an adventure!
++//    private String displayName;
++    private Component displayName;
++//    private String prefix;
++    private Component prefix;
++//    private String suffix;
++    private Component suffix;
++    // Waterfall end
+     private byte friendlyFire;
+     private String nameTagVisibility;
+     private String collisionRule;
+@@ -36,4 +45,62 @@ public class Team
+     {
+         players.remove( name );
+     }
++
++    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
++    @Deprecated
++    public String getDisplayName() {
++        return LegacyComponentSerializer.legacySection().serialize(displayName);
++    }
++
++    @Deprecated
++    public void setDisplayName(final String displayName) {
++        this.displayName = LegacyComponentSerializer.legacySection().deserialize(displayName);
++    }
++
++    @Deprecated
++    public String getPrefix() {
++        return LegacyComponentSerializer.legacySection().serialize(prefix);
++    }
++
++    @Deprecated
++    public void setPrefix(final String prefix) {
++        this.prefix = LegacyComponentSerializer.legacySection().deserialize(prefix);
++    }
++
++    @Deprecated
++    public String getSuffix() {
++        return LegacyComponentSerializer.legacySection().serialize(suffix);
++    }
++
++    @Deprecated
++    public void setSuffix(final String suffix) {
++        this.suffix = LegacyComponentSerializer.legacySection().deserialize(suffix);
++    }
++    // Waterfall end
++
++    // Waterfall start - we're going on an adventure!
++    public Component displayName() {
++        return displayName;
++    }
++
++    public void displayName(final Component displayName) {
++        this.displayName = displayName;
++    }
++
++    public Component prefix() {
++        return prefix;
++    }
++
++    public void prefix(final Component prefix) {
++        this.prefix = prefix;
++    }
++
++    public Component suffix() {
++        return suffix;
++    }
++
++    public void suffix(final Component suffix) {
++        this.suffix = suffix;
++    }
++    // Waterfall end
+ }
+diff --git a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
+index aefe026e..2c2c0d34 100644
+--- a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
++++ b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
+@@ -3,6 +3,8 @@ package net.md_5.bungee.api;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.util.Collection;
++
++import net.kyori.adventure.text.Component;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.event.ServerConnectEvent;
+@@ -43,6 +45,13 @@ public class ServerConnectRequestTest
+             return null;
+         }
+ 
++        // Waterfall start - we're going on an adventure!
++        @Override
++        public Component motd() {
++            return null;
++        }
++        // Waterfall end
++
+         @Override
+         public boolean isRestricted()
+         {
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/AdventureTitle.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/AdventureTitle.java
+new file mode 100644
+index 00000000..06506c83
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/AdventureTitle.java
+@@ -0,0 +1,39 @@
++package io.github.waterfallmc.waterfall.adventure;
++
++import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
++import net.kyori.adventure.title.Title;
++import net.md_5.bungee.api.connection.Connection;
++import net.md_5.bungee.protocol.packet.Title.Action;
++
++import java.util.Objects;
++
++public final class AdventureTitle {
++
++    public static void send(final Connection connection, final Title title) {
++        connection.unsafe().sendPacket(createPacket(Action.TITLE, title));
++        connection.unsafe().sendPacket(createPacket(Action.SUBTITLE, title));
++        if (title.times() != null) connection.unsafe().sendPacket(createPacket(Action.TIMES, title));
++    }
++
++    private static net.md_5.bungee.protocol.packet.Title createPacket(final Action action, final Title title) {
++        final net.md_5.bungee.protocol.packet.Title packet = new net.md_5.bungee.protocol.packet.Title();
++        packet.setAction(action);
++
++        switch (action) {
++            case TITLE:
++                packet.setText(GsonComponentSerializer.gson().serialize(title.title()));
++                break;
++            case SUBTITLE:
++                packet.setText(GsonComponentSerializer.gson().serialize(title.subtitle()));
++                break;
++            case TIMES:
++                packet.setFadeIn((int) Objects.requireNonNull(title.times()).fadeIn().toMillis() / 50);
++                packet.setStay((int) Objects.requireNonNull(title.times()).stay().toMillis() / 50);
++                packet.setFadeOut((int) Objects.requireNonNull(title.times()).fadeOut().toMillis() / 50);
++                break;
++            default: break;
++        }
++
++        return packet;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 2938f2f1..abccf735 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -51,6 +51,13 @@ import java.util.logging.Logger;
+ import lombok.Getter;
+ import lombok.Setter;
+ import lombok.Synchronized;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.Audience;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++import org.checkerframework.checker.nullness.qual.NonNull;
++// Waterfall end
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.Favicon;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -169,7 +176,14 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( ScoreComponent.class, new ScoreComponentSerializer() )
+             .registerTypeAdapter( SelectorComponent.class, new SelectorComponentSerializer() )
+             .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer() )
+-            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
++            // Waterfall start - we're going on an adventure!
++            // we have to register all these type adapters so Gson recognises that they are all the same
++            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() )
++            .registerTypeAdapter(Component.class, GsonComponentSerializer.gson().serializer().getAdapter(Component.class))
++            .registerTypeAdapter(net.kyori.adventure.text.TextComponent.class, GsonComponentSerializer.gson().serializer().getAdapter(net.kyori.adventure.text.TextComponent.class))
++            .registerTypeAdapter(net.kyori.adventure.text.TranslatableComponent.class, GsonComponentSerializer.gson().serializer().getAdapter(net.kyori.adventure.text.TranslatableComponent.class))
++            .create();
++            // Waterfall end
+     @Getter
+     private ConnectionThrottle connectionThrottle;
+     private final ModuleManager moduleManager = new ModuleManager();
+@@ -312,7 +326,10 @@ public class BungeeCord extends ProxyServer
+             @Override
+             public void run()
+             {
+-                independentThreadStop( getTranslation( "restart" ), false );
++                // Waterfall start - we're going on an adventure!
++//                independentThreadStop( getTranslation( "restart" ), false );
++                independentThreadStop(Component.text(getTranslation("restart")), false);
++                // Waterfall end
+             }
+         } );
+     }
+@@ -399,26 +416,39 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public void stop()
+     {
+-        stop( getTranslation( "restart" ) );
++        // Waterfall start - we're going on an adventure!
++//        stop( getTranslation( "restart" ) );
++        stop(Component.text(getTranslation("restart")));
++        // Waterfall end
+     }
+ 
+     @Override
+     public void stop(final String reason)
+     {
+-        new Thread( "Shutdown Thread" )
+-        {
+-            @Override
+-            public void run()
+-            {
+-                independentThreadStop( reason, true );
+-            }
+-        }.start();
++        // Waterfall start - move this down to the component stop - we're going on an adventure!
++//        new Thread( "Shutdown Thread" )
++//        {
++//            @Override
++//            public void run()
++//            {
++//                independentThreadStop( reason, true );
++//            }
++//        }.start();
++        stop(LegacyComponentSerializer.legacySection().deserialize(reason));
++        // Waterfall end
++    }
++
++    @Override
++    public void stop(@NonNull Component reason) {
++        new Thread(() -> {
++            independentThreadStop(reason, true);
++        }, "Shutdown Thread");
+     }
+ 
+     // This must be run on a separate thread to avoid deadlock!
+     @SuppressFBWarnings("DM_EXIT")
+     @SuppressWarnings("TooBroadCatch")
+-    private void independentThreadStop(final String reason, boolean callSystemExit)
++    private void independentThreadStop(final Component reason, boolean callSystemExit) // Waterfall - we're going on an adventure!
+     {
+         // Acquire the shutdown lock
+         // This needs to actually block here, otherwise running 'end' and then ctrl+c will cause the thread to terminate prematurely
+@@ -704,11 +734,24 @@ public class BungeeCord extends ProxyServer
+         return constructServerInfo( name, (SocketAddress) address, motd, restricted );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public ServerInfo constructServerInfo(@NonNull String name, @NonNull InetSocketAddress address, @NonNull Component motd, boolean restricted) {
++        return constructServerInfo(name, (SocketAddress) address, motd, restricted);
++    }
++
+     @Override
+     public ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted)
+     {
+-        return new BungeeServerInfo( name, address, motd, restricted );
++//        return new BungeeServerInfo( name, address, motd, restricted );
++        return constructServerInfo(name, address, LegacyComponentSerializer.legacySection().deserialize(motd), restricted);
++    }
++
++    @Override
++    public ServerInfo constructServerInfo(@NonNull String name, @NonNull SocketAddress address, @NonNull Component motd, boolean restricted) {
++        return new BungeeServerInfo(name, address, motd, restricted);
+     }
++    // Waterfall end
+ 
+     @Override
+     public CommandSender getConsole()
+@@ -807,4 +850,9 @@ public class BungeeCord extends ProxyServer
+     {
+         return new BungeeTitle();
+     }
++
++    @Override
++    public @NonNull Iterable<? extends Audience> audiences() {
++        return Iterables.concat(Collections.singleton(getConsole()), getPlayers());
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+index 7b002089..218d51d3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+@@ -18,6 +18,8 @@ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import lombok.Synchronized;
+ import lombok.ToString;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -46,8 +48,11 @@ public class BungeeServerInfo implements ServerInfo
+     @Getter
+     private final SocketAddress socketAddress;
+     private final Collection<ProxiedPlayer> players = new ArrayList<>();
+-    @Getter
+-    private final String motd;
++    // Waterfall start - we're going on an adventure!
++//    @Getter
++//    private final String motd;
++    private final Component motd;
++    // Waterfall end
+     @Getter
+     private final boolean restricted;
+     @Getter
+@@ -78,6 +83,18 @@ public class BungeeServerInfo implements ServerInfo
+         return "bungeecord.server." + name;
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public String getMotd() {
++        return LegacyComponentSerializer.legacySection().serialize(motd);
++    }
++
++    @Override
++    public Component motd() {
++        return motd;
++    }
++    // Waterfall end
++
+     @Override
+     public boolean canAccess(CommandSender player)
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+index 5e452780..5526d3d6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+@@ -9,6 +9,7 @@ import lombok.Data;
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import lombok.Setter;
++import net.kyori.adventure.text.Component; // Waterfall start - we're going on an adventure!
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.connection.Server;
+ import net.md_5.bungee.netty.ChannelWrapper;
+@@ -60,6 +61,14 @@ public class ServerConnection implements Server
+         ch.close();
+     }
+ 
++    // Waterfall - we're going on an adventure!
++    @Override
++    public void disconnect(Component reason) {
++        // we ignore the reason rather than throwing like the above does as this should fail silently
++        ch.close();
++    }
++    // Waterfall end
++
+     @Override
+     public void disconnect(BaseComponent reason)
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 7ec119ea..c3b5afea 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Multimap;
++import io.github.waterfallmc.waterfall.adventure.AdventureTitle; // Waterfall - we're going on an adventure!
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFuture;
+@@ -27,6 +28,14 @@ import lombok.Getter;
+ import lombok.NonNull;
+ import lombok.RequiredArgsConstructor;
+ import lombok.Setter;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.MessageType;
++import net.kyori.adventure.identity.Identity;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.ChatMessageType;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -61,6 +70,7 @@ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.SetCompression;
++import net.md_5.bungee.protocol.packet.Title.Action; // Waterfall - we're going on an adventure!
+ import net.md_5.bungee.tab.ServerUnique;
+ import net.md_5.bungee.tab.TabList;
+ import net.md_5.bungee.util.CaseInsensitiveSet;
+@@ -131,8 +141,11 @@ public final class UserConnection implements ProxiedPlayer
+     private final Multimap<Integer, Integer> potions = HashMultimap.create();
+     // Waterfall end
+     /*========================================================================*/
+-    @Getter
+-    private String displayName;
++    // Waterfall start - we're going on an adventure!
++//    @Getter
++//    private String displayName;
++    private Component displayName;
++    // Waterfall end
+     @Getter
+     private EntityMap entityRewrite;
+     private Locale locale;
+@@ -157,7 +170,10 @@ public final class UserConnection implements ProxiedPlayer
+     {
+         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
+ 
+-        this.displayName = name;
++        // Waterfall start - we're going on an adventure!
++//        this.displayName = name;
++        this.displayName = Component.text(name);
++        // Waterfall end
+ 
+         tabListHandler = new ServerUnique( this );
+ 
+@@ -193,7 +209,10 @@ public final class UserConnection implements ProxiedPlayer
+     public void setDisplayName(String name)
+     {
+         Preconditions.checkNotNull( name, "displayName" );
+-        displayName = name;
++        // Waterfall start - we're going on an adventure!
++//        displayName = name;
++        displayName = LegacyComponentSerializer.legacySection().deserialize(name);
++        // Waterfall end
+     }
+ 
+     @Override
+@@ -395,38 +414,70 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public void disconnect(String reason)
+     {
+-        disconnect0( TextComponent.fromLegacyText( reason ) );
++        // Waterfall start - we're going on an adventure!
++//        disconnect0( TextComponent.fromLegacyText( reason ) );
++        disconnect0(LegacyComponentSerializer.legacySection().deserialize(reason));
++        // Waterfall end
+     }
+ 
+     @Override
+     public void disconnect(BaseComponent... reason)
+     {
+-        disconnect0( reason );
++        // Waterfall start - we're going on an adventure!
++//        disconnect0( reason );
++        disconnect0(BungeeComponentSerializer.get().deserialize(reason));
++        // Waterfall end
+     }
+ 
+     @Override
+     public void disconnect(BaseComponent reason)
+     {
+-        disconnect0( reason );
++        // Waterfall start - we're going on an adventure!
++//        disconnect0( reason );
++        disconnect0(BungeeComponentSerializer.get().deserialize(new BaseComponent[]{reason}));
++        // Waterfall end
+     }
+ 
+-    public void disconnect0(final BaseComponent... reason)
+-    {
+-        if ( !ch.isClosing() )
+-        {
+-            bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
+-            {
+-                getName(), BaseComponent.toLegacyText( reason )
+-            } );
+-
+-            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void disconnect(Component reason) {
++        disconnect0(reason);
++    }
++    // Waterfall end
+ 
+-            if ( server != null )
+-            {
+-                server.setObsolete( true );
+-                server.disconnect( "Quitting" );
+-            }
++    // Waterfall start - replace disconnect0 with one that uses Adventure component - we're going on an adventure!
++//    public void disconnect0(final BaseComponent... reason)
++//    {
++//        if ( !ch.isClosing() )
++//        {
++//            bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
++//            {
++//                getName(), BaseComponent.toLegacyText( reason )
++//            } );
++//
++//            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
++//
++//            if ( server != null )
++//            {
++//                server.setObsolete( true );
++//                server.disconnect( "Quitting" );
++//            }
++//        }
++//    }
++
++    public void disconnect0(final Component reason) {
++        if (ch.isClosing()) return;
++        bungee.getLogger().log(Level.INFO, "[{0}] disconnected with: {1}", new Object[]{
++            getName(),
++            LegacyComponentSerializer.legacySection().serialize(reason)
++        });
++
++        ch.close(new Kick(GsonComponentSerializer.gson().serialize(reason)));
++        if (server != null) {
++            server.setObsolete(true);
++            server.disconnect("Quitting");
+         }
++        // Waterfall end
+     }
+ 
+     @Override
+@@ -436,6 +487,14 @@ public final class UserConnection implements ProxiedPlayer
+         server.getCh().write( new Chat( message ) );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void chat(Component message) {
++        Preconditions.checkState(server != null, "Not connected to server!");
++        server.getCh().write(new Chat(GsonComponentSerializer.gson().serialize(message)));
++    }
++    // Waterfall end
++
+     @Override
+     public void sendMessage(String message)
+     {
+@@ -517,6 +576,13 @@ public final class UserConnection implements ProxiedPlayer
+         }
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void sendMessage(@org.checkerframework.checker.nullness.qual.NonNull Identity source, @org.checkerframework.checker.nullness.qual.NonNull Component message, @org.checkerframework.checker.nullness.qual.NonNull MessageType type) {
++        unsafe().sendPacket(new Chat(GsonComponentSerializer.gson().serialize(message), (byte) type.ordinal(), source.uuid()));
++    }
++    // Waterfall end
++
+     @Override
+     public void sendData(String channel, byte[] data)
+     {
+@@ -714,6 +780,16 @@ public final class UserConnection implements ProxiedPlayer
+         ) );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void sendPlayerListHeaderAndFooter(@org.checkerframework.checker.nullness.qual.NonNull Component header, @org.checkerframework.checker.nullness.qual.NonNull Component footer) {
++        unsafe().sendPacket(new PlayerListHeaderFooter(
++            GsonComponentSerializer.gson().serialize(header),
++            GsonComponentSerializer.gson().serialize(footer)
++        ));
++    }
++    // Waterfall end
++
+     @Override
+     public void resetTabHeader()
+     {
+@@ -727,6 +803,35 @@ public final class UserConnection implements ProxiedPlayer
+         title.send( this );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void sendActionBar(@org.checkerframework.checker.nullness.qual.NonNull Component message) {
++        net.md_5.bungee.protocol.packet.Title packet = new net.md_5.bungee.protocol.packet.Title();
++        packet.setAction(Action.ACTIONBAR);
++        packet.setText(GsonComponentSerializer.gson().serialize(message));
++        unsafe().sendPacket(packet);
++    }
++
++    @Override
++    public void showTitle(net.kyori.adventure.title.@org.checkerframework.checker.nullness.qual.NonNull Title title) {
++        AdventureTitle.send(this, title);
++    }
++
++    @Override
++    public void clearTitle() {
++        final net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
++        title.setAction(Action.CLEAR);
++        unsafe().sendPacket(title);
++    }
++
++    @Override
++    public void resetTitle() {
++        final net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
++        title.setAction(Action.RESET);
++        unsafe().sendPacket(title);
++    }
++    // Waterfall end
++
+     public String getExtraDataInHandshake()
+     {
+         return this.getPendingConnection().getExtraDataInHandshake();
+@@ -759,4 +864,22 @@ public final class UserConnection implements ProxiedPlayer
+         return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
+     }
+     // Waterfall end
++
++    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
++    public String getDisplayName() {
++        return LegacyComponentSerializer.legacySection().serialize(displayName);
++    }
++    // Waterfall end
++
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public Component displayName() {
++        return displayName;
++    }
++
++    @Override
++    public void displayName(Component name) {
++        this.displayName = name;
++    }
++    // Waterfall end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
+index 33d7e5bb..26aa00d8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
+@@ -5,6 +5,13 @@ import java.util.Collections;
+ import lombok.AccessLevel;
+ import lombok.Getter;
+ import lombok.NoArgsConstructor;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.audience.MessageType;
++import net.kyori.adventure.identity.Identity;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++import org.checkerframework.checker.nullness.qual.NonNull;
++// Waterfall end
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.BaseComponent;
+@@ -46,6 +53,13 @@ public final class ConsoleCommandSender implements CommandSender
+         sendMessage( message.toLegacyText() );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
++    @Override
++    public void sendMessage(@NonNull Identity source, @NonNull Component message, @NonNull MessageType type) {
++        sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
++    }
++    // Waterfall end
++
+     @Override
+     public String getName()
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 65121ba2..bd1c15a5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -22,6 +22,10 @@ import java.util.Locale;
+ import java.util.Map;
+ import java.util.logging.Level;
+ import lombok.RequiredArgsConstructor;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++// Waterfall end
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -253,8 +257,11 @@ public class YamlConfig implements ConfigurationAdapter
+ 
+         for ( Map<String, Object> val : base )
+         {
+-            String motd = get( "motd", "&1Another Bungee server", val );
+-            motd = ChatColor.translateAlternateColorCodes( '&', motd );
++            // Waterfall start - we're going on an adventure!
++//            String motd = get( "motd", "&1Another Bungee server", val );
++//            motd = ChatColor.translateAlternateColorCodes( '&', motd );
++            final Component motd = LegacyComponentSerializer.legacyAmpersand().deserialize(get("motd", "&1Another Bungee server", val));
++            // Waterfall end
+ 
+             int maxPlayers = get( "max_players", 1, val );
+             boolean forceDefault = get( "force_default_server", false, val );
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 9e180c30..1c758f41 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -96,7 +96,10 @@ public class DownstreamBridge extends PacketHandler
+         }
+         else
+         {
+-            con.disconnect0( event.getKickReasonComponent() );
++            // Waterfall start - we're going on an adventure!
++//            con.disconnect0( event.getKickReasonComponent() );
++            con.disconnect0(event.kickReason());
++            // Waterfall end
+         }
+         // Waterfall end
+     }
+@@ -123,7 +126,10 @@ public class DownstreamBridge extends PacketHandler
+             }
+             else
+             {
+-                con.disconnect0( event.getKickReasonComponent() );
++                // Waterfall start - we're going on an adventure!
++//                con.disconnect0( event.getKickReasonComponent() );
++                con.disconnect0(event.kickReason());
++                // Waterfall end
+             }
+             // Waterfall end
+         }
+@@ -575,7 +581,10 @@ public class DownstreamBridge extends PacketHandler
+             con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
+         } else
+         {
+-            con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff.
++            // Waterfall start - we're going on an adventure!
++//            con.disconnect0( event.getKickReasonComponent() );
++            con.disconnect0(event.kickReason()); // TODO: Prefix our own stuff.
++            // Waterfall end
+         }
+         server.setObsolete( true );
+         throw CancelSendSignal.INSTANCE;
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index b7ecd828..cf7702c0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -16,6 +16,10 @@ import javax.crypto.spec.SecretKeySpec;
+ 
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
++import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.BungeeServerInfo;
+ import net.md_5.bungee.EncryptionUtil;
+@@ -223,7 +227,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         return pos == -1 ? str : str.substring( 0, pos );
+     }
+ 
+-    private ServerPing getPingInfo(String motd, int protocol)
++    private ServerPing getPingInfo(Component motd, int protocol) // Waterfall - we're going on an adventure!
+     {
+         return new ServerPing(
+                 new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), protocol ),
+@@ -238,7 +242,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
+ 
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+-        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
++        // Waterfall start - we're going on an adventure!
++//        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
++        final Component motd = forced != null ? forced.motd() : listener.motd();
++        // Waterfall end
+         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+ 
+         Callback<ServerPing> pingBack = new Callback<ServerPing>()
+@@ -248,7 +255,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( error != null )
+                 {
+-                    result = getPingInfo( bungee.getTranslation( "ping_cannot_connect" ), protocol );
++                    // Waterfall start - we're going on an adventure!
++//                    result = getPingInfo( bungee.getTranslation( "ping_cannot_connect" ), protocol );
++                    result = getPingInfo(Component.text(bungee.getTranslation("ping_cannot_connect")), protocol);
++                    // Waterfall end
+                     bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
+                 }
+ 
+@@ -400,7 +410,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( result.isCancelled() )
+                 {
+-                    disconnect( result.getCancelReasonComponents() );
++                    // Waterfall start - we're going on an adventure!
++//                    disconnect( result.getCancelReasonComponents() );
++                    disconnect(result.cancelReason());
++                    // Waterfall end
+                     return;
+                 }
+                 if ( ch.isClosed() )
+@@ -529,7 +542,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( result.isCancelled() )
+                 {
+-                    disconnect( result.getCancelReasonComponents() );
++                    // Waterfall start - we're going on an adventure!
++//                    disconnect( result.getCancelReasonComponents() );
++                    disconnect(result.cancelReason());
++                    // Waterfall end
+                     return;
+                 }
+                 if ( ch.isClosed() )
+@@ -590,7 +606,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( canSendKickMessage() )
+         {
+-            disconnect( TextComponent.fromLegacyText( reason ) );
++            // Waterfall start - we're going on an adventure!
++//            disconnect( TextComponent.fromLegacyText( reason ) );
++            disconnect(LegacyComponentSerializer.legacySection().deserialize(reason));
++            // Waterfall end
+         } else
+         {
+             ch.close();
+@@ -600,13 +619,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void disconnect(final BaseComponent... reason)
+     {
+-        if ( canSendKickMessage() )
+-        {
+-            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
+-        } else
+-        {
+-            ch.close();
+-        }
++        // Waterfall start - we're going on an adventure!
++//        if ( canSendKickMessage() )
++//        {
++//            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
++//        } else
++//        {
++//            ch.close();
++//        }
++        disconnect(BungeeComponentSerializer.get().deserialize(reason));
++        // Waterfall end
+     }
+ 
+     @Override
+@@ -618,7 +640,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         } );
+     }
+ 
++    // Waterfall start - we're going on an adventure!
+     @Override
++    public void disconnect(Component reason) {
++        if (canSendKickMessage()) {
++            ch.delayedClose(new Kick(GsonComponentSerializer.gson().serialize(reason)));
++        } else {
++            ch.close();
++        }
++    }
++    // Waterfall end
++
+     public String getName()
+     {
+         return ( name != null ) ? name : ( loginRequest == null ) ? null : loginRequest.getData();
+-- 
+2.24.1.windows.2
+
