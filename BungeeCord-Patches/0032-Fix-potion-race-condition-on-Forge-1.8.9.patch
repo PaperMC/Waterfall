@@ -1,4 +1,4 @@
-From d1cae1a3697ae9bfa0599b0e4658a2cee7fbb07a Mon Sep 17 00:00:00 2001
+From 266bc30c5330ef442070a9e7d122d756ca7dca0b Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index ac31e435..252389bd 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 50a911c2..66c925d0 100644
+index 50a911c2..3a686e60 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -17,6 +17,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -45,7 +45,7 @@ index 50a911c2..66c925d0 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -106,6 +108,32 @@ public enum Protocol
+@@ -106,6 +108,18 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C )
              );
@@ -53,31 +53,29 @@ index 50a911c2..66c925d0 100644
 +            TO_CLIENT.registerPacket(
 +                    EntityEffect.class,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
-+                    map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
-+                    map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
-+                    map(ProtocolConstants.MINECRAFT_1_12, 0x4E),
-+                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x4F),
-+                    map(ProtocolConstants.MINECRAFT_1_13, 0x53),
-+                    map(ProtocolConstants.MINECRAFT_1_14, 0x59),
-+                    map(ProtocolConstants.MINECRAFT_1_15, 0x5A),
-+                    map(ProtocolConstants.MINECRAFT_1_16, 0x59)
++                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
 +            );
 +            TO_CLIENT.registerPacket(
 +                    EntityRemoveEffect.class,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
-+                    map(ProtocolConstants.MINECRAFT_1_9, 0x31),
-+                    map(ProtocolConstants.MINECRAFT_1_12, 0x32),
-+                    map(ProtocolConstants.MINECRAFT_1_12_1, 0x33),
-+                    map(ProtocolConstants.MINECRAFT_1_13, 0x36),
-+                    map(ProtocolConstants.MINECRAFT_1_14, 0x38),
-+                    map(ProtocolConstants.MINECRAFT_1_15, 0x39),
-+                    map(ProtocolConstants.MINECRAFT_1_16, 0x38),
-+                    map(ProtocolConstants.MINECRAFT_1_16_2, 0x37)
++                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      map( ProtocolConstants.MINECRAFT_1_8, 0x38 ),
+@@ -501,9 +515,11 @@ public enum Protocol
+                         }
+                     }
+ 
++                    if (mapping.packetID != Integer.MIN_VALUE) { // Waterfall
+                     ProtocolData data = protocols.get( protocol );
+                     data.packetMap.put( packetClass, mapping.packetID );
+                     data.packetConstructors[mapping.packetID] = constructor;
++                    } // Waterfall
+                 }
+             } catch ( NoSuchMethodException ex )
+             {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 new file mode 100644
 index 00000000..d11a9ea9
@@ -172,7 +170,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 76ab1481..fae9805c 100644
+index 5e3c27a3..bc8156cc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -280,5 +278,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.28.0
+2.31.1
 
