@@ -1,11 +1,11 @@
-From d5c909341edc81b0a3417e989a2a6253c5f7f0ab Mon Sep 17 00:00:00 2001
+From a2af99497d49a904b49f8f04dc6c475bbe31074a Mon Sep 17 00:00:00 2001
 From: Callum Seabrook <callum.seabrook@prevarinite.com>
 Date: Wed, 28 Apr 2021 17:02:18 +0100
 Subject: [PATCH] Adventure
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index ca1ed881..215f89bb 100644
+index ca1ed881..c53ad692 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -18,6 +18,28 @@
@@ -37,11 +37,11 @@ index ca1ed881..215f89bb 100644
      <dependencies>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
-@@ -82,5 +104,23 @@
+@@ -82,5 +104,24 @@
              <artifactId>slf4j-api</artifactId>
              <version>1.7.25</version>
          </dependency>
-+        <!-- Waterfall - Add Adventure -->
++        <!-- Waterfall start - Add Adventure -->
 +        <dependency>
 +            <groupId>net.kyori</groupId>
 +            <artifactId>adventure-api</artifactId>
@@ -59,32 +59,27 @@ index ca1ed881..215f89bb 100644
 +            <artifactId>adventure-text-serializer-bungeecord</artifactId>
 +            <version>4.0.0-SNAPSHOT</version>
 +        </dependency>
++        <!-- Waterfall end -->
      </dependencies>
  </project>
 diff --git a/api/src/main/java/net/md_5/bungee/api/CommandSender.java b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
-index d5888311..a8224a9f 100644
+index d5888311..72f3da4c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/CommandSender.java
 +++ b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
-@@ -1,9 +1,13 @@
- package net.md_5.bungee.api;
- 
+@@ -3,7 +3,7 @@ package net.md_5.bungee.api;
  import java.util.Collection;
-+// Waterfall start - we're going on an adventure!
-+import net.kyori.adventure.audience.Audience;
-+import net.kyori.adventure.text.Component;
-+// Waterfall end
  import net.md_5.bungee.api.chat.BaseComponent;
  
 -public interface CommandSender
-+public interface CommandSender extends Audience // Waterfall - we're going on an adventure!
++public interface CommandSender extends net.kyori.adventure.audience.Audience // Waterfall - we're going on an adventure!
  {
  
      /**
-@@ -34,14 +38,18 @@ public interface CommandSender
+@@ -34,14 +34,18 @@ public interface CommandSender
       * Send a message to this sender.
       *
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(BaseComponent... message);
@@ -93,48 +88,28 @@ index d5888311..a8224a9f 100644
       * Send a message to this sender.
       *
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(BaseComponent message);
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index a4011335..f20f401b 100644
+index a4011335..00ae3986 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -4,11 +4,19 @@ import com.google.common.base.Preconditions;
- import java.io.File;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
-+import java.text.MessageFormat;
- import java.util.Collection;
-+import java.util.Locale;
- import java.util.Map;
- import java.util.UUID;
- import java.util.logging.Logger;
- import lombok.Getter;
-+// Waterfall start - we're going on an adventure!
-+import net.kyori.adventure.audience.Audience;
-+import net.kyori.adventure.audience.ForwardingAudience;
-+import net.kyori.adventure.text.Component;
-+// Waterfall end
-+import net.kyori.adventure.text.TranslatableComponent;
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.api.config.ConfigurationAdapter;
- import net.md_5.bungee.api.config.ServerInfo;
-@@ -16,8 +24,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -16,8 +16,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.plugin.Plugin;
  import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.api.scheduler.TaskScheduler;
-+import org.checkerframework.checker.nullness.qual.NonNull;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
  
 -public abstract class ProxyServer
-+public abstract class ProxyServer implements ForwardingAudience // Waterfall - We're going on an adventure!
++public abstract class ProxyServer implements net.kyori.adventure.audience.ForwardingAudience // Waterfall - We're going on an adventure!
  {
  
      @Getter
-@@ -170,9 +179,20 @@ public abstract class ProxyServer
+@@ -170,9 +171,20 @@ public abstract class ProxyServer
       * Gracefully mark this instance for shutdown.
       *
       * @param reason the reason for stopping. This will be shown to players.
@@ -149,21 +124,22 @@ index a4011335..f20f401b 100644
 +     *
 +     * @param reason the reason for stopping. This will be shown to players.
 +     */
-+    public abstract void stop(final @NonNull Component reason);
++    public abstract void stop(final @org.checkerframework.checker.nullness.qual.NonNull Component reason);
 +    // Waterfall end
 +
      /**
       * Register a channel for use with plugin messages. This is required by some
       * server / client implementations.
-@@ -220,9 +240,23 @@ public abstract class ProxyServer
+@@ -220,9 +232,25 @@ public abstract class ProxyServer
       * @param motd the motd when used as a forced server
       * @param restricted whether the server info restricted property will be set
       * @return the constructed instance
 +     * @deprecated in favour of {@link #constructServerInfo(String, InetSocketAddress, Component, boolean)}
       */
-+    @Deprecated
++    @Deprecated // Waterfall - we're going on an adventure!
      public abstract ServerInfo constructServerInfo(String name, InetSocketAddress address, String motd, boolean restricted);
  
++    // Waterfall start - we're going on an adventure!
 +    /**
 +     * Factory method to construct an implementation specific server info
 +     * instance.
@@ -174,20 +150,22 @@ index a4011335..f20f401b 100644
 +     * @param restricted whether the server will be restricted or not
 +     * @return the constructed instance
 +     */
-+    public abstract ServerInfo constructServerInfo(final @NonNull String name, final @NonNull InetSocketAddress address, final @NonNull Component motd, final boolean restricted);
++    public abstract ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress address, final @org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
++    // Waterfall end
 +
      /**
       * Factory method to construct an implementation specific server info
       * instance.
-@@ -232,9 +266,23 @@ public abstract class ProxyServer
+@@ -232,9 +260,25 @@ public abstract class ProxyServer
       * @param motd the motd when used as a forced server
       * @param restricted whether the server info restricted property will be set
       * @return the constructed instance
 +     * @deprecated in favour of {@link #constructServerInfo(String, SocketAddress, Component, boolean)}
       */
-+    @Deprecated
++    @Deprecated // Waterfall - we're going on an adventure!
      public abstract ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted);
  
++    // Waterfall start - we're going on an adventure!
 +    /**
 +     * Factory method to construct an implementation specific server info
 +     * instance.
@@ -198,16 +176,17 @@ index a4011335..f20f401b 100644
 +     * @param restricted whether the server will be restricted or not
 +     * @return the constructed instance
 +     */
-+    public abstract ServerInfo constructServerInfo(final @NonNull String name, final @NonNull SocketAddress address, final @NonNull Component motd, final boolean restricted);
++    public abstract ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull SocketAddress address, final @org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
++    // Waterfall end
 +
      /**
       * Returns the console overlord for this proxy. Being the console, this
       * command server cannot have permissions or groups, and will be able to
-@@ -279,14 +327,18 @@ public abstract class ProxyServer
+@@ -279,14 +323,18 @@ public abstract class ProxyServer
       * Send the specified message to the console and all connected players.
       *
       * @param message the message to broadcast
-+     * @deprecated in favor of {@link Audience#sendMessage(Component)}
++     * @deprecated in favor of {@link net.kyori.adventure.audience.Audience#sendMessage(Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public abstract void broadcast(BaseComponent... message);
@@ -216,28 +195,38 @@ index a4011335..f20f401b 100644
       * Send the specified message to the console and all connected players.
       *
       * @param message the message to broadcast
-+     * @deprecated in favour of {@link Audience#sendMessage(Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public abstract void broadcast(BaseComponent message);
  
      /**
+@@ -324,7 +372,9 @@ public abstract class ProxyServer
+      *
+      * @return A new empty title configuration.
+      * @see Title
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#showTitle(net.kyori.adventure.title.Title)}
+      */
++    @Deprecated // Waterfall - we're going on an adventure!
+     public abstract Title createTitle();
+ 
+ }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index fc92a7b5..2a11c371 100644
+index fc92a7b5..bec3ce12 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-@@ -3,6 +3,11 @@ package net.md_5.bungee.api;
- import java.util.ArrayList;
- import java.util.List;
- import java.util.UUID;
+@@ -10,6 +10,11 @@ import lombok.ToString;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +// Waterfall end
- import lombok.AllArgsConstructor;
- import lombok.Data;
- import lombok.NoArgsConstructor;
+ 
+ /**
+  * Represents the standard list data returned by opening a server in the
 @@ -78,7 +83,10 @@ public class ServerPing
          }
      }
@@ -334,40 +323,37 @@ index 4717f40d..a7b861bf 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
-index 71abdc87..4d4c8b10 100644
+index 71abdc87..9193c68c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
 +++ b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
-@@ -6,6 +6,10 @@ import java.util.List;
+@@ -6,6 +6,7 @@ import java.util.List;
  import java.util.Map;
  import lombok.AllArgsConstructor;
  import lombok.Data;
-+// Waterfall start - we're going on an adventure!
-+import net.kyori.adventure.text.Component;
-+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-+// Waterfall end
++import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer; // Waterfall - we're going on an adventure!
  
  /**
   * Class representing the configuration of a server listener. Used for allowing
-@@ -23,7 +27,10 @@ public class ListenerInfo
+@@ -23,7 +24,10 @@ public class ListenerInfo
      /**
       * Displayed MOTD.
       */
 -    private final String motd;
 +    // Waterfall start - we're going on an adventure!
 +//    private final String motd;
-+    private final Component motd;
++    private final net.kyori.adventure.text.Component motd;
 +    // Waterfall end
      /**
       * Max amount of slots displayed on the ping page.
       */
-@@ -76,9 +83,33 @@ public class ListenerInfo
+@@ -76,9 +80,33 @@ public class ListenerInfo
      @Deprecated
      public ListenerInfo(InetSocketAddress host, String motd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled)
      {
 -        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
 +        // Waterfall start - we're going on an adventure!
 +//        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
-+        this( host, LegacyComponentSerializer.legacySection().deserialize(motd), maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
++        this(host, LegacyComponentSerializer.legacySection().deserialize(motd), maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false);
 +        // Waterfall end
      }
  
@@ -395,7 +381,7 @@ index 71abdc87..4d4c8b10 100644
      /**
       * Gets the highest priority server to join.
       *
-@@ -115,4 +146,16 @@ public class ListenerInfo
+@@ -115,4 +143,16 @@ public class ListenerInfo
      {
          return (InetSocketAddress) socketAddress;
      }
@@ -407,28 +393,20 @@ index 71abdc87..4d4c8b10 100644
 +    // Waterfall end
 +
 +    // Waterfall start - we're going on an adventure!
-+    public Component motd() {
++    public net.kyori.adventure.text.Component motd() {
 +        return motd;
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
-index b0fc000a..c889c034 100644
+index b0fc000a..a30ef6b2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
 +++ b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.api.config;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
- import java.util.Collection;
-+import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.ServerPing;
-@@ -51,9 +52,20 @@ public interface ServerInfo
+@@ -51,9 +51,20 @@ public interface ServerInfo
       * Returns the MOTD which should be used when this server is a forced host.
       *
       * @return the motd
-+     * @deprecated in favour of {@link ServerInfo#motd()}
++     * @deprecated in favour of {@link #motd()}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      String getMotd();
@@ -439,39 +417,31 @@ index b0fc000a..c889c034 100644
 +     *
 +     * @return the motd
 +     */
-+    Component motd();
++    net.kyori.adventure.text.Component motd();
 +    // Waterfall end
 +
      /**
       * Whether this server is restricted and therefore only players with the
       * given permission can access it.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
-index f59b49c7..411eb9a9 100644
+index f59b49c7..3a27185e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
-@@ -2,6 +2,7 @@ package net.md_5.bungee.api.connection;
- 
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
-+import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.protocol.DefinedPacket;
- 
-@@ -47,7 +48,9 @@ public interface Connection
+@@ -47,7 +47,9 @@ public interface Connection
       *
       * @param reason the reason shown to the player / sent to the server on
       * disconnect
-+     * @deprecated in favour of {@link Connection#disconnect(Component)}
++     * @deprecated in favour of {@link #disconnect(net.kyori.adventure.text.Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void disconnect(BaseComponent... reason);
  
      /**
-@@ -57,9 +60,23 @@ public interface Connection
+@@ -57,9 +59,23 @@ public interface Connection
       *
       * @param reason the reason shown to the player / sent to the server on
       * disconnect
-+     * @deprecated in favour of {@link Connection#disconnect(Component)}
++     * @deprecated in favour of {@link #disconnect(net.kyori.adventure.text.Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void disconnect(BaseComponent reason);
@@ -485,41 +455,36 @@ index f59b49c7..411eb9a9 100644
 +     * @param reason the reason shown to the player / sent to the server on
 +     * disconnect
 +     */
-+    void disconnect(final Component reason);
++    void disconnect(final net.kyori.adventure.text.Component reason);
 +    // Waterfall end
 +
      /**
       * Gets whether this connection is currently open, ie: not disconnected, and
       * able to send / receive data.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 3dc32801..c2b09182 100644
+index 3dc32801..4c0b9089 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -3,6 +3,10 @@ package net.md_5.bungee.api.connection;
- import java.util.Locale;
- import java.util.Map;
- import java.util.UUID;
-+// Waterfall start - we're going on an adventure!
-+import net.kyori.adventure.audience.Audience;
-+import net.kyori.adventure.text.Component;
-+// Waterfall end
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.ChatMessageType;
- import net.md_5.bungee.api.CommandSender;
-@@ -18,7 +22,7 @@ import net.md_5.bungee.api.score.Scoreboard;
+@@ -13,12 +13,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.event.ServerConnectEvent;
+ import net.md_5.bungee.api.score.Scoreboard;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+ 
+ /**
   * Represents a player who's connection is being connected to somewhere else,
   * whether it be a remote or embedded server.
   */
 -public interface ProxiedPlayer extends Connection, CommandSender
-+public interface ProxiedPlayer extends Connection, CommandSender, Audience // Waterfall - we're going on an adventure!
++public interface ProxiedPlayer extends Connection, CommandSender, net.kyori.adventure.audience.Audience // Waterfall - we're going on an adventure!
  {
  
      /**
-@@ -53,22 +57,44 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -53,22 +54,44 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * Gets this player's display name.
       *
       * @return the players current display name
-+     * @deprecated in favour of {@link ProxiedPlayer#displayName()}
++     * @deprecated in favour of {@link #displayName()}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      String getDisplayName();
@@ -528,7 +493,7 @@ index 3dc32801..c2b09182 100644
       * Sets this players display name to be used by bungeecord commands and plugins.
       *
       * @param name the name to set
-+     * @deprecated in favour of {@link ProxiedPlayer#displayName(Component)}
++     * @deprecated in favour of {@link #displayName(Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void setDisplayName(String name);
@@ -554,47 +519,47 @@ index 3dc32801..c2b09182 100644
       *
       * @param position the screen position
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(ChatMessageType position, BaseComponent... message);
  
      /**
-@@ -76,7 +102,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -76,7 +99,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param position the screen position
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(Component, net.kyori.adventure.audience.MessageType)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(ChatMessageType position, BaseComponent message);
  
      /**
-@@ -84,7 +112,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -84,7 +109,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param sender the sender of the message
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(UUID sender, BaseComponent... message);
  
      /**
-@@ -92,7 +122,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -92,7 +119,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param sender the sender of the message
       * @param message the message to send
-+     * @deprecated in favour of {@link Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.identity.Identity, Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      public void sendMessage(UUID sender, BaseComponent message);
  
      /**
-@@ -236,9 +268,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -236,9 +265,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * Make this player chat (say something), to the server he is currently on.
       *
       * @param message the message to say
-+     * @deprecated in favour of {@link ProxiedPlayer#chat(Component)}
++     * @deprecated in favour of {@link #chat(Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void chat(String message);
@@ -611,21 +576,21 @@ index 3dc32801..c2b09182 100644
      /**
       * Get the server which this player will be sent to next time the log in.
       *
-@@ -316,7 +359,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -316,7 +356,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param header The header for the tab player list, null to clear it.
       * @param footer The footer for the tab player list, null to clear it.
-+     * @deprecated in favour of {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(Component, Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void setTabHeader(BaseComponent header, BaseComponent footer);
  
      /**
-@@ -324,12 +369,17 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -324,12 +366,17 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param header The header for the tab player list, null to clear it.
       * @param footer The footer for the tab player list, null to clear it.
-+     * @deprecated in favour of {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(Component, Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void setTabHeader(BaseComponent[] header, BaseComponent[] footer);
@@ -633,38 +598,38 @@ index 3dc32801..c2b09182 100644
      /**
       * Clears the header and footer displayed in the tab player list.
 +     *
-+     * @deprecated in favour of using empty components with {@link Audience#sendPlayerListHeaderAndFooter(Component, Component)}
++     * @deprecated in favour of using empty components with {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(Component, Component)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void resetTabHeader();
  
      /**
-@@ -338,7 +388,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -338,7 +385,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
       *
       * @param title The title to send to the player.
       * @see Title
-+     * @deprecated in favour of {@link Audience#showTitle(net.kyori.adventure.title.Title)}
++     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#showTitle(net.kyori.adventure.title.Title)}
       */
 +    @Deprecated // Waterfall - we're going on an adventure!
      void sendTitle(Title title);
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
-index a13eba79..bd6e2dad 100644
+index a13eba79..fd02b9e5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
-@@ -5,6 +5,11 @@ import lombok.Data;
- import lombok.EqualsAndHashCode;
- import lombok.Setter;
- import lombok.ToString;
+@@ -11,6 +11,11 @@ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.connection.PendingConnection;
+ import net.md_5.bungee.api.plugin.Cancellable;
+ import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult object to new constructor of LoginEvent
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +// Waterfall end
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.api.chat.TextComponent;
+ 
+ /**
+  * Event called to represent a player logging in.
 @@ -29,7 +34,10 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
       * Message to use when kicking if this event is canceled.
       */
@@ -677,13 +642,15 @@ index a13eba79..bd6e2dad 100644
  
      // Waterfall start - adding the LoginResult variable to provide access to it, when calling the login event
      /**
-@@ -65,8 +73,15 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
+@@ -65,8 +73,17 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      @Deprecated
      public String getCancelReason()
      {
 -        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++        // Waterfall start - we're going on an adventure!
 +//        return BaseComponent.toLegacyText( getCancelReasonComponents() );
 +        return LegacyComponentSerializer.legacySection().serialize(cancelReason);
++        // Waterfall end
 +    }
 +
 +    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
@@ -694,7 +661,7 @@ index a13eba79..bd6e2dad 100644
  
      /**
       * @param cancelReason reason to be displayed
-@@ -77,11 +92,42 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
+@@ -77,11 +94,42 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      @Deprecated
      public void setCancelReason(String cancelReason)
      {
@@ -740,20 +707,22 @@ index a13eba79..bd6e2dad 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
-index 87040d30..8d2db6a0 100644
+index 87040d30..757aea85 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
-@@ -5,6 +5,9 @@ import lombok.Data;
- import lombok.EqualsAndHashCode;
- import lombok.Setter;
- import lombok.ToString;
-+import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+@@ -10,6 +10,11 @@ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.connection.PendingConnection;
+ import net.md_5.bungee.api.plugin.Cancellable;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.api.chat.TextComponent;
-@@ -33,7 +36,10 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
++// Waterfall end
+ 
+ /**
+  * Event called to represent a player first making their presence and username
+@@ -33,7 +38,10 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
       * Message to use when kicking if this event is canceled.
       */
      @Setter(AccessLevel.NONE)
@@ -765,13 +734,15 @@ index 87040d30..8d2db6a0 100644
      /**
       * Connection attempting to login.
       */
-@@ -52,9 +58,16 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
+@@ -52,9 +60,18 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      @Deprecated
      public String getCancelReason()
      {
 -        return BaseComponent.toLegacyText( getCancelReasonComponents() );
++        // Waterfall start - we're going on an adventure!
 +//        return BaseComponent.toLegacyText( getCancelReasonComponents() );
 +        return LegacyComponentSerializer.legacySection().serialize(cancelReason);
++        // Waterfall end
      }
  
 +    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
@@ -783,7 +754,7 @@ index 87040d30..8d2db6a0 100644
      /**
       * @param cancelReason reason to be displayed
       * @deprecated Use
-@@ -64,11 +77,42 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
+@@ -64,11 +81,42 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      @Deprecated
      public void setCancelReason(String cancelReason)
      {
@@ -798,7 +769,7 @@ index 87040d30..8d2db6a0 100644
 +     * @param cancelReason reason to be displayed
 +     * @deprecated in favour of {@link #cancelReason(Component)}
 +     */
-+    @Deprecated // Waterfall start - we're going on an adventure!
++    @Deprecated // Waterfall - we're going on an adventure!
      public void setCancelReason(BaseComponent... cancelReason)
      {
 -        this.cancelReasonComponents = cancelReason;
@@ -829,21 +800,21 @@ index 87040d30..8d2db6a0 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
-index ee63732d..8c1becb7 100644
+index ee63732d..33e61334 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
-@@ -3,6 +3,11 @@ package net.md_5.bungee.api.event;
- import lombok.Data;
- import lombok.EqualsAndHashCode;
- import lombok.ToString;
+@@ -9,6 +9,11 @@ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.plugin.Cancellable;
+ import net.md_5.bungee.api.plugin.Event;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +// Waterfall end
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.api.chat.TextComponent;
- import net.md_5.bungee.api.config.ServerInfo;
+ 
+ /**
+  * Represents a player getting kicked from a server.
 @@ -35,7 +40,10 @@ public class ServerKickEvent extends Event implements Cancellable
      /**
       * Kick reason.
@@ -915,19 +886,21 @@ index ee63732d..8c1becb7 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-index b4566327..202a901d 100644
+index b4566327..f209feee 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-@@ -5,6 +5,8 @@ import lombok.AccessLevel;
- import lombok.Data;
+@@ -6,6 +6,10 @@ import lombok.Data;
  import lombok.RequiredArgsConstructor;
  import lombok.Setter;
+ import net.md_5.bungee.api.CommandSender;
++// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
- import net.md_5.bungee.api.CommandSender;
++// Waterfall end
  
  /**
-@@ -18,8 +20,11 @@ public abstract class Command
+  * A command that can be executed by a {@link CommandSender}.
+@@ -18,8 +22,11 @@ public abstract class Command
      private final String name;
      private final String permission;
      private final String[] aliases;
@@ -941,7 +914,7 @@ index b4566327..202a901d 100644
  
      /**
       * Construct a new command with no permissions or aliases.
-@@ -66,4 +71,24 @@ public abstract class Command
+@@ -66,4 +73,24 @@ public abstract class Command
      {
          return permission == null || permission.isEmpty() || sender.hasPermission( permission );
      }
@@ -1099,19 +1072,18 @@ index 849ba1cf..db3f95b0 100644
 +    // Waterfall end
  }
 diff --git a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-index aefe026e..2c2c0d34 100644
+index aefe026e..2f2a167b 100644
 --- a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
 +++ b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-@@ -3,6 +3,8 @@ package net.md_5.bungee.api;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
- import java.util.Collection;
-+
-+import net.kyori.adventure.text.Component;
- import net.md_5.bungee.api.config.ServerInfo;
+@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.event.ServerConnectEvent;
-@@ -43,6 +45,13 @@ public class ServerConnectRequestTest
+ import org.junit.Test;
++import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+ 
+ public class ServerConnectRequestTest
+ {
+@@ -43,6 +44,13 @@ public class ServerConnectRequestTest
              return null;
          }
  
@@ -1171,13 +1143,13 @@ index 00000000..06506c83
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2938f2f1..abccf735 100644
+index 2938f2f1..afca3258 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -51,6 +51,13 @@ import java.util.logging.Logger;
- import lombok.Getter;
- import lombok.Setter;
- import lombok.Synchronized;
+@@ -93,6 +93,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.audience.Audience;
 +import net.kyori.adventure.text.Component;
@@ -1185,9 +1157,9 @@ index 2938f2f1..abccf735 100644
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +import org.checkerframework.checker.nullness.qual.NonNull;
 +// Waterfall end
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.Favicon;
- import net.md_5.bungee.api.ProxyServer;
+ 
+ /**
+  * Main BungeeCord proxy class.
 @@ -169,7 +176,14 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( ScoreComponent.class, new ScoreComponentSerializer() )
              .registerTypeAdapter( SelectorComponent.class, new SelectorComponentSerializer() )
@@ -1211,7 +1183,7 @@ index 2938f2f1..abccf735 100644
 -                independentThreadStop( getTranslation( "restart" ), false );
 +                // Waterfall start - we're going on an adventure!
 +//                independentThreadStop( getTranslation( "restart" ), false );
-+                independentThreadStop(Component.text(getTranslation("restart")), false);
++                independentThreadStop(LegacyComponentSerializer.legacySection().deserialize(getTranslation("restart")), false);
 +                // Waterfall end
              }
          } );
@@ -1223,7 +1195,7 @@ index 2938f2f1..abccf735 100644
 -        stop( getTranslation( "restart" ) );
 +        // Waterfall start - we're going on an adventure!
 +//        stop( getTranslation( "restart" ) );
-+        stop(Component.text(getTranslation("restart")));
++        stop(LegacyComponentSerializer.legacySection().deserialize(getTranslation("restart")));
 +        // Waterfall end
      }
  
@@ -1303,19 +1275,21 @@ index 2938f2f1..abccf735 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 7b002089..218d51d3 100644
+index 7b002089..a4d1abbc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -18,6 +18,8 @@ import lombok.Getter;
- import lombok.RequiredArgsConstructor;
- import lombok.Synchronized;
- import lombok.ToString;
-+import net.kyori.adventure.text.Component; // Waterfall - we're going on an adventure!
+@@ -30,6 +30,10 @@ import net.md_5.bungee.netty.HandlerBoss;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
++// Waterfall start - we're going on an adventure!
++import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.ProxyServer;
-@@ -46,8 +48,11 @@ public class BungeeServerInfo implements ServerInfo
++// Waterfall end
+ 
+ // CHECKSTYLE:OFF
+ @RequiredArgsConstructor
+@@ -46,8 +50,11 @@ public class BungeeServerInfo implements ServerInfo
      @Getter
      private final SocketAddress socketAddress;
      private final Collection<ProxiedPlayer> players = new ArrayList<>();
@@ -1329,7 +1303,7 @@ index 7b002089..218d51d3 100644
      @Getter
      private final boolean restricted;
      @Getter
-@@ -78,6 +83,18 @@ public class BungeeServerInfo implements ServerInfo
+@@ -78,6 +85,18 @@ public class BungeeServerInfo implements ServerInfo
          return "bungeecord.server." + name;
      }
  
@@ -1349,17 +1323,17 @@ index 7b002089..218d51d3 100644
      public boolean canAccess(CommandSender player)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 5e452780..5526d3d6 100644
+index 5e452780..c3af070d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-@@ -9,6 +9,7 @@ import lombok.Data;
- import lombok.Getter;
- import lombok.RequiredArgsConstructor;
- import lombok.Setter;
-+import net.kyori.adventure.text.Component; // Waterfall start - we're going on an adventure!
- import net.md_5.bungee.api.chat.BaseComponent;
- import net.md_5.bungee.api.connection.Server;
+@@ -14,6 +14,7 @@ import net.md_5.bungee.api.connection.Server;
  import net.md_5.bungee.netty.ChannelWrapper;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
++import net.kyori.adventure.text.Component; // Waterfall start - we're going on an adventure!
+ 
+ @RequiredArgsConstructor
+ public class ServerConnection implements Server
 @@ -60,6 +61,14 @@ public class ServerConnection implements Server
          ch.close();
      }
@@ -1376,21 +1350,13 @@ index 5e452780..5526d3d6 100644
      public void disconnect(BaseComponent reason)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7ec119ea..c3b5afea 100644
+index 7ec119ea..40f9a869 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
- import com.google.common.collect.HashMultimap;
- import com.google.common.collect.ImmutableMap;
- import com.google.common.collect.Multimap;
-+import io.github.waterfallmc.waterfall.adventure.AdventureTitle; // Waterfall - we're going on an adventure!
- import io.netty.bootstrap.Bootstrap;
- import io.netty.channel.Channel;
- import io.netty.channel.ChannelFuture;
-@@ -27,6 +28,14 @@ import lombok.Getter;
- import lombok.NonNull;
- import lombok.RequiredArgsConstructor;
- import lombok.Setter;
+@@ -65,6 +65,15 @@ import net.md_5.bungee.tab.ServerUnique;
+ import net.md_5.bungee.tab.TabList;
+ import net.md_5.bungee.util.CaseInsensitiveSet;
+ import net.md_5.bungee.util.ChatComponentTransformer;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.audience.MessageType;
 +import net.kyori.adventure.identity.Identity;
@@ -1398,19 +1364,12 @@ index 7ec119ea..c3b5afea 100644
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
++import net.md_5.bungee.protocol.packet.Title.Action;
 +// Waterfall end
- import net.md_5.bungee.api.Callback;
- import net.md_5.bungee.api.ChatMessageType;
- import net.md_5.bungee.api.ProxyServer;
-@@ -61,6 +70,7 @@ import net.md_5.bungee.protocol.packet.Kick;
- import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.SetCompression;
-+import net.md_5.bungee.protocol.packet.Title.Action; // Waterfall - we're going on an adventure!
- import net.md_5.bungee.tab.ServerUnique;
- import net.md_5.bungee.tab.TabList;
- import net.md_5.bungee.util.CaseInsensitiveSet;
-@@ -131,8 +141,11 @@ public final class UserConnection implements ProxiedPlayer
+ 
+ @RequiredArgsConstructor
+ public final class UserConnection implements ProxiedPlayer
+@@ -131,8 +140,11 @@ public final class UserConnection implements ProxiedPlayer
      private final Multimap<Integer, Integer> potions = HashMultimap.create();
      // Waterfall end
      /*========================================================================*/
@@ -1424,7 +1383,7 @@ index 7ec119ea..c3b5afea 100644
      @Getter
      private EntityMap entityRewrite;
      private Locale locale;
-@@ -157,7 +170,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -157,7 +169,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
  
@@ -1436,7 +1395,7 @@ index 7ec119ea..c3b5afea 100644
  
          tabListHandler = new ServerUnique( this );
  
-@@ -193,7 +209,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -193,7 +208,10 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1448,7 +1407,7 @@ index 7ec119ea..c3b5afea 100644
      }
  
      @Override
-@@ -395,38 +414,70 @@ public final class UserConnection implements ProxiedPlayer
+@@ -395,38 +413,70 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void disconnect(String reason)
      {
@@ -1537,7 +1496,7 @@ index 7ec119ea..c3b5afea 100644
      }
  
      @Override
-@@ -436,6 +487,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -436,6 +486,14 @@ public final class UserConnection implements ProxiedPlayer
          server.getCh().write( new Chat( message ) );
      }
  
@@ -1552,7 +1511,7 @@ index 7ec119ea..c3b5afea 100644
      @Override
      public void sendMessage(String message)
      {
-@@ -517,6 +576,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -517,6 +575,13 @@ public final class UserConnection implements ProxiedPlayer
          }
      }
  
@@ -1566,7 +1525,7 @@ index 7ec119ea..c3b5afea 100644
      @Override
      public void sendData(String channel, byte[] data)
      {
-@@ -714,6 +780,16 @@ public final class UserConnection implements ProxiedPlayer
+@@ -714,6 +779,16 @@ public final class UserConnection implements ProxiedPlayer
          ) );
      }
  
@@ -1583,7 +1542,7 @@ index 7ec119ea..c3b5afea 100644
      @Override
      public void resetTabHeader()
      {
-@@ -727,6 +803,35 @@ public final class UserConnection implements ProxiedPlayer
+@@ -727,6 +802,35 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  
@@ -1598,7 +1557,7 @@ index 7ec119ea..c3b5afea 100644
 +
 +    @Override
 +    public void showTitle(net.kyori.adventure.title.@org.checkerframework.checker.nullness.qual.NonNull Title title) {
-+        AdventureTitle.send(this, title);
++        io.github.waterfallmc.waterfall.adventure.AdventureTitle.send(this, title);
 +    }
 +
 +    @Override
@@ -1619,7 +1578,7 @@ index 7ec119ea..c3b5afea 100644
      public String getExtraDataInHandshake()
      {
          return this.getPendingConnection().getExtraDataInHandshake();
-@@ -759,4 +864,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -759,4 +863,22 @@ public final class UserConnection implements ProxiedPlayer
          return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
      }
      // Waterfall end
@@ -1643,13 +1602,13 @@ index 7ec119ea..c3b5afea 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
-index 33d7e5bb..26aa00d8 100644
+index 33d7e5bb..dd99e3a8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
-@@ -5,6 +5,13 @@ import java.util.Collections;
- import lombok.AccessLevel;
- import lombok.Getter;
- import lombok.NoArgsConstructor;
+@@ -8,6 +8,13 @@ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.BaseComponent;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.audience.MessageType;
 +import net.kyori.adventure.identity.Identity;
@@ -1657,9 +1616,9 @@ index 33d7e5bb..26aa00d8 100644
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +import org.checkerframework.checker.nullness.qual.NonNull;
 +// Waterfall end
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.chat.BaseComponent;
+ 
+ /**
+  * Command sender representing the proxy console.
 @@ -46,6 +53,13 @@ public final class ConsoleCommandSender implements CommandSender
          sendMessage( message.toLegacyText() );
      }
@@ -1675,20 +1634,20 @@ index 33d7e5bb..26aa00d8 100644
      public String getName()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 65121ba2..bd1c15a5 100644
+index 65121ba2..90be1eee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -22,6 +22,10 @@ import java.util.Locale;
- import java.util.Map;
- import java.util.logging.Level;
- import lombok.RequiredArgsConstructor;
+@@ -32,6 +32,10 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
+ import org.yaml.snakeyaml.DumperOptions;
+ import org.yaml.snakeyaml.Yaml;
+ import org.yaml.snakeyaml.error.YAMLException;
 +// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 +// Waterfall end
- import net.md_5.bungee.Util;
- import net.md_5.bungee.api.ChatColor;
- import net.md_5.bungee.api.ProxyServer;
+ 
+ public class YamlConfig implements ConfigurationAdapter
+ {
 @@ -253,8 +257,11 @@ public class YamlConfig implements ConfigurationAdapter
  
          for ( Map<String, Object> val : base )
@@ -1744,21 +1703,23 @@ index 9e180c30..1c758f41 100644
          server.setObsolete( true );
          throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b7ecd828..cf7702c0 100644
+index b7ecd828..ff207950 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -16,6 +16,10 @@ import javax.crypto.spec.SecretKeySpec;
- 
- import lombok.Getter;
- import lombok.RequiredArgsConstructor;
+@@ -67,6 +67,12 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
+ import net.md_5.bungee.util.BoundedArrayList;
+ import net.md_5.bungee.util.BufUtil;
+ import net.md_5.bungee.util.QuietException;
++// Waterfall start - we're going on an adventure!
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 +import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 +import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
- import net.md_5.bungee.BungeeCord;
- import net.md_5.bungee.BungeeServerInfo;
- import net.md_5.bungee.EncryptionUtil;
-@@ -223,7 +227,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
++// Waterfall end
+ 
+ @RequiredArgsConstructor
+ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -223,7 +229,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          return pos == -1 ? str : str.substring( 0, pos );
      }
  
@@ -1767,7 +1728,7 @@ index b7ecd828..cf7702c0 100644
      {
          return new ServerPing(
                  new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), protocol ),
-@@ -238,7 +242,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -238,7 +244,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
@@ -1779,7 +1740,7 @@ index b7ecd828..cf7702c0 100644
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
-@@ -248,7 +255,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -248,7 +257,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( error != null )
                  {
@@ -1791,7 +1752,7 @@ index b7ecd828..cf7702c0 100644
                      bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
                  }
  
-@@ -400,7 +410,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -400,7 +412,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -1803,7 +1764,7 @@ index b7ecd828..cf7702c0 100644
                      return;
                  }
                  if ( ch.isClosed() )
-@@ -529,7 +542,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -529,7 +544,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -1815,7 +1776,7 @@ index b7ecd828..cf7702c0 100644
                      return;
                  }
                  if ( ch.isClosed() )
-@@ -590,7 +606,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -590,7 +608,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -1827,7 +1788,7 @@ index b7ecd828..cf7702c0 100644
          } else
          {
              ch.close();
-@@ -600,13 +619,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -600,13 +621,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void disconnect(final BaseComponent... reason)
      {
@@ -1851,12 +1812,12 @@ index b7ecd828..cf7702c0 100644
      }
  
      @Override
-@@ -618,7 +640,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -618,6 +642,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          } );
      }
  
 +    // Waterfall start - we're going on an adventure!
-     @Override
++    @Override
 +    public void disconnect(Component reason) {
 +        if (canSendKickMessage()) {
 +            ch.delayedClose(new Kick(GsonComponentSerializer.gson().serialize(reason)));
@@ -1866,9 +1827,9 @@ index b7ecd828..cf7702c0 100644
 +    }
 +    // Waterfall end
 +
+     @Override
      public String getName()
      {
-         return ( name != null ) ? name : ( loginRequest == null ) ? null : loginRequest.getData();
 -- 
-2.24.1.windows.2
+2.31.1
 
