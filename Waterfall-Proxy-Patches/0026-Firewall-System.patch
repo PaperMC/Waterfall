@@ -1,4 +1,4 @@
-From b18c16e3bb5a0e71261a854327ec7966b6af279e Mon Sep 17 00:00:00 2001
+From 59870243f92af6df6734c1860ee0038b2205b1ec Mon Sep 17 00:00:00 2001
 From: linsaftw <linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 19:23:36 -0300
 Subject: [PATCH] Firewall System
@@ -63,6 +63,58 @@ index 8957c79a..fd889644 100644
      }
  }
 \ No newline at end of file
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index 650cb302..b7268e1d 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -13,7 +13,12 @@ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
+     @Getter
+-    private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false;
++    private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false, firewallNotify = true,
++            firewallEnabled = true;
++    @Getter
++    private int firewallSeconds = 60;
++    @Getter
++    private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
+ 
+     public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
+         try {
+@@ -32,6 +37,10 @@ public class FlameCordConfiguration {
+                     configuration);
+             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
+             this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
++            this.firewallEnabled = setIfUnexistant("firewall.enabled", this.firewallEnabled, configuration);
++            this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
++            this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
++            this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
+ 
+             if (!configurationExists) {
+                 configurationProvider.save(configuration, configurationFile);
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index ebfaa761..c88077ad 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -82,9 +82,17 @@ public class MessagesConfiguration {
+ 			setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
+ 
+ 			// FlameCord
++			setIfUnexistant("firewall_added", "&e{0}&c had been firewalled from the proxy!", configuration);
++			setIfUnexistant("firewall_blocked", "&e{0}&c is firewalled from the proxy, request blocked!",
++					configuration);
++			setIfUnexistant("firewall_info",
++					"&aThere are&b {0} &aaddresses firewalled!\n&aThe firewall will clear in &b{1} &aseconds!",
++					configuration);
++			setIfUnexistant("firewall_cleared", "&b{0}&a addresses had been automatically removed from the firewall!",
++					configuration);
+ 			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
+ 			setIfUnexistant("flamecord_help",
+-					"&aFlameCord&b {0}&a by&b LinsaFTW&a &&b Sammwy&r\n&e /flamecord reload&7 >&b Reloads FlameCord files!\n&e /flamecord help&7 >&b Shows this message!",
++					"&aFlameCord&b {0}&a by&b LinsaFTW&a &&b Sammwy&r\n&e /flamecord reload&7 >&b Reloads FlameCord files!\n&e /flamecord firewall&7 >&b Shows information about the Firewall!\n&e /flamecord help&7 >&b Shows this message!",
+ 					configuration);
+ 			setIfUnexistant("flamecord_nopermission", "&cYou don't have permission to do this!", configuration);
+ 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
 new file mode 100644
 index 00000000..6a661898
