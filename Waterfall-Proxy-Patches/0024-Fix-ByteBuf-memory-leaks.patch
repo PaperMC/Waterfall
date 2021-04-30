@@ -167,49 +167,6 @@ index cefa0206..2cd5740c 100644
          }
          return modTags;
      }
-diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 46e338ca..048ac826 100644
---- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-+++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -100,23 +100,32 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-         if ( msg instanceof HAProxyMessage )
-         {
-             HAProxyMessage proxy = (HAProxyMessage) msg;
--            InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
- 
--            ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
-+            try
-             {
--                channel.getRemoteAddress(), newAddress
--            } );
-+                InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
-+
-+                ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
-+                {
-+                    channel.getRemoteAddress(), newAddress
-+                } );
- 
--            channel.setRemoteAddress( newAddress );
-+                channel.setRemoteAddress( newAddress );
-+            } finally 
-+            {
-+            proxy.release();
-+            }
-             return;
-         }
- 
-         if ( handler != null )
-         {
-             PacketWrapper packet = (PacketWrapper) msg;
--            boolean sendPacket = handler.shouldHandle( packet );
-+
-             try
-             {
-+                boolean sendPacket = handler.shouldHandle( packet );
-+
-                 if ( sendPacket && packet.packet != null )
-                 {
-                     try
 --
 2.31.0.windows.1
 
