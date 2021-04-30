@@ -1,4 +1,4 @@
-From 18b08582d180a2fbffeec2234c143d26857382e2 Mon Sep 17 00:00:00 2001
+From 93bb936ae38b16084d021f522e461a1fcba439f0 Mon Sep 17 00:00:00 2001
 From: Callum Seabrook <callum.seabrook@prevarinite.com>
 Date: Wed, 28 Apr 2021 17:02:18 +0100
 Subject: [PATCH] Adventure
@@ -95,7 +95,7 @@ index d5888311..72f3da4c 100644
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index a4011335..e73f093d 100644
+index a4011335..092aaf09 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -17,7 +17,7 @@ import net.md_5.bungee.api.plugin.Plugin;
@@ -148,7 +148,7 @@ index a4011335..e73f093d 100644
 +     * @param restricted whether the server will be restricted or not
 +     * @return the constructed instance
 +     */
-+    public abstract ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress address, final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
++    public abstract @org.checkerframework.checker.nullness.qual.NonNull ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress address, final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
 +    // Waterfall end
 +
      /**
@@ -174,7 +174,7 @@ index a4011335..e73f093d 100644
 +     * @param restricted whether the server will be restricted or not
 +     * @return the constructed instance
 +     */
-+    public abstract ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull SocketAddress address, final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
++    public abstract @org.checkerframework.checker.nullness.qual.NonNull ServerInfo constructServerInfo(final @org.checkerframework.checker.nullness.qual.NonNull String name, final @org.checkerframework.checker.nullness.qual.NonNull SocketAddress address, final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, final boolean restricted);
 +    // Waterfall end
 +
      /**
@@ -210,7 +210,7 @@ index a4011335..e73f093d 100644
  
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index fc92a7b5..6eda2d70 100644
+index fc92a7b5..f84601b2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -78,7 +78,10 @@ public class ServerPing
@@ -225,13 +225,18 @@ index fc92a7b5..6eda2d70 100644
      private Favicon favicon;
  
      @Data
-@@ -114,6 +117,13 @@ public class ServerPing
+@@ -114,6 +117,18 @@ public class ServerPing
          this( version, players, new TextComponent( TextComponent.fromLegacyText( description ) ), favicon );
      }
  
 +    // Waterfall start - write out the previously Lombok-generated constructor - we're going on an adventure!
 +    @Deprecated
-+    public ServerPing(final Protocol version, final Players players, final BaseComponent description, final Favicon favicon) {
++    public ServerPing(
++        final @org.checkerframework.checker.nullness.qual.NonNull Protocol version,
++        final @org.checkerframework.checker.nullness.qual.NonNull Players players,
++        final @org.checkerframework.checker.nullness.qual.NonNull BaseComponent description,
++        final @org.checkerframework.checker.nullness.qual.NonNull Favicon favicon
++    ) {
 +        this(version, players, net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer.get().deserialize(new BaseComponent[]{description}), favicon);
 +    }
 +    // Waterfall end
@@ -239,7 +244,7 @@ index fc92a7b5..6eda2d70 100644
      @Deprecated
      public String getFavicon()
      {
-@@ -139,22 +149,50 @@ public class ServerPing
+@@ -139,22 +154,50 @@ public class ServerPing
      @Deprecated
      public void setDescription(String description)
      {
@@ -284,11 +289,11 @@ index fc92a7b5..6eda2d70 100644
 +    }
 +
 +    // Waterfall start - we're going on an adventure!
-+    public net.kyori.adventure.text.Component description() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component description() {
          return description;
      }
 +
-+    public void description(final net.kyori.adventure.text.Component description) {
++    public void description(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component description) {
 +        this.description = description;
 +    }
 +    // Waterfall end
@@ -309,7 +314,7 @@ index 4717f40d..a7b861bf 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
-index 71abdc87..538b23f1 100644
+index 71abdc87..b95d793b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
 +++ b/api/src/main/java/net/md_5/bungee/api/config/ListenerInfo.java
 @@ -23,7 +23,10 @@ public class ListenerInfo
@@ -338,14 +343,14 @@ index 71abdc87..538b23f1 100644
 +    // Waterfall start - rewrite previously Lombok-generated constructor - we're going on an adventure!
 +    @Deprecated
 +    public ListenerInfo(
-+        final InetSocketAddress host,
-+        final String motd,
++        final @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress host,
++        final @org.checkerframework.checker.nullness.qual.NonNull String motd,
 +        final int maxPlayers,
 +        final int tabListSize,
-+        final List<String> serverPriority,
++        final @org.checkerframework.checker.nullness.qual.NonNull List<String> serverPriority,
 +        final boolean forceDefault,
-+        final Map<String, String> forcedHosts,
-+        final String tabListType,
++        final @org.checkerframework.checker.nullness.qual.NonNull Map<String, String> forcedHosts,
++        final @org.checkerframework.checker.nullness.qual.NonNull String tabListType,
 +        final boolean setLocalAddress,
 +        final boolean pingPassthrough,
 +        final int queryPort,
@@ -365,19 +370,19 @@ index 71abdc87..538b23f1 100644
      }
 +
 +    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
-+    public String getMotd() {
++    public @org.checkerframework.checker.nullness.qual.NonNull String getMotd() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(motd);
 +    }
 +    // Waterfall end
 +
 +    // Waterfall start - we're going on an adventure!
-+    public net.kyori.adventure.text.Component motd() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd() {
 +        return motd;
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
-index b0fc000a..a30ef6b2 100644
+index b0fc000a..084e8ed0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
 +++ b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
 @@ -51,9 +51,20 @@ public interface ServerInfo
@@ -395,14 +400,14 @@ index b0fc000a..a30ef6b2 100644
 +     *
 +     * @return the motd
 +     */
-+    net.kyori.adventure.text.Component motd();
++    net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd();
 +    // Waterfall end
 +
      /**
       * Whether this server is restricted and therefore only players with the
       * given permission can access it.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
-index f59b49c7..3a27185e 100644
+index f59b49c7..72f68ad6 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
 @@ -47,7 +47,9 @@ public interface Connection
@@ -433,14 +438,14 @@ index f59b49c7..3a27185e 100644
 +     * @param reason the reason shown to the player / sent to the server on
 +     * disconnect
 +     */
-+    void disconnect(final net.kyori.adventure.text.Component reason);
++    void disconnect(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component reason);
 +    // Waterfall end
 +
      /**
       * Gets whether this connection is currently open, ie: not disconnected, and
       * able to send / receive data.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 3dc32801..eb0e8350 100644
+index 3dc32801..602c87be 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -18,7 +18,7 @@ import net.md_5.bungee.api.score.Scoreboard;
@@ -448,7 +453,7 @@ index 3dc32801..eb0e8350 100644
   * whether it be a remote or embedded server.
   */
 -public interface ProxiedPlayer extends Connection, CommandSender
-+public interface ProxiedPlayer extends Connection, CommandSender, net.kyori.adventure.audience.Audience // Waterfall - we're going on an adventure!
++public interface ProxiedPlayer extends Connection, CommandSender, net.kyori.adventure.audience.Audience, net.kyori.adventure.identity.Identified // Waterfall - we're going on an adventure!
  {
  
      /**
@@ -476,14 +481,14 @@ index 3dc32801..eb0e8350 100644
 +     *
 +     * @return the player's current display name
 +     */
-+    net.kyori.adventure.text.Component displayName();
++    net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component displayName();
 +
 +    /**
 +     * Sets this player's display name to be used by BungeeCord commands and plugins.
 +     *
 +     * @param name the new name to set the display name to
 +     */
-+    void displayName(final net.kyori.adventure.text.Component name);
++    void displayName(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component name);
 +    // Waterfall end
 +
      /**
@@ -542,7 +547,7 @@ index 3dc32801..eb0e8350 100644
 +     *
 +     * @param message the message to make this player say
 +     */
-+    void chat(final net.kyori.adventure.text.Component message);
++    void chat(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component message);
 +    // Waterfall end
 +
      /**
@@ -586,8 +591,20 @@ index 3dc32801..eb0e8350 100644
      void sendTitle(Title title);
  
      /**
+@@ -387,4 +435,11 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * @return this player's {@link Scoreboard}
+      */
+     Scoreboard getScoreboard();
++
++    // Waterfall start - we're going on an adventure!
++    @Override
++    default net.kyori.adventure.identity.@org.checkerframework.checker.nullness.qual.NonNull Identity identity() {
++        return net.kyori.adventure.identity.Identity.identity(getUniqueId());
++    }
++    // Waterfall end
+ }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
-index a13eba79..7fecd7bb 100644
+index a13eba79..d431fcdd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
 @@ -29,7 +29,10 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
@@ -597,7 +614,7 @@ index a13eba79..7fecd7bb 100644
 -    private BaseComponent[] cancelReasonComponents;
 +    // Waterfall start - we're going on an adventure!
 +//    private BaseComponent[] cancelReasonComponents;
-+    private net.kyori.adventure.text.Component cancelReason;
++    private net.kyori.adventure.text.Component cancelReason = net.kyori.adventure.text.Component.empty();
 +    // Waterfall end
  
      // Waterfall start - adding the LoginResult variable to provide access to it, when calling the login event
@@ -652,7 +669,7 @@ index a13eba79..7fecd7bb 100644
 +     *
 +     * @return the reason why this event was cancelled
 +     */
-+    public net.kyori.adventure.text.Component cancelReason() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component cancelReason() {
 +        return cancelReason;
 +    }
 +
@@ -661,13 +678,13 @@ index a13eba79..7fecd7bb 100644
 +     *
 +     * @param cancelReason the new reason why this event was cancelled
 +     */
-+    public void cancelReason(final net.kyori.adventure.text.Component cancelReason) {
++    public void cancelReason(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component cancelReason) {
 +        this.cancelReason = cancelReason;
      }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
-index 87040d30..1be745ec 100644
+index 87040d30..dcd6b77c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
 @@ -33,7 +33,10 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
@@ -677,7 +694,7 @@ index 87040d30..1be745ec 100644
 -    private BaseComponent[] cancelReasonComponents;
 +    // Waterfall start - we're going on an adventure!
 +//    private BaseComponent[] cancelReasonComponents;
-+    private net.kyori.adventure.text.Component cancelReason;
++    private net.kyori.adventure.text.Component cancelReason = net.kyori.adventure.text.Component.empty();
 +    // Waterfall end
      /**
       * Connection attempting to login.
@@ -733,7 +750,7 @@ index 87040d30..1be745ec 100644
 +     *
 +     * @return the reason why this event was cancelled
 +     */
-+    public net.kyori.adventure.text.Component cancelReason() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component cancelReason() {
 +        return cancelReason;
 +    }
 +
@@ -742,13 +759,13 @@ index 87040d30..1be745ec 100644
 +     *
 +     * @param cancelReason the new reason why this event was cancelled
 +     */
-+    public void cancelReason(final net.kyori.adventure.text.Component cancelReason) {
++    public void cancelReason(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component cancelReason) {
 +        this.cancelReason = cancelReason;
      }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
-index ee63732d..99531169 100644
+index ee63732d..8b25a7cd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 @@ -35,7 +35,10 @@ public class ServerKickEvent extends Event implements Cancellable
@@ -812,17 +829,17 @@ index ee63732d..99531169 100644
 +    // Waterfall end
 +
 +    // Waterfall start - we're going on an adventure!
-+    public net.kyori.adventure.text.Component kickReason() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component kickReason() {
 +        return kickReason;
 +    }
 +
-+    public void kickReason(final net.kyori.adventure.text.Component kickReason) {
++    public void kickReason(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component kickReason) {
 +        this.kickReason = kickReason;
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-index b4566327..848bfe6d 100644
+index b4566327..cef82f29 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 @@ -18,8 +18,11 @@ public abstract class Command
@@ -845,27 +862,27 @@ index b4566327..848bfe6d 100644
      }
 +
 +    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
-+    public String getPermissionMessage() {
++    public @org.checkerframework.checker.nullness.qual.Nullable String getPermissionMessage() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(permissionMessage);
 +    }
 +
-+    protected void setPermissionMessage(final String permissionMessage) {
-+        this.permissionMessage = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(permissionMessage);
++    protected void setPermissionMessage(final @org.checkerframework.checker.nullness.qual.Nullable String permissionMessage) {
++        this.permissionMessage = permissionMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(permissionMessage) : null;
 +    }
 +    // Waterfall end
 +
 +    // Waterfall start - we're going on an adventure!
-+    public net.kyori.adventure.text.Component permissionMessage() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.Nullable Component permissionMessage() {
 +        return permissionMessage;
 +    }
 +
-+    protected void permissionMessage(final net.kyori.adventure.text.Component permissionMessage) {
++    protected void permissionMessage(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.Nullable Component permissionMessage) {
 +        this.permissionMessage = permissionMessage;
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Objective.java b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
-index 0dd25646..86bb9f70 100644
+index 0dd25646..5db935ed 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Objective.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
 @@ -15,6 +15,12 @@ public class Objective
@@ -881,19 +898,23 @@ index 0dd25646..86bb9f70 100644
      /**
       * Value of the objective.
       */
-@@ -23,4 +29,10 @@ public class Objective
+@@ -23,4 +29,14 @@ public class Objective
       * Type; integer or hearts
       */
      private String type;
 +
 +    // Waterfall start - write previously Lombok-generated constructor - we're going on an adventure!
-+    public Objective(final String name, final String value, final String type) {
++    public Objective(
++        final @org.checkerframework.checker.nullness.qual.NonNull String name,
++        final @org.checkerframework.checker.nullness.qual.NonNull String value,
++        final @org.checkerframework.checker.nullness.qual.NonNull String type
++    ) {
 +        this(name, net.kyori.adventure.text.Component.empty(), value, type);
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
-index 849ba1cf..c5638876 100644
+index 849ba1cf..7e93e275 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Team.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Team.java
 @@ -13,9 +13,14 @@ public class Team
@@ -905,11 +926,11 @@ index 849ba1cf..c5638876 100644
 -    private String suffix;
 +    // Waterfall start - we're going on an adventure!
 +//    private String displayName;
-+    private net.kyori.adventure.text.Component displayName;
++    private net.kyori.adventure.text.Component displayName = net.kyori.adventure.text.Component.empty();
 +//    private String prefix;
-+    private net.kyori.adventure.text.Component prefix;
++    private net.kyori.adventure.text.Component prefix = net.kyori.adventure.text.Component.empty();
 +//    private String suffix;
-+    private net.kyori.adventure.text.Component suffix;
++    private net.kyori.adventure.text.Component suffix = net.kyori.adventure.text.Component.empty();
 +    // Waterfall end
      private byte friendlyFire;
      private String nameTagVisibility;
@@ -921,64 +942,64 @@ index 849ba1cf..c5638876 100644
 +
 +    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
 +    @Deprecated
-+    public String getDisplayName() {
++    public @org.checkerframework.checker.nullness.qual.NonNull String getDisplayName() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(displayName);
 +    }
 +
 +    @Deprecated
-+    public void setDisplayName(final String displayName) {
++    public void setDisplayName(final @org.checkerframework.checker.nullness.qual.NonNull String displayName) {
 +        this.displayName = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(displayName);
 +    }
 +
 +    @Deprecated
-+    public String getPrefix() {
++    public @org.checkerframework.checker.nullness.qual.NonNull String getPrefix() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(prefix);
 +    }
 +
 +    @Deprecated
-+    public void setPrefix(final String prefix) {
++    public void setPrefix(final @org.checkerframework.checker.nullness.qual.NonNull String prefix) {
 +        this.prefix = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(prefix);
 +    }
 +
 +    @Deprecated
-+    public String getSuffix() {
++    public @org.checkerframework.checker.nullness.qual.NonNull String getSuffix() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(suffix);
 +    }
 +
 +    @Deprecated
-+    public void setSuffix(final String suffix) {
++    public void setSuffix(final @org.checkerframework.checker.nullness.qual.NonNull String suffix) {
 +        this.suffix = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(suffix);
 +    }
 +    // Waterfall end
 +
 +    // Waterfall start - we're going on an adventure!
-+    public net.kyori.adventure.text.Component displayName() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component displayName() {
 +        return displayName;
 +    }
 +
-+    public void displayName(final net.kyori.adventure.text.Component displayName) {
++    public void displayName(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component displayName) {
 +        this.displayName = displayName;
 +    }
 +
-+    public net.kyori.adventure.text.Component prefix() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component prefix() {
 +        return prefix;
 +    }
 +
-+    public void prefix(final net.kyori.adventure.text.Component prefix) {
++    public void prefix(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component prefix) {
 +        this.prefix = prefix;
 +    }
 +
-+    public net.kyori.adventure.text.Component suffix() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component suffix() {
 +        return suffix;
 +    }
 +
-+    public void suffix(final net.kyori.adventure.text.Component suffix) {
++    public void suffix(final net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component suffix) {
 +        this.suffix = suffix;
 +    }
 +    // Waterfall end
  }
 diff --git a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-index aefe026e..83bee916 100644
+index aefe026e..a5ccc04e 100644
 --- a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
 +++ b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
 @@ -43,6 +43,13 @@ public class ServerConnectRequestTest
@@ -987,8 +1008,8 @@ index aefe026e..83bee916 100644
  
 +        // Waterfall start - we're going on an adventure!
 +        @Override
-+        public net.kyori.adventure.text.Component motd() {
-+            return null;
++        public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd() {
++            return net.kyori.adventure.text.Component.empty();
 +        }
 +        // Waterfall end
 +
@@ -997,16 +1018,17 @@ index aefe026e..83bee916 100644
          {
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/WaterfallAdventure.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/WaterfallAdventure.java
 new file mode 100644
-index 00000000..11c57a03
+index 00000000..8b6e2e32
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/adventure/WaterfallAdventure.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,40 @@
 +package io.github.waterfallmc.waterfall.adventure;
 +
 +import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 +import net.kyori.adventure.title.Title;
 +import net.md_5.bungee.api.connection.Connection;
 +import net.md_5.bungee.protocol.packet.Title.Action;
++import org.checkerframework.checker.nullness.qual.NonNull;
 +
 +import java.util.Objects;
 +
@@ -1018,7 +1040,7 @@ index 00000000..11c57a03
 +        if (title.times() != null) connection.unsafe().sendPacket(createPacket(Action.TIMES, title));
 +    }
 +
-+    private static net.md_5.bungee.protocol.packet.Title createPacket(final Action action, final Title title) {
++    private static net.md_5.bungee.protocol.packet.@NonNull Title createPacket(final Action action, final Title title) {
 +        final net.md_5.bungee.protocol.packet.Title packet = new net.md_5.bungee.protocol.packet.Title();
 +        packet.setAction(action);
 +
@@ -1041,7 +1063,7 @@ index 00000000..11c57a03
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2938f2f1..0b461f3f 100644
+index 2938f2f1..df02d624 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -169,7 +169,14 @@ public class BungeeCord extends ProxyServer
@@ -1128,7 +1150,7 @@ index 2938f2f1..0b461f3f 100644
  
 +    // Waterfall start - we're going on an adventure!
 +    @Override
-+    public ServerInfo constructServerInfo(@org.checkerframework.checker.nullness.qual.NonNull String name, @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress address, net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, boolean restricted) {
++    public @org.checkerframework.checker.nullness.qual.NonNull ServerInfo constructServerInfo(@org.checkerframework.checker.nullness.qual.NonNull String name, @org.checkerframework.checker.nullness.qual.NonNull InetSocketAddress address, net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, boolean restricted) {
 +        return constructServerInfo(name, (SocketAddress) address, motd, restricted);
 +    }
 +
@@ -1141,7 +1163,7 @@ index 2938f2f1..0b461f3f 100644
 +    }
 +
 +    @Override
-+    public ServerInfo constructServerInfo(@org.checkerframework.checker.nullness.qual.NonNull String name, @org.checkerframework.checker.nullness.qual.NonNull SocketAddress address, net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, boolean restricted) {
++    public @org.checkerframework.checker.nullness.qual.NonNull ServerInfo constructServerInfo(@org.checkerframework.checker.nullness.qual.NonNull String name, @org.checkerframework.checker.nullness.qual.NonNull SocketAddress address, net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd, boolean restricted) {
 +        return new BungeeServerInfo(name, address, motd, restricted);
      }
 +    // Waterfall end
@@ -1159,7 +1181,7 @@ index 2938f2f1..0b461f3f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 7b002089..f17bb468 100644
+index 7b002089..1b1e5350 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -46,8 +46,11 @@ public class BungeeServerInfo implements ServerInfo
@@ -1187,7 +1209,7 @@ index 7b002089..f17bb468 100644
 +    }
 +
 +    @Override
-+    public net.kyori.adventure.text.Component motd() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component motd() {
 +        return motd;
 +    }
 +    // Waterfall end
@@ -1196,7 +1218,7 @@ index 7b002089..f17bb468 100644
      public boolean canAccess(CommandSender player)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 5e452780..698e706f 100644
+index 5e452780..d31edfc2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 @@ -60,6 +60,14 @@ public class ServerConnection implements Server
@@ -1205,7 +1227,7 @@ index 5e452780..698e706f 100644
  
 +    // Waterfall - we're going on an adventure!
 +    @Override
-+    public void disconnect(net.kyori.adventure.text.Component reason) {
++    public void disconnect(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component reason) {
 +        // we ignore the reason rather than throwing like the above does as this should fail silently
 +        ch.close();
 +    }
@@ -1215,7 +1237,7 @@ index 5e452780..698e706f 100644
      public void disconnect(BaseComponent reason)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7ec119ea..115c287c 100644
+index 7ec119ea..a03f4ba8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -131,8 +131,11 @@ public final class UserConnection implements ProxiedPlayer
@@ -1299,7 +1321,7 @@ index 7ec119ea..115c287c 100644
 -            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
 +    // Waterfall start - we're going on an adventure!
 +    @Override
-+    public void disconnect(net.kyori.adventure.text.Component reason) {
++    public void disconnect(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component reason) {
 +        disconnect0(reason);
 +    }
 +    // Waterfall end
@@ -1351,7 +1373,7 @@ index 7ec119ea..115c287c 100644
  
 +    // Waterfall start - we're going on an adventure!
 +    @Override
-+    public void chat(net.kyori.adventure.text.Component message) {
++    public void chat(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component message) {
 +        Preconditions.checkState(server != null, "Not connected to server!");
 +        server.getCh().write(new Chat(net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(message)));
 +    }
@@ -1440,12 +1462,12 @@ index 7ec119ea..115c287c 100644
 +
 +    // Waterfall start - we're going on an adventure!
 +    @Override
-+    public net.kyori.adventure.text.Component displayName() {
++    public net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component displayName() {
 +        return displayName;
 +    }
 +
 +    @Override
-+    public void displayName(net.kyori.adventure.text.Component name) {
++    public void displayName(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component name) {
 +        this.displayName = name;
 +    }
 +    // Waterfall end
@@ -1527,7 +1549,7 @@ index 9e180c30..1c758f41 100644
          server.setObsolete( true );
          throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b7ecd828..9e9430e8 100644
+index b7ecd828..81fe654f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -223,7 +223,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -1629,7 +1651,7 @@ index b7ecd828..9e9430e8 100644
  
 +    // Waterfall start - we're going on an adventure!
 +    @Override
-+    public void disconnect(net.kyori.adventure.text.Component reason) {
++    public void disconnect(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component reason) {
 +        if (canSendKickMessage()) {
 +            ch.delayedClose(new Kick(net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(reason)));
 +        } else {
