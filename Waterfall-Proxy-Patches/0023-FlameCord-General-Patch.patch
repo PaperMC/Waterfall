@@ -1,4 +1,4 @@
-From 7d558615b4ce5eae94afe9f013368dd7b232c27e Mon Sep 17 00:00:00 2001
+From 683075f7987cdd69042088d383509914a1f148e9 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -352,7 +352,7 @@ index 000000000..e82c4844b
 +        }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index bb39d31b8..3318b1de3 100644
+index bb39d31b8..b77ce763f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,5 +1,6 @@
@@ -362,13 +362,12 @@ index bb39d31b8..3318b1de3 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufUtil;
  import io.netty.channel.ChannelHandlerContext;
-@@ -102,7 +103,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -102,7 +103,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
 -            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
 +
-+            // FlameCord - Change from FastDecoderException to DecoderException
 +            throw new FastDecoderException( "Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e ); // Waterfall
          } finally
          {
