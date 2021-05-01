@@ -1,0 +1,134 @@
+From 4e2cb9724d144d7d0257716b50984d7fd164535d Mon Sep 17 00:00:00 2001
+From: linsaftw <25271111+linsaftw@users.noreply.github.com>
+Date: Fri, 30 Apr 2021 23:51:51 -0300
+Subject: [PATCH] FlameCord logger options
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index 8bb61ac11..8822c6d33 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
++    @Getter
++    private boolean loggerInitialhandler = false;
++    @Getter
++    private boolean loggerExceptions = false;
++    @Getter
++    private boolean loggerDump = false;
++    @Getter
++    private boolean loggerHaProxy = false;
++
+     @Getter
+     private boolean firewallNotify = true;
+     @Getter
+@@ -34,6 +43,12 @@ public class FlameCordConfiguration {
+                 configuration = configurationProvider.load(configurationFile);
+             }
+ 
++            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler,
++                    configuration);
++            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
++            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
++            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
++            
+             this.firewallEnabled = setIfUnexistant("firewall.enabled", this.firewallEnabled, configuration);
+             this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
+             this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 18bab507a..86869e5b4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -369,7 +369,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             case 1:
+                 // Ping
+-                if ( bungee.getConfig().isLogPings() )
++                // FlameCord - Option to log initialhandler
++                if ( bungee.getConfig().isLogPings() && FlameCord.getInstance().getFlameCordConfiguration().isLoggerInitialhandler() )
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
+                 }
+@@ -378,7 +379,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 break;
+             case 2:
+                 // Login
+-                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
++                // FlameCord - Option to log initialhandler
++                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() && FlameCord.getInstance().getFlameCordConfiguration().isLoggerInitialhandler() ) // Waterfall
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                 }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 5de0414ec..9f70323ee 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -48,7 +48,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel = new ChannelWrapper( ctx );
+             handler.connected( channel );
+ 
+-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
++            // FlameCord - Option to log initialhandler
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && FlameCord.getInstance().getFlameCordConfiguration().isLoggerInitialhandler() )
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
+             }
+@@ -64,7 +65,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             channel.close();
+             handler.disconnected( channel );
+ 
+-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
++            // FlameCord - Option to log initialhandler
++            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) && FlameCord.getInstance().getFlameCordConfiguration().isLoggerInitialhandler() )
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
+             }
+@@ -95,10 +97,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             {
+                 InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
+ 
+-                ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
+-                {
+-                    channel.getRemoteAddress(), newAddress
+-                } );
++                // FlameCord - Option to log haproxy
++                if ( FlameCord.getInstance().getFlameCordConfiguration().isLoggerHaProxy() ) {
++                    ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
++                    {
++                        channel.getRemoteAddress(), newAddress
++                    } );
++                }
+ 
+                 channel.setRemoteAddress( newAddress );
+             } finally
+@@ -142,6 +147,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+         {
+             boolean logExceptions = !( handler instanceof PingHandler );
+ 
++            // FlameCord - Option to log exceptions
++            logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
++
+             // FlameCord - Don't log firewall exceptions
+             logExceptions = cause instanceof FirewallException ? false : logExceptions;
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 81987ca39..8808a989c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -115,7 +115,10 @@ public class PipelineUtils
+         // FlameCord - Close on exception caught
+         @Override
+         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+-            cause.printStackTrace();
++            // FlameCord - Option to log exceptions
++            if (FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions()) {
++                cause.printStackTrace();
++            }
+ 
+             ctx.close();
+         }
+-- 
+2.31.1
+
