@@ -1,4 +1,4 @@
-From c366cae9359b1f027225fd6c2a4365b162857c01 Mon Sep 17 00:00:00 2001
+From 9dd65918d56668166b82233f084c25bdb974f05c Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -283,7 +283,7 @@ index 000000000..dfb5c6d30
 +}
 \ No newline at end of file
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 79a78b318..744f6dc1c 100644
+index 107855b83..e8942767c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -45,6 +45,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -296,13 +296,13 @@ index 79a78b318..744f6dc1c 100644
              if (readableBytes > 2097152) {
                  throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
              } else if (capacity > 2097152) {
-@@ -107,6 +110,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -106,6 +109,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
                  packetTypeStr = "unknown";
              }
- 
++
 +            // FlameCord - Firewall system
 +            FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
-+
              throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
          } finally
          {
