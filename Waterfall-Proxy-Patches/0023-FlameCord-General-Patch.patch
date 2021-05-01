@@ -1,4 +1,4 @@
-From 55134b87570446f86306234e3868d73785efe804 Mon Sep 17 00:00:00 2001
+From 83cf5e25ec01e1fd7b0b05c3c7ef041d86f75727 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -6,17 +6,16 @@ Subject: [PATCH] FlameCord General Patch
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 new file mode 100644
-index 000000000..8957c79ac
+index 00000000..2e317533
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,38 @@
 +package dev._2lstudios.flamecord;
 +
 +import java.util.Collection;
 +import java.util.logging.Logger;
 +
 +import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
-+import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
 +import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
 +import lombok.Getter;
 +import net.md_5.bungee.config.ConfigurationProvider;
@@ -29,8 +28,6 @@ index 000000000..8957c79ac
 +    private final FlameCordConfiguration flameCordConfiguration;
 +    @Getter
 +    private final ModulesConfiguration modulesConfiguration;
-+    @Getter
-+    private final MessagesConfiguration messagesConfiguration;
 +    @Getter
 +    private boolean running = true;
 +
@@ -49,13 +46,12 @@ index 000000000..8957c79ac
 +
 +        this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
 +        this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
-+        this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 +    }
 +}
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 new file mode 100644
-index 000000000..81ded2243
+index 00000000..81ded224
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -0,0 +1,64 @@
@@ -123,137 +119,9 @@ index 000000000..81ded2243
 +        }
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-new file mode 100644
-index 000000000..ebfaa761c
---- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -0,0 +1,121 @@
-+package dev._2lstudios.flamecord.configuration;
-+
-+import java.io.File;
-+import java.io.IOException;
-+import java.text.MessageFormat;
-+import java.util.HashMap;
-+import java.util.Map;
-+import java.util.logging.Logger;
-+
-+import net.md_5.bungee.api.ChatColor;
-+import net.md_5.bungee.config.Configuration;
-+import net.md_5.bungee.config.ConfigurationProvider;
-+
-+public class MessagesConfiguration {
-+	private final Logger logger;
-+	private final Map<String, String> messages = new HashMap<>();
-+
-+	public MessagesConfiguration(final Logger logger, final ConfigurationProvider configurationProvider) {
-+		this.logger = logger;
-+
-+		try {
-+			final String fileName = "./messages.yml";
-+			final File configurationFile = new File(fileName);
-+			final Configuration configuration;
-+			final boolean configurationExists = configurationFile.exists();
-+
-+			if (!configurationExists) {
-+				configuration = new Configuration();
-+			} else {
-+				configuration = configurationProvider.load(configurationFile);
-+			}
-+
-+			// BungeeCord
-+			setIfUnexistant("alert", "&8[&4Alert&8]&r ", configuration);
-+			setIfUnexistant("already_connected", "&cYou are already connected to this server!", configuration);
-+			setIfUnexistant("already_connected_proxy", "&cYou are already connected to this proxy!", configuration);
-+			setIfUnexistant("already_connecting", "&cAlready connecting to this server!", configuration);
-+			setIfUnexistant("command_list", "&a[{0}] &e({1}): &r{2}", configuration);
-+			setIfUnexistant("connect_kick", "&cKicked whilst connecting to {0}: {1}", configuration);
-+			setIfUnexistant("current_server", "&6You are currently connected to {0}.", configuration);
-+			setIfUnexistant("fallback_kick",
-+					"&cCould not connect to a default or fallback server, please try again later: {0}", configuration);
-+			setIfUnexistant("fallback_lobby",
-+					"&cCould not connect to target server, you have been moved to a fallback server.", configuration);
-+			setIfUnexistant("lost_connection", "[Proxy] Lost connection to server.", configuration);
-+			setIfUnexistant("mojang_fail", "Error occurred while contacting login servers, are they down?",
-+					configuration);
-+			setIfUnexistant("no_permission", "&cYou do not have permission to execute this command!", configuration);
-+			setIfUnexistant("no_server", "&cThe specified server does not exist.", configuration);
-+			setIfUnexistant("no_server_permission", "&cYou don't have permission to access this server.",
-+					configuration);
-+			setIfUnexistant("outdated_client", "Outdated client! Please use {0}", configuration);
-+			setIfUnexistant("outdated_server", "Outdated server! I'm still on {0}", configuration);
-+			setIfUnexistant("proxy_full", "Server is full!", configuration);
-+			setIfUnexistant("restart", "[Proxy] Proxy restarting.", configuration);
-+			setIfUnexistant("server_kick", "[Kicked] ", configuration);
-+			setIfUnexistant("server_list", "&6You may connect to the following servers at this time: ", configuration);
-+			setIfUnexistant("server_went_down",
-+					"&cThe server you were previously on went down, you have been connected to a fallback server",
-+					configuration);
-+			setIfUnexistant("total_players", "Total players online: {0}", configuration);
-+			setIfUnexistant("name_too_long", "Cannot have username longer than 16 characters", configuration);
-+			setIfUnexistant("name_invalid", "Username contains invalid characters.", configuration);
-+			setIfUnexistant("ping_cannot_connect", "&c[Bungee] Can't connect to server.", configuration);
-+			setIfUnexistant("offline_mode_player", "Not authenticated with Minecraft.net", configuration);
-+			setIfUnexistant("message_needed", "&cYou must supply a message.", configuration);
-+			setIfUnexistant("error_occurred_player",
-+					"&cAn error occurred while parsing your message. (Hover for details)", configuration);
-+			setIfUnexistant("error_occurred_console", "&cAn error occurred while parsing your message: {0}",
-+					configuration);
-+			setIfUnexistant("click_to_connect", "Click to connect to the server", configuration);
-+			setIfUnexistant("username_needed", "&cPlease follow this command by a user name.", configuration);
-+			setIfUnexistant("user_not_online", "&cThat user is not online.", configuration);
-+			setIfUnexistant("user_online_at", "&a{0} &ris online at {1}", configuration);
-+			setIfUnexistant("send_cmd_usage",
-+					"&cNot enough arguments, usage: /send <server|player|all|current> <target>", configuration);
-+			setIfUnexistant("player_only", "&cOnly in game players can use this command", configuration);
-+			setIfUnexistant("successfully_summoned", "&aSuccessfully summoned player(s)", configuration);
-+			setIfUnexistant("you_got_summoned", "&6Summoned to {0} by {1}", configuration);
-+			setIfUnexistant("command_perms_groups", "&6You have the following groups: {0}", configuration);
-+			setIfUnexistant("command_perms_permission", "&9- {0}", configuration);
-+			setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
-+
-+			// FlameCord
-+			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
-+			setIfUnexistant("flamecord_help",
-+					"&aFlameCord&b {0}&a by&b LinsaFTW&a &&b Sammwy&r\n&e /flamecord reload&7 >&b Reloads FlameCord files!\n&e /flamecord help&7 >&b Shows this message!",
-+					configuration);
-+			setIfUnexistant("flamecord_nopermission", "&cYou don't have permission to do this!", configuration);
-+
-+			if (!configurationExists) {
-+				configurationProvider.save(configuration, configurationFile);
-+			}
-+
-+			for (final String key : configuration.getKeys()) {
-+				final Object value = configuration.get(key);
-+
-+				if (value instanceof String) {
-+					this.messages.put(key, ChatColor.translateAlternateColorCodes('&', (String) value));
-+				}
-+			}
-+		} catch (final IOException e) {
-+			e.printStackTrace();
-+		}
-+	}
-+
-+	public String getTranslation(final String name, final Object... args) {
-+		if (!messages.containsKey(name)) {
-+			logger.warning("[FlameCord] Tried to get translation '" + name
-+					+ "' from messages.yml file but wasn't found. Please try resetting this file or report to a developer.");
-+		}
-+
-+		return MessageFormat.format(messages.getOrDefault(name, "<translation '" + name + "' missing>"), args);
-+	}
-+
-+	private void setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
-+		if (!configuration.contains(arg1)) {
-+			configuration.set(arg1, arg2);
-+		}
-+	}
-+}
-\ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
-index 000000000..e82c4844b
+index 00000000..e82c4844
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 @@ -0,0 +1,94 @@
@@ -352,7 +220,7 @@ index 000000000..e82c4844b
 +        }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index bb39d31b8..28edad1a7 100644
+index bb39d31b..28edad1a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,5 +1,6 @@
@@ -364,17 +232,16 @@ index bb39d31b8..28edad1a7 100644
  import io.netty.channel.ChannelHandlerContext;
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 new file mode 100644
-index 000000000..bf6f85386
+index 00000000..a323598e
 --- /dev/null
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,58 @@
 +package dev._2lstudios.flamecord.commands;
 +
 +import java.util.Collection;
 +import java.util.HashSet;
 +
 +import dev._2lstudios.flamecord.FlameCord;
-+import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
 +import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.chat.TextComponent;
@@ -393,7 +260,6 @@ index 000000000..bf6f85386
 +    @Override
 +    public void execute(final CommandSender sender, final String[] args) {
 +        final FlameCord flameCord = FlameCord.getInstance();
-+        final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
 +
 +        if (sender.hasPermission("flamecord.usage")) {
 +            if (args.length > 0) {
@@ -410,27 +276,26 @@ index 000000000..bf6f85386
 +
 +                        FlameCord.renew(bungeeCord.getLogger(), whitelistedAddresses);
 +                        sender.sendMessage(TextComponent
-+                                .fromLegacyText(messagesConfiguration.getTranslation("flamecord_reload")));
++                                .fromLegacyText("flamecord_reload"));
 +                        break;
 +                    }
 +                    default: {
-+                        sender.sendMessage(TextComponent.fromLegacyText(
-+                                messagesConfiguration.getTranslation("flamecord_help", bungeeCord.getVersion())));
++                        sender.sendMessage(TextComponent.fromLegacyText("flamecord_help"));
 +                        break;
 +                    }
 +                }
 +            } else {
 +                sender.sendMessage(TextComponent
-+                        .fromLegacyText(messagesConfiguration.getTranslation("flamecord_help", bungeeCord.getVersion())));
++                        .fromLegacyText("flamecord_help"));
 +            }
 +        } else {
 +            sender.sendMessage(TextComponent
-+                    .fromLegacyText(messagesConfiguration.getTranslation("flamecord_nopermission")));
++                    .fromLegacyText("flamecord_nopermission"));
 +        }
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 5d3857060..83d3e9edd 100644
+index 5d385706..ed3e3e12 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,10 @@ import com.google.common.collect.Sets;
@@ -505,26 +370,18 @@ index 5d3857060..83d3e9edd 100644
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -573,16 +595,8 @@ public class BungeeCord extends ProxyServer
-     @Override
-     public String getTranslation(String name, Object... args)
-     {
--        String translation = "<translation '" + name + "' missing>";
--        try
--        {
+@@ -576,9 +598,7 @@ public class BungeeCord extends ProxyServer
+         String translation = "<translation '" + name + "' missing>";
+         try
+         {
 -            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
 -
 -            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
--        } catch ( MissingResourceException ex )
--        {
--        }
--        return translation;
-+        // FlameCord - Use own translation system
-+        return FlameCord.getInstance().getMessagesConfiguration().getTranslation(name, args);
-     }
- 
-     @Override
-@@ -815,4 +829,56 @@ public class BungeeCord extends ProxyServer
++            translation = MessageFormat.format( customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name ), args );
+         } catch ( MissingResourceException ex )
+         {
+         }
+@@ -815,4 +835,56 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -582,7 +439,7 @@ index 5d3857060..83d3e9edd 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7b99c466d..522bd93da 100644
+index 7b99c466..522bd93d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,8 @@
@@ -604,7 +461,7 @@ index 7b99c466d..522bd93da 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 159119c13..7c4c8f8a0 100644
+index 159119c1..7c4c8f8a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -638,7 +495,7 @@ index 159119c13..7c4c8f8a0 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e7542b1c1..deee607dc 100644
+index e7542b1c..deee607d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -16,6 +16,8 @@ import java.util.logging.Level;
@@ -660,7 +517,7 @@ index e7542b1c1..deee607dc 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6cd71071e..423af854f 100644
+index 6cd71071..423af854 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -1,6 +1,7 @@
@@ -672,7 +529,7 @@ index 6cd71071e..423af854f 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index b8e508552..7f18b5646 100644
+index b8e50855..7f18b564 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,8 @@
@@ -685,7 +542,7 @@ index b8e508552..7f18b5646 100644
  import io.netty.channel.ChannelInboundHandlerAdapter;
  import io.netty.handler.codec.CorruptedFrameException;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 4996a7b44..1d86aa63c 100644
+index 4996a7b4..1d86aa63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,6 +1,8 @@
