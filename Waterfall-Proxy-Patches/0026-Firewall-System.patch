@@ -1,4 +1,4 @@
-From fd88f8b5de095c410ee19136015eb2624e416ec4 Mon Sep 17 00:00:00 2001
+From c0464d9c47b4a3e21a614e3965052889755536f7 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -306,6 +306,66 @@ index bf6f85386..fa0b59c27 100644
                      case "reload": {
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 494375cd6..aedfece35 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -165,6 +165,9 @@ public class ServerConnector extends PacketHandler
+     {
+         if ( packet.packet == null )
+         {
++            // FlameCord - Firewall on unexpected packet
++            FlameCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress());
++
+             throw new QuietException( "Unexpected packet received during server connector process!\n" + BufUtil.dump(packet.buf, 16) );
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index deee607dc..3720825af 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -154,6 +154,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( packet.packet == null )
+         {
++            // FlameCord - Firewall on unexpected packet
++            FlameCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress());
++
+             throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
+         }
+     }
+@@ -396,6 +399,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+                 break;
+             default:
++                // FlameCord - Firewall on unexpected packet
++                FlameCord.getInstance().getFirewallManager().addFirewalled(ch.getRemoteAddress());
++                
+                 throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
+         }
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+index 423af854f..70917b0b0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
+ 
+ import com.google.gson.Gson;
+ 
++import dev._2lstudios.flamecord.FlameCord;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -59,6 +60,9 @@ public class PingHandler extends PacketHandler
+     {
+         if ( packet.packet == null )
+         {
++            // FlameCord - Firewall on unexpected packet
++            FlameCord.getInstance().getFirewallManager().addFirewalled(channel.getRemoteAddress());
++
+             throw new QuietException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
+         }
+     }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 index 7f18b5646..5de0414ec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java

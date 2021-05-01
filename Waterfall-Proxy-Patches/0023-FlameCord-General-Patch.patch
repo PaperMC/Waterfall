@@ -1,4 +1,4 @@
-From 38e24dcc8b058115653bc7bf79cd81a75a058b92 Mon Sep 17 00:00:00 2001
+From 7d558615b4ce5eae94afe9f013368dd7b232c27e Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -671,7 +671,7 @@ index e7542b1c1..deee607dc 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6cd71071e..cf73d1f0a 100644
+index 6cd71071e..423af854f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -1,6 +1,7 @@
@@ -682,14 +682,6 @@ index 6cd71071e..cf73d1f0a 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -12,6 +13,7 @@ import net.md_5.bungee.api.config.ServerInfo;
- import net.md_5.bungee.netty.ChannelWrapper;
- import net.md_5.bungee.netty.PacketHandler;
- import net.md_5.bungee.netty.PipelineUtils;
-+import net.md_5.bungee.protocol.BadPacketException;
- import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.MinecraftEncoder;
- import net.md_5.bungee.protocol.PacketWrapper;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 index b8e508552..7f18b5646 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
