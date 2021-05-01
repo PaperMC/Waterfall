@@ -1,11 +1,11 @@
-From ca9f27058c584094c899099636c5459df82b7290 Mon Sep 17 00:00:00 2001
+From a9337cf77d233e0f7429c899ffd374c9d8b73641 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 8957c79a..fd889644 100644
+index 8957c79ac..fd889644f 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -6,6 +6,7 @@ import java.util.logging.Logger;
@@ -64,7 +64,7 @@ index 8957c79a..fd889644 100644
  }
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 650cb302..b7268e1d 100644
+index 650cb3028..b7268e1d3 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -13,7 +13,12 @@ import net.md_5.bungee.config.ConfigurationProvider;
@@ -93,7 +93,7 @@ index 650cb302..b7268e1d 100644
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index ebfaa761..c88077ad 100644
+index ebfaa761c..c88077ade 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -82,9 +82,17 @@ public class MessagesConfiguration {
@@ -117,7 +117,7 @@ index ebfaa761..c88077ad 100644
  
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
 new file mode 100644
-index 00000000..6a661898
+index 000000000..6a661898d
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
 @@ -0,0 +1,30 @@
@@ -154,7 +154,7 @@ index 00000000..6a661898
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 new file mode 100644
-index 00000000..8a474758
+index 000000000..8a4747588
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 @@ -0,0 +1,116 @@
@@ -276,7 +276,7 @@ index 00000000..8a474758
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index bf6f8538..fa0b59c2 100644
+index bf6f85386..fa0b59c27 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -5,6 +5,7 @@ import java.util.HashSet;
@@ -304,7 +304,7 @@ index bf6f8538..fa0b59c2 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index f0b25b53..5de0414e 100644
+index 7f18b5646..5de0414ec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
@@ -323,12 +323,10 @@ index f0b25b53..5de0414e 100644
  import java.util.logging.Level;
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
-@@ -140,8 +142,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -140,6 +142,23 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
              boolean logExceptions = !( handler instanceof PingHandler );
  
--            // FlameCord - Use flamecord
--            final FlameCord flameCord = FlameCord.getInstance();
 +            // FlameCord - Don't log firewall exceptions
 +            logExceptions = cause instanceof FirewallException ? false : logExceptions;
 +
@@ -345,11 +343,12 @@ index f0b25b53..5de0414e 100644
 +            if (cause instanceof FirewallException) {
 +                FlameCord.getInstance().getFirewallManager().logBlocked(ctx.channel().remoteAddress());
 +            }
- 
++
              if ( logExceptions )
              {
+                 if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1d86aa63..81987ca3 100644
+index 1d86aa63c..81987ca39 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
