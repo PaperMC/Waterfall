@@ -1,11 +1,11 @@
-From ee009b46b1b0adc6269aea1698e9ded4bdda943d Mon Sep 17 00:00:00 2001
+From a16eb2112438585594f672a6a310a3a7594374a5 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 8bb61ac11..8822c6d33 100644
+index 8bb61ac1..8822c6d3 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
@@ -38,7 +38,7 @@ index 8bb61ac11..8822c6d33 100644
              this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3720825af..03c5aa07a 100644
+index 3720825a..03c5aa07 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -370,7 +370,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -62,10 +62,10 @@ index 3720825af..03c5aa07a 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 5de0414ec..9f70323ee 100644
+index 616651ba..7bf30b23 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -48,7 +48,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -47,7 +47,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              channel = new ChannelWrapper( ctx );
              handler.connected( channel );
  
@@ -75,7 +75,7 @@ index 5de0414ec..9f70323ee 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
              }
-@@ -64,7 +65,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -63,7 +64,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              channel.close();
              handler.disconnected( channel );
  
@@ -85,7 +85,7 @@ index 5de0414ec..9f70323ee 100644
              {
                  ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
              }
-@@ -95,10 +97,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -94,10 +96,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              {
                  InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
  
@@ -103,21 +103,21 @@ index 5de0414ec..9f70323ee 100644
  
                  channel.setRemoteAddress( newAddress );
              } finally
-@@ -142,6 +147,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -141,6 +146,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
              boolean logExceptions = !( handler instanceof PingHandler );
  
 +            // FlameCord - Option to log exceptions
 +            logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
 +
-             // FlameCord - Don't log firewall exceptions
-             logExceptions = cause instanceof FirewallException ? false : logExceptions;
- 
+             if ( logExceptions )
+             {
+                 if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 81987ca39..8808a989c 100644
+index 915c162f..a6722b41 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -115,7 +115,10 @@ public class PipelineUtils
+@@ -116,7 +116,10 @@ public class PipelineUtils
          // FlameCord - Close on exception caught
          @Override
          public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {

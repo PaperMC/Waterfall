@@ -1,11 +1,11 @@
-From 9dd65918d56668166b82233f084c25bdb974f05c Mon Sep 17 00:00:00 2001
+From 8ed0fb5643c225133bedd5b8336e736be07d0b48 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 8957c79ac..fd889644f 100644
+index 8957c79a..fd889644 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -6,6 +6,7 @@ import java.util.logging.Logger;
@@ -64,7 +64,7 @@ index 8957c79ac..fd889644f 100644
  }
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 81ded2243..8bb61ac11 100644
+index 81ded224..8bb61ac1 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
@@ -96,7 +96,7 @@ index 81ded2243..8bb61ac11 100644
                  configurationProvider.save(configuration, configurationFile);
              }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index ebfaa761c..c88077ade 100644
+index ebfaa761..c88077ad 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -82,9 +82,17 @@ public class MessagesConfiguration {
@@ -118,46 +118,9 @@ index ebfaa761c..c88077ade 100644
  					configuration);
  			setIfUnexistant("flamecord_nopermission", "&cYou don't have permission to do this!", configuration);
  
-diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
-new file mode 100644
-index 000000000..6a661898d
---- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallException.java
-@@ -0,0 +1,30 @@
-+package dev._2lstudios.flamecord.firewall;
-+
-+import java.net.SocketAddress;
-+
-+public class FirewallException extends Exception {
-+    private static final long serialVersionUID = 1L;
-+
-+    public FirewallException(final SocketAddress address) {
-+        super("The address " + address + " is blocked from the server!");
-+    }
-+
-+    public FirewallException(final String string) {
-+        super(string);
-+    }
-+
-+    public FirewallException(final String string, final Throwable throwable) {
-+        super(string, throwable);
-+    }
-+
-+    @Override
-+    public synchronized Throwable initCause(final Throwable cause)
-+    {
-+        return this;
-+    }
-+
-+    @Override
-+    public synchronized Throwable fillInStackTrace() {
-+        return this;
-+    }
-+}
-\ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 new file mode 100644
-index 000000000..dfb5c6d30
+index 00000000..dfb5c6d3
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 @@ -0,0 +1,120 @@
@@ -283,20 +246,25 @@ index 000000000..dfb5c6d30
 +}
 \ No newline at end of file
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 107855b83..e8942767c 100644
+index 107855b8..27a027e0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -45,6 +45,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-             final int readableBytes = in.readableBytes();
+@@ -46,8 +46,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              final int capacity = in.capacity();
  
-+            // FlameCord - Firewall system
-+            FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
-+
              if (readableBytes > 2097152) {
++                // FlameCord - Firewall system
++                FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++                
                  throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
              } else if (capacity > 2097152) {
-@@ -106,6 +109,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
++                // FlameCord - Firewall system
++                FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++
+                 throw new FastDecoderException("Error decoding packet with too big capacity: " + capacity);
+             }
+         }
+@@ -106,6 +112,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -307,7 +275,7 @@ index 107855b83..e8942767c 100644
          } finally
          {
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index bf6f85386..fa0b59c27 100644
+index bf6f8538..fa0b59c2 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -5,6 +5,7 @@ import java.util.HashSet;
@@ -335,7 +303,7 @@ index bf6f85386..fa0b59c27 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 494375cd6..aedfece35 100644
+index 494375cd..aedfece3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -165,6 +165,9 @@ public class ServerConnector extends PacketHandler
@@ -349,7 +317,7 @@ index 494375cd6..aedfece35 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index deee607dc..3720825af 100644
+index deee607d..3720825a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -154,6 +154,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -373,7 +341,7 @@ index deee607dc..3720825af 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 423af854f..70917b0b0 100644
+index 423af854..70917b0b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
@@ -395,18 +363,10 @@ index 423af854f..70917b0b0 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 7f18b5646..81785523b 100644
+index 7f18b564..616651ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
- import com.google.common.base.Preconditions;
- 
- import dev._2lstudios.flamecord.FlameCord;
-+import dev._2lstudios.flamecord.firewall.FirewallException;
- import io.netty.channel.ChannelHandlerContext;
- import io.netty.channel.ChannelInboundHandlerAdapter;
- import io.netty.handler.codec.CorruptedFrameException;
-@@ -11,6 +12,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
+@@ -11,6 +11,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
  import io.netty.handler.timeout.ReadTimeoutException;
  import java.io.IOException;
  import java.net.InetSocketAddress;
@@ -414,47 +374,26 @@ index 7f18b5646..81785523b 100644
  import java.util.logging.Level;
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
-@@ -140,6 +142,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-         {
-             boolean logExceptions = !( handler instanceof PingHandler );
- 
-+            // FlameCord - Don't log firewall exceptions
-+            logExceptions = cause instanceof FirewallException ? false : logExceptions;
-+
-+            // FlameCord - Handle firewall exceptions
-+            if (cause instanceof FirewallException) {
-+                FlameCord.getInstance().getFirewallManager().logBlocked(ctx.channel().remoteAddress());
-+            }
-+
-             if ( logExceptions )
-             {
-                 if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1d86aa63c..81987ca39 100644
+index 1d86aa63..915c162f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
- import com.google.common.base.Preconditions;
- 
- import dev._2lstudios.flamecord.FlameCord;
-+import dev._2lstudios.flamecord.firewall.FirewallException;
- import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
- import io.netty.buffer.PooledByteBufAllocator;
- import io.netty.channel.Channel;
-@@ -63,6 +64,11 @@ public class PipelineUtils
+@@ -63,6 +63,13 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
 +            // FlameCord - Firewall system
-+            if (remoteAddress != null && FlameCord.getInstance().getFirewallManager().isFirewalled(remoteAddress)) {
-+                throw new FirewallException(remoteAddress);
++            if ( FlameCord.getInstance().getFirewallManager().isFirewalled( remoteAddress ) ) {
++                FlameCord.getInstance().getFirewallManager().logBlocked( remoteAddress );
++                ch.close();
++                return;
 +            }
 +
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
                  ch.close();
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index b3bdfd05e..49d53f177 100644
+index b3bdfd05..49d53f17 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee.query;
