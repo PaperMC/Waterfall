@@ -1,4 +1,4 @@
-From c0464d9c47b4a3e21a614e3965052889755536f7 Mon Sep 17 00:00:00 2001
+From f460649d5c2ea74ae2ceaf9b177f63b01c9298bf Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -157,10 +157,10 @@ index 000000000..6a661898d
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 new file mode 100644
-index 000000000..8a4747588
+index 000000000..dfb5c6d30
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,120 @@
 +package dev._2lstudios.flamecord.firewall;
 +
 +import java.net.InetSocketAddress;
@@ -203,6 +203,10 @@ index 000000000..8a4747588
 +    }
 +
 +    public void addFirewalled(final SocketAddress address) {
++        if (address == null) {
++            return;
++        }
++
 +        if (FlameCord.getInstance().getFlameCordConfiguration().isFirewallEnabled() && !isWhitelisted(address)) {
 +            final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
 +            final String hostString = iNetSocketAddress.getHostString();
@@ -278,6 +282,30 @@ index 000000000..8a4747588
 +    }
 +}
 \ No newline at end of file
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index d36f98656..0815cac25 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -45,6 +45,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             final int readableBytes = in.readableBytes();
+             final int capacity = in.capacity();
+ 
++            // FlameCord - Firewall system
++            FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++
+             if (readableBytes > 2097152) {
+                 throw new FastDecoderException("Error decoding packet with too many readableBytes: " + readableBytes);
+             } else if (capacity > 2097152) {
+@@ -107,6 +110,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 packetTypeStr = "unknown";
+             }
+ 
++            // FlameCord - Firewall system
++            FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++
+             // FlameCord - Change from FastDecoderException to DecoderException
+             throw new FastDecoderException( "Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e ); // Waterfall
+         } finally
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 index bf6f85386..fa0b59c27 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
@@ -367,7 +395,7 @@ index 423af854f..70917b0b0 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 7f18b5646..5de0414ec 100644
+index 7f18b5646..81785523b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
@@ -386,21 +414,12 @@ index 7f18b5646..5de0414ec 100644
  import java.util.logging.Level;
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
-@@ -140,6 +142,23 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -140,6 +142,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
              boolean logExceptions = !( handler instanceof PingHandler );
  
 +            // FlameCord - Don't log firewall exceptions
 +            logExceptions = cause instanceof FirewallException ? false : logExceptions;
-+
-+            // FlameCord - Firewall system
-+            if (cause instanceof DecoderException || cause instanceof IllegalStateException || cause instanceof BadPacketException) {
-+                final SocketAddress remoteAddress = ctx.channel().remoteAddress();
-+
-+                if (remoteAddress != null) {
-+                    FlameCord.getInstance().getFirewallManager().addFirewalled(remoteAddress);
-+                }
-+            }
 +
 +            // FlameCord - Handle firewall exceptions
 +            if (cause instanceof FirewallException) {
@@ -434,6 +453,39 @@ index 1d86aa63c..81987ca39 100644
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
                  ch.close();
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index b3bdfd05e..49d53f177 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -2,6 +2,8 @@ package net.md_5.bungee.query;
+ 
+ import com.google.common.cache.Cache;
+ import com.google.common.cache.CacheBuilder;
++
++import dev._2lstudios.flamecord.FlameCord;
+ import io.github.waterfallmc.waterfall.QueryResult;
+ import io.github.waterfallmc.waterfall.event.ProxyQueryEvent;
+ import io.netty.buffer.ByteBuf;
+@@ -70,6 +72,9 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+         ByteBuf in = msg.content();
+         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
+         {
++            // FlameCord - Firewall system
++            FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++            
+             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
+             // FlameCord - Close on incorrect magic
+             ctx.close();
+@@ -164,6 +169,9 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+                 out.writeByte( 0x00 ); // Null
+             } else
+             {
++                // FlameCord - Firewall system
++                FlameCord.getInstance().getFirewallManager().addFirewalled(ctx.channel().remoteAddress());
++
+                 // Error!
+                 throw new IllegalStateException( "Invalid data request packet" );
+             }
 -- 
 2.31.1
 
