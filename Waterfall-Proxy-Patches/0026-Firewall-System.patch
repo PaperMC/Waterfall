@@ -1,6 +1,6 @@
-From e6ce50df78087e26000d0d99f2f5a51b7334b93c Mon Sep 17 00:00:00 2001
-From: linsaftw <linsaftw@users.noreply.github.com>
-Date: Fri, 30 Apr 2021 19:23:36 -0300
+From 9e823cf6478f0b35c293a90ca846f00ba51142da Mon Sep 17 00:00:00 2001
+From: linsaftw <25271111+linsaftw@users.noreply.github.com>
+Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
 
 
@@ -304,7 +304,7 @@ index bf6f8538..fa0b59c2 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index d3a89e79..60c9ddcd 100644
+index e4208b59..3b5bb7db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
@@ -323,12 +323,12 @@ index d3a89e79..60c9ddcd 100644
  import java.util.logging.Level;
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
-@@ -143,7 +145,21 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-             // FlameCord - Use flamecord
-             final FlameCord flameCord = FlameCord.getInstance();
+@@ -148,6 +150,23 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              // FlameCord - Log exceptions based on FlameCord
--            boolean logExceptions = flameCord.getFlameCordConfiguration().isLoggerExceptions();
-+            boolean logExceptions = flameCord.getFlameCordConfiguration().isLoggerExceptions() && !(cause instanceof FirewallException);
+             logExceptions = flameCord.getFlameCordConfiguration().isLoggerExceptions();
+ 
++            // FlameCord - Don't log firewall exceptions
++            logExceptions = cause instanceof FirewallException ? false : logExceptions;
 +
 +            // FlameCord - Firewall system
 +            if (cause instanceof DecoderException || cause instanceof IllegalStateException || cause instanceof BadPacketException) {
@@ -343,11 +343,12 @@ index d3a89e79..60c9ddcd 100644
 +            if (cause instanceof FirewallException) {
 +                flameCord.getFirewallManager().logBlocked(ctx.channel().remoteAddress());
 +            }
- 
++
              if ( logExceptions )
              {
+                 if ( cause instanceof ReadTimeoutException )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1680ce96..5ddc84a3 100644
+index d9d00fa5..fa6ab3e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.netty;
