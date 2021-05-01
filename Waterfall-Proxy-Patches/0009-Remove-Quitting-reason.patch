@@ -1,14 +1,14 @@
-From 80ace46853567b268136b98cab869eb2dd495846 Mon Sep 17 00:00:00 2001
+From 311cd787abe702b9ed4179effa2aa9fd1bc9c53f Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:03:12 +0800
 Subject: [PATCH] Remove "Quitting" reason
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 44f257ae..e90237ac 100644
+index 00749538..7b99c466 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -267,7 +267,8 @@ public class ServerConnector extends PacketHandler
+@@ -269,7 +269,8 @@ public class ServerConnector extends PacketHandler
                  user.getSentBossBars().clear();
  
                  user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
@@ -18,7 +18,7 @@ index 44f257ae..e90237ac 100644
              } else
              {
                  // Travertine start
-@@ -362,13 +363,15 @@ public class ServerConnector extends PacketHandler
+@@ -364,13 +365,15 @@ public class ServerConnector extends PacketHandler
              user.setDimension( login.getDimension() );
  
              // Remove from old servers
@@ -63,5 +63,5 @@ index ad3bdee5..c05714ba 100644
          }
      }
 -- 
-2.20.1
+2.31.1
 

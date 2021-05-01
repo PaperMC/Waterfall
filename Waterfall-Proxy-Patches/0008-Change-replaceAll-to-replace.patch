@@ -1,14 +1,14 @@
-From dca58a6a7ae25120b8aeccbe4f3ecf2c7fbef6a0 Mon Sep 17 00:00:00 2001
+From e67e9ed998a04f1aacd313d5ca3a9dd3755a942a Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:01:37 +0800
 Subject: [PATCH] Change replaceAll() to replace()
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c12085e1..44f257ae 100644
+index a4c25575..00749538 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -125,7 +125,8 @@ public class ServerConnector extends PacketHandler
+@@ -127,7 +127,8 @@ public class ServerConnector extends PacketHandler
                  newp[newp.length - 2] = new LoginResult.Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
  
                  // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
@@ -19,5 +19,5 @@ index c12085e1..44f257ae 100644
                  // All done.
                  properties = newp;
 -- 
-2.20.1
+2.31.1
 
