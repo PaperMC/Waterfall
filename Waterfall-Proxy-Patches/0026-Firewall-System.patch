@@ -1,4 +1,4 @@
-From a9337cf77d233e0f7429c899ffd374c9d8b73641 Mon Sep 17 00:00:00 2001
+From fd88f8b5de095c410ee19136015eb2624e416ec4 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -64,34 +64,37 @@ index 8957c79ac..fd889644f 100644
  }
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 650cb3028..b7268e1d3 100644
+index 81ded2243..8bb61ac11 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -13,7 +13,12 @@ import net.md_5.bungee.config.ConfigurationProvider;
+@@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration {
-     @Getter
--    private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false;
-+    private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false, firewallNotify = true,
-+            firewallEnabled = true;
++    @Getter
++    private boolean firewallNotify = true;
++    @Getter
++    private boolean firewallEnabled = true;
 +    @Getter
 +    private int firewallSeconds = 60;
 +    @Getter
 +    private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
- 
++
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
          try {
-@@ -32,6 +37,10 @@ public class FlameCordConfiguration {
-                     configuration);
-             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
-             this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
+             final String fileName = "./flamecord.yml";
+@@ -25,6 +34,11 @@ public class FlameCordConfiguration {
+                 configuration = configurationProvider.load(configurationFile);
+             }
+ 
 +            this.firewallEnabled = setIfUnexistant("firewall.enabled", this.firewallEnabled, configuration);
 +            this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
 +            this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
 +            this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
- 
++
              if (!configurationExists) {
                  configurationProvider.save(configuration, configurationFile);
+             }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 index ebfaa761c..c88077ade 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java

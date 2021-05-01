@@ -1,32 +1,44 @@
-From 83d77a25bc63fe25486d0171e7fae3ddc1aa1ab2 Mon Sep 17 00:00:00 2001
+From 4e2cb9724d144d7d0257716b50984d7fd164535d Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index b7268e1d..ea641bcf 100644
+index 8bb61ac11..8822c6d33 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,8 @@ public class FlameCordConfiguration {
-     private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false, firewallNotify = true,
-             firewallEnabled = true;
-     @Getter
-+    private boolean loggerHaProxy = false;
+@@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
 +    @Getter
-     private int firewallSeconds = 60;
++    private boolean loggerInitialhandler = false;
++    @Getter
++    private boolean loggerExceptions = false;
++    @Getter
++    private boolean loggerDump = false;
++    @Getter
++    private boolean loggerHaProxy = false;
++
      @Getter
-     private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
-@@ -37,6 +39,7 @@ public class FlameCordConfiguration {
-                     configuration);
-             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
-             this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
+     private boolean firewallNotify = true;
+     @Getter
+@@ -34,6 +43,12 @@ public class FlameCordConfiguration {
+                 configuration = configurationProvider.load(configurationFile);
+             }
+ 
++            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler,
++                    configuration);
++            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
++            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 +            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
++            
              this.firewallEnabled = setIfUnexistant("firewall.enabled", this.firewallEnabled, configuration);
              this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 18bab507..86869e5b 100644
+index 18bab507a..86869e5b4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -369,7 +369,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -50,7 +62,7 @@ index 18bab507..86869e5b 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 5de0414e..9f70323e 100644
+index 5de0414ec..9f70323ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -48,7 +48,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -102,7 +114,7 @@ index 5de0414e..9f70323e 100644
              logExceptions = cause instanceof FirewallException ? false : logExceptions;
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 81987ca3..8808a989 100644
+index 81987ca39..8808a989c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -115,7 +115,10 @@ public class PipelineUtils

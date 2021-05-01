@@ -1,4 +1,4 @@
-From 805001ea20a26c3bcff5c81828685cf77b010758 Mon Sep 17 00:00:00 2001
+From b59b64610c3cafc27f28602efd104477760cde45 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -55,10 +55,10 @@ index 000000000..8957c79ac
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 new file mode 100644
-index 000000000..650cb3028
+index 000000000..81ded2243
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,64 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -73,9 +73,6 @@ index 000000000..650cb3028
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
 +public class FlameCordConfiguration {
-+    @Getter
-+    private boolean loggerInitialhandler = false, loggerExceptions = false, loggerDump = false;
-+
 +    public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
 +        try {
 +            final String fileName = "./flamecord.yml";
@@ -88,11 +85,6 @@ index 000000000..650cb3028
 +            } else {
 +                configuration = configurationProvider.load(configurationFile);
 +            }
-+
-+            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler,
-+                    configuration);
-+            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
-+            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 +
 +            if (!configurationExists) {
 +                configurationProvider.save(configuration, configurationFile);
