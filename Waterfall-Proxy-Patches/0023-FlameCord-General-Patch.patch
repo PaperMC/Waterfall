@@ -1,4 +1,4 @@
-From b59b64610c3cafc27f28602efd104477760cde45 Mon Sep 17 00:00:00 2001
+From 38e24dcc8b058115653bc7bf79cd81a75a058b92 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -593,7 +593,7 @@ index 5d3857060..83d3e9edd 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7b99c466d..2c94ef554 100644
+index 7b99c466d..522bd93da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,8 @@
@@ -605,21 +605,12 @@ index 7b99c466d..2c94ef554 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -34,6 +36,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
- import net.md_5.bungee.netty.HandlerBoss;
- import net.md_5.bungee.netty.PacketHandler;
- import net.md_5.bungee.netty.PipelineUtils;
-+import net.md_5.bungee.protocol.BadPacketException;
- import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.PacketWrapper;
-@@ -163,7 +166,8 @@ public class ServerConnector extends PacketHandler
+@@ -163,7 +165,7 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
 -            throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump( packet.buf, 16 ) );
-+            // FlameCord - Change from QuietException to BadPacketException
-+            throw new BadPacketException( "Unexpected packet received during server connector process!\n" + BufUtil.dump(packet.buf, 16) );
++            throw new QuietException( "Unexpected packet received during server connector process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
  
@@ -658,7 +649,7 @@ index 159119c13..7c4c8f8a0 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e7542b1c1..18bab507a 100644
+index e7542b1c1..deee607dc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -16,6 +16,8 @@ import java.util.logging.Level;
@@ -670,38 +661,28 @@ index e7542b1c1..18bab507a 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -49,6 +51,7 @@ import net.md_5.bungee.netty.PacketHandler;
- import net.md_5.bungee.netty.PipelineUtils;
- import net.md_5.bungee.netty.cipher.CipherDecoder;
- import net.md_5.bungee.netty.cipher.CipherEncoder;
-+import net.md_5.bungee.protocol.BadPacketException;
- import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.Protocol;
-@@ -152,7 +155,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -152,7 +154,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
 -            throw new QuietException( "Unexpected packet received during login process! " + BufUtil.dump( packet.buf, 16 ) );
-+            // FlameCord - Change from QuietException to BadPacketException
-+            throw new BadPacketException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
++            throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6cd71071e..24195ed1b 100644
+index 6cd71071e..cf73d1f0a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-@@ -1,6 +1,8 @@
+@@ -1,6 +1,7 @@
  package net.md_5.bungee.connection;
  
  import com.google.gson.Gson;
 +
-+import dev._2lstudios.flamecord.FlameCord;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -12,6 +14,7 @@ import net.md_5.bungee.api.config.ServerInfo;
+@@ -12,6 +13,7 @@ import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
  import net.md_5.bungee.netty.PipelineUtils;
@@ -709,16 +690,6 @@ index 6cd71071e..24195ed1b 100644
  import net.md_5.bungee.protocol.MinecraftDecoder;
  import net.md_5.bungee.protocol.MinecraftEncoder;
  import net.md_5.bungee.protocol.PacketWrapper;
-@@ -58,7 +61,8 @@ public class PingHandler extends PacketHandler
-     {
-         if ( packet.packet == null )
-         {
--            throw new QuietException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
-+            // FlameCord - Change from QuietException to BadPacketException
-+            throw new BadPacketException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
-         }
-     }
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 index b8e508552..7f18b5646 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java

@@ -1,14 +1,14 @@
-From 3a3b9229d496e28f0194ccffdf5bb3b0cf4079ea Mon Sep 17 00:00:00 2001
+From be41c59b3d676632710f10a1c88d655e12cbf48c Mon Sep 17 00:00:00 2001
 From: linsaftw <linsaftw@users.noreply.github.com>
 Date: Sat, 20 Mar 2021 12:36:25 -0300
 Subject: [PATCH] Fix ByteBuf memory leaks
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 2c94ef55..3646cb95 100644
+index 522bd93da..494375cd6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -286,9 +286,15 @@ public class ServerConnector extends PacketHandler
+@@ -284,9 +284,15 @@ public class ServerConnector extends PacketHandler
                  } else
                  {
                      ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
@@ -28,7 +28,7 @@ index 2c94ef55..3646cb95 100644
                  // Travertine end
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 474551d3..8716d0c8 100644
+index 474551d3e..8716d0c85 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -294,12 +294,21 @@ public class DownstreamBridge extends PacketHandler
@@ -60,7 +60,7 @@ index 474551d3..8716d0c8 100644
                  {
                      return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index a3a12e19..214a1fd0 100644
+index a3a12e19b..214a1fd04 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -143,11 +143,17 @@ public abstract class EntityMap
@@ -87,7 +87,7 @@ index a3a12e19..214a1fd0 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
-index 6755fe84..21871d14 100644
+index 6755fe845..21871d14a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 @@ -39,19 +39,27 @@ class EntityMap_1_7_6 extends EntityMap_1_7_2
@@ -130,7 +130,7 @@ index 6755fe84..21871d14 100644
                  }
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-index cefa0206..2cd5740c 100644
+index cefa0206e..2cd5740ca 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 @@ -38,15 +38,27 @@ public class ForgeUtils
