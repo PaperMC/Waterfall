@@ -19,6 +19,13 @@ jobs:
         distribution: 'adopt'
         architecture: x64
     
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
     - name: Build Flamecord
       run: |
         git config --global user.email "you@example.com"
