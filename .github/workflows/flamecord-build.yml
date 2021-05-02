@@ -1,0 +1,32 @@
+name: Flamecord Maven Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [8, 11, 16]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup JAVA ${{ matrix.java }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: 'adopt'
+        architecture: x64
+    
+    - name: Build Flamecord
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        scripts/build.sh --jar
+      
+    - name: Upload Flamecord
+      uses: actions/upload-artifact@v2
+      with:
+        name: Flamecord-JDK${{ matrix.java }}
+        path: Travertine-Proxy/bootstrap/target/Travertine.jar
