@@ -1,0 +1,46 @@
+From e00ed4d4e69f192d801c294b96a5bac11c21a344 Mon Sep 17 00:00:00 2001
+From: linsaftw <25271111+linsaftw@users.noreply.github.com>
+Date: Sat, 1 May 2021 23:28:19 -0300
+Subject: [PATCH] Always release packet
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 7bf30b23..21bd5a17 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -112,12 +112,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             return;
+         }
+ 
+-        if ( handler != null )
++        PacketWrapper packet = (PacketWrapper) msg;
++
++
++        try
+         {
+-            PacketWrapper packet = (PacketWrapper) msg;
+-            boolean sendPacket = handler.shouldHandle( packet );
+-            try
++            if ( handler != null )
+             {
++                boolean sendPacket = handler.shouldHandle( packet );
+                 if ( sendPacket && packet.packet != null )
+                 {
+                     try
+@@ -132,10 +134,10 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                 {
+                     handler.handle( packet );
+                 }
+-            } finally
+-            {
+-                packet.trySingleRelease();
+             }
++        } finally
++        {
++            packet.trySingleRelease();
+         }
+     }
+ 
+-- 
+2.31.1
+
