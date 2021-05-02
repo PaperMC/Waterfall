@@ -1,4 +1,4 @@
-From 93bb936ae38b16084d021f522e461a1fcba439f0 Mon Sep 17 00:00:00 2001
+From 321fa344d87ea259c18703dda0ed2f894c6ee783 Mon Sep 17 00:00:00 2001
 From: Callum Seabrook <callum.seabrook@prevarinite.com>
 Date: Wed, 28 Apr 2021 17:02:18 +0100
 Subject: [PATCH] Adventure
@@ -63,7 +63,7 @@ index ca1ed881..c53ad692 100644
      </dependencies>
  </project>
 diff --git a/api/src/main/java/net/md_5/bungee/api/CommandSender.java b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
-index d5888311..72f3da4c 100644
+index d5888311..d03dae0c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/CommandSender.java
 +++ b/api/src/main/java/net/md_5/bungee/api/CommandSender.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.api;
@@ -81,7 +81,7 @@ index d5888311..72f3da4c 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(BaseComponent... message);
  
      /**
@@ -90,12 +90,12 @@ index d5888311..72f3da4c 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(BaseComponent message);
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index a4011335..092aaf09 100644
+index a4011335..e26ca56d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -17,7 +17,7 @@ import net.md_5.bungee.api.plugin.Plugin;
@@ -113,7 +113,7 @@ index a4011335..092aaf09 100644
       * @param reason the reason for stopping. This will be shown to players.
 +     * @deprecated in favour of {@link #stop(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract void stop(String reason);
  
 +    // Waterfall start - we're going on an adventure!
@@ -134,7 +134,7 @@ index a4011335..092aaf09 100644
       * @return the constructed instance
 +     * @deprecated in favour of {@link #constructServerInfo(String, InetSocketAddress, net.kyori.adventure.text.Component, boolean)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract ServerInfo constructServerInfo(String name, InetSocketAddress address, String motd, boolean restricted);
  
 +    // Waterfall start - we're going on an adventure!
@@ -160,7 +160,7 @@ index a4011335..092aaf09 100644
       * @return the constructed instance
 +     * @deprecated in favour of {@link #constructServerInfo(String, SocketAddress, net.kyori.adventure.text.Component, boolean)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted);
  
 +    // Waterfall start - we're going on an adventure!
@@ -186,7 +186,7 @@ index a4011335..092aaf09 100644
       * @param message the message to broadcast
 +     * @deprecated in favor of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract void broadcast(BaseComponent... message);
  
      /**
@@ -195,7 +195,7 @@ index a4011335..092aaf09 100644
       * @param message the message to broadcast
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract void broadcast(BaseComponent message);
  
      /**
@@ -205,12 +205,12 @@ index a4011335..092aaf09 100644
       * @see Title
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#showTitle(net.kyori.adventure.title.Title)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public abstract Title createTitle();
  
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index fc92a7b5..f84601b2 100644
+index fc92a7b5..77ff4541 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -78,7 +78,10 @@ public class ServerPing
@@ -265,7 +265,7 @@ index fc92a7b5..f84601b2 100644
 +        // Waterfall end
      }
  
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void setDescriptionComponent(BaseComponent description)
      {
 -        this.description = description;
@@ -275,7 +275,7 @@ index fc92a7b5..f84601b2 100644
 +        // Waterfall end
      }
  
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public BaseComponent getDescriptionComponent()
      {
 +        // Waterfall start - rewrite component return to return the first element if not empty, or null if is - we're going on an adventure!
@@ -382,7 +382,7 @@ index 71abdc87..b95d793b 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
-index b0fc000a..084e8ed0 100644
+index b0fc000a..ba9f77f0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
 +++ b/api/src/main/java/net/md_5/bungee/api/config/ServerInfo.java
 @@ -51,9 +51,20 @@ public interface ServerInfo
@@ -391,7 +391,7 @@ index b0fc000a..084e8ed0 100644
       * @return the motd
 +     * @deprecated in favour of {@link #motd()}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      String getMotd();
  
 +    // Waterfall start - we're going on an adventure!
@@ -407,7 +407,7 @@ index b0fc000a..084e8ed0 100644
       * Whether this server is restricted and therefore only players with the
       * given permission can access it.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
-index f59b49c7..72f68ad6 100644
+index f59b49c7..e9b418fa 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/Connection.java
 @@ -47,7 +47,9 @@ public interface Connection
@@ -416,7 +416,7 @@ index f59b49c7..72f68ad6 100644
       * disconnect
 +     * @deprecated in favour of {@link #disconnect(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void disconnect(BaseComponent... reason);
  
      /**
@@ -426,7 +426,7 @@ index f59b49c7..72f68ad6 100644
       * disconnect
 +     * @deprecated in favour of {@link #disconnect(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void disconnect(BaseComponent reason);
  
 +    // Waterfall start - we're going on an adventure!
@@ -445,7 +445,7 @@ index f59b49c7..72f68ad6 100644
       * Gets whether this connection is currently open, ie: not disconnected, and
       * able to send / receive data.
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 3dc32801..602c87be 100644
+index 3dc32801..88944e26 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -18,7 +18,7 @@ import net.md_5.bungee.api.score.Scoreboard;
@@ -463,7 +463,7 @@ index 3dc32801..602c87be 100644
       * @return the players current display name
 +     * @deprecated in favour of {@link #displayName()}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      String getDisplayName();
  
      /**
@@ -472,7 +472,7 @@ index 3dc32801..602c87be 100644
       * @param name the name to set
 +     * @deprecated in favour of {@link #displayName(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void setDisplayName(String name);
  
 +    // Waterfall start - we're going on an adventure!
@@ -498,7 +498,7 @@ index 3dc32801..602c87be 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component, net.kyori.adventure.audience.MessageType)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(ChatMessageType position, BaseComponent... message);
  
      /**
@@ -508,7 +508,7 @@ index 3dc32801..602c87be 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.text.Component, net.kyori.adventure.audience.MessageType)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(ChatMessageType position, BaseComponent message);
  
      /**
@@ -518,7 +518,7 @@ index 3dc32801..602c87be 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.identity.Identity, net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(UUID sender, BaseComponent... message);
  
      /**
@@ -528,7 +528,7 @@ index 3dc32801..602c87be 100644
       * @param message the message to send
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendMessage(net.kyori.adventure.identity.Identity, net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void sendMessage(UUID sender, BaseComponent message);
  
      /**
@@ -538,7 +538,7 @@ index 3dc32801..602c87be 100644
       * @param message the message to say
 +     * @deprecated in favour of {@link #chat(net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void chat(String message);
  
 +    // Waterfall start - we're going on an adventure!
@@ -559,7 +559,7 @@ index 3dc32801..602c87be 100644
       * @param footer The footer for the tab player list, null to clear it.
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void setTabHeader(BaseComponent header, BaseComponent footer);
  
      /**
@@ -569,7 +569,7 @@ index 3dc32801..602c87be 100644
       * @param footer The footer for the tab player list, null to clear it.
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void setTabHeader(BaseComponent[] header, BaseComponent[] footer);
  
      /**
@@ -577,7 +577,7 @@ index 3dc32801..602c87be 100644
 +     *
 +     * @deprecated in favour of using empty components with {@link net.kyori.adventure.audience.Audience#sendPlayerListHeaderAndFooter(net.kyori.adventure.text.Component, net.kyori.adventure.text.Component)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void resetTabHeader();
  
      /**
@@ -587,7 +587,7 @@ index 3dc32801..602c87be 100644
       * @see Title
 +     * @deprecated in favour of {@link net.kyori.adventure.audience.Audience#showTitle(net.kyori.adventure.title.Title)}
       */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      void sendTitle(Title title);
  
      /**
@@ -604,7 +604,7 @@ index 3dc32801..602c87be 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
-index a13eba79..d431fcdd 100644
+index a13eba79..566756a2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/LoginEvent.java
 @@ -29,7 +29,10 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
@@ -631,7 +631,7 @@ index a13eba79..d431fcdd 100644
 +    }
 +
 +    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
-+    public BaseComponent[] getCancelReasonComponents() {
++    public BaseComponent@org.checkerframework.checker.nullness.qual.NonNull[] getCancelReasonComponents() {
 +        return net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer.get().serialize(cancelReason);
      }
 +    // Waterfall end
@@ -653,7 +653,7 @@ index a13eba79..d431fcdd 100644
 +     * @param cancelReason reason to be displayed
 +     * @deprecated in favour of {@link #cancelReason(net.kyori.adventure.text.Component)}
 +     */
-+    @Deprecated // Waterfall start - we're going on an adventure!
++    @Deprecated // Waterfall
      public void setCancelReason(BaseComponent... cancelReason)
      {
 -        this.cancelReasonComponents = cancelReason;
@@ -684,7 +684,7 @@ index a13eba79..d431fcdd 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
-index 87040d30..dcd6b77c 100644
+index 87040d30..d139c674 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/PreLoginEvent.java
 @@ -33,7 +33,10 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
@@ -711,7 +711,7 @@ index 87040d30..dcd6b77c 100644
      }
  
 +    // Waterfall start - add previously Lombok-generated getter - we're going on an adventure!
-+    public BaseComponent[] getCancelReasonComponents() {
++    public BaseComponent@org.checkerframework.checker.nullness.qual.NonNull[] getCancelReasonComponents() {
 +        return net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer.get().serialize(cancelReason);
 +    }
 +    // Waterfall end
@@ -734,7 +734,7 @@ index 87040d30..dcd6b77c 100644
 +     * @param cancelReason reason to be displayed
 +     * @deprecated in favour of {@link #cancelReason(net.kyori.adventure.text.Component)}
 +     */
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public void setCancelReason(BaseComponent... cancelReason)
      {
 -        this.cancelReasonComponents = cancelReason;
@@ -765,7 +765,7 @@ index 87040d30..dcd6b77c 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
-index ee63732d..8b25a7cd 100644
+index ee63732d..aa0b78f7 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 @@ -35,7 +35,10 @@ public class ServerKickEvent extends Event implements Cancellable
@@ -784,7 +784,7 @@ index ee63732d..8b25a7cd 100644
          this( player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN );
      }
  
-+    @Deprecated // Waterfall - we're going on an adventure!
++    @Deprecated // Waterfall
      public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause)
      {
          this.player = player;
@@ -819,11 +819,11 @@ index ee63732d..8b25a7cd 100644
 +    }
 +
 +    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
-+    public BaseComponent[] getKickReasonComponent() {
++    public BaseComponent@org.checkerframework.checker.nullness.qual.NonNull[] getKickReasonComponent() {
 +        return net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer.get().serialize(kickReason);
      }
 +
-+    public void setKickReasonComponent(final BaseComponent[] kickReasonComponent) {
++    public void setKickReasonComponent(final BaseComponent@org.checkerframework.checker.nullness.qual.NonNull[] kickReasonComponent) {
 +        this.kickReason = net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer.get().deserialize(kickReasonComponent);
 +    }
 +    // Waterfall end
@@ -839,7 +839,7 @@ index ee63732d..8b25a7cd 100644
 +    // Waterfall end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-index b4566327..cef82f29 100644
+index b4566327..cb00f1f0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 @@ -18,8 +18,11 @@ public abstract class Command
@@ -856,16 +856,18 @@ index b4566327..cef82f29 100644
  
      /**
       * Construct a new command with no permissions or aliases.
-@@ -66,4 +69,24 @@ public abstract class Command
+@@ -66,4 +69,26 @@ public abstract class Command
      {
          return permission == null || permission.isEmpty() || sender.hasPermission( permission );
      }
 +
 +    // Waterfall start - add previously Lombok-generated getters/setters - we're going on an adventure!
++    @Deprecated
 +    public @org.checkerframework.checker.nullness.qual.Nullable String getPermissionMessage() {
 +        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(permissionMessage);
 +    }
 +
++    @Deprecated
 +    protected void setPermissionMessage(final @org.checkerframework.checker.nullness.qual.Nullable String permissionMessage) {
 +        this.permissionMessage = permissionMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(permissionMessage) : null;
 +    }
@@ -881,6 +883,42 @@ index b4566327..cef82f29 100644
 +    }
 +    // Waterfall end
  }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 90031156..beccceda 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -11,18 +11,7 @@ import java.io.File;
+ import java.io.InputStream;
+ import java.lang.reflect.Method;
+ import java.net.URLClassLoader;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.Collections;
+-import java.util.HashMap;
+-import java.util.HashSet;
+-import java.util.Iterator;
+-import java.util.LinkedHashMap;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.Set;
+-import java.util.Stack;
++import java.util.*;
+ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
+ import java.util.logging.Level;
+@@ -193,7 +182,10 @@ public final class PluginManager
+         {
+             if ( tabResults == null )
+             {
+-                sender.sendMessage( ( command.getPermissionMessage() == null ) ? proxy.getTranslation( "no_permission" ) : command.getPermissionMessage() );
++                // Waterfall start - we're going on an adventure!
++//                sender.sendMessage( ( command.getPermissionMessage() == null ) ? proxy.getTranslation( "no_permission" ) : command.getPermissionMessage() );
++                sender.sendMessage(command.permissionMessage() == null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(proxy.getTranslation("no_permission")) : Objects.requireNonNull(command.permissionMessage()));
++                // Waterfall end
+             }
+             return true;
+         }
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Objective.java b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
 index 0dd25646..5db935ed 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Objective.java
@@ -1218,7 +1256,7 @@ index 7b002089..1b1e5350 100644
      public boolean canAccess(CommandSender player)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 5e452780..d31edfc2 100644
+index 5e452780..4d72f94c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 @@ -60,6 +60,14 @@ public class ServerConnection implements Server
@@ -1228,7 +1266,7 @@ index 5e452780..d31edfc2 100644
 +    // Waterfall - we're going on an adventure!
 +    @Override
 +    public void disconnect(net.kyori.adventure.text.@org.checkerframework.checker.nullness.qual.NonNull Component reason) {
-+        // we ignore the reason rather than throwing like the above does as this should fail silently
++        Preconditions.checkArgument(reason == net.kyori.adventure.text.Component.empty(), "Server cannot have disconnect reason");
 +        ch.close();
 +    }
 +    // Waterfall end
