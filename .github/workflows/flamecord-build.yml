@@ -1,4 +1,9 @@
-name: Flamecord Maven Build
+#This workflow will perform a compilation test 
+#on each pull request or push to the branch master
+#to check its correct compilation and will deliver 
+#an artifact to check if the change is working properly.
+
+name: FlameCord Maven Build
 
 on: [push, pull_request]
 
@@ -6,6 +11,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    #The corresponding tests are performed in the versions
+    #marked as Long Term Support by Java and in its
+    #latest version up to the moment.
     strategy:
       matrix:
         java: [8, 11, 16]
@@ -19,6 +27,7 @@ jobs:
         distribution: 'adopt'
         architecture: x64
     
+    #The corresponding dependencies are stored in the cache to speed up the test.
     - name: Cache Maven packages
       uses: actions/cache@v2
       with:
@@ -32,6 +41,7 @@ jobs:
         git config --global user.name "Your Name"
         scripts/build.sh --jar
       
+    #An artifact is generated in a compressed file according to each JDK build version.
     - name: Upload Flamecord
       uses: actions/upload-artifact@v2
       with:
