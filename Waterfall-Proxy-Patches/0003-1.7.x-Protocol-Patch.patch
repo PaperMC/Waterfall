@@ -1,4 +1,4 @@
-From bc92a3b1a1f14ed5b31b8baa82e17b4ede1d8bdf Mon Sep 17 00:00:00 2001
+From 6f9d46148349b909fe4a49f5d65ca6d9f287e6cf Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 10:31:04 -0500
 Subject: [PATCH] 1.7.x Protocol Patch
@@ -1439,10 +1439,10 @@ index 2d9c0cda5..a4c255757 100644
                  throw CancelSendSignal.INSTANCE;
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7ec119ea0..986a9d052 100644
+index 01075a85e..96df01757 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -193,6 +193,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -196,6 +196,7 @@ public final class UserConnection implements ProxiedPlayer
      public void setDisplayName(String name)
      {
          Preconditions.checkNotNull( name, "displayName" );
@@ -1450,7 +1450,7 @@ index 7ec119ea0..986a9d052 100644
          displayName = name;
      }
  
-@@ -497,7 +498,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -500,7 +501,8 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
@@ -1460,7 +1460,7 @@ index 7ec119ea0..986a9d052 100644
          {
              // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
              // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
-@@ -693,6 +695,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -696,6 +698,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent header, BaseComponent footer)
      {
@@ -1468,7 +1468,7 @@ index 7ec119ea0..986a9d052 100644
          header = ChatComponentTransformer.getInstance().transform( this, true, header )[0];
          footer = ChatComponentTransformer.getInstance().transform( this, true, footer )[0];
  
-@@ -705,6 +708,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -708,6 +711,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
      {
@@ -1476,7 +1476,7 @@ index 7ec119ea0..986a9d052 100644
          header = ChatComponentTransformer.getInstance().transform( this, true, header );
          footer = ChatComponentTransformer.getInstance().transform( this, true, footer );
  
-@@ -734,6 +738,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -737,6 +741,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void setCompressionThreshold(int compressionThreshold)
      {
@@ -1637,7 +1637,7 @@ index 4d7b1b23e..ad3bdee56 100644
              con.getServer().disconnect( "Quitting" );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index db93d8835..a3a12e19b 100644
+index db5210d16..cd0bc5a9b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -35,6 +35,10 @@ public abstract class EntityMap
