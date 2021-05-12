@@ -1,4 +1,4 @@
-From 6d01261c6f3846eb751d212196efbdc8d4efc030 Mon Sep 17 00:00:00 2001
+From 8f2d534b8f40b7a4738fabb88bb4d3ed5d735e54 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,10 +123,10 @@ index f304f991..2d9c0cda 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index bc8156cc..7ec119ea 100644
+index c3cc914d..01075a85 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -753,4 +753,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -756,4 +756,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -158,7 +158,7 @@ index 033877fc..72b6e9be 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 4a27148f..db93d883 100644
+index 509898e9..db5210d1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -6,6 +6,7 @@ import io.netty.buffer.ByteBufInputStream;
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.30.1
+2.31.1
 
