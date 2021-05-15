@@ -1,0 +1,63 @@
+From 97a8cb2fb8c5b348efd614bb4fd952c0c42caac0 Mon Sep 17 00:00:00 2001
+From: abhiram <abhithegamer2019@gmail.com>
+Date: Sat, 15 May 2021 13:58:21 +0530
+Subject: [PATCH] Format Code to Bungee's code style
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 3ece27c8..a190dfae 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -303,31 +303,31 @@ public final class PluginManager
+     public void unloadPlugin(Plugin plugin)
+     {
+         plugin.onDisable();
+-        this.unregisterListeners(plugin);
+-        this.unregisterCommands(plugin);
+-        this.proxy.getScheduler().cancel(plugin);
++        this.unregisterListeners( plugin );
++        this.unregisterCommands( plugin );
++        this.proxy.getScheduler().cancel( plugin );
+ 
+-        for ( Handler handler : plugin.getLogger().getHandlers())
++        for ( Handler handler : plugin.getLogger().getHandlers() )
+         {
+             handler.close();
+         }
+ 
+         try
+         {
+-            pluginloaders.get(plugin.getDescription().getName()).close();
++            pluginloaders.get( plugin.getDescription().getName() ).close();
+         }catch (Exception exception)
+         {
+             exception.printStackTrace();
+         }
+ 
+-        if(this.plugins.containsKey(plugin.getDescription().getName()))
++        if( this.plugins.containsKey( plugin.getDescription().getName() ) )
+         {
+-            this.plugins.remove(plugin.getDescription().getName());
++            this.plugins.remove( plugin.getDescription().getName() );
+         }
+ 
+-        if(this.pluginloaders.containsKey(plugin.getDescription().getName()))
++        if( this.pluginloaders.containsKey( plugin.getDescription().getName() ) )
+         {
+-            this.pluginloaders.remove(plugin.getDescription().getName());
++            this.pluginloaders.remove( plugin.getDescription().getName() );
+         }
+     }
+     // FlameCord end
+@@ -437,7 +437,7 @@ public final class PluginManager
+ 
+                 plugins.put( plugin.getName(), clazz );
+                 // FlameCord start - cache url classloaders to unload plugins
+-                pluginloaders.put(plugin.getName(),loader);
++                pluginloaders.put( plugin.getName(),loader );
+                 // FlameCord end
+                 clazz.onLoad();
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
+-- 
+2.26.2.windows.1
+
