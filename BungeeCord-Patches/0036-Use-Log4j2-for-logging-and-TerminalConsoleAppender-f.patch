@@ -1,4 +1,4 @@
-From 94d4370d668dc6cd1056707e1f33ef26eda9f961 Mon Sep 17 00:00:00 2001
+From a29675723a6c2c520cf6c2079512f21621db28c0 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 2e9160a2..02480a20 100644
+index aa83cd3d..5e8499a7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -251,7 +251,7 @@ index 2e9160a2..02480a20 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 645835d8..602b9a93 100644
+index eb23676e..177147ac 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -279,7 +279,7 @@ index 645835d8..602b9a93 100644
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
 @@ -130,6 +131,25 @@
-             <version>1.6.2</version>
+             <version>1.7.0</version>
              <scope>compile</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->
