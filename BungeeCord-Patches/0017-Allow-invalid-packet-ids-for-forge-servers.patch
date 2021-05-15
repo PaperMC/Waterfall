@@ -1,4 +1,4 @@
-From ce2efc22510538721c07bb4ba4d6cebe5da85885 Mon Sep 17 00:00:00 2001
+From ec9c98165375395d0ab4726f8b56182495682203 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index d36b7f3c..5e03e175 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index caf4a685..50a911c2 100644
+index de94bfda..4b16a50f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -441,14 +441,23 @@ public enum Protocol
+@@ -475,14 +475,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -93,7 +93,7 @@ index bafd741b..4d0fa540 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e0b48763..b64d3f50 100644
+index cb722d78..b0e7e392 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -105,10 +105,10 @@ index e0b48763..b64d3f50 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 53911d1c..4a27148f 100644
+index 93989ee9..2e6cf764 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -322,6 +322,12 @@ public abstract class EntityMap
+@@ -324,6 +324,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -122,5 +122,5 @@ index 53911d1c..4a27148f 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.30.1
+2.31.1
 

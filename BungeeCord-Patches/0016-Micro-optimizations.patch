@@ -1,4 +1,4 @@
-From 17dc40e613083bdbc436c7d7f075e09690fa1c58 Mon Sep 17 00:00:00 2001
+From 38cac6bb66605dd7c39c7a1c0c7eba5ad25a43a7 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -8,10 +8,10 @@ Subject: [PATCH] Micro-optimizations
 - Don't create a data input stream for every plugin message we get from servers
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bcb229c3..b9d624f8 100644
+index 8464fefb..a1752045 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -557,7 +557,9 @@ public class BungeeCord extends ProxyServer
+@@ -559,7 +559,9 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -23,7 +23,7 @@ index bcb229c3..b9d624f8 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 653242f0..d1e57953 100644
+index 552b0b17..a859195e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -250,7 +250,6 @@ public class DownstreamBridge extends PacketHandler
@@ -43,5 +43,5 @@ index 653242f0..d1e57953 100644
              String subChannel = in.readUTF();
  
 -- 
-2.24.0
+2.31.1
 
