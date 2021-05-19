@@ -1,4 +1,4 @@
-From e91832380cb724413372a27c547468be2bf74a26 Mon Sep 17 00:00:00 2001
+From 2b17b5973a9618e4f4939c801d47e34a43c26477 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
@@ -134,7 +134,7 @@ index 00000000..e82c4844
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 301763f1..ed3e3e12 100644
+index 61c2e52a..a862f0a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
@@ -145,7 +145,7 @@ index 301763f1..ed3e3e12 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
-@@ -285,9 +286,10 @@ public class BungeeCord extends ProxyServer
+@@ -286,9 +287,10 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  
@@ -158,7 +158,7 @@ index 301763f1..ed3e3e12 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -303,6 +305,7 @@ public class BungeeCord extends ProxyServer
+@@ -304,6 +306,7 @@ public class BungeeCord extends ProxyServer
          }
          
          FlameCord.renew(logger, whitelistedAddresses);
@@ -166,7 +166,7 @@ index 301763f1..ed3e3e12 100644
  
          if ( config.isForgeSupport() )
          {
-@@ -832,4 +835,56 @@ public class BungeeCord extends ProxyServer
+@@ -833,4 +836,56 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }

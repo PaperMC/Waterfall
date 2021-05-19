@@ -1,4 +1,4 @@
-From 5580b156711771e38a5a3a3557581d7358abeea6 Mon Sep 17 00:00:00 2001
+From 5bfb9c26b611a8268bfc97fd869d1a410f812adc Mon Sep 17 00:00:00 2001
 From: linsaftw <linsaftw@users.noreply.github.com>
 Date: Sat, 20 Mar 2021 12:36:25 -0300
 Subject: [PATCH] Fix ByteBuf memory leaks
@@ -60,10 +60,10 @@ index 474551d3..8716d0c8 100644
                  {
                      return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index a3a12e19..214a1fd0 100644
+index 44066317..e4b97490 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -143,11 +143,17 @@ public abstract class EntityMap
+@@ -145,11 +145,17 @@ public abstract class EntityMap
          if ( readId == oldId || readId == newId )
          {
              ByteBuf data = packet.copy();
