@@ -1,4 +1,4 @@
-From 5bfb9c26b611a8268bfc97fd869d1a410f812adc Mon Sep 17 00:00:00 2001
+From 70d54b4ecbdca409826513d00c0a4d53d6603a11 Mon Sep 17 00:00:00 2001
 From: linsaftw <linsaftw@users.noreply.github.com>
 Date: Sat, 20 Mar 2021 12:36:25 -0300
 Subject: [PATCH] Fix ByteBuf memory leaks
@@ -130,10 +130,10 @@ index 6755fe84..21871d14 100644
                  }
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-index cefa0206..2cd5740c 100644
+index cefa0206..cede3994 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-@@ -38,15 +38,27 @@ public class ForgeUtils
+@@ -38,15 +38,22 @@ public class ForgeUtils
      {
          Map<String, String> modTags = new HashMap<>();
          ByteBuf payload = Unpooled.wrappedBuffer( pluginMessage.getData() );
@@ -151,15 +151,10 @@ index cefa0206..2cd5740c 100644
 -                modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
 +                ByteBuf buffer = payload.slice();
 +
-+                try {
-+                    int modCount = DefinedPacket.readVarInt( buffer, 2 );
-+                    for ( int i = 0; i < modCount; i++ )
-+                    {
-+                        modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
-+                    }
-+                } finally
++                int modCount = DefinedPacket.readVarInt( buffer, 2 );
++                for ( int i = 0; i < modCount; i++ )
 +                {
-+                    buffer.release();
++                    modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
 +                }
              }
 +        } finally {
