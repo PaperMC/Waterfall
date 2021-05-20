@@ -1,0 +1,79 @@
+From 333ca65e32247d5d2941a638b16d829a8409d80c Mon Sep 17 00:00:00 2001
+From: MrFishCakes <fishcake007@outlook.com>
+Date: Thu, 20 May 2021 15:23:21 +0100
+Subject: [PATCH] Add command to view all proxy plugins
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index c09f5b4c..82ba69f9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -75,12 +75,7 @@ import net.md_5.bungee.chat.ScoreComponentSerializer;
+ import net.md_5.bungee.chat.SelectorComponentSerializer;
+ import net.md_5.bungee.chat.TextComponentSerializer;
+ import net.md_5.bungee.chat.TranslatableComponentSerializer;
+-import net.md_5.bungee.command.CommandBungee;
+-import net.md_5.bungee.command.CommandEnd;
+-import net.md_5.bungee.command.CommandIP;
+-import net.md_5.bungee.command.CommandPerms;
+-import net.md_5.bungee.command.CommandReload;
+-import net.md_5.bungee.command.ConsoleCommandSender;
++import net.md_5.bungee.command.*;
+ import net.md_5.bungee.compress.CompressFactory;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+@@ -230,6 +225,7 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new CommandIP() );
+         getPluginManager().registerCommand( null, new CommandBungee() );
+         getPluginManager().registerCommand( null, new CommandPerms() );
++        getPluginManager().registerCommand( null, new CommandPlugins() ); // Waterfall - register /gplugins command
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPlugins.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPlugins.java
+new file mode 100644
+index 00000000..dd7f4480
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPlugins.java
+@@ -0,0 +1,37 @@
++package net.md_5.bungee.command;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++
++import java.util.Collection;
++
++public class CommandPlugins extends Command {
++
++    public CommandPlugins() {
++        super("gplugins", "bungeecord.command.plugins", "gpl");
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args) {
++        sender.sendMessage("Proxy Plugins " + getPluginList());
++    }
++
++    // Code from Bukkit for simplicity
++    private String getPluginList() {
++        final Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
++        final StringBuilder builder = new StringBuilder();
++
++        for (Plugin plugin : plugins) {
++            if (builder.length() > 0) {
++                builder.append(ChatColor.WHITE).append(", ");
++            }
++
++            builder.append(ChatColor.GREEN).append(plugin.getDescription().getName());
++        }
++
++        return "(" + plugins.size() + ") " + builder.toString();
++    }
++
++}
+-- 
+2.26.2.windows.1
+
