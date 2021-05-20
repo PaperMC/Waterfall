@@ -1,16 +1,16 @@
-From 80403931ef95e1569b79c85d9b62a6485ef06ac3 Mon Sep 17 00:00:00 2001
+From e12bc246dfc8d052e40895e3d6bf31d4fba2660d Mon Sep 17 00:00:00 2001
 From: Andrew Steinborn <git@steinborn.me>
 Date: Sat, 24 Apr 2021 17:52:33 +0100
 Subject: [PATCH] Set Netty pooled buffer size to 4MB
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index e830198d..771b3725 100644
+index 0db3d76a..35680528 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -21,6 +21,19 @@ public class BungeeCordLauncher
-         Security.setProperty( "networkaddress.cache.ttl", "30" );
-         Security.setProperty( "networkaddress.cache.negative.ttl", "10" );
+@@ -26,6 +26,19 @@ public class BungeeCordLauncher
+             System.setProperty( "jdk.util.jar.enableMultiRelease", "force" );
+         }
  
 +        // Waterfall start
 +        // By default, Netty allocates 16MiB arenas for the PooledByteBufAllocator. This is too much
@@ -29,5 +29,5 @@ index e830198d..771b3725 100644
          parser.allowsUnrecognizedOptions();
          parser.acceptsAll( Arrays.asList( "help" ), "Show the help" );
 -- 
-2.31.1
+2.31.1.windows.1
 
