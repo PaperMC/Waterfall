@@ -5,6 +5,8 @@ FlameCord is a patch for Travertine to fix possible exploits and add useful func
 
 FlameCord is compiled like Travertine does; Please follow the CONTRIBUTING.md file. If you need help you can always contact us on Discord.
 
+To compile FlameCord you need the same requirements as Travertine, and run the command `./flamecord b` to get the corresponding jar.
+
 <a href="https://discord.gg/gF36AT3"><img src="https://discord.com/assets/4ff060e44afc171e9622fbe589c2c09e.png" width=10% height=10%><img/><a/> <a href="https://www.mc-market.org/resources/13492/"><img src="https://www.mc-market.org/styles/mcmarketv2/xenforo/logo.png" width=10% height=10%><img/><a/>
 
 Travertine [![Build Status](https://papermc.io/ci/job/Travertine/badge/icon)](https://papermc.io/ci/job/Travertine/)
