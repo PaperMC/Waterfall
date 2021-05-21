@@ -13,7 +13,7 @@ index 93d17f6b..dd663e1d 100644
      public static String readString(ByteBuf buf)
      {
 -        return readString( buf, Short.MAX_VALUE );
-+        return readString( buf, 4096 ); // FlameCord
++        return readString( buf, 2048 ); // FlameCord
      }
  
      public static String readString(ByteBuf buf, int maxLen)
