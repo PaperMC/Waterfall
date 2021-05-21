@@ -1,0 +1,79 @@
+From 481b64d2bac4530c108e0116666c91db2d6526a5 Mon Sep 17 00:00:00 2001
+From: MrFishCakes <fishcake007@outlook.com>
+Date: Fri, 21 May 2021 17:32:13 +0100
+Subject: [PATCH] Add command to view all proxy plugins
+
+
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/command/CommandPlugins.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/command/CommandPlugins.java
+new file mode 100644
+index 00000000..f97e37ab
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/command/CommandPlugins.java
+@@ -0,0 +1,44 @@
++package io.github.waterfallmc.waterfall.command;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++
++import java.util.Collection;
++
++public class CommandPlugins extends Command {
++
++    public CommandPlugins() {
++        super("gplugins", "bungeecord.command.plugins", "gpl");
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args) {
++        sender.sendMessage(getPluginList());
++    }
++
++    private BaseComponent[] getPluginList() {
++        final Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
++        final ComponentBuilder builder = new ComponentBuilder();
++
++        builder.append("Plugins (" + plugins.size() + "): ");
++        boolean firstIteration = true;
++
++        for (Plugin plugin : plugins) {
++            if (firstIteration) {
++                firstIteration = false;
++            } else {
++                builder.append(ChatColor.WHITE.toString()).append(", ");
++            }
++
++            builder.append(ChatColor.GREEN.toString()).append(plugin.getDescription().getName());
++        }
++
++        return builder.create();
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index c09f5b4c..c1cea184 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
++import io.github.waterfallmc.waterfall.command.CommandPlugins;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
+ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
+@@ -230,6 +231,7 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new CommandIP() );
+         getPluginManager().registerCommand( null, new CommandBungee() );
+         getPluginManager().registerCommand( null, new CommandPerms() );
++        getPluginManager().registerCommand( null, new CommandPlugins() ); // Waterfall - Register command to view proxy plugins
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+-- 
+2.26.2.windows.1
+
