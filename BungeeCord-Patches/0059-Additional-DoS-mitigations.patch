@@ -1,4 +1,4 @@
-From 0fd0bf29d77463349c44fc92f9ccdcae63af89db Mon Sep 17 00:00:00 2001
+From 27dd755c7d2ca99b302ae28b61a9e4a00823130e Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -50,7 +50,7 @@ index d10cf2ed..31a95495 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 1a647f2b..ac9f114d 100644
+index 37d28c01..01d35f41 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.protocol;
@@ -166,10 +166,10 @@ index 388f6cdb..53575ce0 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index a691f962..a4c0a6a5 100644
+index 08ee376e..cfd8e64e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
  import lombok.NoArgsConstructor;
  import net.md_5.bungee.protocol.AbstractPacketHandler;
  import net.md_5.bungee.protocol.DefinedPacket;
@@ -177,7 +177,7 @@ index a691f962..a4c0a6a5 100644
  
  @Data
  @NoArgsConstructor
-@@ -38,4 +39,12 @@ public class LoginRequest extends DefinedPacket
+@@ -34,4 +35,12 @@ public class LoginRequest extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -241,5 +241,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.30.0
+2.31.1
 
