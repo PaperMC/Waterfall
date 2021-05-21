@@ -1,11 +1,11 @@
-From d3c5c858620aaeb2d94ce29c15fa87cb39156e51 Mon Sep 17 00:00:00 2001
+From 01ec864075a0abd0084167e9e72e632f254de58f Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Wed, 19 May 2021 15:40:41 -0300
 Subject: [PATCH] Limit String read
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 93d17f6b..dfcba274 100644
+index 93d17f6b..dd663e1d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -36,12 +36,13 @@ public abstract class DefinedPacket
@@ -13,7 +13,7 @@ index 93d17f6b..dfcba274 100644
      public static String readString(ByteBuf buf)
      {
 -        return readString( buf, Short.MAX_VALUE );
-+        return readString( buf, 1024 ); // FlameCord
++        return readString( buf, 4096 ); // FlameCord
      }
  
      public static String readString(ByteBuf buf, int maxLen)
