@@ -1,4 +1,4 @@
-From b498c27f2197205ed7acb59939a6d1eeeef818e8 Mon Sep 17 00:00:00 2001
+From e6d62e8999fba8fdb5409175d81238ddd383404b Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Wed, 22 Apr 2020 14:00:44 +1000
 Subject: [PATCH] Add exception reporting event
@@ -551,10 +551,10 @@ index 4180c995..90031156 100644
       * Register a {@link Listener} for receiving called events. Methods in this
       * Object which wish to receive events must be annotated with the
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index f5bd1f98..d7c3b90d 100644
+index 8da5f275..d28fd528 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -33,7 +33,8 @@ public class EventBus
+@@ -34,7 +34,8 @@ public class EventBus
          this.logger = ( logger == null ) ? Logger.getLogger( Logger.GLOBAL_LOGGER_NAME ) : logger;
      }
  
@@ -564,7 +564,7 @@ index f5bd1f98..d7c3b90d 100644
      {
          EventHandlerMethod[] handlers = byEventBaked.get( event.getClass() );
  
-@@ -52,7 +53,9 @@ public class EventBus
+@@ -53,7 +54,9 @@ public class EventBus
                      throw new Error( "Method rejected target/argument: " + event, ex );
                  } catch ( InvocationTargetException ex )
                  {
@@ -695,5 +695,5 @@ index 67db0cc4..02ec98fc 100644
  
              // If we have a period of 0 or less, only run once
 -- 
-2.31.1
+2.31.1.windows.1
 

@@ -1,4 +1,4 @@
-From e11aadcf79d0e672de3681e1253977fedc327d0c Mon Sep 17 00:00:00 2001
+From eb3467bf3d65ee24940d3ae3c4422ed16ba55544 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -418,10 +418,10 @@ index 1f6ba085..617a077f 100644
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index a4fe8aad..e830198d 100644
+index c2512dd5..0db3d76a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -63,6 +63,9 @@ public class BungeeCordLauncher
+@@ -68,6 +68,9 @@ public class BungeeCordLauncher
  
          if ( !options.has( "noconsole" ) )
          {
@@ -431,7 +431,7 @@ index a4fe8aad..e830198d 100644
              String line;
              while ( bungee.isRunning && ( line = bungee.getConsoleReader().readLine( ">" ) ) != null )
              {
-@@ -71,6 +74,8 @@ public class BungeeCordLauncher
+@@ -76,6 +79,8 @@ public class BungeeCordLauncher
                      bungee.getConsole().sendMessage( new ComponentBuilder( "Command not found" ).color( ChatColor.RED ).create() );
                  }
              }
@@ -1585,5 +1585,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.25.1
+2.31.1.windows.1
 
