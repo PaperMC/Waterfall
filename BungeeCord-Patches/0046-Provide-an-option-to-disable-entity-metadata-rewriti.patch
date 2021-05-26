@@ -1,4 +1,4 @@
-From e2aa832097ee0d8f09cd8b84ec1a6dc11dcacebb Mon Sep 17 00:00:00 2001
+From 4c120e1cb0579c52efcbaf85f281f770efaf21aa Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index f304f991..2d9c0cda 100644
+index 84e93b38..a5efb0af 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -230,7 +230,7 @@ public class ServerConnector extends PacketHandler
+@@ -231,7 +231,7 @@ public class ServerConnector extends PacketHandler
              ch.write( message );
          }
  
@@ -69,7 +69,7 @@ index f304f991..2d9c0cda 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -283,6 +283,7 @@ public class ServerConnector extends PacketHandler
+@@ -284,6 +284,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -77,7 +77,7 @@ index f304f991..2d9c0cda 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -295,6 +296,7 @@ public class ServerConnector extends PacketHandler
+@@ -296,6 +297,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -85,7 +85,7 @@ index f304f991..2d9c0cda 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -313,12 +315,35 @@ public class ServerConnector extends PacketHandler
+@@ -314,12 +316,35 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.31.1
+2.31.1.windows.1
 
