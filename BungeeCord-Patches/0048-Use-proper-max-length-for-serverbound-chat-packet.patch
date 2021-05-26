@@ -1,4 +1,4 @@
-From fb684fc6e09c86d84c6b6047901ad3f6b447fd41 Mon Sep 17 00:00:00 2001
+From 642d3af7c2e2537c49af02090b2ff7f17424c5e9 Mon Sep 17 00:00:00 2001
 From: kashike <kashike@vq.lc>
 Date: Wed, 20 Mar 2019 21:39:12 -0700
 Subject: [PATCH] Use proper max length for serverbound chat packet
@@ -30,25 +30,10 @@ index 0cef9430..d51a3142 100644
      {
          if ( b.length > Short.MAX_VALUE )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index f886fe6e..c387802d 100644
+index e3a4d250..4749a671 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-@@ -40,7 +40,13 @@ public class Chat extends DefinedPacket
-     @Override
-     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
--        message = readString( buf, ( direction == ProtocolConstants.Direction.TO_CLIENT ) ? Short.MAX_VALUE : 256 );
-+        // Waterfall start
-+        if (direction == ProtocolConstants.Direction.TO_CLIENT) {
-+            this.message = readString(buf, Short.MAX_VALUE * 8 + 8);
-+        } else {
-+            message = readString( buf, 256 );
-+        }
-+        // Waterfall end
-         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
-         {
-             position = buf.readByte();
-@@ -54,6 +60,11 @@ public class Chat extends DefinedPacket
+@@ -54,6 +54,11 @@ public class Chat extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
@@ -61,5 +46,5 @@ index f886fe6e..c387802d 100644
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
 -- 
-2.31.1
+2.31.1.windows.1
 
