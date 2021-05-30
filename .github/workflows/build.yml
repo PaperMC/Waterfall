@@ -27,4 +27,6 @@ jobs:
           git config --global user.name "Github Actions"
           ./waterfall p
       - name: build
-        run: mvn clean package javadoc:javadoc
+        run: mvn clean package
+      - name: javadoc
+        run: mvn clean javadoc:javadoc
