@@ -1,4 +1,4 @@
-From 8025bd96688d2dd7a6b83a8b2cf2d2b54bd56f64 Mon Sep 17 00:00:00 2001
+From b05d57f0c877494db46ab67097b32dc96db3cca5 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 6e8e84f5..ee3ab347 100644
+index 29c58dd8..385a5cc2 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,42 @@
@@ -145,10 +145,10 @@ index 6be22739..a4516ed9 100644
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index d7aca2ad..85309233 100644
+index d7aca2ad..dffdddaf 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
-@@ -4,19 +4,19 @@
+@@ -4,25 +4,25 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
@@ -174,6 +174,13 @@ index d7aca2ad..85309233 100644
  
      <dependencies>
          <dependency>
+             <groupId>com.google.code.gson</groupId>
+             <artifactId>gson</artifactId>
+-            <version>2.8.0</version>
++            <version>2.8.7</version> <!-- Waterfall - bump gson version -->
+             <scope>compile</scope>
+         </dependency>
+     </dependencies>
 diff --git a/config/pom.xml b/config/pom.xml
 index bfb82d52..38db2292 100644
 --- a/config/pom.xml
@@ -491,7 +498,7 @@ index cf46174c..db15febb 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 8b5feae5..2e9160a2 100644
+index ad213e93..aa83cd3d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -749,7 +756,7 @@ index 5ec853a5..402266ca 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 086b9e79..bd636f36 100644
+index 77fa06e2..6075d86a 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
