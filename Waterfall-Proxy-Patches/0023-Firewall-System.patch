@@ -1,4 +1,4 @@
-From d1d73f437bc7e61be80eed98c4d8485f53b38a02 Mon Sep 17 00:00:00 2001
+From f3e4276fb66c18b3c78975e452d1d4b6c78939dc Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -246,7 +246,7 @@ index 00000000..dfb5c6d3
 +}
 \ No newline at end of file
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index f0761a4f..31873afc 100644
+index c03e1b51..7f4b5b45 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -46,8 +46,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -303,10 +303,10 @@ index bf6f8538..fa0b59c2 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 494375cd..aedfece3 100644
+index c8089afc..2b2a12d8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -165,6 +165,9 @@ public class ServerConnector extends PacketHandler
+@@ -164,6 +164,9 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
@@ -317,10 +317,10 @@ index 494375cd..aedfece3 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index deee607d..3720825a 100644
+index 82e23314..8e1749a4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -154,6 +154,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -152,6 +152,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -330,7 +330,7 @@ index deee607d..3720825a 100644
              throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
-@@ -396,6 +399,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -379,6 +382,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -341,7 +341,7 @@ index deee607d..3720825a 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 423af854..70917b0b 100644
+index 264c22e8..2101cbc4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
@@ -352,7 +352,7 @@ index 423af854..70917b0b 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -59,6 +60,9 @@ public class PingHandler extends PacketHandler
+@@ -58,6 +59,9 @@ public class PingHandler extends PacketHandler
      {
          if ( packet.packet == null )
          {
@@ -363,7 +363,7 @@ index 423af854..70917b0b 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 7f18b564..616651ba 100644
+index 4c53e02c..376daee9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -11,6 +11,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
@@ -375,7 +375,7 @@ index 7f18b564..616651ba 100644
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1d86aa63..915c162f 100644
+index a840bc70..4e23c996 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,6 +63,13 @@ public class PipelineUtils
@@ -426,5 +426,5 @@ index b3bdfd05..49d53f17 100644
                  throw new IllegalStateException( "Invalid data request packet" );
              }
 -- 
-2.31.1
+2.31.1.windows.1
 

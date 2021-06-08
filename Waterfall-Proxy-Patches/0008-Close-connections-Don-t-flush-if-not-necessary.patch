@@ -1,14 +1,14 @@
-From cdf91cda29d5b69410c130012de20dba5d7da506 Mon Sep 17 00:00:00 2001
+From f1b1c7e6c185bc7a13cf6125dc2672b9a53e12e1 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5407c20a..e9937428 100644
+index 49ba34db..6e148782 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -194,6 +194,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -22,11 +22,10 @@ index 5407c20a..e9937428 100644
                  String kickMessage;
  
                  if ( v1_5 )
-@@ -264,6 +271,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                         {
-                             bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
-                         }
-+
+@@ -257,6 +264,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     @Override
+                     public void done(ProxyPingEvent pingResult, Throwable error)
+                     {
 +                        // FlameCord - Close if response is null
 +                        // FlameCord - Return if connection is closed
 +                        if (pingResult.getResponse() == null) {
@@ -36,10 +35,10 @@ index 5407c20a..e9937428 100644
 +                            return;
 +                        }
 +
-                         // FlameCord start
-                         if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
-                         {
-@@ -304,11 +321,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         Gson gson = BungeeCord.getInstance().gson;
+                         unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                         if ( bungee.getConnectionThrottle() != null )
+@@ -286,11 +302,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(PingPacket ping) throws Exception
      {
@@ -47,15 +46,17 @@ index 5407c20a..e9937428 100644
 -            Preconditions.checkState(thisState == State.PING, "Not expecting PING");
 -        }
 +        // FlameCord - Never accept invalid packets
-+        Preconditions.checkState(thisState == State.PING, "Not expecting PING");
++        Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
++
          unsafe.sendPacket( ping );
 -        disconnect( "" );
++
 +        // FlameCord - Close instead of disconnect
 +        ch.close();
      }
  
      @Override
-@@ -624,7 +641,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -606,7 +624,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -117,34 +118,8 @@ index 6dc5633f..5c05f2b9 100644
          ch.pipeline().addBefore( baseName, name, handler );
      }
  
-diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 270545f2..b0825e51 100644
---- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-+++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -56,7 +56,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-     {
-         if ( handler != null )
-         {
--            channel.markClosed();
-+            // FlameCord - close instead of markClosed
-+            channel.close();
-             handler.disconnected( channel );
- 
-             if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
-@@ -186,8 +187,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-                     ProxyServer.getInstance().getLogger().log( Level.SEVERE, handler + " - exception processing exception", ex );
-                 }
-             }
--
--            ctx.close();
-         }
-+
-+        // FlameCord - Close even if the channel isn't active
-+        ctx.close();
-     }
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5e..4996a7b4 100644
+index 96704d5e..654203ab 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -170,6 +145,20 @@ index 96704d5e..4996a7b4 100644
      };
      public static final Base BASE = new Base();
      private static final KickStringWriter legacyKicker = new KickStringWriter();
+@@ -196,5 +205,13 @@ public class PipelineUtils
+ 
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+         }
++
++        // FlameCord - Close on exception caught
++        @Override
++        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
++            cause.printStackTrace();
++
++            ctx.close();
++        }
+     }
+ }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 index 0c1ecfb8..b3bdfd05 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
@@ -184,5 +173,5 @@ index 0c1ecfb8..b3bdfd05 100644
          }
  
 -- 
-2.31.1
+2.31.1.windows.1
 

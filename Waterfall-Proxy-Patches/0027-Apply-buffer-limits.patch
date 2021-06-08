@@ -1,14 +1,14 @@
-From 9b03768079f2ac841fa87e3e10d3808b7bc3cae3 Mon Sep 17 00:00:00 2001
+From 3dc90158a5898f0546df38b2b55c49e949d78177 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Wed, 19 May 2021 12:56:29 -0300
 Subject: [PATCH] Apply buffer limits
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fb19d5dc..7c5af95b 100644
+index 483884a4..ab9e2ab5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -378,6 +378,9 @@ public class BungeeCord extends ProxyServer
+@@ -370,6 +370,9 @@ public class BungeeCord extends ProxyServer
                      }
                  }
              };
@@ -18,7 +18,7 @@ index fb19d5dc..7c5af95b 100644
              new ServerBootstrap()
                      .channel( PipelineUtils.getServerChannel( info.getSocketAddress() ) )
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
-@@ -385,6 +388,8 @@ public class BungeeCord extends ProxyServer
+@@ -377,6 +380,8 @@ public class BungeeCord extends ProxyServer
                      .childHandler( PipelineUtils.SERVER_CHILD )
                      .group( bossEventLoopGroup, workerEventLoopGroup )
                      .localAddress( info.getSocketAddress() )
@@ -52,7 +52,7 @@ index 37657c4c..ba31471e 100644
          if ( ssl )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a6722b41..5de2e6ef 100644
+index 7fb1e70f..c7038164 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -207,6 +207,11 @@ public class PipelineUtils
@@ -95,5 +95,5 @@ index 8becc26a..8304685c 100644
      }
  }
 -- 
-2.31.1
+2.31.1.windows.1
 

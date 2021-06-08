@@ -1,14 +1,14 @@
-From 355853706ca50aba3dc231b6adee5f5e8bd58548 Mon Sep 17 00:00:00 2001
+From e6b04ac9bcc7a544cf3291b159c9498f94cc9029 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:51 +0800
 Subject: [PATCH] Don't allow name containing dot
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 037a305b..c6dfa00f 100644
+index e23cf604..b4067b1e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -404,13 +404,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -387,13 +387,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          this.loginRequest = loginRequest;
  
@@ -28,5 +28,5 @@ index 037a305b..c6dfa00f 100644
              disconnect( bungee.getTranslation( "name_too_long" ) );
              return;
 -- 
-2.20.1
+2.31.1.windows.1
 

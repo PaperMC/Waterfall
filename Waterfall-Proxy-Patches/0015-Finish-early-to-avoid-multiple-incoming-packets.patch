@@ -1,14 +1,14 @@
-From e57213dfb0ed9e6ebb122cb95d08a2e7592c4c60 Mon Sep 17 00:00:00 2001
+From 53f0affe159b7b18210d1927bd4991dd27b3b1d3 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:36:08 +0800
 Subject: [PATCH] Finish early to avoid multiple incoming packets
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3c67494f..f7ed1f46 100644
+index 3120abdb..4a17a117 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -470,6 +470,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +453,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
  
@@ -17,7 +17,7 @@ index 3c67494f..f7ed1f46 100644
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
          if (sharedKey instanceof SecretKeySpec) {
-@@ -529,6 +531,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -512,6 +514,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {
@@ -27,7 +27,7 @@ index 3c67494f..f7ed1f46 100644
          if ( isOnlineMode() )
          {
              // Check for multiple connections
-@@ -610,8 +615,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -593,8 +598,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                              }
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
@@ -37,5 +37,5 @@ index 3c67494f..f7ed1f46 100644
                      }
                  } );
 -- 
-2.20.1
+2.31.1.windows.1
 
