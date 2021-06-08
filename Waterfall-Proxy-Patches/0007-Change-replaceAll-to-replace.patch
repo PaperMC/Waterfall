@@ -1,0 +1,23 @@
+From 91cb9c13a57df9a21e2e2894a3365d36e2e54d08 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:01:37 +0800
+Subject: [PATCH] Change replaceAll() to replace()
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 2d9c0cda..af73283e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -126,7 +126,8 @@ public class ServerConnector extends PacketHandler
+                 newp[newp.length - 2] = new LoginResult.Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
+ 
+                 // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
+-                newp[newp.length - 1] = new LoginResult.Property( ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
++                // FlameCord - Change replaceAll() to replace()
++                newp[newp.length - 1] = new LoginResult.Property( ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replace( "\0", "\1"), "" );
+ 
+                 // All done.
+                 properties = newp;
+-- 
+2.31.1.windows.1
+
