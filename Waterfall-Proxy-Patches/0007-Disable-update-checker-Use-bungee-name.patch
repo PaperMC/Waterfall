@@ -31,7 +31,7 @@ index 6a5193fe..e82073d4 100644
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
--        bungee.getLogger().info( "Enabled Travertine version " + bungee.getVersion() );
+-        bungee.getLogger().info( "Enabled FlameCord version " + bungee.getVersion() );
 +        // FlameCord - Use bungee name
 +        bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() );
          bungee.start();
@@ -53,7 +53,7 @@ index d4fad294..7994c1c1 100644
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );
--            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Travertine - Forced Host", val ) );
+-            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another FlameCord - Forced Host", val ) );
 +            // FlameCord - Use Bungee name instead
 +            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another " +  BungeeCord.getInstance().getName() + " - Forced Host", val ) );
              boolean restricted = get( "restricted", false, val );

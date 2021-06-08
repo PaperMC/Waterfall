@@ -3,25 +3,25 @@ Contributing to FlameCord
 WaterfallMC has a very lenient policy towards PRs, but would prefer that you try and adhere to the following guidelines.
 
 ## Understanding Patches
-Patches to FlameCord are very simple, but center around the directory 'Travertine-Proxy'
+Patches to FlameCord are very simple, but center around the directory 'FlameCord-Proxy'
 
 Assuming you already have forked the repository:
 
 1. Pull the latest changes from the main repository
 2. Type `./flamecord p` in git bash to apply the changes from upstream
-3. cd into `Travertine-Proxy` for proxy changes
+3. cd into `FlameCord-Proxy` for proxy changes
 
 This directory is not a git repository in the traditional sense:
 
-- Every single commit in Travertine-Proxy is a patch. 
-- 'origin/master' points to a directory similar to Travertine-Proxy but for FlameCord
-- Typing `git status` should show that we are 10 or 11 commits ahead of master, meaning we have 10 or 11 patches that FlameCord, Travertine, Waterfall, and Bungeecord don't
-  - If it says something like `212 commits ahead, 207 commits behind`, then type `git fetch` to update Travertine
+- Every single commit in FlameCord-Proxy is a patch. 
+- 'origin/master' points to a directory similar to FlameCord-Proxy but for FlameCord
+- Typing `git status` should show that we are 10 or 11 commits ahead of master, meaning we have 10 or 11 patches that FlameCord, FlameCord, Waterfall, and Bungeecord don't
+  - If it says something like `212 commits ahead, 207 commits behind`, then type `git fetch` to update FlameCord
 
 ## Adding Patches
 Adding patches to FlameCord is very simple:
 
-1. Modify `Travertine-Proxy` with the appropriate changes
+1. Modify `FlameCord-Proxy` with the appropriate changes
 2. Type `git add .` to add your changes
 3. Run `git commit` with the desired patch message
 4. Run `./flamecord rb` in the main directory to convert your commit into a new patch

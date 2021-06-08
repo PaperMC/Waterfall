@@ -17,7 +17,7 @@ index 00749538..7b99c466 100644
 +                user.getServer().disconnect();
              } else
              {
-                 // Travertine start
+                 // FlameCord start
 @@ -364,13 +365,15 @@ public class ServerConnector extends PacketHandler
              user.setDimension( login.getDimension() );
  
@@ -56,7 +56,7 @@ index ad3bdee5..c05714ba 100644
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -92,6 +92,7 @@ public class UpstreamBridge extends PacketHandler
                  }
-                 // Travertine end
+                 // FlameCord end
              }
 +            // FlameCord - Remove "Quitting" reason
              con.getServer().disconnect( "Quitting" );
