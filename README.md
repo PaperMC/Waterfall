@@ -9,7 +9,7 @@ To compile FlameCord you need the same requirements as FlameCord, and run the co
 
 <a href="https://discord.gg/gF36AT3"><img src="https://discord.com/assets/4ff060e44afc171e9622fbe589c2c09e.png" width=10% height=10%><img/><a/> <a href="https://www.mc-market.org/resources/13492/"><img src="https://www.mc-market.org/styles/mcmarketv2/xenforo/logo.png" width=10% height=10%><img/><a/>
 
-FlameCord [![Build Status](https://papermc.io/ci/job/FlameCord/badge/icon)](https://papermc.io/ci/job/FlameCord/)
+FlameCord
 =======
 
 FlameCord is Waterfall with additional protocols. Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
