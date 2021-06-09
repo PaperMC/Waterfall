@@ -1,6 +1,6 @@
 Contributing to FlameCord
 ==========================
-WaterfallMC has a very lenient policy towards PRs, but would prefer that you try and adhere to the following guidelines.
+FlameCord follows the parameters of the WaterfallMC project when making a Pull Request. WaterfallMC has a very lenient policy towards PRs, but would prefer that you try and adhere to the following guidelines.
 
 ## Understanding Patches
 Patches to FlameCord are very simple, but center around the directory 'FlameCord-Proxy'
@@ -14,8 +14,8 @@ Assuming you already have forked the repository:
 This directory is not a git repository in the traditional sense:
 
 - Every single commit in FlameCord-Proxy is a patch. 
-- 'origin/master' points to a directory similar to FlameCord-Proxy but for FlameCord
-- Typing `git status` should show that we are 10 or 11 commits ahead of master, meaning we have 10 or 11 patches that FlameCord, FlameCord, Waterfall, and Bungeecord don't
+- 'origin/master' points to a directory similar to Waterfall-Proxy but for FlameCord
+- Typing `git status` should show that we are 10 or 11 commits ahead of master, meaning we have 10 or 11 patches that FlameCord, Waterfall, and Bungeecord don't
   - If it says something like `212 commits ahead, 207 commits behind`, then type `git fetch` to update FlameCord
 
 ## Adding Patches
@@ -38,7 +38,6 @@ This method works by temporarily resetting HEAD to the desired commit to edit us
 1. If you have changes you are working on type `git stash` to store them for later.
   - Later you can type `git stash pop` to get them back.
 2. Type `git rebase -i upstream/upstream`
-  - It should show something like [this](https://gist.github.com/Zbob750/e6bb220d3b734933c320).
 3. Replace `pick` with `edit` for the commit/patch you want to modify, and "save" the changes.
   - Only do this for one commit at a time.
 4. Make the changes you want to make to the patch.
