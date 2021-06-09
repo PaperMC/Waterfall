@@ -7,6 +7,8 @@ FlameCord is compiled like Waterfall does; Please follow the [CONTRIBUTING.md](h
 
 <a href="https://discord.gg/gF36AT3"><img src="https://discord.com/assets/4ff060e44afc171e9622fbe589c2c09e.png" width=10% height=10%><img/><a/> <a href="https://www.mc-market.org/resources/13492/"><img src="https://www.mc-market.org/styles/mcmarketv2/xenforo/logo.png" width=10% height=10%><img/><a/>
 
+## Features
+
 Waterfall focuses on three main areas:
 
 * **Stability**: Waterfall aims to be stable. We will achieve this through making the code base testable and discouraging practices that lead to proxy lag.
@@ -19,7 +21,7 @@ FlameCord being a fork of Waterfall, has all its features, and some of its own, 
 
 ## Why fork Waterfall?
 
-Waterfall was forked because of the fact that Waterfall intends to only support protocol versions supported by upstream BungeeCord. 
+Waterfall was forked out of a desire for greater protection to be afforded to a Bungeecord-based proxy, which Waterfall currently cannot offer.
 
 FlameCord will track upstream Waterfall and merge changes as needed.
 
@@ -31,7 +33,7 @@ FlameCord requires **Java 8** or above.
 
 ## How To (Compiling from source)
 
-To compile FlameCord, you need JDK8, git, bash, maven, and an internet connection.
+To compile FlameCord, you need JDK8 or above, git, bash, maven, and an internet connection.
 
 Clone this repo, run `./flamecord b` from *bash*, get jar from `FlameCord-Proxy/bootstrap/target`
 
