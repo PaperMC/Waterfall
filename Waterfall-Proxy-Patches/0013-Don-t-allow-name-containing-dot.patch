@@ -1,22 +1,22 @@
-From 1cdd4fe76f18d526b8f4b963a7ee07f8929312ed Mon Sep 17 00:00:00 2001
+From c180aa80773a50794cef5bff389d663b876b49b3 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:51 +0800
 Subject: [PATCH] Don't allow name containing dot
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e23cf604..b4067b1e 100644
+index 9293739f..10b5aafb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -387,13 +387,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          this.loginRequest = loginRequest;
  
--        if ( getName().contains( "." ) )
+-        if ( getName().contains( " " ) )
 +        // FlameCord - Use name
 +        final String name = getName();
 +
-+        if ( name.contains( "." ) )
++        if ( name.contains( " " ) || name.contains( "." ) )
          {
              disconnect( bungee.getTranslation( "name_invalid" ) );
              return;
