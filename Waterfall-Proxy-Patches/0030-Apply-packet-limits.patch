@@ -1,0 +1,30 @@
+From cfa71e7554b7e6dd29c6bfd768ca09ce4e8249d3 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Thu, 10 Jun 2021 11:30:19 -0300
+Subject: [PATCH] Apply packet limits
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 7dbbfd3c..732bf553 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+@@ -43,4 +44,8 @@ public class Handshake extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 1 + 2 + 1 + 1; // FlameCord - Apply packet limits
++    }
+ }
+-- 
+2.31.1.windows.1
+
