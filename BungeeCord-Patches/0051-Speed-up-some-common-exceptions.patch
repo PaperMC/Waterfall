@@ -1,4 +1,4 @@
-From 5b7a8861bb1b6079762e28a1a14711de15db3fe8 Mon Sep 17 00:00:00 2001
+From a1d39a207c1b1bcbfcc753f31599990ccbf72a23 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -133,7 +133,7 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index a2c72c9b..1a647f2b 100644
+index 8b7e0708..37d28c01 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -78,7 +78,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -146,7 +146,7 @@ index a2c72c9b..1a647f2b 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3d3b2352..4b22b232 100644
+index 8fb25af1..aad82d49 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,8 @@ import java.util.List;
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.30.0
+2.32.0
 
