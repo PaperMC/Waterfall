@@ -1,4 +1,4 @@
-From 3e59f82613e4f183eebc4717f1fe73d5049a9d27 Mon Sep 17 00:00:00 2001
+From 7533aa6de4430f84ea6bb8deb1b1ae4a23d02a70 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Fri, 18 Mar 2016 10:53:24 -0700
 Subject: [PATCH] Better Decompression Sanity
@@ -6,7 +6,7 @@ Subject: [PATCH] Better Decompression Sanity
 Fixes #40
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-index 21b3ea2b..37fe6ac7 100644
+index 445ee947..eaedf4bc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 @@ -1,5 +1,7 @@
@@ -29,8 +29,8 @@ index 21b3ea2b..37fe6ac7 100644
      private final BungeeZlib zlib = CompressFactory.zlib.newInstance();
  
      @Override
-@@ -35,12 +39,13 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
-             in.skipBytes( in.readableBytes() );
+@@ -34,12 +38,13 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+             out.add( in.retain() );
          } else
          {
 +            Preconditions.checkArgument( size >= compressionThreshold, "Decompressed size %s less than compression threshold %s", size, compressionThreshold);
@@ -45,7 +45,7 @@ index 21b3ea2b..37fe6ac7 100644
                  out.add( decompressed );
                  decompressed = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 0ef21887..30ccfa9f 100644
+index 6be2d942..6dc5633f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -138,7 +138,7 @@ public class ChannelWrapper
@@ -58,5 +58,5 @@ index 0ef21887..30ccfa9f 100644
          if ( compressionThreshold == -1 )
          {
 -- 
-2.24.1
+2.30.1 (Apple Git-130)
 
