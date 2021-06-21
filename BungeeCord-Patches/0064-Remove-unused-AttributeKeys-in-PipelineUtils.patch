@@ -1,0 +1,31 @@
+From 0356582db9bb59b1a402b5f90e3d6b1a930aa5e6 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Mon, 21 Jun 2021 23:45:25 +0200
+Subject: [PATCH] Remove unused AttributeKeys in PipelineUtils
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 7770f4d9..31ed9c82 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -33,8 +33,6 @@ import java.util.concurrent.ThreadFactory;
+ import java.util.concurrent.TimeUnit;
+ import java.util.logging.Level;
+ import net.md_5.bungee.BungeeCord;
+-import net.md_5.bungee.BungeeServerInfo;
+-import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.config.ListenerInfo;
+@@ -52,8 +50,6 @@ public class PipelineUtils
+ {
+ 
+     public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
+-    public static final AttributeKey<UserConnection> USER = AttributeKey.newInstance("User");
+-    public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.newInstance("Target");
+     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
+     {
+         @Override
+-- 
+2.32.0.windows.1
+

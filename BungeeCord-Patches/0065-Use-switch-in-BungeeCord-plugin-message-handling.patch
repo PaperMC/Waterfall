@@ -1,0 +1,485 @@
+From 88b8d8dee553949b22feb0ee3f7d1ab2d3225091 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Thu, 27 May 2021 14:03:21 +0200
+Subject: [PATCH] Use switch in "BungeeCord" plugin message handling
+
+
+diff --git a/checkstyle.xml b/checkstyle.xml
+index 9ac4e931..cde9c210 100644
+--- a/checkstyle.xml
++++ b/checkstyle.xml
+@@ -33,6 +33,7 @@
+ 
+         <!-- See http://checkstyle.sourceforge.net/config_filters.html -->
+         <module name="SuppressionCommentFilter"/>
++        <module name="SuppressWarningsHolder"/>
+ 
+         <!-- See http://checkstyle.sourceforge.net/config_imports.html -->
+         <module name="AvoidStarImport"/>
+@@ -84,4 +85,6 @@
+         <module name="Indentation"/>
+         <module name="UpperEll"/>
+     </module>
++
++    <module name="SuppressWarningsFilter"/>
+ </module>
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 9e180c30..65c87ff8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -221,7 +221,7 @@ public class DownstreamBridge extends PacketHandler
+     {
+         Scoreboard serverScoreboard = con.getServerSentScoreboard();
+         serverScoreboard.setName( displayScoreboard.getName() );
+-        serverScoreboard.setPosition( Position.values()[displayScoreboard.getPosition()] );
++        serverScoreboard.setPosition( Position.values()[ displayScoreboard.getPosition() ] );
+     }
+ 
+     @Override
+@@ -274,6 +274,7 @@ public class DownstreamBridge extends PacketHandler
+         }
+     }
+ 
++    @SuppressWarnings("checkstyle:avoidnestedblocks")
+     @Override
+     public void handle(PluginMessage pluginMessage) throws Exception
+     {
+@@ -307,12 +308,36 @@ public class DownstreamBridge extends PacketHandler
+             ByteArrayDataOutput out = ByteStreams.newDataOutput();
+             String subChannel = in.readUTF();
+ 
+-            if ( subChannel.equals( "ForwardToPlayer" ) )
++            switch ( subChannel )
+             {
+-                ProxiedPlayer target = bungee.getPlayer( in.readUTF() );
+-                if ( target != null )
++                case "ForwardToPlayer":
++                {
++                    ProxiedPlayer target = bungee.getPlayer( in.readUTF() );
++                    if ( target != null )
++                    {
++                        // Read data from server
++                        String channel = in.readUTF();
++                        short len = in.readShort();
++                        byte[] data = new byte[ len ];
++                        in.readFully( data );
++
++                        // Prepare new data to send
++                        out.writeUTF( channel );
++                        out.writeShort( data.length );
++                        out.write( data );
++                        byte[] payload = out.toByteArray();
++
++                        target.getServer().sendData( "BungeeCord", payload );
++                    }
++
++                    // Null out stream, important as we don't want to send to ourselves
++                    out = null;
++                    break;
++                }
++                case "Forward":
+                 {
+                     // Read data from server
++                    String target = in.readUTF();
+                     String channel = in.readUTF();
+                     short len = in.readShort();
+                     byte[] data = new byte[ len ];
+@@ -324,226 +349,221 @@ public class DownstreamBridge extends PacketHandler
+                     out.write( data );
+                     byte[] payload = out.toByteArray();
+ 
+-                    target.getServer().sendData( "BungeeCord", payload );
+-                }
++                    // Null out stream, important as we don't want to send to ourselves
++                    out = null;
+ 
+-                // Null out stream, important as we don't want to send to ourselves
+-                out = null;
+-            }
+-            if ( subChannel.equals( "Forward" ) )
+-            {
+-                // Read data from server
+-                String target = in.readUTF();
+-                String channel = in.readUTF();
+-                short len = in.readShort();
+-                byte[] data = new byte[ len ];
+-                in.readFully( data );
+-
+-                // Prepare new data to send
+-                out.writeUTF( channel );
+-                out.writeShort( data.length );
+-                out.write( data );
+-                byte[] payload = out.toByteArray();
+-
+-                // Null out stream, important as we don't want to send to ourselves
+-                out = null;
+-
+-                if ( target.equals( "ALL" ) )
++                    switch ( target )
++                    {
++                        case "ALL":
++                            for ( ServerInfo server : bungee.getServers().values() )
++                            {
++                                if ( server != this.server.getInfo() )
++                                {
++                                    server.sendData( "BungeeCord", payload );
++                                }
++                            }
++                            break;
++                        case "ONLINE":
++                            for ( ServerInfo server : bungee.getServers().values() )
++                            {
++                                if ( server != this.server.getInfo() )
++                                {
++                                    server.sendData( "BungeeCord", payload, false );
++                                }
++                            }
++                            break;
++                        default:
++                            ServerInfo server = bungee.getServerInfo( target );
++                            if ( server != null )
++                            {
++                                server.sendData( "BungeeCord", payload );
++                            }
++                            break;
++                    }
++                    break;
++                }
++                case "Connect":
+                 {
+-                    for ( ServerInfo server : bungee.getServers().values() )
++                    ServerInfo server = bungee.getServerInfo( in.readUTF() );
++                    if ( server != null )
+                     {
+-                        if ( server != this.server.getInfo() )
+-                        {
+-                            server.sendData( "BungeeCord", payload );
+-                        }
++                        con.connect( server, ServerConnectEvent.Reason.PLUGIN_MESSAGE );
+                     }
+-                } else if ( target.equals( "ONLINE" ) )
++                    break;
++                }
++                case "ConnectOther":
+                 {
+-                    for ( ServerInfo server : bungee.getServers().values() )
++                    ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
++                    if ( player != null )
+                     {
+-                        if ( server != this.server.getInfo() )
++                        ServerInfo server = bungee.getServerInfo( in.readUTF() );
++                        if ( server != null )
+                         {
+-                            server.sendData( "BungeeCord", payload, false );
++                            player.connect( server );
+                         }
+                     }
+-                } else
++                    break;
++                }
++                case "IP":
++                    out.writeUTF( "IP" );
++                    if ( con.getSocketAddress() instanceof InetSocketAddress )
++                    {
++                        out.writeUTF( con.getAddress().getHostString() );
++                        out.writeInt( con.getAddress().getPort() );
++                    } else
++                    {
++                        out.writeUTF( "unix://" + ( (DomainSocketAddress) con.getSocketAddress() ).path() );
++                        out.writeInt( 0 );
++                    }
++                    break;
++                case "IPOther":
+                 {
+-                    ServerInfo server = bungee.getServerInfo( target );
+-                    if ( server != null )
++                    ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
++                    if ( player != null )
+                     {
+-                        server.sendData( "BungeeCord", payload );
++                        out.writeUTF( "IPOther" );
++                        out.writeUTF( player.getName() );
++                        if ( player.getSocketAddress() instanceof InetSocketAddress )
++                        {
++                            InetSocketAddress address = (InetSocketAddress) player.getSocketAddress();
++                            out.writeUTF( address.getHostString() );
++                            out.writeInt( address.getPort() );
++                        } else
++                        {
++                            out.writeUTF( "unix://" + ( (DomainSocketAddress) player.getSocketAddress() ).path() );
++                            out.writeInt( 0 );
++                        }
+                     }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "Connect" ) )
+-            {
+-                ServerInfo server = bungee.getServerInfo( in.readUTF() );
+-                if ( server != null )
++                case "PlayerCount":
+                 {
+-                    con.connect( server, ServerConnectEvent.Reason.PLUGIN_MESSAGE );
++                    String target = in.readUTF();
++                    out.writeUTF( "PlayerCount" );
++                    if ( target.equals( "ALL" ) )
++                    {
++                        out.writeUTF( "ALL" );
++                        out.writeInt( bungee.getOnlineCount() );
++                    } else
++                    {
++                        ServerInfo server = bungee.getServerInfo( target );
++                        if ( server != null )
++                        {
++                            out.writeUTF( server.getName() );
++                            out.writeInt( server.getPlayers().size() );
++                        }
++                    }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "ConnectOther" ) )
+-            {
+-                ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+-                if ( player != null )
++                case "PlayerList":
+                 {
+-                    ServerInfo server = bungee.getServerInfo( in.readUTF() );
+-                    if ( server != null )
++                    String target = in.readUTF();
++                    out.writeUTF( "PlayerList" );
++                    if ( target.equals( "ALL" ) )
++                    {
++                        out.writeUTF( "ALL" );
++                        out.writeUTF( Util.csv( bungee.getPlayers() ) );
++                    } else
+                     {
+-                        player.connect( server );
++                        ServerInfo server = bungee.getServerInfo( target );
++                        if ( server != null )
++                        {
++                            out.writeUTF( server.getName() );
++                            out.writeUTF( Util.csv( server.getPlayers() ) );
++                        }
+                     }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "IP" ) )
+-            {
+-                out.writeUTF( "IP" );
+-                if ( con.getSocketAddress() instanceof InetSocketAddress )
+-                {
+-                    out.writeUTF( con.getAddress().getHostString() );
+-                    out.writeInt( con.getAddress().getPort() );
+-                } else
++                case "GetServers":
+                 {
+-                    out.writeUTF( "unix://" + ( (DomainSocketAddress) con.getSocketAddress() ).path() );
+-                    out.writeInt( 0 );
++                    out.writeUTF( "GetServers" );
++                    out.writeUTF( Util.csv( bungee.getServers().keySet() ) );
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "IPOther" ) )
+-            {
+-                ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+-                if ( player != null )
++                case "Message":
+                 {
+-                    out.writeUTF( "IPOther" );
+-                    out.writeUTF( player.getName() );
+-                    if ( player.getSocketAddress() instanceof InetSocketAddress )
++                    String target = in.readUTF();
++                    String message = in.readUTF();
++                    if ( target.equals( "ALL" ) )
+                     {
+-                        InetSocketAddress address = (InetSocketAddress) player.getSocketAddress();
+-                        out.writeUTF( address.getHostString() );
+-                        out.writeInt( address.getPort() );
++                        for ( ProxiedPlayer player : bungee.getPlayers() )
++                        {
++                            player.sendMessage( message );
++                        }
+                     } else
+                     {
+-                        out.writeUTF( "unix://" + ( (DomainSocketAddress) player.getSocketAddress() ).path() );
+-                        out.writeInt( 0 );
++                        ProxiedPlayer player = bungee.getPlayer( target );
++                        if ( player != null )
++                        {
++                            player.sendMessage( message );
++                        }
+                     }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "PlayerCount" ) )
+-            {
+-                String target = in.readUTF();
+-                out.writeUTF( "PlayerCount" );
+-                if ( target.equals( "ALL" ) )
++                case "MessageRaw":
+                 {
+-                    out.writeUTF( "ALL" );
+-                    out.writeInt( bungee.getOnlineCount() );
+-                } else
+-                {
+-                    ServerInfo server = bungee.getServerInfo( target );
+-                    if ( server != null )
++                    String target = in.readUTF();
++                    BaseComponent[] message = ComponentSerializer.parse( in.readUTF() );
++                    if ( target.equals( "ALL" ) )
++                    {
++                        for ( ProxiedPlayer player : bungee.getPlayers() )
++                        {
++                            player.sendMessage( message );
++                        }
++                    } else
+                     {
+-                        out.writeUTF( server.getName() );
+-                        out.writeInt( server.getPlayers().size() );
++                        ProxiedPlayer player = bungee.getPlayer( target );
++                        if ( player != null )
++                        {
++                            player.sendMessage( message );
++                        }
+                     }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "PlayerList" ) )
+-            {
+-                String target = in.readUTF();
+-                out.writeUTF( "PlayerList" );
+-                if ( target.equals( "ALL" ) )
+-                {
+-                    out.writeUTF( "ALL" );
+-                    out.writeUTF( Util.csv( bungee.getPlayers() ) );
+-                } else
++                case "GetServer":
+                 {
+-                    ServerInfo server = bungee.getServerInfo( target );
+-                    if ( server != null )
+-                    {
+-                        out.writeUTF( server.getName() );
+-                        out.writeUTF( Util.csv( server.getPlayers() ) );
+-                    }
++                    out.writeUTF( "GetServer" );
++                    out.writeUTF( server.getInfo().getName() );
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "GetServers" ) )
+-            {
+-                out.writeUTF( "GetServers" );
+-                out.writeUTF( Util.csv( bungee.getServers().keySet() ) );
+-            }
+-            if ( subChannel.equals( "Message" ) )
+-            {
+-                String target = in.readUTF();
+-                String message = in.readUTF();
+-                if ( target.equals( "ALL" ) )
++                case "UUID":
+                 {
+-                    for ( ProxiedPlayer player : bungee.getPlayers() )
+-                    {
+-                        player.sendMessage( message );
+-                    }
+-                } else
++                    out.writeUTF( "UUID" );
++                    out.writeUTF( con.getUUID() );
++                    break;
++                }
++                case "UUIDOther":
+                 {
+-                    ProxiedPlayer player = bungee.getPlayer( target );
++                    ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                     if ( player != null )
+                     {
+-                        player.sendMessage( message );
++                        out.writeUTF( "UUIDOther" );
++                        out.writeUTF( player.getName() );
++                        out.writeUTF( player.getUUID() );
+                     }
++                    break;
+                 }
+-            }
+-            if ( subChannel.equals( "MessageRaw" ) )
+-            {
+-                String target = in.readUTF();
+-                BaseComponent[] message = ComponentSerializer.parse( in.readUTF() );
+-                if ( target.equals( "ALL" ) )
++                case "ServerIP":
+                 {
+-                    for ( ProxiedPlayer player : bungee.getPlayers() )
++                    ServerInfo info = bungee.getServerInfo( in.readUTF() );
++                    if ( info != null && !info.getAddress().isUnresolved() )
+                     {
+-                        player.sendMessage( message );
++                        out.writeUTF( "ServerIP" );
++                        out.writeUTF( info.getName() );
++                        out.writeUTF( info.getAddress().getAddress().getHostAddress() );
++                        out.writeShort( info.getAddress().getPort() );
+                     }
+-                } else
++                    break;
++                }
++                case "KickPlayer":
+                 {
+-                    ProxiedPlayer player = bungee.getPlayer( target );
++                    ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+                     if ( player != null )
+                     {
+-                        player.sendMessage( message );
++                        String kickReason = in.readUTF();
++                        player.disconnect( new TextComponent( kickReason ) );
+                     }
+-                }
+-            }
+-            if ( subChannel.equals( "GetServer" ) )
+-            {
+-                out.writeUTF( "GetServer" );
+-                out.writeUTF( server.getInfo().getName() );
+-            }
+-            if ( subChannel.equals( "UUID" ) )
+-            {
+-                out.writeUTF( "UUID" );
+-                out.writeUTF( con.getUUID() );
+-            }
+-            if ( subChannel.equals( "UUIDOther" ) )
+-            {
+-                ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+-                if ( player != null )
+-                {
+-                    out.writeUTF( "UUIDOther" );
+-                    out.writeUTF( player.getName() );
+-                    out.writeUTF( player.getUUID() );
+-                }
+-            }
+-            if ( subChannel.equals( "ServerIP" ) )
+-            {
+-                ServerInfo info = bungee.getServerInfo( in.readUTF() );
+-                if ( info != null && !info.getAddress().isUnresolved() )
+-                {
+-                    out.writeUTF( "ServerIP" );
+-                    out.writeUTF( info.getName() );
+-                    out.writeUTF( info.getAddress().getAddress().getHostAddress() );
+-                    out.writeShort( info.getAddress().getPort() );
+-                }
+-            }
+-            if ( subChannel.equals( "KickPlayer" ) )
+-            {
+-                ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
+-                if ( player != null )
+-                {
+-                    String kickReason = in.readUTF();
+-                    player.disconnect( new TextComponent( kickReason ) );
++                    break;
+                 }
+             }
+ 
+-- 
+2.32.0.windows.1
+

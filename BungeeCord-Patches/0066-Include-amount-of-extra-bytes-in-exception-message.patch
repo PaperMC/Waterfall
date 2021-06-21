@@ -1,0 +1,23 @@
+From 838091e98540a1c654367140988dddebc771c124 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Thu, 27 May 2021 13:50:19 +0200
+Subject: [PATCH] Include amount of extra bytes in exception message
+
+Also made the message a little more similar to vanilla.
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 01d35f41..ac83e325 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -66,7 +66,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                         throw PACKET_NOT_READ_TO_END;
+                     }
+                     // Waterfall end
+-                    throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
++                    throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
+                 }
+             } else
+             {
+-- 
+2.32.0.windows.1
+
