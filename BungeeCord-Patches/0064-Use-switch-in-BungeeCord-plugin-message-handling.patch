@@ -1,18 +1,18 @@
-From 88b8d8dee553949b22feb0ee3f7d1ab2d3225091 Mon Sep 17 00:00:00 2001
+From ffe46977ae76e2b17bef4b20abfc343b8c340c08 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Thu, 27 May 2021 14:03:21 +0200
 Subject: [PATCH] Use switch in "BungeeCord" plugin message handling
 
 
 diff --git a/checkstyle.xml b/checkstyle.xml
-index 9ac4e931..cde9c210 100644
+index 9ac4e931..a7c9bdd5 100644
 --- a/checkstyle.xml
 +++ b/checkstyle.xml
 @@ -33,6 +33,7 @@
  
          <!-- See http://checkstyle.sourceforge.net/config_filters.html -->
          <module name="SuppressionCommentFilter"/>
-+        <module name="SuppressWarningsHolder"/>
++        <module name="SuppressWarningsHolder"/><!-- Waterfall - Allow checkstyle suppression - Use switch in "BungeeCord" plugin message handling -->
  
          <!-- See http://checkstyle.sourceforge.net/config_imports.html -->
          <module name="AvoidStarImport"/>
@@ -21,10 +21,10 @@ index 9ac4e931..cde9c210 100644
          <module name="UpperEll"/>
      </module>
 +
-+    <module name="SuppressWarningsFilter"/>
++    <module name="SuppressWarningsFilter"/><!-- Waterfall - Allow checkstyle suppression - Use switch in "BungeeCord" plugin message handling -->
  </module>
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9e180c30..65c87ff8 100644
+index 9e180c30..9d513e5a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -221,7 +221,7 @@ public class DownstreamBridge extends PacketHandler
@@ -40,15 +40,16 @@ index 9e180c30..65c87ff8 100644
          }
      }
  
-+    @SuppressWarnings("checkstyle:avoidnestedblocks")
++    @SuppressWarnings("checkstyle:avoidnestedblocks") //Waterfall - Use switch in "BungeeCord" plugin message handling
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
      {
-@@ -307,12 +308,36 @@ public class DownstreamBridge extends PacketHandler
+@@ -307,12 +308,37 @@ public class DownstreamBridge extends PacketHandler
              ByteArrayDataOutput out = ByteStreams.newDataOutput();
              String subChannel = in.readUTF();
  
 -            if ( subChannel.equals( "ForwardToPlayer" ) )
++            //Waterfall start: Use switch in "BungeeCord" plugin message handling
 +            switch ( subChannel )
              {
 -                ProxiedPlayer target = bungee.getPlayer( in.readUTF() );
@@ -84,7 +85,7 @@ index 9e180c30..65c87ff8 100644
                      String channel = in.readUTF();
                      short len = in.readShort();
                      byte[] data = new byte[ len ];
-@@ -324,226 +349,221 @@ public class DownstreamBridge extends PacketHandler
+@@ -324,228 +350,224 @@ public class DownstreamBridge extends PacketHandler
                      out.write( data );
                      byte[] payload = out.toByteArray();
  
@@ -354,12 +355,12 @@ index 9e180c30..65c87ff8 100644
 -                String target = in.readUTF();
 -                out.writeUTF( "PlayerList" );
 -                if ( target.equals( "ALL" ) )
--                {
++                case "GetServer":
+                 {
 -                    out.writeUTF( "ALL" );
 -                    out.writeUTF( Util.csv( bungee.getPlayers() ) );
 -                } else
-+                case "GetServer":
-                 {
+-                {
 -                    ServerInfo server = bungee.getServerInfo( target );
 -                    if ( server != null )
 -                    {
@@ -436,8 +437,9 @@ index 9e180c30..65c87ff8 100644
 +                        String kickReason = in.readUTF();
 +                        player.disconnect( new TextComponent( kickReason ) );
                      }
--                }
--            }
++                    break;
+                 }
+             }
 -            if ( subChannel.equals( "GetServer" ) )
 -            {
 -                out.writeUTF( "GetServer" );
@@ -476,10 +478,12 @@ index 9e180c30..65c87ff8 100644
 -                {
 -                    String kickReason = in.readUTF();
 -                    player.disconnect( new TextComponent( kickReason ) );
-+                    break;
-                 }
-             }
+-                }
+-            }
++            // Waterfall end
  
+             // Check we haven't set out to null, and we have written data, if so reply back back along the BungeeCord channel
+             if ( out != null )
 -- 
 2.32.0.windows.1
 

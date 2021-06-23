@@ -1,4 +1,4 @@
-From 215a7876fea6d2d0759d5fb91a45a77101cb93ce Mon Sep 17 00:00:00 2001
+From 42955d0d96ca50b9e440b4bd8b732870f75a3299 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:34:15 +0200
 Subject: [PATCH] Speed up event calling with LambdaMetafactory BiConsumer
@@ -7,7 +7,7 @@ Subject: [PATCH] Speed up event calling with LambdaMetafactory BiConsumer
 Using lookup of special class loaded by a class loader which can delegate to all PluginClassloaders.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
-index 75cf6e33..ee635bba 100644
+index 75cf6e33..319cf532 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 @@ -21,7 +21,7 @@ import net.md_5.bungee.api.ProxyServer;
@@ -15,38 +15,30 @@ index 75cf6e33..ee635bba 100644
  {
  
 -    private static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
-+    static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
++    static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>(); // Waterfall - private -> package - Speed up event calling with LambdaMetafactory BiConsumer creation
      //
      private final ProxyServer proxy;
      private final PluginDescription desc;
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 90031156..5f488c70 100644
+index 90031156..794d816e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -9,6 +9,7 @@ import com.google.common.graph.Graphs;
- import com.google.common.graph.MutableGraph;
- import java.io.File;
- import java.io.InputStream;
-+import java.lang.invoke.MethodHandles;
- import java.lang.reflect.Method;
- import java.net.URLClassLoader;
- import java.util.Arrays;
-@@ -63,11 +64,12 @@ public final class PluginManager
+@@ -63,11 +63,12 @@ public final class PluginManager
      private Map<String, PluginDescription> toLoad = new HashMap<>();
      private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
-+    private final MethodHandles.Lookup lookup;
++    private final java.lang.invoke.MethodHandles.Lookup lookup; // Waterfall - field added - Speed up event calling with LambdaMetafactory BiConsumer creation
  
 -    @SuppressWarnings("unchecked")
 -    public PluginManager(ProxyServer proxy)
-+    public PluginManager(ProxyServer proxy, MethodHandles.Lookup lookup)
++    public PluginManager(ProxyServer proxy, java.lang.invoke.MethodHandles.Lookup lookup) // Waterfall - param added - Speed up event calling with LambdaMetafactory BiConsumer creation
      {
          this.proxy = proxy;
-+        this.lookup = lookup;
++        this.lookup = lookup; // Waterfall - field set - Speed up event calling with LambdaMetafactory BiConsumer creation
  
          // Ignore unknown entries in the plugin descriptions
          Constructor yamlConstructor = new Constructor();
-@@ -500,7 +502,7 @@ public final class PluginManager
+@@ -500,7 +501,7 @@ public final class PluginManager
              Preconditions.checkArgument( !method.isAnnotationPresent( Subscribe.class ),
                      "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
          }
@@ -56,14 +48,15 @@ index 90031156..5f488c70 100644
      }
  
 diff --git a/event/pom.xml b/event/pom.xml
-index 563783e9..bf5f2d4e 100644
+index 563783e9..314993a5 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
-@@ -17,4 +17,13 @@
+@@ -17,4 +17,15 @@
  
      <name>Waterfall-Event</name>
      <description>Generic java event dispatching API intended for use with Waterfall.</description>
 +
++    <!-- Waterfall start: satisfy animal-sniffer - Speed up event calling with LambdaMetafactory BiConsumer creation -->
 +    <dependencies>
 +        <dependency>
 +            <groupId>org.codehaus.mojo</groupId>
@@ -72,40 +65,33 @@ index 563783e9..bf5f2d4e 100644
 +            <scope>provided</scope>
 +        </dependency>
 +    </dependencies>
++    <!-- Waterfall end -->
  </project>
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index 01a7e3c9..24b2acbe 100644
+index 1f6d780a..9e9663fa 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -1,7 +1,9 @@
- package net.md_5.bungee.event;
- 
- import com.google.common.collect.ImmutableSet;
--import java.lang.reflect.InvocationTargetException;
+@@ -15,11 +15,18 @@ import java.util.concurrent.locks.Lock;
+ import java.util.concurrent.locks.ReentrantLock;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
++// Waterfall start: Speed up event calling with LambdaMetafactory BiConsumer creation
 +import java.lang.invoke.LambdaMetafactory;
 +import java.lang.invoke.MethodHandles;
 +import java.lang.invoke.MethodType;
- import java.lang.reflect.Method;
- import java.text.MessageFormat;
- import java.util.ArrayList;
-@@ -13,13 +15,15 @@ import java.util.Set;
- import java.util.concurrent.ConcurrentHashMap;
- import java.util.concurrent.locks.Lock;
- import java.util.concurrent.locks.ReentrantLock;
 +import java.util.function.BiConsumer;
- import java.util.logging.Level;
- import java.util.logging.Logger;
 +import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
++// Waterfall end
  
  public class EventBus
  {
  
 -    private final Map<Class<?>, Map<Byte, Map<Object, Method[]>>> byListenerAndPriority = new HashMap<>();
-+    private final Map<Class<?>, Map<Byte, Map<Object, BiConsumer<Object, Object>[]>>> byListenerAndPriority = new HashMap<>();
++    private final Map<Class<?>, Map<Byte, Map<Object, BiConsumer<Object, Object>[]>>> byListenerAndPriority = new HashMap<>(); // Waterfall - Method[] -> BiConsumer[] - Speed up event calling with LambdaMetafactory BiConsumer creation
      private final Map<Class<?>, EventHandlerMethod[]> byEventBaked = new ConcurrentHashMap<>();
      private final Lock lock = new ReentrantLock();
      private final Logger logger;
-@@ -46,17 +50,11 @@ public class EventBus
+@@ -46,18 +53,14 @@ public class EventBus
                  try
                  {
                      method.invoke( event );
@@ -116,6 +102,7 @@ index 01a7e3c9..24b2acbe 100644
 -                {
 -                    throw new Error( "Method rejected target/argument: " + event, ex );
 -                } catch ( InvocationTargetException ex )
++                    // Waterfall start: Change catching exceptions due to direct method call - Speed up event calling with LambdaMetafactory BiConsumer creation
 +                } catch ( Throwable t )
                  {
                      String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
@@ -124,12 +111,15 @@ index 01a7e3c9..24b2acbe 100644
 +                    logger.log( Level.WARNING, msg, t.getCause() );
 +                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, t ); //Waterfall - call passed exception handler
                  }
++                // Waterfall end
              }
          }
-@@ -88,7 +86,36 @@ public class EventBus
+     }
+@@ -90,8 +93,41 @@ public class EventBus
          return handler;
      }
  
++    // Waterfall start: Speed up event calling with LambdaMetafactory BiConsumer creation
 +    private static final MethodType INVOKED_TYPE = MethodType.methodType( BiConsumer.class );
 +    private static final MethodType SAM_METHOD_TYPE = MethodType.methodType( void.class, Object.class, Object.class );
 +
@@ -152,78 +142,75 @@ index 01a7e3c9..24b2acbe 100644
 +            throw new RuntimeException( "Could not create invoker for method " + method + " of listener " + listener + " (" + listener.getClass() + ")", t );
 +        }
 +    }
++    // Waterfall end
 +
      public void register(Object listener)
-+    {
+     {
++        // Waterfall start: Speed up event calling with LambdaMetafactory BiConsumer creation
 +        register( listener, MethodHandles.lookup() );
 +    }
 +
 +    @SuppressWarnings("unchecked")
 +    public void register(Object listener, MethodHandles.Lookup lookup)
-     {
++    {
++        // Waterfall end
          Map<Class<?>, Map<Byte, Set<Method>>> handler = findHandlers( listener );
          lock.lock();
-@@ -96,11 +123,14 @@ public class EventBus
-         {
+         try
+@@ -99,11 +135,16 @@ public class EventBus
              for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
              {
+                 // Waterfall start: Use Java 8 lambda map access in EventBus
 -                Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() );
-+                Map<Byte, Map<Object, BiConsumer<Object, Object>[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() );
++                Map<Byte, Map<Object, BiConsumer<Object, Object>[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() ); // Waterfall - Method[] -> BiConsumer[] - Speed up event calling with LambdaMetafactory BiConsumer creation
                  for ( Map.Entry<Byte, Set<Method>> entry : e.getValue().entrySet() )
                  {
++                    // Waterfall start: Speed up event calling with LambdaMetafactory BiConsumer creation
 +                    BiConsumer<Object, Object>[] baked = entry.getValue().stream()
 +                            .map( method -> createMethodInvoker( lookup, listener, method ) )
 +                            .toArray( BiConsumer[]::new );
                      prioritiesMap.computeIfAbsent( entry.getKey(), k -> new HashMap<>() )
 -                            .put( listener, entry.getValue().toArray( new Method[ 0 ] ) );
 +                            .put( listener, baked );
++                    // Waterfall end
                  }
+                 // Waterfall end
                  bakeHandlers( e.getKey() );
-             }
-@@ -147,7 +177,7 @@ public class EventBus
+@@ -153,7 +194,7 @@ public class EventBus
       */
      private void bakeHandlers(Class<?> eventClass)
      {
 -        Map<Byte, Map<Object, Method[]>> handlersByPriority = byListenerAndPriority.get( eventClass );
-+        Map<Byte, Map<Object, BiConsumer<Object, Object>[]>> handlersByPriority = byListenerAndPriority.get( eventClass );
++        Map<Byte, Map<Object, BiConsumer<Object, Object>[]>> handlersByPriority = byListenerAndPriority.get( eventClass ); // Waterfall - Method[] -> BiConsumer[] - Speed up event calling with LambdaMetafactory BiConsumer creation
          if ( handlersByPriority != null )
          {
              List<EventHandlerMethod> handlersList = new ArrayList<>( handlersByPriority.size() * 2 );
-@@ -157,12 +187,12 @@ public class EventBus
+@@ -163,12 +204,12 @@ public class EventBus
              byte value = Byte.MIN_VALUE;
              do
              {
 -                Map<Object, Method[]> handlersByListener = handlersByPriority.get( value );
-+                Map<Object, BiConsumer<Object, Object>[]> handlersByListener = handlersByPriority.get( value );
++                Map<Object, BiConsumer<Object, Object>[]> handlersByListener = handlersByPriority.get( value ); // Waterfall - Method[] -> BiConsumer[] - Speed up event calling with LambdaMetafactory BiConsumer creation
                  if ( handlersByListener != null )
                  {
 -                    for ( Map.Entry<Object, Method[]> listenerHandlers : handlersByListener.entrySet() )
 +                    for ( Map.Entry<Object, BiConsumer<Object, Object>[]> listenerHandlers : handlersByListener.entrySet() )
                      {
 -                        for ( Method method : listenerHandlers.getValue() )
-+                        for ( BiConsumer<Object, Object> method : listenerHandlers.getValue() )
++                        for ( BiConsumer<Object, Object> method : listenerHandlers.getValue() ) // Waterfall - Method[] -> BiConsumer[] - Speed up event calling with LambdaMetafactory BiConsumer creation
                          {
                              EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
                              handlersList.add( ehm );
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
-index ad19c020..d8d56870 100644
+index ad19c020..b215c00f 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
-@@ -1,7 +1,6 @@
- package net.md_5.bungee.event;
- 
--import java.lang.reflect.InvocationTargetException;
--import java.lang.reflect.Method;
-+import java.util.function.BiConsumer;
- import lombok.AllArgsConstructor;
- import lombok.Getter;
- 
-@@ -12,10 +11,10 @@ public class EventHandlerMethod
+@@ -12,10 +12,10 @@ public class EventHandlerMethod
      @Getter
      private final Object listener;
      @Getter
 -    private final Method method;
-+    private final BiConsumer<Object, Object> method;
++    private final java.util.function.BiConsumer<Object, Object> method; // Waterfall - Method -> BiConsumer - Speed up event calling with LambdaMetafactory BiConsumer creation
  
 -    public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
 +    public void invoke(Object event)
@@ -232,33 +219,50 @@ index ad19c020..d8d56870 100644
 +        method.accept( listener, event );
      }
  }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/EventCaller.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/EventCaller.java
+new file mode 100644
+index 00000000..bcbc742e
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/EventCaller.java
+@@ -0,0 +1,18 @@
++package io.github.waterfallmc.waterfall;
++
++import java.lang.invoke.MethodHandles;
++
++/**
++ * Class to be loaded by {@linkplain net.md_5.bungee.api.plugin.EventCallerClassLoader EventCallerClassLoader}, may not
++ * be referenced in other code directly.<br>
++ * <br>
++ * This class is string-referenced in EventCallerClassLoader; renaming or moving requires to update said string in said
++ * class.<br>
++ * The class is alone in this package to not be able to access other package-only
++ * things.
++ */
++public final class EventCaller
++{
++
++    public static final MethodHandles.Lookup lookup = MethodHandles.lookup();
++}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c09f5b4c..dc2dbd05 100644
+index c09f5b4c..f2b8d707 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -67,6 +67,7 @@ import net.md_5.bungee.api.config.ConfigurationAdapter;
- import net.md_5.bungee.api.config.ListenerInfo;
- import net.md_5.bungee.api.config.ServerInfo;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.api.plugin.EventCallerClassLoader;
- import net.md_5.bungee.api.plugin.Plugin;
- import net.md_5.bungee.api.plugin.PluginManager;
- import net.md_5.bungee.chat.ComponentSerializer;
-@@ -224,7 +225,7 @@ public class BungeeCord extends ProxyServer
+@@ -224,7 +224,7 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  
 -        pluginManager = new PluginManager( this );
-+        pluginManager = new PluginManager( this, EventCallerClassLoader.getEventCallerLookup() );
++        pluginManager = new PluginManager( this, net.md_5.bungee.api.plugin.EventCallerClassLoader.getEventCallerLookup() ); // Waterfall - Speed up event calling with LambdaMetafactory BiConsumer creation
          getPluginManager().registerCommand( null, new CommandReload() );
          getPluginManager().registerCommand( null, new CommandEnd() );
          getPluginManager().registerCommand( null, new CommandIP() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
 new file mode 100644
-index 00000000..ad133ce0
+index 00000000..fd2246e4
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,117 @@
++// Waterfall - Added class - not in Waterfall package for package access
 +package net.md_5.bungee.api.plugin;
 +
 +import com.google.common.io.ByteStreams;
@@ -275,7 +279,7 @@ index 00000000..ad133ce0
 +public final class EventCallerClassLoader extends ClassLoader
 +{
 +
-+    private static final String EVENT_CALLER_CLASS = "net.md_5.bungee.pluginutil.EventCaller";
++    private static final String EVENT_CALLER_CLASS = "io.github.waterfallmc.waterfall.EventCaller";
 +    private static final String EVENT_CALLER_CLASS_PATH = EVENT_CALLER_CLASS.replace( '.', '/' ).concat( ".class" );
 +
 +    static
@@ -374,30 +378,6 @@ index 00000000..ad133ce0
 +        }
 +        return appClassLoader.loadClass( name );
 +    }
-+}
-diff --git a/proxy/src/main/java/net/md_5/bungee/pluginutil/EventCaller.java b/proxy/src/main/java/net/md_5/bungee/pluginutil/EventCaller.java
-new file mode 100644
-index 00000000..0b8c3b57
---- /dev/null
-+++ b/proxy/src/main/java/net/md_5/bungee/pluginutil/EventCaller.java
-@@ -0,0 +1,18 @@
-+package net.md_5.bungee.pluginutil;
-+
-+import java.lang.invoke.MethodHandles;
-+
-+/**
-+ * Class to be loaded by {@linkplain net.md_5.bungee.api.plugin.EventCallerClassLoader EventCallerClassLoader}, may not
-+ * be referenced in other code directly.<br>
-+ * <br>
-+ * This class is string-referenced in EventCallerClassLoader; renaming or moving requires to update said string in said
-+ * class.<br>
-+ * The class is alone in this package to not be able to access other package-only
-+ * things.
-+ */
-+public final class EventCaller
-+{
-+
-+    public static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 +}
 -- 
 2.32.0.windows.1

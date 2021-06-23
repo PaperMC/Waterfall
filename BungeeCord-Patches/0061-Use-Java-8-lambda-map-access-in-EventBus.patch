@@ -1,4 +1,4 @@
-From 19e3a8c9bcaf60ba8e2e70b413cce11f7a654683 Mon Sep 17 00:00:00 2001
+From cf9703d6cf1bfef02a9c77d50bfb985fb8d8f75d Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Tue, 8 Jun 2021 12:04:40 +0200
 Subject: [PATCH] Use Java 8 lambda map access in EventBus
@@ -6,10 +6,10 @@ Subject: [PATCH] Use Java 8 lambda map access in EventBus
 Improves speed as HashMap doesn't have to calculate hash multiple times.
 
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index ac6b9758..01a7e3c9 100644
+index ac6b9758..1f6d780a 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -80,19 +80,9 @@ public class EventBus
+@@ -80,19 +80,11 @@ public class EventBus
                      } );
                      continue;
                  }
@@ -26,13 +26,15 @@ index ac6b9758..01a7e3c9 100644
 -                    prioritiesMap.put( annotation.priority(), priority );
 -                }
 -                priority.add( m );
++                // Waterfall start: Use Java 8 lambda map access in EventBus
 +                handler.computeIfAbsent( params[ 0 ], k -> new HashMap<>() )
 +                        .computeIfAbsent( annotation.priority(), k -> new HashSet<>() )
 +                        .add( m );
++                // Waterfall end
              }
          }
          return handler;
-@@ -106,21 +96,11 @@ public class EventBus
+@@ -106,22 +98,14 @@ public class EventBus
          {
              for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
              {
@@ -42,6 +44,7 @@ index ac6b9758..01a7e3c9 100644
 -                    prioritiesMap = new HashMap<>();
 -                    byListenerAndPriority.put( e.getKey(), prioritiesMap );
 -                }
++                // Waterfall start: Use Java 8 lambda map access in EventBus
 +                Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() );
                  for ( Map.Entry<Byte, Set<Method>> entry : e.getValue().entrySet() )
                  {
@@ -55,14 +58,17 @@ index ac6b9758..01a7e3c9 100644
 +                    prioritiesMap.computeIfAbsent( entry.getKey(), k -> new HashMap<>() )
 +                            .put( listener, entry.getValue().toArray( new Method[ 0 ] ) );
                  }
++                // Waterfall end
                  bakeHandlers( e.getKey() );
              }
-@@ -138,26 +118,18 @@ public class EventBus
+         } finally
+@@ -138,26 +122,20 @@ public class EventBus
          {
              for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
              {
 -                Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.get( e.getKey() );
 -                if ( prioritiesMap != null )
++                // Waterfall start: Use Java 8 lambda map access in EventBus
 +                byListenerAndPriority.computeIfPresent( e.getKey(), ( clazz, prioritiesMap ) ->
                  {
                      for ( Byte priority : e.getValue().keySet() )
@@ -87,6 +93,7 @@ index ac6b9758..01a7e3c9 100644
 -                }
 +                    return prioritiesMap.isEmpty() ? null : prioritiesMap;
 +                } );
++                // Waterfall end
                  bakeHandlers( e.getKey() );
              }
          } finally

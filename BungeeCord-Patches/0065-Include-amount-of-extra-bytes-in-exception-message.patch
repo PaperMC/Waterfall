@@ -1,4 +1,4 @@
-From 838091e98540a1c654367140988dddebc771c124 Mon Sep 17 00:00:00 2001
+From b0eadfd75bf307b6ed7672ad4b29095ae19fe0e9 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Thu, 27 May 2021 13:50:19 +0200
 Subject: [PATCH] Include amount of extra bytes in exception message
@@ -6,7 +6,7 @@ Subject: [PATCH] Include amount of extra bytes in exception message
 Also made the message a little more similar to vanilla.
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 01d35f41..ac83e325 100644
+index 01d35f41..95d500f6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -66,7 +66,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -14,7 +14,7 @@ index 01d35f41..ac83e325 100644
                      }
                      // Waterfall end
 -                    throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
-+                    throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
++                    throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() ); // Waterfall - Include amount of extra bytes in exception message
                  }
              } else
              {

@@ -1,4 +1,4 @@
-From a5788df4916b4da4a12a313d6c9aee3f2b0794d1 Mon Sep 17 00:00:00 2001
+From 3eb66b5bb6efa0b0f39233cc4e0d55f0161dfa53 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,20 +6,20 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index dc2dbd05..5b164200 100644
+index f2b8d707..94714ab8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -350,7 +350,7 @@ public class BungeeCord extends ProxyServer
+@@ -349,7 +349,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
 -                    .channel( PipelineUtils.getServerChannel( info.getSocketAddress() ) )
-+                    .channelFactory( PipelineUtils.getServerChannelFactory( info.getSocketAddress() ) )
++                    .channelFactory( PipelineUtils.getServerChannelFactory( info.getSocketAddress() ) ) // Waterfall - netty reflection -> factory
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 7b002089..ce02ea35 100644
+index 7b002089..bdca3125 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -183,7 +183,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -27,12 +27,12 @@ index 7b002089..ce02ea35 100644
          };
          new Bootstrap()
 -                .channel( PipelineUtils.getChannel( socketAddress ) )
-+                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) )
++                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // Waterfall - netty reflection -> factory
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
                  .handler( PipelineUtils.BASE )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 6d974d74..d396dd02 100644
+index 6d974d74..db1f288f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -382,7 +382,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -40,12 +40,12 @@ index 6d974d74..d396dd02 100644
          };
          Bootstrap b = new Bootstrap()
 -                .channel( PipelineUtils.getChannel( target.getAddress() ) )
-+                .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) )
++                .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) ) // Waterfall - netty reflection -> factory
                  .group( ch.getHandle().eventLoop() )
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 37337429..1e3d2799 100644
+index 37337429..b9c0a29a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -111,8 +111,14 @@ public class HttpClient
@@ -55,7 +55,7 @@ index 37337429..1e3d2799 100644
 -        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
 -                option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).resolver(dnsResolverGroup).remoteAddress( address ).connect().addListener( future );
 +        new Bootstrap()
-+                .channelFactory( PipelineUtils.getChannelFactory( null ) )
++                .channelFactory( PipelineUtils.getChannelFactory( null ) ) // Waterfall - netty reflection -> factory
 +                .group( eventLoop )
 +                .handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) )
 +                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT )
@@ -72,7 +72,7 @@ index 37337429..1e3d2799 100644
 -        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
 -                option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).remoteAddress( inetHost, port ).connect().addListener( future );
 +        new Bootstrap()
-+                .channelFactory( PipelineUtils.getChannelFactory( null ) )
++                .channelFactory( PipelineUtils.getChannelFactory( null ) ) // Waterfall - netty reflection -> factory
 +                .group( eventLoop )
 +                .handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) )
 +                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT )
@@ -82,7 +82,7 @@ index 37337429..1e3d2799 100644
      // Waterfall End
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5e..7770f4d9 100644
+index 96704d5e..977dcc62 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -93,67 +93,67 @@ index 96704d5e..7770f4d9 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -118,6 +119,10 @@ public class PipelineUtils
+@@ -118,6 +119,12 @@ public class PipelineUtils
      public static final String LEGACY_KICKER = "legacy-kick";
  
      private static boolean epoll;
++    // Waterfall start: netty reflection -> factory
 +    private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;
 +    private static final ChannelFactory<? extends ServerChannel> serverChannelDomainFactory;
 +    private static final ChannelFactory<? extends Channel> channelFactory;
 +    private static final ChannelFactory<? extends Channel> channelDomainFactory;
++    // Waterfall end
  
      static
      {
-@@ -133,6 +138,10 @@ public class PipelineUtils
+@@ -133,6 +140,12 @@ public class PipelineUtils
                  ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
              }
          }
++        // Waterfall start: netty reflection -> factory
 +        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
 +        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
 +        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
 +        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
++        // Waterfall end
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -140,28 +149,30 @@ public class PipelineUtils
-         return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
+@@ -164,6 +177,34 @@ public class PipelineUtils
+         return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
--    public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
++    // Waterfall start: netty reflection -> factory
 +    public static ChannelFactory<? extends ServerChannel> getServerChannelFactory(SocketAddress address)
-     {
-         if ( address instanceof DomainSocketAddress )
-         {
--            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
++    {
++        if ( address instanceof DomainSocketAddress )
++        {
 +            ChannelFactory<? extends ServerChannel> factory = PipelineUtils.serverChannelDomainFactory;
 +            Preconditions.checkState( factory != null, "Epoll required to have UNIX sockets" );
- 
--            return EpollServerDomainSocketChannel.class;
++
 +            return factory;
-         }
- 
--        return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
++        }
++
 +        return serverChannelFactory;
-     }
- 
--    public static Class<? extends Channel> getChannel(SocketAddress address)
++    }
++
 +    public static ChannelFactory<? extends Channel> getChannelFactory(SocketAddress address)
-     {
-         if ( address instanceof DomainSocketAddress )
-         {
--            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
++    {
++        if ( address instanceof DomainSocketAddress )
++        {
 +            ChannelFactory<? extends Channel> factory = PipelineUtils.channelDomainFactory;
 +            Preconditions.checkState( factory != null, "Epoll required to have UNIX sockets" );
- 
--            return EpollDomainSocketChannel.class;
++
 +            return factory;
-         }
- 
--        return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
++        }
++
 +        return channelFactory;
-     }
- 
++    }
++    // Waterfall end
++
      public static Class<? extends DatagramChannel> getDatagramChannel()
+     {
+         return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
 2.32.0.windows.1
 
