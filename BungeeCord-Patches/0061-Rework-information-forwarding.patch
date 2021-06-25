@@ -1,4 +1,4 @@
-From ba6e0e6d2baea3310434b8d2915b0d4a0f823ee0 Mon Sep 17 00:00:00 2001
+From 08f6ce558f755e916b7a1eebff380a6f010acdcb Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Wed, 23 Jun 2021 23:10:02 +0200
 Subject: [PATCH] Rework information forwarding
@@ -83,8 +83,27 @@ index d69463f0..59f61e47 100644
 +     */
 +    ForwardingMode getForwardingMode();
  }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 90031156..f1aad373 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -439,6 +439,14 @@ public final class PluginManager
+                         Preconditions.checkNotNull( desc.getName(), "Plugin from %s has no name", file );
+                         Preconditions.checkNotNull( desc.getMain(), "Plugin from %s has no main", file );
+ 
++                        // Waterfall start: Forwarding rework
++                        if(desc.getName().equals("BungeeGuard")) {
++                            proxy.getLogger().warning("Detected the plugin BungeeGuard. " +
++                                    "Waterfall now supports the functionality this plugin provides natively. " +
++                                    "Please refer to the Waterfall documentation for more information.");
++                        }
++                        // Waterfall end: Forwarding rework
++
+                         desc.setFile( file );
+                         toLoad.put( desc.getName(), desc );
+                     }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 527f310e..a15112af 100644
+index 527f310e..1b805015 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -1,11 +1,16 @@
@@ -92,67 +111,66 @@ index 527f310e..a15112af 100644
  
  import com.google.common.base.Joiner;
 +import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
++import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.Util;
  import net.md_5.bungee.conf.Configuration;
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.protocol.ProtocolConstants;
-+import org.apache.logging.log4j.LogManager;
-+import org.apache.logging.log4j.Logger;
  
  import java.io.File;
 +import java.nio.charset.StandardCharsets;
++import java.util.logging.Logger;
  
  public class WaterfallConfiguration extends Configuration {
  
-@@ -45,6 +50,11 @@ public class WaterfallConfiguration extends Configuration {
+@@ -45,6 +50,9 @@ public class WaterfallConfiguration extends Configuration {
      private boolean disableEntityMetadataRewrite = false;
      private boolean disableTabListRewrite = false;
  
 +    private ForwardingMode forwardingMode = ForwardingMode.BUNGEECORD_LEGACY;
 +    private byte[] forwardingSecret = Util.randomAlphanumericSequence(12);
 +
-+    private static final Logger logger = LogManager.getLogger(WaterfallConfiguration.class);
-+
      @Override
      public void load() {
          super.load();
-@@ -58,6 +68,35 @@ public class WaterfallConfiguration extends Configuration {
+@@ -58,6 +66,36 @@ public class WaterfallConfiguration extends Configuration {
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
          disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
          disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
 +        forwardingMode = ForwardingMode.valueOf(config.getString("forwarding_mode", ForwardingMode.BUNGEECORD_LEGACY.toString()).toUpperCase());
-+
++        Logger logger = BungeeCord.getInstance().getLogger();
 +        if(super.isIpForward()) {
 +            switch(forwardingMode) {
 +                case BUNGEECORD_LEGACY:
-+                    logger.info("Forwarding mode is set to Bungeecord/Legacy forwarding.");
-+                    logger.info("It is recommended to use another forwarding method to mitigate information spoofing attacks.");
++                    logger.info("Forwarding mode is set to Bungeecord/Legacy forwarding. " +
++                            "It is recommended to use another forwarding method to mitigate information spoofing attacks.");
 +                    break;
 +                case BUNGEEGUARD:
-+                    logger.info("Forwarding mode is set to BungeeGuard forwarding.");
-+                    logger.info("Please ensure all connected servers make use of BungeeGuard for optimal security.");
++                    logger.info("Forwarding mode is set to BungeeGuard forwarding. " +
++                            "Please ensure all connected servers make use of BungeeGuard for optimal security.");
 +                    break;
 +                case VELOCITY_MODERN:
-+                    logger.info("Forwarding mode is set to Modern/Velocity forwarding.");
-+                    logger.info("If you need to use servers on versions older than 1.13 please use another forwarding type.");
++                    logger.info("Forwarding mode is set to modern/Velocity forwarding. " +
++                            "If you need to use versions older than 1.13 please use another forwarding type.");
 +                    break;
 +            }
 +        } else {
-+            logger.warn("Information forwarding (ip-forwarding) is disabled. ");
-+            logger.warn("Player UUIDs may not be consistent across the servers.");
-+            logger.warn("For the best experience enable ip_forward in the config.yml.");
++            logger.warning("Information forwarding (ip-forwarding) is disabled. " +
++                    "Player UUIDs may not be consistent across the servers. " +
++                    "For the optimal experience please enable ip_forward in the config.yml and " +
++                    "configure forwarding and on your servers.");
 +        }
 +
 +        if(config.getString("forwarding_secret", "").isEmpty()) {
 +            config.regenerateForwardingSecret();
-+            logger.info("A new forwarding secret has been generated. If this was the");
-+            logger.info("first start of the proxy please configure forwarding for your network.");
++            logger.warning("A new forwarding secret has been generated. If this was the " +
++                    "first start of the proxy please configure forwarding for your network.");
 +        }
 +        forwardingSecret = config.getString("forwarding_secret", "").getBytes(StandardCharsets.UTF_8);
      }
  
      @Override
-@@ -94,4 +133,13 @@ public class WaterfallConfiguration extends Configuration {
+@@ -94,4 +132,13 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
      }
