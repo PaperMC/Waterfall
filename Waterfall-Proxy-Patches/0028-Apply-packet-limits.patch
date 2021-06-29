@@ -1,0 +1,36 @@
+From fd8069ef569a8ab85a743a52f1fd9b67cad09ba4 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Thu, 10 Jun 2021 11:30:19 -0300
+Subject: [PATCH] Apply packet limits
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 7dbbfd3c..00f387d8 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+@@ -43,4 +44,14 @@ public class Handshake extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    @Override
++    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 5 + ((255 * 4 + 3) + 5) + 2 + 1; // FlameCord - Apply packet limits (by Janmm14)
++    }
++
++    @Override
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 1 + 2 + 1 + 1; // FlameCord - Apply packet limits (by Janmm14)
++    }
+ }
+-- 
+2.32.0.windows.1
+
