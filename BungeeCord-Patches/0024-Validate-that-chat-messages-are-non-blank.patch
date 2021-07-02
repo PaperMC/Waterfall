@@ -1,57 +1,33 @@
-From 76e7f32f689d050b70f77d3a28f41e86f242890a Mon Sep 17 00:00:00 2001
+From efb082580161b889b88e5351ba25a1084ab618f1 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 25 Oct 2016 12:34:41 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
 
 
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
-new file mode 100644
-index 00000000..940ad806
---- /dev/null
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/StringUtil.java
-@@ -0,0 +1,22 @@
-+package io.github.waterfallmc.waterfall;
-+
-+import lombok.AccessLevel;
-+import lombok.NoArgsConstructor;
-+
-+@NoArgsConstructor(access = AccessLevel.PRIVATE)
-+public class StringUtil {
-+    public static boolean isBlank(String str) {
-+        if (str.isEmpty()) {
-+            return true;
-+        }
-+
-+        int l = str.length();
-+        for (int i = 0; i < l; i++) {
-+            if (!Character.isWhitespace(str.charAt(i))) {
-+                return false;
-+            }
-+        }
-+
-+        return true;
-+    }
-+}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index a2f36f23..4d7b1b23 100644
+index a667623b..d93d8851 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
- import com.mojang.brigadier.context.StringRange;
- import com.mojang.brigadier.suggestion.Suggestion;
- import com.mojang.brigadier.suggestion.Suggestions;
-+import io.github.waterfallmc.waterfall.StringUtil;
- import io.netty.channel.Channel;
- import java.util.ArrayList;
- import java.util.LinkedList;
-@@ -148,6 +149,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -146,6 +146,7 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public void handle(Chat chat) throws Exception
      {
-         int maxLength = ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_11 ) ? 256 : 100;
-         Preconditions.checkArgument( chat.getMessage().length() <= maxLength, "Chat message too long" ); // Mojang limit, check on updates
-+        Preconditions.checkArgument(!StringUtil.isBlank(chat.getMessage()), "Chat message is empty");
++        boolean empty = true;
+         for ( int index = 0, length = chat.getMessage().length(); index < length; index++ )
+         {
+             char c = chat.getMessage().charAt( index );
+@@ -154,8 +155,11 @@ public class UpstreamBridge extends PacketHandler
+             {
+                 con.disconnect( bungee.getTranslation( "illegal_chat_characters", String.format( "\\u%04x", (int) c ) ) );
+                 throw CancelSendSignal.INSTANCE;
++            } else if (empty && !Character.isWhitespace(c)) {
++                empty = false;
+             }
+         }
++        Preconditions.checkArgument(!empty, "Chat message is empty");
  
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
 -- 
-2.24.0
+2.30.1 (Apple Git-130)
 

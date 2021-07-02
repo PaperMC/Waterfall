@@ -1,4 +1,4 @@
-From 1bdda79d53b7b37044cf10f1090df656342aabef Mon Sep 17 00:00:00 2001
+From 2129b8a17d2352058ee2cb5142c99e4023d3d90c Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -93,10 +93,10 @@ index 2762aede..a8516462 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ed0a12c5..dcdf94c9 100644
+index 8979ac22..d4348eb7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -73,6 +73,7 @@ public final class UserConnection implements ProxiedPlayer
      @NonNull
      private final ProxyServer bungee;
      @NonNull
@@ -122,5 +122,5 @@ index 93989ee9..2e6cf764 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.32.0
+2.30.1 (Apple Git-130)
 

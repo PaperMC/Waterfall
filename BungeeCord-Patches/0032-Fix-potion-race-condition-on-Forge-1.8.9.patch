@@ -1,4 +1,4 @@
-From ad9cce2866823d6344b9682f395d9687c45e45d5 Mon Sep 17 00:00:00 2001
+From 307d071abd19cfe07b7bb9f90bac7ca9b24737fd Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -173,7 +173,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e677e032..f804ae3a 100644
+index a8f4378e..95dc97b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -186,7 +186,7 @@ index e677e032..f804ae3a 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -124,6 +126,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -281,5 +281,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.32.0
+2.30.1 (Apple Git-130)
 

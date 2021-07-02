@@ -1,4 +1,4 @@
-From 2c6678f66fe499d028b4478a45df4001841e9058 Mon Sep 17 00:00:00 2001
+From c730e09faaa438333ef13935f08a44097f947562 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -75,10 +75,10 @@ index 29a4716f..3dc32801 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b0e7e392..5e4c4518 100644
+index d4348eb7..a8f4378e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -257,9 +257,20 @@ public final class UserConnection implements ProxiedPlayer
+@@ -258,9 +258,20 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
@@ -99,7 +99,7 @@ index b0e7e392..5e4c4518 100644
          if ( callback != null )
          {
              // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-@@ -353,7 +364,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -354,7 +365,7 @@ public final class UserConnection implements ProxiedPlayer
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
@@ -107,7 +107,7 @@ index b0e7e392..5e4c4518 100644
 +                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
                      } else if ( dimensionChange )
                      {
-                         disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
+                         disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 -- 
-2.31.1
+2.30.1 (Apple Git-130)
 
