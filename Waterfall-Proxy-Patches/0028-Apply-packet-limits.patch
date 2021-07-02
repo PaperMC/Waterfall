@@ -23,12 +23,12 @@ index 7dbbfd3c..00f387d8 100644
 +
 +    @Override
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-+        return 5 + ((255 * 4 + 3) + 5) + 2 + 1; // FlameCord - Apply packet limits (by Janmm14)
++        return 1036 + 256; // FlameCord - Apply packet limits (by Janmm14)
 +    }
 +
 +    @Override
 +    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-+        return 1 + 2 + 1 + 1; // FlameCord - Apply packet limits (by Janmm14)
++        return 5; // FlameCord - Apply packet limits (by Janmm14)
 +    }
  }
 -- 
