@@ -1,14 +1,14 @@
-From 6b6dd8e0fc01d46fb928cbac548cc2ca1a0a7da1 Mon Sep 17 00:00:00 2001
+From ac987c138b977c2029dc845bbec5f9a1b70dd746 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:35:33 +0800
 Subject: [PATCH] Allow custom uuids even if onlineMode is true
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b4067b1e..3120abdb 100644
+index 1925188f..554526a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -686,7 +686,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -680,7 +680,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void setUniqueId(UUID uuid)
      {
          Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
@@ -18,5 +18,5 @@ index b4067b1e..3120abdb 100644
      }
  
 -- 
-2.31.1.windows.1
+2.32.0.windows.1
 
