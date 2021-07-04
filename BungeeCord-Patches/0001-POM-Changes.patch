@@ -1,4 +1,4 @@
-From 21881adc4dbdfd1e85fef1317b7ce830ffa83b91 Mon Sep 17 00:00:00 2001
+From e8bf85ea2fbfb671dc47172aed8188dece807038 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -498,7 +498,7 @@ index f8bacabd..652a869d 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 3a793641..97056e93 100644
+index 3a793641..85e74737 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -625,7 +625,15 @@ index 3a793641..97056e93 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -321,5 +346,88 @@
+@@ -290,6 +315,7 @@
+                                     <!-- lombok does not add @return or @param which causes warnings, so ignore -->
+                                     <doclint>none</doclint>
+                                     <sourcepath>${project.build.directory}/delombok</sourcepath>
++                                    <additionalJOption>--no-module-directories</additionalJOption> <!-- Waterfall -->
+                                 </configuration>
+                             </execution>
+                         </executions>
+@@ -321,5 +347,88 @@
                  </plugins>
              </build>
          </profile>
