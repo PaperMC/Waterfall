@@ -1,4 +1,4 @@
-From 07b1872dfc3b6ee50f7d266aca5c5ea854cc89b2 Mon Sep 17 00:00:00 2001
+From 76cf77bc9f761dce7d6fe2eaf8040ddce503b2cd Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 93d22dba..81ccc47a 100644
+index 97056e93..e92d5af8 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -350,7 +350,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1f6ba085..617a077f 100644
+index 1db22fc6..f281dfa1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -46,7 +46,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -472,10 +472,10 @@ index bd52d880..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-index 10366c88..8c5cc949 100644
+index 9ec4920e..d3abee44 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-@@ -42,7 +42,7 @@ public class ModuleManager
+@@ -44,7 +44,7 @@ public class ModuleManager
          ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
          if ( bungeeVersion == null )
          {
@@ -1585,5 +1585,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.30.0
+2.32.0
 
