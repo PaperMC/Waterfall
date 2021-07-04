@@ -1,11 +1,11 @@
-From 8b6849830329606a4afcf29e855bd1bfb626b307 Mon Sep 17 00:00:00 2001
+From 0a8ceb281a8162b0de4887b2569995bba6f0d41f Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
 
 
 diff --git a/native/compile-native.sh b/native/compile-native.sh
-index f37c9fdd..7ced0950 100755
+index f37c9fdd..a50b52bf 100755
 --- a/native/compile-native.sh
 +++ b/native/compile-native.sh
 @@ -8,7 +8,16 @@ echo "Compiling mbedtls"
@@ -26,8 +26,8 @@ index f37c9fdd..7ced0950 100755
 +
 +CXX="g++ -shared -fPIC -O3 -Wall -Werror"
 +
-+$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
-+$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX}native-compress.so zlib/libz.a $CXX_ARGS
++$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX:-}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
++$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX:-}native-compress.so zlib/libz.a $CXX_ARGS
 diff --git a/native/src/main/c/NativeCipherImpl.cpp b/native/src/main/c/NativeCipherImpl.cpp
 index 9de328ea..42fdb540 100644
 --- a/native/src/main/c/NativeCipherImpl.cpp
@@ -1215,5 +1215,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.30.1 (Apple Git-130)
+2.32.0
 
