@@ -1,11 +1,11 @@
-From fd1cdbfda00482440c45e74217c78f5b62b1be49 Mon Sep 17 00:00:00 2001
+From cf8b96298bc7e02d04b30aa1dca04968bda068d8 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 49ba34db..6e148782 100644
+index 0647a774..37784acd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -56,7 +56,7 @@ index 49ba34db..6e148782 100644
      }
  
      @Override
-@@ -606,7 +624,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -600,7 +618,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -173,5 +173,5 @@ index 0c1ecfb8..b3bdfd05 100644
          }
  
 -- 
-2.31.1.windows.1
+2.32.0.windows.1
 
