@@ -1,10 +1,10 @@
-# This workflow will perform a compilation test 
-# on each pull request or push to the branch master
-# to check its correct compilation and will deliver 
-# an artifact to check if the change is working properly.
+# This workflow will perform a compilation test on 
+# each push to the branch master to check its correct 
+# compilation and will deliver an artifact to check 
+# if the change is working properly.
 name: FlameCord Maven Build
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Setup JAVA ${{ matrix.java }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v2.1.0
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
@@ -30,7 +30,7 @@ jobs:
     
     # The corresponding dependencies are stored in the cache to speed up the test.
     - name: Cache Maven Packages
-      uses: actions/cache@v2.1.5
+      uses: actions/cache@v2.1.6
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -44,7 +44,7 @@ jobs:
       
     # An artifact is generated in a compressed file according to each JDK build version.
     - name: Upload FlameCord
-      uses: actions/upload-artifact@v2.2.3
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: FlameCord-JDK${{ matrix.java }}
         path: FlameCord-Proxy/bootstrap/target/FlameCord.jar

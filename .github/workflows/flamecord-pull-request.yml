@@ -1,0 +1,49 @@
+# This workflow will perform a compilation test on each 
+# pull request to check its correct compilation and will deliver 
+# an artifact to check if the change is working properly.
+name: FlameCord Pull Request
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # The corresponding tests are performed in the versions
+    # marked as Long Term Support by Oracle and in its
+    # latest version up to the moment.
+    strategy:
+      matrix:
+        java: [8, 11, 16]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Setup JAVA ${{ matrix.java }}
+      uses: actions/setup-java@v2.1.0
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: 'adopt'
+        architecture: x64
+    
+    # The corresponding dependencies are stored in the cache to speed up the test.
+    - name: Cache Maven Packages
+      uses: actions/cache@v2.1.6
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Build FlameCord
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        scripts/build.sh --jar
+      
+    # An artifact is generated in a compressed file according to each JDK build version.
+    - name: Upload FlameCord
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: FlameCord-JDK${{ matrix.java }}
+        path: FlameCord-Proxy/bootstrap/target/FlameCord.jar
