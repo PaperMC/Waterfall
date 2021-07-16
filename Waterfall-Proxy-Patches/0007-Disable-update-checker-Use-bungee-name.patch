@@ -1,14 +1,14 @@
-From 930c3622edaa63c7538d225d809e84c55b6a14fb Mon Sep 17 00:00:00 2001
+From 6cc482b6a66e0085ff7eb4ad565592ec9dd0d285 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:00:49 +0800
 Subject: [PATCH] Disable update checker & Use bungee name
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 713bbbef..96db5e5e 100644
+index 25da0a65..d4b612b3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -58,25 +58,12 @@ public class BungeeCordLauncher
+@@ -45,25 +45,12 @@ public class BungeeCordLauncher
              return;
          }
  
@@ -38,7 +38,7 @@ index 713bbbef..96db5e5e 100644
  
          if ( !options.has( "noconsole" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index d5b3e6f8..7994c1c1 100644
+index 9c11ac57..ae4c7ac2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -22,6 +22,7 @@ import java.util.Locale;
@@ -70,5 +70,5 @@ index d5b3e6f8..7994c1c1 100644
  
              int maxPlayers = get( "max_players", 1, val );
 -- 
-2.31.1.windows.1
+2.32.0.windows.1
 
