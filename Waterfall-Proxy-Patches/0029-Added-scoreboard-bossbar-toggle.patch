@@ -1,0 +1,80 @@
+From 73b68bd089ab2780acec9d8bb1f3b320ce64846c Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Mon, 2 Aug 2021 21:32:30 -0300
+Subject: [PATCH] Added scoreboard bossbar toggle
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index aafd99d8..423688c0 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -31,6 +31,11 @@ public class FlameCordConfiguration {
+     @Getter
+     private Collection<String> firewallNames = new HashSet<>(Arrays.asList(new String[] { "mcspam" }));
+ 
++    @Getter
++    private boolean proxyScoreboard = false;
++    @Getter
++    private boolean proxyBossBar = false;
++
+     public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
+         try {
+             final String fileName = "./flamecord.yml";
+@@ -54,6 +59,9 @@ public class FlameCordConfiguration {
+             this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
+             this.firewallNames = setIfUnexistant("firewall.names", this.firewallNames, configuration);
+ 
++            this.proxyScoreboard = setIfUnexistant("proxy-scoreboard", this.proxyScoreboard, configuration);
++            this.proxyBossBar = setIfUnexistant("proxy-bossbar", this.proxyBossBar, configuration);          
++
+             if (!configurationExists) {
+                 configurationProvider.save(configuration, configurationFile);
+             }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index e95431a0..a843d69a 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -2,6 +2,8 @@ package net.md_5.bungee.protocol;
+ 
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.Iterables;
++
++import dev._2lstudios.flamecord.FlameCord;
+ import gnu.trove.map.TIntObjectMap;
+ import gnu.trove.map.TObjectIntMap;
+ import gnu.trove.map.hash.TIntObjectHashMap;
+@@ -114,6 +116,7 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_16_2, 0x39 ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x3D )
+             );
++            if (FlameCord.getInstance().getFlameCordConfiguration().isProxyBossBar())
+             TO_CLIENT.registerPacket(
+                     BossBar.class,
+                     BossBar::new,
+@@ -160,6 +163,7 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_16_2, 0x0F ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x11 )
+             );
++            if (FlameCord.getInstance().getFlameCordConfiguration().isProxyScoreboard())
+             TO_CLIENT.registerPacket(
+                     ScoreboardObjective.class,
+                     ScoreboardObjective::new,
+@@ -172,6 +176,7 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x4A ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x53 )
+             );
++            if (FlameCord.getInstance().getFlameCordConfiguration().isProxyScoreboard())
+             TO_CLIENT.registerPacket(
+                     ScoreboardScore.class,
+                     ScoreboardScore::new,
+@@ -184,6 +189,7 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x4D ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x56 )
+             );
++            if (FlameCord.getInstance().getFlameCordConfiguration().isProxyScoreboard())
+             TO_CLIENT.registerPacket(
+                     ScoreboardDisplay.class,
+                     ScoreboardDisplay::new,
+-- 
+2.32.0.windows.1
+
