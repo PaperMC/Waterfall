@@ -1,4 +1,4 @@
-From 67799e8a980a77546059d9c362d9845fce792f22 Mon Sep 17 00:00:00 2001
+From 0cdc879be6e32c45bdb2e3214a003f24808c2702 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
@@ -134,7 +134,7 @@ index 00000000..e82c4844
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a788559e..7681240b 100644
+index 90812759..6efe18c2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
@@ -158,21 +158,21 @@ index a788559e..7681240b 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -296,6 +298,7 @@ public class BungeeCord extends ProxyServer
+@@ -313,6 +315,7 @@ public class BungeeCord extends ProxyServer
+             connectionThrottle = new ConnectionThrottle( config.getThrottle(), config.getThrottleLimit() );
          }
-         
-         FlameCord.renew(logger, whitelistedAddresses);
-+        registerModules();
+         startListeners();
++        loadModules();
  
-         if ( config.isForgeSupport() )
+         saveThread.scheduleAtFixedRate( new TimerTask()
          {
-@@ -830,4 +833,56 @@ public class BungeeCord extends ProxyServer
+@@ -830,4 +833,52 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
 +
 +    // FlameCord - Method to simplify module registering
-+    public void registerModules() {
++    public void loadModules() {
 +        final ModulesConfiguration modulesConfiguration = FlameCord.getInstance().getModulesConfiguration();
 +
 +        // Bungeecord Commands
@@ -206,17 +206,13 @@ index a788559e..7681240b 100644
 +            pluginManager.registerCommand(null, new CommandServer());
 +        }
 +
-+        try {
-+            if (modulesConfiguration.reconnectEnabled) {
-+                for (ListenerInfo info : getConfig().getListeners()) {
-+                    if (!info.isForceDefault() && getReconnectHandler() == null) {
-+                        setReconnectHandler(new YamlReconnectHandler());
-+                        break;
-+                    }
++        if (modulesConfiguration.reconnectEnabled) {
++            for (ListenerInfo info : getConfig().getListeners()) {
++                if (!info.isForceDefault() && getReconnectHandler() == null) {
++                    setReconnectHandler(new YamlReconnectHandler());
++                    break;
 +                }
 +            }
-+        } catch (final Exception exception) {
-+            logger.warning("Reconnect module is not able to work on FlameCord!");
 +        }
 +
 +        // Flamecord - Commands (Had to make it like this because of maven limitations)
