@@ -1,4 +1,4 @@
-From 9f455bc55f7af057192e8075a9f295adad8de734 Mon Sep 17 00:00:00 2001
+From 7a80f39c65fcf3ef6569fbb5ee96715708875ca7 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -317,7 +317,7 @@ index ccab6800..d57a0516 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e88ec72a..83d074be 100644
+index e88ec72a..a720a0c3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -152,6 +152,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -340,6 +340,22 @@ index e88ec72a..83d074be 100644
                  throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
          }
      }
+@@ -392,6 +398,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         // FlameCord - Use name
+         final String name = getName();
+ 
++        // FlameCord start - Firewall and close if username is blocked
++        if ( FlameCord.getInstance().getFirewallManager().isFirewalled( name ) )
++        {
++            FlameCord.getInstance().getFirewallManager().addFirewalled( ch.getRemoteAddress() );
++            ch.close();
++            return;
++        }
++        // FlameCord end
++
+         if ( name.contains( " " ) || name.contains( "." ) )
+         {
+             disconnect( bungee.getTranslation( "name_invalid" ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 index 264c22e8..2101cbc4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
@@ -426,5 +442,5 @@ index b3bdfd05..49d53f17 100644
                  throw new IllegalStateException( "Invalid data request packet" );
              }
 -- 
-2.32.0.windows.2
+2.33.0.windows.2
 
