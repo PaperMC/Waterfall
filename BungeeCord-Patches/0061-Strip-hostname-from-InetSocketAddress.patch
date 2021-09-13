@@ -1,4 +1,4 @@
-From 1b1107674563adebad11d00b6625bf8f6cbb97d1 Mon Sep 17 00:00:00 2001
+From 4719d808999eabefc957768b47dfbf3faf962852 Mon Sep 17 00:00:00 2001
 From: mibac138 <5672750+mibac138@users.noreply.github.com>
 Date: Tue, 20 Jul 2021 00:47:59 +0200
 Subject: [PATCH] Strip hostname from InetSocketAddress
@@ -42,14 +42,14 @@ index 03dabe01..464acc6c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/util/AddressUtil.java
 +++ b/proxy/src/main/java/net/md_5/bungee/util/AddressUtil.java
 @@ -11,7 +11,7 @@ public class AddressUtil
-
+ 
      public static String sanitizeAddress(InetSocketAddress addr)
      {
 -        String string = addr.getHostString();
 +        String string = addr.getAddress().getHostAddress(); // Waterfall
-
+ 
          // Remove IPv6 scope if present
          if ( addr.getAddress() instanceof Inet6Address )
---
-2.25.1
+-- 
+2.33.0
 
