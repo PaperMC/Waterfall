@@ -1,0 +1,57 @@
+From 4de43b146365b482414d44c38d33d06f25e75a74 Mon Sep 17 00:00:00 2001
+From: LemonCaramel <admin@caramel.moe>
+Date: Fri, 17 Sep 2021 03:59:41 +0900
+Subject: [PATCH] Preliminary 1.18 Snapshot support
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index caf7ed0b..82e5eaba 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -36,6 +36,7 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_16_4 = 754;
+     public static final int MINECRAFT_1_17 = 755;
+     public static final int MINECRAFT_1_17_1 = 756;
++    public static final int MINECRAFT_1_18 = (1 << 30) | 41;
+     public static final List<String> SUPPORTED_VERSIONS;
+     public static final List<Integer> SUPPORTED_VERSION_IDS;
+ 
+@@ -87,8 +88,8 @@ public class ProtocolConstants
+ 
+         if ( SNAPSHOT_SUPPORT )
+         {
+-            // supportedVersions.add( "1.17.x" );
+-            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_17 );
++            supportedVersions.add( "1.18" );
++            supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
+         }
+ 
+         SUPPORTED_VERSIONS = supportedVersions.build();
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+index 09df5a93..99ad8b9c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
+@@ -77,6 +77,8 @@ public abstract class EntityMap
+             case ProtocolConstants.MINECRAFT_1_17:
+             case ProtocolConstants.MINECRAFT_1_17_1:
+                 return EntityMap_1_16_2.INSTANCE_1_17;
++            case ProtocolConstants.MINECRAFT_1_18:
++                return EntityMap_1_16_2.INSTANCE_1_18;
+         }
+         throw new RuntimeException( "Version " + version + " has no entity map" );
+     }
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
+index df5516ca..66586c8c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
+@@ -16,6 +16,7 @@ class EntityMap_1_16_2 extends EntityMap
+ 
+     static final EntityMap_1_16_2 INSTANCE_1_16_2 = new EntityMap_1_16_2( 0x04, 0x2D );
+     static final EntityMap_1_16_2 INSTANCE_1_17 = new EntityMap_1_16_2( 0x04, 0x2D );
++    static final EntityMap_1_16_2 INSTANCE_1_18 = new EntityMap_1_16_2( 0x04, 0x2D );
+     //
+     private final int spawnPlayerId;
+     private final int spectateId;
+-- 
+2.28.0.windows.1
+
