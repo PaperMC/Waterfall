@@ -1,4 +1,4 @@
-From b97c5f8ab7d4605fb37cf2396799b752f045e27d Mon Sep 17 00:00:00 2001
+From 21d5f3c16dbc4a10e89e8a5d3eb2df5342711eb7 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -67,7 +67,7 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index d51a3142..d10cf2ed 100644
+index ab9519f9..40281aa4 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -19,6 +19,9 @@ import se.llbit.nbt.Tag;
@@ -146,7 +146,7 @@ index 8b7e0708..37d28c01 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0d30eeef..3cd4cc6f 100644
+index 80a66a2b..d07f60c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -12,6 +12,8 @@ import java.util.List;
@@ -158,7 +158,7 @@ index 0d30eeef..3cd4cc6f 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -418,6 +420,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -420,6 +422,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.32.0
+2.30.0
 

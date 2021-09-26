@@ -1,4 +1,4 @@
-From 3088c32039b873d9ca1e45c3a185182d9223a3f1 Mon Sep 17 00:00:00 2001
+From 9c03fe60c1742e26bb2294355279ee21c76ad643 Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Wed, 22 Apr 2020 14:00:44 +1000
 Subject: [PATCH] Add exception reporting event
@@ -642,7 +642,7 @@ index fbfbd546..ae85a1d4 100644
  
      @EventHandler
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index eeb63c43..c09f5b4c 100644
+index c5f2a92d..c7b0ab25 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;
@@ -668,7 +668,7 @@ index eeb63c43..c09f5b4c 100644
              getScheduler().cancel( plugin );
              plugin.getExecutorService().shutdownNow();
 diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
-index 67db0cc4..02ec98fc 100644
+index 38b75b51..02ec98fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
 +++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
 @@ -3,6 +3,9 @@ package net.md_5.bungee.scheduler;
@@ -685,7 +685,7 @@ index 67db0cc4..02ec98fc 100644
                  task.run();
              } catch ( Throwable t )
              {
--                ProxyServer.getInstance().getLogger().log( Level.SEVERE, String.format( "Task %s encountered an exception", this ), t );
+-                ProxyServer.getInstance().getLogger().log( Level.SEVERE, "Task " + this + " encountered an exception", t );
 +                //Waterfall start - throw exception event
 +                String msg = String.format( "Task %s encountered an exception", this );
 +                ProxyServer.getInstance().getLogger().log( Level.SEVERE, msg, t );
@@ -695,5 +695,5 @@ index 67db0cc4..02ec98fc 100644
  
              // If we have a period of 0 or less, only run once
 -- 
-2.32.0
+2.30.0
 
