@@ -1,4 +1,4 @@
-From 58a7123d84293c0934334b3dea3cf0b1e4fc9dbe Mon Sep 17 00:00:00 2001
+From 8fe7d7d99ecdfa342b7cfb5bfca9f4f61bb2be37 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -208,10 +208,10 @@ index 00000000..cc24dd35
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 31101f6b..77eb64a1 100644
+index e565c836..7b79346c 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
-@@ -3,12 +3,15 @@ package net.md_5.bungee;
+@@ -3,6 +3,7 @@ package net.md_5.bungee;
  import com.google.common.base.Joiner;
  import com.google.common.primitives.UnsignedLongs;
  import io.netty.channel.unix.DomainSocketAddress;
@@ -219,7 +219,8 @@ index 31101f6b..77eb64a1 100644
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
  import java.net.URI;
- import java.net.URISyntaxException;
+@@ -10,6 +11,8 @@ import java.net.URISyntaxException;
+ import java.util.Locale;
  import java.util.UUID;
  
 +import io.github.waterfallmc.waterfall.utils.Hex;
@@ -227,7 +228,7 @@ index 31101f6b..77eb64a1 100644
  /**
   * Series of utility classes to perform various operations.
   */
-@@ -65,7 +68,7 @@ public class Util
+@@ -66,7 +69,7 @@ public class Util
       */
      public static String hex(int i)
      {
@@ -250,7 +251,7 @@ index 88d36ad2..fc92a7b5 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 916a0fef..3eeaeffb 100644
+index cc40fe1b..25406d82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -641,7 +641,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -263,5 +264,5 @@ index 916a0fef..3eeaeffb 100644
  
      @Override
 -- 
-2.32.0
+2.30.0
 

@@ -1,4 +1,4 @@
-From a46065c54e536379cf3328642e23e03092dd9691 Mon Sep 17 00:00:00 2001
+From 3407db483797e0b3ccca1c81773a97851cf22317 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,7 +8,7 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index d10cf2ed..31a95495 100644
+index 40281aa4..a310844d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -44,6 +44,7 @@ public abstract class DefinedPacket
@@ -16,7 +16,7 @@ index d10cf2ed..31a95495 100644
          if ( len > maxLen * 4 )
          {
 +            if(!MinecraftDecoder.DEBUG) throw STRING_TOO_MANY_BYTES_EXCEPTION; // Waterfall start: Additional DoS mitigations
-             throw new OverflowPacketException( String.format( "Cannot receive string longer than %d (got %d bytes)", maxLen * 4, len ) );
+             throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 4 + " (got " + len + " bytes)" );
          }
  
 @@ -53,6 +54,7 @@ public abstract class DefinedPacket
@@ -24,7 +24,7 @@ index d10cf2ed..31a95495 100644
          if ( s.length() > maxLen )
          {
 +            if(!MinecraftDecoder.DEBUG) throw STRING_TOO_LONG_EXCEPTION; // Waterfall start: Additional DoS mitigations
-             throw new OverflowPacketException( String.format( "Cannot receive string longer than %d (got %d characters)", maxLen, s.length() ) );
+             throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
 @@ -284,4 +286,21 @@ public abstract class DefinedPacket
@@ -241,5 +241,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.32.0
+2.30.0
 
