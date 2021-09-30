@@ -1,4 +1,4 @@
-From 5fb36dc51158d5d396411ac9bcf66ab7af62cfdb Mon Sep 17 00:00:00 2001
+From 932721f8e83afa12ad09f503b2adace9b619e758 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
 Date: Thu, 30 Sep 2021 16:59:18 +0200
 Subject: [PATCH] Add root/admin user detection
@@ -12,10 +12,10 @@ Co-authored-by: egg82 <eggys82@gmail.com>
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
 new file mode 100644
-index 00000000..99bd16b9
+index 00000000..32791b72
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,31 @@
 +package io.github.waterfallmc.waterfall.utils;
 +
 +import java.io.BufferedReader;
@@ -39,7 +39,6 @@ index 00000000..99bd16b9
 +				isAdmin = uid.equals("0");
 +			}
 +		} catch (InterruptedException | IOException ignored) {
-+			ignored.printStackTrace();
 +		}
 +		RUNNING_AS_ROOT_OR_ADMIN = isAdmin;
 +	}
