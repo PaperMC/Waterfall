@@ -1,0 +1,75 @@
+From 5fb36dc51158d5d396411ac9bcf66ab7af62cfdb Mon Sep 17 00:00:00 2001
+From: Noah van der Aa <ndvdaa@gmail.com>
+Date: Thu, 30 Sep 2021 16:59:18 +0200
+Subject: [PATCH] Add root/admin user detection
+
+This patch detects whether or not the server is currently executing as a privileged user and spits out a warning.
+The warning serves as a sort-of PSA for newer server admins who don't understand the risks of running as root.
+We've seen plenty of bad/malicious plugins hit markets, and there's been a few close-calls with exploits in the past.
+Hopefully this helps mitigate some potential damage to servers, even if it is just a warning.
+
+Co-authored-by: egg82 <eggys82@gmail.com>
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
+new file mode 100644
+index 00000000..99bd16b9
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
+@@ -0,0 +1,32 @@
++package io.github.waterfallmc.waterfall.utils;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStreamReader;
++
++public class ServerEnvironment {
++	private static final boolean RUNNING_AS_ROOT_OR_ADMIN;
++
++	static {
++		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
++		boolean isAdmin = false;
++		try {
++			Process process = Runtime.getRuntime().exec(isWindows ? "reg query \"HKU\\S-1-5-19\"" : "id -u " + System.getProperty("user.name"));
++			process.waitFor();
++			if (isWindows) {
++				isAdmin = process.exitValue() == 0;
++			} else {
++				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
++				String uid = reader.readLine();
++				isAdmin = uid.equals("0");
++			}
++		} catch (InterruptedException | IOException ignored) {
++			ignored.printStackTrace();
++		}
++		RUNNING_AS_ROOT_OR_ADMIN = isAdmin;
++	}
++
++	public static boolean userIsRootOrAdmin() {
++		return RUNNING_AS_ROOT_OR_ADMIN;
++	}
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 07d74c67..d66c5a6c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -287,6 +287,16 @@ public class BungeeCord extends ProxyServer
+ 
+         isRunning = true;
+ 
++        // Waterfall start - detect running as root
++        if ( io.github.waterfallmc.waterfall.utils.ServerEnvironment.userIsRootOrAdmin() ) {
++            getLogger().warning("****************************");
++            getLogger().warning("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
++            getLogger().warning("YOU ARE OPENING YOURSELF UP TO POTENTIAL RISKS WHEN DOING THIS.");
++            getLogger().warning("FOR MORE INFORMATION, SEE https://madelinemiller.dev/blog/root-minecraft-server/");
++            getLogger().warning("****************************");
++        }
++        // Waterfall end
++
+         pluginManager.enablePlugins();
+ 
+         if ( config.getThrottle() > 0 )
+-- 
+2.33.0
+
