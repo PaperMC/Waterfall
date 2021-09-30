@@ -1,4 +1,4 @@
-From 1f6d89b080f89d2a235554957815deb3047dab05 Mon Sep 17 00:00:00 2001
+From c0015af5ddf9eb2e081949e90a908ba36acf27ba Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -191,7 +191,7 @@ index 00000000..a323598e
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 778fe4a1..9c45f305 100644
+index 136da2a8..4991c0a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,9 @@ import com.google.common.collect.Sets;
@@ -319,7 +319,7 @@ index db79b58a..a847c049 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index dc5b64b7..e88ec72a 100644
+index 98b46cc2..d5e4dcb6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -14,6 +14,8 @@ import java.util.logging.Level;
@@ -331,7 +331,7 @@ index dc5b64b7..e88ec72a 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -150,7 +152,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -151,7 +153,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -353,7 +353,7 @@ index 6df3f3dd..264c22e8 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 3bbc1510..4c53e02c 100644
+index c0e4791f..28543346 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,8 @@

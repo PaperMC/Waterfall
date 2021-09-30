@@ -1,14 +1,14 @@
-From cf8b96298bc7e02d04b30aa1dca04968bda068d8 Mon Sep 17 00:00:00 2001
+From 377cba38cd24e2e64a89104547befaf18cdbbd8b Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0647a774..37784acd 100644
+index 2af68601..3b1f3d99 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -192,6 +192,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -193,6 +193,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -22,7 +22,7 @@ index 0647a774..37784acd 100644
                  String kickMessage;
  
                  if ( v1_5 )
-@@ -257,6 +264,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -258,6 +265,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -38,7 +38,7 @@ index 0647a774..37784acd 100644
                          Gson gson = BungeeCord.getInstance().gson;
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
-@@ -286,11 +302,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -287,11 +303,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(PingPacket ping) throws Exception
      {

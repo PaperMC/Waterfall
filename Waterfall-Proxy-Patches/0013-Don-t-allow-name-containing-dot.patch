@@ -1,25 +1,23 @@
-From 9754f77c4142bebe9425d493b6826503dd9060f9 Mon Sep 17 00:00:00 2001
+From 17b968a7aa4e4afec3eff6e09f150ede548aff6a Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:51 +0800
 Subject: [PATCH] Don't allow name containing dot
 
 
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1811084a..1925188f 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -387,7 +387,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
-         this.loginRequest = loginRequest;
- 
--        if ( getName().contains( " " ) )
-+        // FlameCord - Use name
-+        final String name = getName();
-+
-+        if ( name.contains( " " ) || name.contains( "." ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/util/AllowedCharacters.java b/proxy/src/main/java/net/md_5/bungee/util/AllowedCharacters.java
+index d1cd1090..44cb1ce6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/util/AllowedCharacters.java
++++ b/proxy/src/main/java/net/md_5/bungee/util/AllowedCharacters.java
+@@ -21,7 +21,8 @@ public final class AllowedCharacters
+         } else
          {
-             disconnect( bungee.getTranslation( "name_invalid" ) );
-             return;
+             // Don't allow spaces, Yaml config doesn't support them
+-            return isChatAllowedCharacter( c ) && c != ' ';
++            // FlameCord - Don't allow dots
++            return isChatAllowedCharacter( c ) && c != ' ' && c != '.';
+         }
+     }
+ 
 -- 
 2.32.0.windows.1
 

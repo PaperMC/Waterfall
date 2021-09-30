@@ -1,27 +1,22 @@
-From bb419bd35b5e513be0ca20cda4c97bcaa23f0cd7 Mon Sep 17 00:00:00 2001
+From d0df3e9283244e4124ea3abb0c210743e9a5b39f Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:03 +0800
 Subject: [PATCH] Change state to encrypt only if onlineMode is true
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 37784acd..1811084a 100644
+index 3b1f3d99..503ee86a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -426,11 +426,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 if ( onlineMode )
+@@ -428,6 +428,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
+                     thisState = State.ENCRYPT;
                      unsafe().sendPacket( request = EncryptionUtil.encryptRequest() );
 +                    // FlameCord - Change state to encrypt only if onlineMode is true
 +                    thisState = State.ENCRYPT;
                  } else
                  {
-                     finish();
-                 }
--                thisState = State.ENCRYPT;
-             }
-         };
- 
+                     thisState = State.FINISHING;
 -- 
 2.32.0.windows.1
 
