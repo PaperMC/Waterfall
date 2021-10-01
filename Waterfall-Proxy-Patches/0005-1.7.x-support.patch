@@ -1,4 +1,4 @@
-From 702633e22f59f3a5b0df89f6d557c4a819358caf Mon Sep 17 00:00:00 2001
+From b74598019073565159c2d9a1d93680916632e78b Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -746,10 +746,10 @@ index 80e4f85af..cab28b999 100644
          {
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index a5555f6af..7c21c9dd8 100644
+index a5555f6af..09dc67f9e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-@@ -55,7 +55,12 @@ public class Team extends DefinedPacket
+@@ -55,12 +55,22 @@ public class Team extends DefinedPacket
                  suffix = readString( buf );
              }
              friendlyFire = buf.readByte();
@@ -763,16 +763,27 @@ index a5555f6af..7c21c9dd8 100644
              if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
              {
                  collisionRule = readString( buf );
-@@ -69,7 +74,7 @@ public class Team extends DefinedPacket
+             }
+-            color = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? readVarInt( buf ) : buf.readByte();
++            // FlameCord start - 1.7.x support
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 )
++            {
++                color = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? readVarInt( buf ) : buf.readByte();
++            }
++            // FlameCord end - 1.7.x support
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
+             {
+                 prefix = readString( buf );
+@@ -69,7 +79,7 @@ public class Team extends DefinedPacket
          }
          if ( mode == 0 || mode == 3 || mode == 4 )
          {
 -            int len = readVarInt( buf );
-+            int len = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt( buf ) : readVarShort( buf ); // FlameCord - 1.7.x support
++            int len = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt( buf ) : buf.readShort(); // FlameCord - 1.7.x support
              players = new String[ len ];
              for ( int i = 0; i < len; i++ )
              {
-@@ -81,6 +86,30 @@ public class Team extends DefinedPacket
+@@ -81,6 +91,30 @@ public class Team extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
