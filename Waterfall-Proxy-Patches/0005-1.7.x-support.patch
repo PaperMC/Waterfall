@@ -1,4 +1,4 @@
-From a421ce9004de456cfd72b8e3f40578056889de24 Mon Sep 17 00:00:00 2001
+From 6e47eca098c2a7576acd64fe87bc915f21c8bb31 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -357,35 +357,50 @@ index caf7ed0b6..787b93740 100644
                  ProtocolConstants.MINECRAFT_1_8,
                  ProtocolConstants.MINECRAFT_1_9,
                  ProtocolConstants.MINECRAFT_1_9_1,
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-index 29440533f..22b7d4632 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-@@ -28,6 +28,18 @@ public class ClientSettings extends DefinedPacket
-     @Override
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+index 6034fc180..6100687cb 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
+@@ -41,6 +41,7 @@ public class Chat extends DefinedPacket
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
+         message = readString( buf, ( direction == ProtocolConstants.Direction.TO_CLIENT ) ? 262144 : ( protocolVersion >= ProtocolConstants.MINECRAFT_1_11 ? 256 : 100 ) );
++        if ( ProtocolConstants.isAfterOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_8 ) ) // FlameCord - 1.7.x support
+         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
+         {
+             position = buf.readByte();
+@@ -60,6 +61,7 @@ public class Chat extends DefinedPacket
+         } else
+         // Waterfall end
+         writeString( message, buf );
++        if ( ProtocolConstants.isAfterOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_8 ) ) // FlameCord - 1.7.x support
+         if ( direction == ProtocolConstants.Direction.TO_CLIENT )
+         {
+             buf.writeByte( position );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+index 29440533f..8d00c3897 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
+@@ -33,6 +33,12 @@ public class ClientSettings extends DefinedPacket
+         chatFlags = protocolVersion >= ProtocolConstants.MINECRAFT_1_9 ? DefinedPacket.readVarInt( buf ) : buf.readUnsignedByte();
+         chatColours = buf.readBoolean();
+         skinParts = buf.readByte();
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
-+            locale = readString( buf );
-+            viewDistance = buf.readByte();
-+            chatFlags = buf.readUnsignedByte();
-+            chatColours = buf.readBoolean();
-+            skinParts = buf.readByte();
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            difficulty = buf.readByte();
-+            return;
 +        }
 +        // FlameCord end - 1.7.x support
-+        
-         locale = readString( buf, 16 );
-         viewDistance = buf.readByte();
-         chatFlags = protocolVersion >= ProtocolConstants.MINECRAFT_1_9 ? DefinedPacket.readVarInt( buf ) : buf.readUnsignedByte();
-@@ -46,6 +58,18 @@ public class ClientSettings extends DefinedPacket
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+         {
+             mainHand = DefinedPacket.readVarInt( buf );
+@@ -46,6 +52,19 @@ public class ClientSettings extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( locale, buf );
 +            buf.writeByte( viewDistance );
 +            buf.writeByte( chatFlags );
@@ -400,15 +415,16 @@ index 29440533f..22b7d4632 100644
          buf.writeByte( viewDistance );
          if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
-index a29524ca8..ddcc4249e 100644
+index a29524ca8..86182cdd3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
-@@ -23,6 +23,15 @@ public class EncryptionRequest extends DefinedPacket
+@@ -23,6 +23,16 @@ public class EncryptionRequest extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            serverId = readString( buf );
 +            publicKey = v17readArray( buf );
 +            verifyToken = v17readArray( buf );
@@ -419,12 +435,13 @@ index a29524ca8..ddcc4249e 100644
          serverId = readString( buf );
          publicKey = readArray( buf );
          verifyToken = readArray( buf );
-@@ -31,6 +40,15 @@ public class EncryptionRequest extends DefinedPacket
+@@ -31,6 +41,16 @@ public class EncryptionRequest extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( serverId, buf );
 +            v17writeArray( publicKey, buf, false );
 +            v17writeArray( verifyToken, buf, false );
@@ -436,15 +453,16 @@ index a29524ca8..ddcc4249e 100644
          writeArray( publicKey, buf );
          writeArray( verifyToken, buf );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-index 53575ce0e..33f5718a4 100644
+index 53575ce0e..52d7a5cc8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-@@ -22,6 +22,14 @@ public class EncryptionResponse extends DefinedPacket
+@@ -22,6 +22,15 @@ public class EncryptionResponse extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            sharedSecret = v17readArray( buf );
 +            verifyToken = v17readArray( buf );
 +            return;
@@ -454,12 +472,13 @@ index 53575ce0e..33f5718a4 100644
          sharedSecret = readArray( buf, 128 );
          verifyToken = readArray( buf, 128 );
      }
-@@ -29,6 +37,14 @@ public class EncryptionResponse extends DefinedPacket
+@@ -29,6 +38,15 @@ public class EncryptionResponse extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            v17writeArray( sharedSecret, buf, false );
 +            v17writeArray( verifyToken, buf, false );
 +            return;
@@ -470,15 +489,16 @@ index 53575ce0e..33f5718a4 100644
          writeArray( verifyToken, buf );
      }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
-index b004bc416..548e592e7 100644
+index b004bc416..a8c3e7736 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
-@@ -21,12 +21,26 @@ public class KeepAlive extends DefinedPacket
+@@ -21,12 +21,28 @@ public class KeepAlive extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            randomId = buf.readInt();
 +            return;
 +        }
@@ -491,7 +511,8 @@ index b004bc416..548e592e7 100644
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            buf.writeInt((int) randomId);
 +            return;
 +        }
@@ -544,15 +565,16 @@ index 551bd1046..5aeae06c3 100644
 +    // FlameCord end - 1.7.x support
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
-index 92bacc7cd..3a46ee103 100644
+index 92bacc7cd..cae5bda5c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerListItem.java
-@@ -21,6 +21,17 @@ public class PlayerListItem extends DefinedPacket
+@@ -21,6 +21,18 @@ public class PlayerListItem extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            items = new Item[ 1 ];
 +            Item item = items[ 0 ] = new Item();
 +            item.displayName = item.username = readString( buf );
@@ -565,12 +587,13 @@ index 92bacc7cd..3a46ee103 100644
          action = Action.values()[DefinedPacket.readVarInt( buf )];
          items = new Item[ DefinedPacket.readVarInt( buf ) ];
          for ( int i = 0; i < items.length; i++ )
-@@ -75,6 +86,16 @@ public class PlayerListItem extends DefinedPacket
+@@ -75,6 +87,17 @@ public class PlayerListItem extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            Item item = items[0]; // Only one at a time
 +            writeString( item.displayName, buf ); // TODO: Server unique only!
 +            buf.writeBoolean( action != Action.REMOVE_PLAYER );
@@ -583,15 +606,16 @@ index 92bacc7cd..3a46ee103 100644
          DefinedPacket.writeVarInt( items.length, buf );
          for ( Item item : items )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index c652ffb4f..1638dcf5b 100644
+index c652ffb4f..90aaee0a9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -82,6 +82,14 @@ public class PluginMessage extends DefinedPacket
+@@ -82,6 +82,15 @@ public class PluginMessage extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            tag = readString( buf );
 +            data = v17readArray( buf );
 +            return;
@@ -601,12 +625,13 @@ index c652ffb4f..1638dcf5b 100644
          tag = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ) ? MODERNISE.apply( readString( buf ) ) : readString( buf, 20 );
          int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
          Preconditions.checkArgument( buf.readableBytes() < maxSize );
-@@ -92,6 +100,14 @@ public class PluginMessage extends DefinedPacket
+@@ -92,6 +101,15 @@ public class PluginMessage extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( tag, buf );
 +            v17writeArray( data, buf, allowExtendedPacket );
 +            return;
@@ -617,15 +642,16 @@ index c652ffb4f..1638dcf5b 100644
          buf.writeBytes( data );
      }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 3c7905d54..936fa06cd 100644
+index 3c7905d54..75b371e9c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-@@ -28,6 +28,15 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -28,6 +28,16 @@ public class ScoreboardObjective extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            name = readString( buf );
 +            value = readString( buf );
 +            action = buf.readByte();
@@ -636,12 +662,13 @@ index 3c7905d54..936fa06cd 100644
          name = readString( buf );
          action = buf.readByte();
          if ( action == 0 || action == 2 )
-@@ -46,6 +55,15 @@ public class ScoreboardObjective extends DefinedPacket
+@@ -46,6 +56,16 @@ public class ScoreboardObjective extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( name, buf );
 +            writeString( value, buf );
 +            buf.writeByte( action );
@@ -653,15 +680,16 @@ index 3c7905d54..936fa06cd 100644
          buf.writeByte( action );
          if ( action == 0 || action == 2 )
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
-index 0b27fc86b..f3e1ce851 100644
+index 0b27fc86b..a812441d9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
-@@ -27,6 +27,19 @@ public class ScoreboardScore extends DefinedPacket
+@@ -27,6 +27,20 @@ public class ScoreboardScore extends DefinedPacket
      @Override
      public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            itemName = readString( buf );
 +            action = buf.readByte();
 +            if ( action != 1 )
@@ -676,12 +704,13 @@ index 0b27fc86b..f3e1ce851 100644
          itemName = readString( buf );
          action = buf.readByte();
          scoreName = readString( buf );
-@@ -39,6 +52,19 @@ public class ScoreboardScore extends DefinedPacket
+@@ -39,6 +53,20 @@ public class ScoreboardScore extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( itemName, buf );
 +            buf.writeByte( action );
 +            if ( action != 1 )
@@ -696,79 +725,40 @@ index 0b27fc86b..f3e1ce851 100644
          writeString( itemName, buf );
          buf.writeByte( action );
          writeString( scoreName, buf );
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-index 80e4f85af..6614ffb21 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteRequest.java
-@@ -37,6 +37,13 @@ public class TabCompleteRequest extends DefinedPacket
-     @Override
-     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
-+        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
-+            cursor = readString( buf );
-+            return;
-+        }
-+        // FlameCord end - 1.7.x support
-+
-         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
-         {
-             transactionId = readVarInt( buf );
-@@ -60,6 +67,13 @@ public class TabCompleteRequest extends DefinedPacket
-     @Override
-     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
-+        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
-+            writeString( cursor, buf );
-+            return;
-+        }
-+        // FlameCord end - 1.7.x support
-+
-         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
-         {
-             writeVarInt( transactionId, buf );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index a5555f6af..1a8cd7da1 100644
+index a5555f6af..7c21c9dd8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-@@ -44,6 +44,30 @@ public class Team extends DefinedPacket
-     @Override
-     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-     {
-+        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
-+            name = readString( buf );
-+            mode = buf.readByte();
-+            if ( mode == 0 || mode == 2 )
+@@ -55,7 +55,12 @@ public class Team extends DefinedPacket
+                 suffix = readString( buf );
+             }
+             friendlyFire = buf.readByte();
+-            nameTagVisibility = readString( buf );
++            // FlameCord start - 1.7.x support
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 )
 +            {
-+                displayName = readString( buf );
-+                prefix = readString( buf );
-+                suffix = readString( buf );
-+                friendlyFire = buf.readByte();
++                nameTagVisibility = readString( buf );
 +            }
-+            if ( mode == 0 || mode == 3 || mode == 4 )
-+            {
-+                int len = buf.readShort();
-+                players = new String[ len ];
-+                for ( int i = 0; i < len; i++ )
-+                {
-+                    players[i] = readString( buf );
-+                }
-+            }
-+            return;
-+        }
-+        // FlameCord end - 1.7.x support
-+
-         name = readString( buf );
-         mode = buf.readByte();
-         if ( mode == 0 || mode == 2 )
-@@ -81,6 +105,29 @@ public class Team extends DefinedPacket
++            // FlameCord end - 1.7.x support
+             if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+             {
+                 collisionRule = readString( buf );
+@@ -69,7 +74,7 @@ public class Team extends DefinedPacket
+         }
+         if ( mode == 0 || mode == 3 || mode == 4 )
+         {
+-            int len = readVarInt( buf );
++            int len = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt( buf ) : readVarShort( buf ); // FlameCord - 1.7.x support
+             players = new String[ len ];
+             for ( int i = 0; i < len; i++ )
+             {
+@@ -81,6 +86,30 @@ public class Team extends DefinedPacket
      @Override
      public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
      {
 +        // FlameCord start - 1.7.x support
-+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_7_2 || protocolVersion == ProtocolConstants.MINECRAFT_1_7_6) {
++        if ( ProtocolConstants.isBeforeOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_7_6 ) )
++        {
 +            writeString( name, buf );
 +            buf.writeByte( mode );
 +            if ( mode == 0 || mode == 2 )
@@ -879,7 +869,7 @@ index 491cf1a16..6cd8ec3b4 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index a5efb0af2..7d66fdbda 100644
+index a5efb0af2..2bdd03b3f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -890,7 +880,7 @@ index a5efb0af2..7d66fdbda 100644
  import java.util.Locale;
  import java.util.Arrays; // Waterfall
  import java.util.Queue;
-@@ -271,11 +272,21 @@ public class ServerConnector extends PacketHandler
+@@ -271,10 +272,20 @@ public class ServerConnector extends PacketHandler
                  user.getServer().disconnect( "Quitting" );
              } else
              {
@@ -911,17 +901,16 @@ index a5efb0af2..7d66fdbda 100644
 +                    user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
 +                    brand.release();
 +                }
++                 // FlameCord end - 1.7.x support
              }
-+            // FlameCord end - 1.7.x support
  
              user.setDimension( login.getDimension() );
-         } else
 @@ -287,7 +298,7 @@ public class ServerConnector extends PacketHandler
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
 -                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-+                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), objective.getType() == null ? null : ScoreboardObjective.HealthDisplay.fromString(objective.getType()), (byte) 1 ) ); // Travertine - 1.7 support
++                user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), objective.getType() == null ? null : ScoreboardObjective.HealthDisplay.fromString(objective.getType()), (byte) 1 ) ); // FlameCord - 1.7 support
              }
              for ( Score score : serverScoreboard.getScores() )
              {
@@ -941,7 +930,7 @@ index a5efb0af2..7d66fdbda 100644
                  throw CancelSendSignal.INSTANCE;
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index fc98b4b19..85ae3fc9d 100644
+index fc98b4b19..b50036b44 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -197,6 +197,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -957,7 +946,7 @@ index fc98b4b19..85ae3fc9d 100644
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  
 -        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 )
-+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // FlameCord
++        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 ) // FlameCord - 1.7.x support
          {
              // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
              // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
@@ -986,7 +975,7 @@ index fc98b4b19..85ae3fc9d 100644
          {
              this.compressionThreshold = compressionThreshold;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9e180c30c..c00b3dcd8 100644
+index 9e180c30c..df618972f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -20,6 +20,7 @@ import io.netty.buffer.Unpooled;
@@ -1015,7 +1004,7 @@ index 9e180c30c..c00b3dcd8 100644
                  }
                  break;
              default:
-@@ -286,19 +287,27 @@ public class DownstreamBridge extends PacketHandler
+@@ -286,19 +287,28 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
          {
@@ -1035,22 +1024,23 @@ index 9e180c30c..c00b3dcd8 100644
 +            // FlameCord start - 1.7.x support
 +            if ( ProtocolConstants.isAfterOrEq( con.getPendingConnection().getVersion(), ProtocolConstants.MINECRAFT_1_8 ) )
 +            {
-+                ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
-+                String serverBrand = DefinedPacket.readString( brand );
-+                brand.release();
-+
-+                Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
-+
-+                brand = ByteBufAllocator.DEFAULT.heapBuffer();
-+                DefinedPacket.writeString( bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
-+                pluginMessage.setData( brand );
-+                brand.release();
-+                // changes in the packet are ignored so we need to send it manually
-+                con.unsafe().sendPacket( pluginMessage );
-+                throw CancelSendSignal.INSTANCE;
-+            } else {
++                try
++                {
++                    ByteBuf brand = Unpooled.wrappedBuffer(pluginMessage.getData());
++                    String serverBrand = DefinedPacket.readString(brand);
++                    brand.release();
++                    brand = ByteBufAllocator.DEFAULT.heapBuffer();
++                    DefinedPacket.writeString(bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
++                    pluginMessage.setData(brand);
++                    brand.release();
++                } catch (Exception ProtocolHacksSuck)
++                {
++                    return;
++                }
++            } else
++            {
 +                String serverBrand = new String( pluginMessage.getData(), StandardCharsets.UTF_8);
-+                pluginMessage.setData( ( bungee.getName() + " <- " + serverBrand ).getBytes(StandardCharsets.UTF_8) ); // FlameCord
++                pluginMessage.setData( ( bungee.getName() + " <- " + serverBrand ).getBytes(StandardCharsets.UTF_8) ); // FlameCord - 1.7.x support
 +            }
 +            // FlameCord end - 1.7.x support
          }
