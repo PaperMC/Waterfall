@@ -1,4 +1,4 @@
-From b74598019073565159c2d9a1d93680916632e78b Mon Sep 17 00:00:00 2001
+From 908d4cf9fa68b614ef69fa1c79877816966d3863 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -488,6 +488,106 @@ index 53575ce0e..52d7a5cc8 100644
          writeArray( sharedSecret, buf );
          writeArray( verifyToken, buf );
      }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+index d11a9ea9d..0ed78a8c4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+@@ -21,20 +22,41 @@ public class EntityEffect extends DefinedPacket {
+     private boolean hideParticles;
+ 
+     @Override
+-    public void read(ByteBuf buf) {
+-        this.entityId = readVarInt(buf);
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        this.entityId = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt(buf) : buf.readInt(); // FlameCord - 1.7.x support
+         this.effectId = buf.readUnsignedByte();
+         this.amplifier = buf.readUnsignedByte();
+-        this.duration = readVarInt(buf);
+-        this.hideParticles = buf.readBoolean();
++        this.duration = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt(buf) : buf.readShort(); // FlameCord - 1.7.x support
++        // FlameCord start - 1.7.x support
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_8 )
++        {
++            this.hideParticles = buf.readBoolean();
++        }
++        // FlameCord end - 1.7.x support
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf) {
+-        writeVarInt(this.entityId, buf);
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        // FlameCord start - 1.7.x support
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_8)
++        {
++            writeVarInt(this.entityId, buf);
++        } else
++        {
++            buf.writeInt(effectId);
++        }
++        // FlameCord end - 1.7.x support
+         buf.writeByte(this.effectId);
+         buf.writeByte(this.amplifier);
+-        writeVarInt(this.duration, buf);
++        // FlameCord start - 1.7.x support
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_8)
++        {
++            writeVarInt(this.duration, buf);
++        } else
++        {
++            buf.writeShort(duration);
++        }
++        // FlameCord end - 1.7.x support
+         buf.writeBoolean(this.hideParticles);
+     }
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+index 7ed2dc3ab..435b85789 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
+ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ @Data
+ @NoArgsConstructor
+@@ -18,14 +19,22 @@ public class EntityRemoveEffect extends DefinedPacket {
+     private int effectId;
+ 
+     @Override
+-    public void read(ByteBuf buf) {
+-        this.entityId = readVarInt(buf);
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        this.entityId = protocolVersion >= ProtocolConstants.MINECRAFT_1_8 ? readVarInt(buf) : buf.readInt(); // FlameCord - 1.7.x support
+         this.effectId = buf.readUnsignedByte();
+     }
+ 
+     @Override
+-    public void write(ByteBuf buf) {
+-        writeVarInt(this.entityId, buf);
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        // FlameCord start - 1.7.x support
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_8)
++        {
++            writeVarInt(this.entityId, buf);
++        } else
++        {
++            buf.writeInt(entityId);
++        }
++        // FlameCord end - 1.7.x support
+         buf.writeByte(effectId);
+     }
+ 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
 index b004bc416..a8c3e7736 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/KeepAlive.java
