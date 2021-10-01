@@ -1,28 +1,28 @@
-From 2bf254d23544622bf9a32880bace6d821e42477f Mon Sep 17 00:00:00 2001
+From 7824c3357547e77f9e307d2fcdd19e1122a7bcd8 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:36:08 +0800
 Subject: [PATCH] Finish early to avoid multiple incoming packets
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5927d57d..4316da26 100644
+index 6a9f1bd8e..674b3ead8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -447,6 +447,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -467,6 +467,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
  
 +        // FlameCord - Finish here to avoid multiple incoming packets
-+        thisState = State.FINISHED;
++        thisState = State.FINISHING;
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
          if (sharedKey instanceof SecretKeySpec) {
-@@ -506,6 +508,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -526,6 +528,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {
 +        // FlameCord - Finish here to avoid multiple incoming packets
-+        thisState = State.FINISHED;
++        thisState = State.FINISHING;
 +
          if ( isOnlineMode() )
          {
