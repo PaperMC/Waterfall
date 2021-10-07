@@ -1,18 +1,59 @@
-From db53a54109912d4607dc79bd3cb656bc275c9e42 Mon Sep 17 00:00:00 2001
+From 62a978a15339798537e2399c4608cd87c7c952d7 Mon Sep 17 00:00:00 2001
 From: LemonCaramel <admin@caramel.moe>
 Date: Fri, 17 Sep 2021 03:59:41 +0900
 Subject: [PATCH] Preliminary 1.18 Snapshot support
 
 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index e95431a0..7f0b71c9 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -242,7 +242,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x4F ),
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x50 ),
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x4F ),
+-                    map( ProtocolConstants.MINECRAFT_1_17, 0x59 )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x59 ),
++                    map( ProtocolConstants.MINECRAFT_1_18, 0x5A )
+             );
+             TO_CLIENT.registerPacket(
+                     ClearTitles.class,
+@@ -252,12 +253,14 @@ public enum Protocol
+             TO_CLIENT.registerPacket(
+                     Subtitle.class,
+                     Subtitle::new,
+-                    map( ProtocolConstants.MINECRAFT_1_17, 0x57 )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x57 ),
++                    map( ProtocolConstants.MINECRAFT_1_18, 0x58 )
+             );
+             TO_CLIENT.registerPacket(
+                     TitleTimes.class,
+                     TitleTimes::new,
+-                    map( ProtocolConstants.MINECRAFT_1_17, 0x5A )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x5A ),
++                    map( ProtocolConstants.MINECRAFT_1_18, 0x5B )
+             );
+             TO_CLIENT.registerPacket(
+                     PlayerListHeaderFooter.class,
+@@ -271,7 +274,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x53 ),
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x54 ),
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x53 ),
+-                    map( ProtocolConstants.MINECRAFT_1_17, 0x5E )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x5E ),
++                    map( ProtocolConstants.MINECRAFT_1_18, 0x5F )
+             );
+             TO_CLIENT.registerPacket(
+                     EntityStatus.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index caf7ed0b..383db55d 100644
+index caf7ed0b..066c513e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -36,6 +36,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_16_4 = 754;
      public static final int MINECRAFT_1_17 = 755;
      public static final int MINECRAFT_1_17_1 = 756;
-+    public static final int MINECRAFT_1_18 = (1 << 30) | 43;
++    public static final int MINECRAFT_1_18 = (1 << 30) | 44;
      public static final List<String> SUPPORTED_VERSIONS;
      public static final List<Integer> SUPPORTED_VERSION_IDS;
  
@@ -27,6 +68,62 @@ index caf7ed0b..383db55d 100644
          }
  
          SUPPORTED_VERSIONS = supportedVersions.build();
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+index a240ccbb..0f2af6f9 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+@@ -32,6 +32,7 @@ public class Login extends DefinedPacket
+     private int maxPlayers;
+     private String levelType;
+     private int viewDistance;
++    private int simulationDistance;
+     private boolean reducedDebugInfo;
+     private boolean normalRespawn;
+     private boolean debug;
+@@ -100,6 +101,10 @@ public class Login extends DefinedPacket
+         {
+             viewDistance = readVarInt( buf );
+         }
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_18)
++        {
++            simulationDistance = readVarInt( buf );
++        }
+         if ( protocolVersion >= 29 )
+         {
+             reducedDebugInfo = buf.readBoolean();
+@@ -177,6 +182,10 @@ public class Login extends DefinedPacket
+         {
+             writeVarInt( viewDistance, buf );
+         }
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_18)
++        {
++            writeVarInt( simulationDistance, buf );
++        }
+         if ( protocolVersion >= 29 )
+         {
+             buf.writeBoolean( reducedDebugInfo );
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index a5efb0af..134d4356 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -249,7 +249,7 @@ public class ServerConnector extends PacketHandler
+ 
+             // Set tab list size, TODO: what shall we do about packet mutability
+             Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
+-                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
++                    (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
+ 
+             user.unsafe().sendPacket( modLogin );
+ 
+@@ -335,7 +335,7 @@ public class ServerConnector extends PacketHandler
+                 }
+ 
+                 Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
+-                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
++                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat() );
+                 user.unsafe().sendPacket(modLogin);
+ 
+                 // Only send if we're in the same dimension
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index 09df5a93..99ad8b9c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
