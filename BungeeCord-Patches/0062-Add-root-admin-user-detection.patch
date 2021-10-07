@@ -1,4 +1,4 @@
-From 932721f8e83afa12ad09f503b2adace9b619e758 Mon Sep 17 00:00:00 2001
+From 763d9ab434a3fcf6dcf0ebd2218e55cbb22333e2 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
 Date: Thu, 30 Sep 2021 16:59:18 +0200
 Subject: [PATCH] Add root/admin user detection
@@ -12,10 +12,10 @@ Co-authored-by: egg82 <eggys82@gmail.com>
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
 new file mode 100644
-index 00000000..32791b72
+index 00000000..1ec9fe05
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,34 @@
 +package io.github.waterfallmc.waterfall.utils;
 +
 +import java.io.BufferedReader;
@@ -28,8 +28,10 @@ index 00000000..32791b72
 +	static {
 +		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 +		boolean isAdmin = false;
++		String[] command = isWindows ? new String[]{"reg", "query", "reg query \"HKU\\S-1-5-19\"" } : new String[]{"id", "-u" };
++
 +		try {
-+			Process process = Runtime.getRuntime().exec(isWindows ? "reg query \"HKU\\S-1-5-19\"" : "id -u " + System.getProperty("user.name"));
++			Process process = new ProcessBuilder(command).start();
 +			process.waitFor();
 +			if (isWindows) {
 +				isAdmin = process.exitValue() == 0;
@@ -40,6 +42,7 @@ index 00000000..32791b72
 +			}
 +		} catch (InterruptedException | IOException ignored) {
 +		}
++
 +		RUNNING_AS_ROOT_OR_ADMIN = isAdmin;
 +	}
 +
