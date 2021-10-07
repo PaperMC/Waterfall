@@ -1,4 +1,4 @@
-From 32f56cb02f7336ed609e181e5bb582fa5a9d0d79 Mon Sep 17 00:00:00 2001
+From 295841ad76a439554074bfde7813de1a487d20a5 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:10:30 +0800
 Subject: [PATCH] Packet Checks
@@ -29,15 +29,19 @@ index 01d35f41a..ec07ae6fd 100644
  
          Object packetTypeInfo = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index f8d6becd6..c0e4791f9 100644
+index f8d6becd6..336050075 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -78,6 +78,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -78,6 +78,15 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      @Override
      public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
      {
 +        // FlameCord - Return if channel isn't active
 +        if (!ctx.channel().isActive()) {
++            if (msg instanceof PacketWrapper) {
++                ((PacketWrapper) msg).trySingleRelease();
++            }
++
 +            return;
 +        }
 +

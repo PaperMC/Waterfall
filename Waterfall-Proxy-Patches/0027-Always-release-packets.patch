@@ -1,14 +1,14 @@
-From 99c527b3d3e388ca5584b0e01e8009e590fc41a5 Mon Sep 17 00:00:00 2001
+From 73145c83efc9cf45bc6fb0adfa0903f3c2d5b144 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 23:28:19 -0300
 Subject: [PATCH] Always release packet
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index e5602230a..085cda114 100644
+index fbc19f66b..a2bd24107 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -113,12 +113,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -117,12 +117,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
              return;
          }
  
@@ -27,7 +27,7 @@ index e5602230a..085cda114 100644
                  if ( sendPacket && packet.packet != null )
                  {
                      try
-@@ -133,10 +135,10 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -137,10 +139,10 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  {
                      handler.handle( packet );
                  }
