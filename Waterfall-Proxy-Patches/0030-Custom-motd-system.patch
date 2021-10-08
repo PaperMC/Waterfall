@@ -1,0 +1,72 @@
+From 34b303a44be51266612eb4e68bef0c157449cea5 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Thu, 7 Oct 2021 21:37:24 -0300
+Subject: [PATCH] Custom motd system
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index aafd99d8c..c005e6864 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -6,12 +6,33 @@ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.HashSet;
++import java.util.List;
++import java.util.Random;
+ 
+ import lombok.Getter;
++import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
++    private List<String> colors(final List<String> strings) {
++        for (int i = 0; i < strings.size(); i++) {
++            strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
++        }
++
++        return strings;
++    }
++
++    @Getter
++    private boolean customMotdEnabled = false;
++    private List<String> customMotdMotds = Arrays.asList(new String[] { "&eDefault &cFlameCord&e custom motd!\n&eChange me in &cflamecord.yml&e file!" });
++
++    public String getRandomMotd() {
++        final Random random = new Random();
++
++        return customMotdMotds.get(random.nextInt(customMotdMotds.size()));
++    }
++
+     @Getter
+     private boolean loggerInitialhandler = false;
+     @Getter
+@@ -44,6 +65,9 @@ public class FlameCordConfiguration {
+                 configuration = configurationProvider.load(configurationFile);
+             }
+ 
++            this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
++            this.customMotdMotds = colors(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
++
+             this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
+             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
+             this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 5fd105410..c51aeb445 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -254,7 +254,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
+ 
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+-        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
++        // FlameCord - Custom motd
++        final String listenerMotd = FlameCord.getInstance().getFlameCordConfiguration().isCustomMotdEnabled() ? FlameCord.getInstance().getFlameCordConfiguration().getRandomMotd() : listener.getMotd();
++        final String motd = ( forced != null ) ? forced.getMotd() : listenerMotd;
+         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+ 
+         Callback<ServerPing> pingBack = new Callback<ServerPing>()
+-- 
+2.32.0.windows.1
+
