@@ -1,4 +1,4 @@
-From dee5fc50a694b5251e2f6e2e6f25ce1cefb0ec65 Mon Sep 17 00:00:00 2001
+From 6e800ce464c39da6b513e08f7227b380a161f80a Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -303,7 +303,7 @@ index bf6f85386..fa0b59c27 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1e01dea51..5e1cca9ae 100644
+index 7bc9b1b47..b4f9e3a7d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -166,6 +166,9 @@ public class ServerConnector extends PacketHandler
@@ -379,7 +379,7 @@ index 3503c089d..283b3134f 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 285433467..8d6f9d3ae 100644
+index 89a6d14a9..224146868 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -11,6 +11,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
@@ -391,10 +391,10 @@ index 285433467..8d6f9d3ae 100644
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a840bc700..4e23c996e 100644
+index a840bc700..f7455a7ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -63,6 +63,13 @@ public class PipelineUtils
+@@ -63,8 +63,16 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
@@ -407,7 +407,10 @@ index a840bc700..4e23c996e 100644
 +
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
++                FlameCord.getInstance().getFirewallManager().addFirewalled( remoteAddress ); // FlameCord - Firewall throttled connections
                  ch.close();
+                 return;
+             }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 index b3bdfd05e..49d53f177 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
