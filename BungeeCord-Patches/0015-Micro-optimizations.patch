@@ -1,0 +1,47 @@
+From d30c8c138f1e6d73fbe4bc586b1bd523a45a7ae7 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Tue, 19 Jan 2016 15:13:29 -0700
+Subject: [PATCH] Micro-optimizations
+
+- PluginManager.dispatchCommand() avoids regex while splitting commands. Java 7 introduced an optimized String.split() that should be used instead (affects command dispatch).
+- Don't attempt to format arguments when there are none provided
+- Don't create a data input stream for every plugin message we get from servers
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index dddc14d8..7227f268 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -559,7 +559,9 @@ public class BungeeCord extends ProxyServer
+         String translation = "<translation '" + name + "' missing>";
+         try
+         {
+-            translation = MessageFormat.format( customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name ), args );
++            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
++
++            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
+         } catch ( MissingResourceException ex )
+         {
+         }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index abad8e3d..d9facc62 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -251,7 +251,6 @@ public class DownstreamBridge extends PacketHandler
+     @SuppressWarnings("checkstyle:avoidnestedblocks")
+     public void handle(PluginMessage pluginMessage) throws Exception
+     {
+-        DataInput in = pluginMessage.getStream();
+         PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
+ 
+         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
+@@ -278,6 +277,7 @@ public class DownstreamBridge extends PacketHandler
+ 
+         if ( pluginMessage.getTag().equals( "BungeeCord" ) )
+         {
++            DataInput in = pluginMessage.getStream();
+             ByteArrayDataOutput out = ByteStreams.newDataOutput();
+             String subChannel = in.readUTF();
+ 
+-- 
+2.30.1 (Apple Git-130)
+
