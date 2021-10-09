@@ -1,0 +1,111 @@
+From b5bfb337c5c2ecd316ecdac721be5767e7ab3aac Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Thu, 14 Mar 2019 07:44:06 +0000
+Subject: [PATCH] Add ProxyDefineCommandsEvent
+
+provides an event to allow plugins to intercept tab completions
+sent to the client
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyDefineCommandsEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyDefineCommandsEvent.java
+new file mode 100644
+index 00000000..1fd4fc90
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyDefineCommandsEvent.java
+@@ -0,0 +1,41 @@
++package io.github.waterfallmc.waterfall.event;
++
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.connection.Connection;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.TargetedEvent;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Event;
++
++import java.util.Map;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++
++/**
++ * Called when the proxy intercepts the command packet
++ * allowing for plugins to prevent commands being added
++ * to the clients which might not be wanted.
++ *
++ *
++ * <i>Plugin developers, please implement {@link Command#hasPermission(CommandSender)}
++ * properly in favor of this event.</i>
++ */
++@Data
++@ToString(callSuper = true)
++@EqualsAndHashCode(callSuper = true)
++public class ProxyDefineCommandsEvent extends TargetedEvent {
++
++
++    /**
++     * The map of commands to be sent to the player
++     */
++    private final Map<String, Command> commands;
++
++    public ProxyDefineCommandsEvent(Connection sender, Connection receiver, Map<String, Command> commands) {
++        super(sender, receiver);
++        this.commands = commands;
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 9f7dd038..4c70fc90 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -12,7 +12,8 @@ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
+ import com.mojang.brigadier.suggestion.Suggestions;
+ import com.mojang.brigadier.tree.LiteralCommandNode;
+-import java.util.Objects; // Waterfall
++
++import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ import io.netty.buffer.Unpooled;
+@@ -20,8 +21,10 @@ import io.netty.channel.unix.DomainSocketAddress;
+ import java.io.DataInput;
+ import java.net.InetSocketAddress;
+ import java.util.ArrayList;
++import java.util.HashMap; // Waterfall
+ import java.util.List;
+ import java.util.Map;
++import java.util.Objects; // Waterfall
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.ServerConnection.KeepAliveData;
+@@ -700,9 +703,25 @@ public class DownstreamBridge extends PacketHandler
+     {
+         boolean modified = false;
+ 
+-        for ( Map.Entry<String, Command> command : bungee.getPluginManager().getCommands() )
++        // Waterfall start
++        Map<String, Command> commandMap = new HashMap<>();
++        for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
++            if ( !bungee.getDisabledCommands().contains( commandEntry.getKey() )
++                    && commands.getRoot().getChild( commandEntry.getKey() ) == null
++                    && commandEntry.getValue().hasPermission( this.con ) ) {
++
++                commandMap.put( commandEntry.getKey(), commandEntry.getValue() );
++            }
++        }
++
++        ProxyDefineCommandsEvent event = new ProxyDefineCommandsEvent( this.server, this.con, commandMap );
++        bungee.getPluginManager().callEvent( event );
++
++        for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
+         {
+-            if ( !bungee.getDisabledCommands().contains( command.getKey() ) && commands.getRoot().getChild( command.getKey() ) == null && command.getValue().hasPermission( con ) )
++            //noinspection ConstantConditions
++            if ( true ) // Moved up
++            // Waterfall end
+             {
+                 LiteralCommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() )
+                         .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
+-- 
+2.30.1 (Apple Git-130)
+

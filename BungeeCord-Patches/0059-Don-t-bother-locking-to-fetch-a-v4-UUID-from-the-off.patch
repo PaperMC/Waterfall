@@ -1,0 +1,26 @@
+From fc0f551fca8e045d1f1b4ade8c4358b0215abbb9 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Fri, 9 Jul 2021 13:20:36 +0100
+Subject: [PATCH] Don't bother locking to fetch a v4 UUID from the offline
+ UUIDs map
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index c7b0ab25..07d74c67 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -613,6 +613,11 @@ public class BungeeCord extends ProxyServer
+ 
+     public UserConnection getPlayerByOfflineUUID(UUID name)
+     {
++        // Waterfall start - Skip lock if we get a v4 UUID, we're not gonna be in here
++        if (name != null && name.version() == 4) {
++            return null;
++        }
++        // Waterfall end
+         connectionLock.readLock().lock();
+         try
+         {
+-- 
+2.30.1 (Apple Git-130)
+

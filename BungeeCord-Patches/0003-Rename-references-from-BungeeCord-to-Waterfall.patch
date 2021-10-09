@@ -1,4 +1,4 @@
-From b0de2554f0190d95e95741474113e9665c7bbdfd Mon Sep 17 00:00:00 2001
+From 42faba74464b079a46f3c6703f3d189206fa2b23 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -18,7 +18,7 @@ index f1ccd4f6..d703d6d2 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f80c0486..998316c3 100644
+index c3bb3afa..ee4d5282 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -187,7 +187,7 @@ public class BungeeCord extends ProxyServer
@@ -28,9 +28,9 @@ index f80c0486..998316c3 100644
 -        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use BungeeCord in directory with ! in path." );
 +        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
  
-         System.setSecurityManager( new BungeeSecurityManager() );
- 
-@@ -530,7 +530,7 @@ public class BungeeCord extends ProxyServer
+         try
+         {
+@@ -528,7 +528,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -88,7 +88,7 @@ index efe048c9..720d0c3b 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index c0620445..e65558ad 100644
+index 2691b8b8..8c25b711 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -216,7 +216,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -101,5 +101,5 @@ index c0620445..e65558ad 100644
              SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.31.1.windows.1
+2.30.1 (Apple Git-130)
 

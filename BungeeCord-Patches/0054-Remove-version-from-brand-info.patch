@@ -1,0 +1,22 @@
+From a61ec46ee3caa4bd08da67acc4bc62a19541d7a2 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sat, 20 Jun 2020 18:21:17 +0100
+Subject: [PATCH] Remove version from brand info
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index ef6214b1..d3650ff8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -294,7 +294,7 @@ public class DownstreamBridge extends PacketHandler
+             Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
+ 
+             brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
++            DefinedPacket.writeString( bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
+             pluginMessage.setData( brand );
+             brand.release();
+             // changes in the packet are ignored so we need to send it manually
+-- 
+2.30.1 (Apple Git-130)
+
