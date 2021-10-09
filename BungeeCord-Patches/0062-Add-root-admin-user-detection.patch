@@ -1,4 +1,4 @@
-From 763d9ab434a3fcf6dcf0ebd2218e55cbb22333e2 Mon Sep 17 00:00:00 2001
+From 796d9a15ab5cd8d25a282399aa949588050de081 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
 Date: Thu, 30 Sep 2021 16:59:18 +0200
 Subject: [PATCH] Add root/admin user detection
@@ -12,7 +12,7 @@ Co-authored-by: egg82 <eggys82@gmail.com>
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
 new file mode 100644
-index 00000000..1ec9fe05
+index 00000000..ecc6c4c1
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/ServerEnvironment.java
 @@ -0,0 +1,34 @@
@@ -23,32 +23,32 @@ index 00000000..1ec9fe05
 +import java.io.InputStreamReader;
 +
 +public class ServerEnvironment {
-+	private static final boolean RUNNING_AS_ROOT_OR_ADMIN;
++    private static final boolean RUNNING_AS_ROOT_OR_ADMIN;
 +
-+	static {
-+		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-+		boolean isAdmin = false;
-+		String[] command = isWindows ? new String[]{"reg", "query", "reg query \"HKU\\S-1-5-19\"" } : new String[]{"id", "-u" };
++    static {
++        boolean isWindows = System.getProperty("os.name").startsWith("Windows");
++        boolean isAdmin = false;
++        String[] command = isWindows ? new String[]{"reg", "query", "reg query \"HKU\\S-1-5-19\"" } : new String[]{"id", "-u" };
 +
-+		try {
-+			Process process = new ProcessBuilder(command).start();
-+			process.waitFor();
-+			if (isWindows) {
-+				isAdmin = process.exitValue() == 0;
-+			} else {
++        try {
++            Process process = new ProcessBuilder(command).start();
++            process.waitFor();
++            if (isWindows) {
++                isAdmin = process.exitValue() == 0;
++            } else {
 +				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-+				String uid = reader.readLine();
-+				isAdmin = uid.equals("0");
-+			}
-+		} catch (InterruptedException | IOException ignored) {
-+		}
++                String uid = reader.readLine();
++                isAdmin = uid.equals("0");
++            }
++        } catch (InterruptedException | IOException ignored) {
++        }
 +
-+		RUNNING_AS_ROOT_OR_ADMIN = isAdmin;
-+	}
++        RUNNING_AS_ROOT_OR_ADMIN = isAdmin;
++    }
 +
-+	public static boolean userIsRootOrAdmin() {
-+		return RUNNING_AS_ROOT_OR_ADMIN;
-+	}
++    public static boolean userIsRootOrAdmin() {
++        return RUNNING_AS_ROOT_OR_ADMIN;
++    }
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
