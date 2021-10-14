@@ -1,0 +1,199 @@
+From 4bd6ac47556d016ac1415c4d929107b8b7040f9b Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Mon, 25 Nov 2019 19:54:06 +0000
+Subject: [PATCH] Speed up some common exceptions
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java
+new file mode 100644
+index 00000000..11e103cb
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/FastException.java
+@@ -0,0 +1,19 @@
++package io.github.waterfallmc.waterfall.utils;
++
++// This is basically a copy of QuietException
++public class FastException extends RuntimeException {
++
++    public FastException(String message) {
++        super(message);
++    }
++
++    @Override
++    public synchronized Throwable initCause(Throwable cause) {
++        return this;
++    }
++
++    @Override
++    public synchronized Throwable fillInStackTrace() {
++        return this;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
+index 6c0ef4df..f20104a2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
+@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol;
+ 
+ public class BadPacketException extends RuntimeException
+ {
++    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
+ 
+     public BadPacketException(String message)
+     {
+@@ -12,4 +13,24 @@ public class BadPacketException extends RuntimeException
+     {
+         super( message, cause );
+     }
++
++    // Waterfall start
++    @Override
++    public Throwable initCause(Throwable cause)
++    {
++        if (PROCESS_TRACES) {
++            return super.initCause(cause);
++        }
++        return this;
++    }
++
++    @Override
++    public Throwable fillInStackTrace()
++    {
++        if (PROCESS_TRACES) {
++            return super.fillInStackTrace();
++        }
++        return this;
++    }
++    // Waterfall end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index ab9519f9..40281aa4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -19,6 +19,9 @@ import se.llbit.nbt.Tag;
+ public abstract class DefinedPacket
+ {
+ 
++    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
++    private static final BadPacketException OVERSIZED_VAR_INT_EXCEPTION = new BadPacketException( "VarInt too big" );
++    private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
+     public static void writeString(String s, ByteBuf buf)
+     {
+         if ( s.length() > Short.MAX_VALUE )
+@@ -150,13 +153,18 @@ public abstract class DefinedPacket
+         byte in;
+         while ( true )
+         {
++            // Waterfall start
++            if (input.readableBytes() == 0) {
++                throw PROCESS_TRACES ? new BadPacketException("No more bytes reading varint") : NO_MORE_BYTES_EXCEPTION;
++            }
++            // Waterfall end
+             in = input.readByte();
+ 
+             out |= ( in & 0x7F ) << ( bytes++ * 7 );
+ 
+             if ( bytes > maxBytes )
+             {
+-                throw new RuntimeException( "VarInt too big" );
++                throw PROCESS_TRACES ? new BadPacketException( "VarInt too big" ) : OVERSIZED_VAR_INT_EXCEPTION;
+             }
+ 
+             if ( ( in & 0x80 ) != 0x80 )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java b/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java
+new file mode 100644
+index 00000000..2583aa2c
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/FastDecoderException.java
+@@ -0,0 +1,26 @@
++package net.md_5.bungee.protocol;
++
++import io.netty.handler.codec.DecoderException;
++
++public class FastDecoderException extends DecoderException {
++
++    public FastDecoderException(String message, Throwable cause) {
++        super(message, cause);
++    }
++
++    public FastDecoderException(String message) {
++        super(message);
++    }
++
++    @Override
++    public Throwable initCause(Throwable cause)
++    {
++        return this;
++    }
++
++    @Override
++    public Throwable fillInStackTrace()
++    {
++        return this;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 8b7e0708..37d28c01 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -78,7 +78,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
+-            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e);
++            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
+         } finally
+         {
+             if ( slice != null )
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 80a66a2b..d07f60c9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -12,6 +12,8 @@ import java.util.List;
+ import java.util.UUID;
+ import java.util.logging.Level;
+ import javax.crypto.SecretKey;
++import javax.crypto.spec.SecretKeySpec;
++
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -420,6 +422,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+ 
+         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
++        // Waterfall start
++        if (sharedKey instanceof SecretKeySpec) {
++            if (sharedKey.getEncoded().length != 16) {
++             this.ch.close();
++             return;
++            }
++        }
++        // Waterfall end
+         BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
+         ch.addBefore( PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder( decrypt ) );
+         BungeeCipher encrypt = EncryptionUtil.getCipher( true, sharedKey );
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index ac99d02c..0c1ecfb8 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -32,6 +32,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+     /*========================================================================*/
+     private final Random random = new Random();
+     private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite( 30, TimeUnit.SECONDS ).build();
++    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
+ 
+     private void writeShort(ByteBuf buf, int s)
+     {
+@@ -96,7 +97,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+             QuerySession session = sessions.getIfPresent( msg.sender().getAddress() );
+             if ( session == null || session.getToken() != challengeToken )
+             {
+-                throw new IllegalStateException( "No session!" );
++                throw cachedNoSessionException; // Waterfall
+             }
+ 
+             // Waterfall start
+-- 
+2.30.1 (Apple Git-130)
+

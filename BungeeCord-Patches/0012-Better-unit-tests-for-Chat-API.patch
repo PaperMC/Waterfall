@@ -1,0 +1,57 @@
+From 1ea8b846f0c0dab4d0a9d526e8bf7052fc3b8bdc Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Thu, 19 May 2016 17:36:31 -0600
+Subject: [PATCH] Better unit tests for Chat API
+
+
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+index 20c62f1d..e8d65a54 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+@@ -450,6 +450,26 @@ public class ComponentsTest
+         Assert.assertEquals( eventRetention[1].getClickEvent(), testClickEvent );
+     }
+ 
++    @Test
++    public void testBuilderSpecialFormatting()
++    {
++        BaseComponent[] components = new ComponentBuilder( "Hello " )
++                .bold(true).underlined(true).italic(true).strikethrough(true).obfuscated(true)
++                .append("World").underlined(false).strikethrough(false).create();
++
++        Assert.assertTrue( components[0].isBold() );
++        Assert.assertTrue( components[0].isUnderlined() );
++        Assert.assertTrue( components[0].isItalic() );
++        Assert.assertTrue( components[0].isStrikethrough() );
++        Assert.assertTrue( components[0].isObfuscated() );
++
++        Assert.assertTrue( components[1].isBold() );
++        Assert.assertFalse( components[1].isUnderlined() );
++        Assert.assertTrue( components[1].isItalic() );
++        Assert.assertFalse( components[1].isStrikethrough() );
++        Assert.assertTrue( components[1].isObfuscated() );
++    }
++
+     @Test(expected = IllegalArgumentException.class)
+     public void testLoopSimple()
+     {
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+index 9e37eed0..a25a01b8 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+@@ -25,4 +25,12 @@ public class TranslatableComponentTest
+         Assert.assertEquals( "Test string with a placeholder", TextComponent.toPlainText( baseComponents ) );
+         Assert.assertEquals( "§fTest string with §fa§f placeholder", TextComponent.toLegacyText( baseComponents ) );
+     }
++
++    @Test
++    public void testEscapedPercentInPlainText()
++    {
++        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
++        Assert.assertEquals( "Test string with % sign", testComponent.toPlainText() );
++        Assert.assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
++    }
+ }
+-- 
+2.30.1 (Apple Git-130)
+

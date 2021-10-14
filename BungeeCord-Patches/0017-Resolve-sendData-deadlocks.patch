@@ -1,0 +1,47 @@
+From 1371c7a0ef5af1684661cee2af8c8fbe8c761b36 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Fri, 12 Feb 2016 23:55:53 -0500
+Subject: [PATCH] Resolve sendData() deadlocks
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+index 4bb0f68f..9d581d9a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+@@ -110,19 +110,22 @@ public class BungeeServerInfo implements ServerInfo
+         Preconditions.checkNotNull( channel, "channel" );
+         Preconditions.checkNotNull( data, "data" );
+ 
+-        synchronized ( packetQueue )
+-        {
+-            Server server = ( players.isEmpty() ) ? null : players.iterator().next().getServer();
+-            if ( server != null )
+-            {
+-                server.sendData( channel, data );
+-                return true;
+-            } else if ( queue )
+-            {
+-                packetQueue.add( new PluginMessage( channel, data, false ) );
++        Server server;
++
++        synchronized (players) {
++            server = players.isEmpty() ? null : players.iterator().next().getServer();
++        }
++
++        if (server != null) {
++            server.sendData(channel, data);
++            return true;
++        } else if (queue) {
++            synchronized (packetQueue) {
++                packetQueue.add(new PluginMessage(channel, data, false));
+             }
+-            return false;
+         }
++
++        return false;
+     }
+ 
+     private long lastPing;
+-- 
+2.30.1 (Apple Git-130)
+

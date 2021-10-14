@@ -1,0 +1,32 @@
+From fac41e3a38b4f6285700c2527da3e9bbbdb5087e Mon Sep 17 00:00:00 2001
+From: Mark Vainomaa <mikroskeem@mikroskeem.eu>
+Date: Sun, 14 Apr 2019 19:15:00 +0300
+Subject: [PATCH] Add callEvent() shortcut to Event
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
+index e2e01ecb..25ec1bd8 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
+@@ -12,4 +12,18 @@ public abstract class Event
+     public void postCall()
+     {
+     }
++    // Waterfall start - Add callEvent() shortcut, borrowed from PaperMC/Paper
++    /**
++     * Calls the event and tests if cancelled.
++     *
++     * @return false if event was cancelled, if cancellable. otherwise true.
++     */
++    public final boolean callEvent() {
++        net.md_5.bungee.api.ProxyServer.getInstance().getPluginManager().callEvent(this);
++        if (this instanceof Cancellable) {
++            return !((Cancellable) this).isCancelled();
++        }
++        return true;
++    }
++    // Waterfall end
+ }
+-- 
+2.30.1 (Apple Git-130)
+
