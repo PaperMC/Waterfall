@@ -1,11 +1,11 @@
-From 6030c4824ddd3b9a496b3ad1dd7acb05799158df Mon Sep 17 00:00:00 2001
+From 30cf3c288a1222d0bc674b91fb9c4aac98734dd6 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 13:40:39 -0300
 Subject: [PATCH] FlameCord message configuration
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 2e317533e..8957c79ac 100644
+index 2e317533..8957c79a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -35,10 +35,10 @@ index 2e317533e..8957c79ac 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 new file mode 100644
-index 000000000..028b6d4cf
+index 00000000..a32522fe
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -0,0 +1,123 @@
+@@ -0,0 +1,121 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -96,7 +96,6 @@ index 000000000..028b6d4cf
 +			setIfUnexistant("outdated_server", "Outdated server! I'm still on {0}", configuration);
 +			setIfUnexistant("proxy_full", "Server is full!", configuration);
 +			setIfUnexistant("restart", "[Proxy] Proxy restarting.", configuration);
-+			setIfUnexistant("server_kick", "[Kicked] ", configuration);
 +			setIfUnexistant("server_list", "&6You may connect to the following servers at this time: ", configuration);
 +			setIfUnexistant("server_went_down",
 +					"&cThe server you were previously on went down, you have been connected to a fallback server",
@@ -117,7 +116,6 @@ index 000000000..028b6d4cf
 +			setIfUnexistant("send_cmd_usage",
 +					"&cNot enough arguments, usage: /send <server|player|all|current> <target>", configuration);
 +			setIfUnexistant("player_only", "&cOnly in game players can use this command", configuration);
-+			setIfUnexistant("successfully_summoned", "&aSuccessfully summoned player(s)", configuration);
 +			setIfUnexistant("you_got_summoned", "&6Summoned to {0} by {1}", configuration);
 +			setIfUnexistant("command_perms_groups", "&6You have the following groups: {0}", configuration);
 +			setIfUnexistant("command_perms_permission", "&9- {0}", configuration);
@@ -164,7 +162,7 @@ index 000000000..028b6d4cf
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index a323598eb..bf6f85386 100644
+index a323598e..bf6f8538 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -211,10 +209,10 @@ index a323598eb..bf6f85386 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e9061e6a8..e3604c0f6 100644
+index 536c6052..2327e5e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -596,14 +596,8 @@ public class BungeeCord extends ProxyServer
+@@ -597,14 +597,8 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getTranslation(String name, Object... args)
      {
@@ -232,5 +230,5 @@ index e9061e6a8..e3604c0f6 100644
  
      @Override
 -- 
-2.32.0.windows.1
+2.33.0.windows.2
 

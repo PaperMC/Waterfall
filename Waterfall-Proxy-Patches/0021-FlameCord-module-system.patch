@@ -1,11 +1,11 @@
-From 5515f767e5231b29a0f30d7754f3fee84a6f5e97 Mon Sep 17 00:00:00 2001
+From b7dab4ca2f05f09e2e48856bdf5c402d00bd06ea Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 252612a31..2e317533e 100644
+index 252612a3..2e317533 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -35,7 +35,7 @@ index 252612a31..2e317533e 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
-index 000000000..e82c4844b
+index 00000000..e82c4844
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 @@ -0,0 +1,94 @@
@@ -134,18 +134,33 @@ index 000000000..e82c4844b
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2a702d141..e9061e6a8 100644
+index 719e73e4..536c6052 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
+@@ -11,6 +11,8 @@ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
  
  import dev._2lstudios.flamecord.FlameCord;
- import dev._2lstudios.flamecord.commands.FlameCordCommand;
++import dev._2lstudios.flamecord.commands.FlameCordCommand;
 +import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
-@@ -286,9 +287,10 @@ public class BungeeCord extends ProxyServer
+@@ -88,6 +90,13 @@ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.module.ModuleManager;
++import net.md_5.bungee.module.cmd.alert.CommandAlert;
++import net.md_5.bungee.module.cmd.alert.CommandAlertRaw;
++import net.md_5.bungee.module.cmd.find.CommandFind;
++import net.md_5.bungee.module.cmd.list.CommandList;
++import net.md_5.bungee.module.cmd.send.CommandSend;
++import net.md_5.bungee.module.cmd.server.CommandServer;
++import net.md_5.bungee.module.reconnect.yaml.YamlReconnectHandler;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -279,9 +288,10 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  
@@ -158,7 +173,7 @@ index 2a702d141..e9061e6a8 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -321,6 +323,7 @@ public class BungeeCord extends ProxyServer
+@@ -314,6 +324,7 @@ public class BungeeCord extends ProxyServer
              connectionThrottle = new ConnectionThrottle( config.getThrottle(), config.getThrottleLimit() );
          }
          startListeners();
@@ -166,7 +181,7 @@ index 2a702d141..e9061e6a8 100644
  
          saveThread.scheduleAtFixedRate( new TimerTask()
          {
-@@ -838,4 +841,52 @@ public class BungeeCord extends ProxyServer
+@@ -831,4 +842,53 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -192,6 +207,7 @@ index 2a702d141..e9061e6a8 100644
 +        // Modules Commands
 +        if (modulesConfiguration.alertEnabled) {
 +            pluginManager.registerCommand(null, new CommandAlert());
++            pluginManager.registerCommand(null, new CommandAlertRaw());
 +        }
 +        if (modulesConfiguration.findEnabled) {
 +            pluginManager.registerCommand(null, new CommandFind());
@@ -220,5 +236,5 @@ index 2a702d141..e9061e6a8 100644
 +    }
  }
 -- 
-2.32.0.windows.1
+2.33.0.windows.2
 
