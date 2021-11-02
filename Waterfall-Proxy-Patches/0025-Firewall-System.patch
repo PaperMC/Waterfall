@@ -1,11 +1,11 @@
-From 6e800ce464c39da6b513e08f7227b380a161f80a Mon Sep 17 00:00:00 2001
+From 4448ba222341e511e7b2add8e6c10c315d3d6a73 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 8957c79ac..fd889644f 100644
+index 8957c79a..fd889644 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -6,6 +6,7 @@ import java.util.logging.Logger;
@@ -64,7 +64,7 @@ index 8957c79ac..fd889644f 100644
  }
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 81ded2243..8bb61ac11 100644
+index 81ded224..8bb61ac1 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
@@ -96,10 +96,10 @@ index 81ded2243..8bb61ac11 100644
                  configurationProvider.save(configuration, configurationFile);
              }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 028b6d4cf..560446318 100644
+index a32522fe..72d48d66 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -84,9 +84,17 @@ public class MessagesConfiguration {
+@@ -82,9 +82,17 @@ public class MessagesConfiguration {
  			setIfUnexistant("illegal_chat_characters", "&cIllegal characters in chat ({0})", configuration);
  
  			// FlameCord
@@ -120,7 +120,7 @@ index 028b6d4cf..560446318 100644
  
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 new file mode 100644
-index 000000000..dfb5c6d30
+index 00000000..dfb5c6d3
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/firewall/FirewallManager.java
 @@ -0,0 +1,120 @@
@@ -246,7 +246,7 @@ index 000000000..dfb5c6d30
 +}
 \ No newline at end of file
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index c03e1b513..7f4b5b45a 100644
+index c03e1b51..7f4b5b45 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -46,8 +46,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -275,7 +275,7 @@ index c03e1b513..7f4b5b45a 100644
          } finally
          {
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index bf6f85386..fa0b59c27 100644
+index bf6f8538..fa0b59c2 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -5,6 +5,7 @@ import java.util.HashSet;
@@ -303,7 +303,7 @@ index bf6f85386..fa0b59c27 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7bc9b1b47..b4f9e3a7d 100644
+index 3b1e4adc..ab9d3ca8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -166,6 +166,9 @@ public class ServerConnector extends PacketHandler
@@ -317,7 +317,7 @@ index 7bc9b1b47..b4f9e3a7d 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 447940111..8f142f488 100644
+index 44794011..8f142f48 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -156,6 +156,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -357,7 +357,7 @@ index 447940111..8f142f488 100644
  
          int limit = BungeeCord.getInstance().config.getPlayerLimit();
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 3503c089d..283b3134f 100644
+index 3503c089..283b3134 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
@@ -379,7 +379,7 @@ index 3503c089d..283b3134f 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 89a6d14a9..224146868 100644
+index 89a6d14a..22414686 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -11,6 +11,7 @@ import io.netty.handler.codec.haproxy.HAProxyMessage;
@@ -391,7 +391,7 @@ index 89a6d14a9..224146868 100644
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a840bc700..f7455a7ee 100644
+index a840bc70..f7455a7e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,8 +63,16 @@ public class PipelineUtils
@@ -412,7 +412,7 @@ index a840bc700..f7455a7ee 100644
                  return;
              }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index b3bdfd05e..49d53f177 100644
+index b3bdfd05..49d53f17 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee.query;
@@ -445,5 +445,5 @@ index b3bdfd05e..49d53f177 100644
                  throw new IllegalStateException( "Invalid data request packet" );
              }
 -- 
-2.32.0.windows.1
+2.33.0.windows.2
 
