@@ -1,4 +1,4 @@
-From 78af2898f522c9819132e8fac9bed8d067a61b01 Mon Sep 17 00:00:00 2001
+From 441be0a40b0298e8e5f2c66a337d365f9ec1c065 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -73,7 +73,7 @@ index 741ebfde..91743f01 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 41101a6e..4ed24626 100644
+index 253c3287..079ae5a0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -40,6 +40,8 @@ public class UpstreamBridge extends PacketHandler
@@ -104,8 +104,8 @@ index 41101a6e..4ed24626 100644
 +
 +        // Waterfall end - tab limiter
          List<String> suggestions = new ArrayList<>();
+         boolean isRegisteredCommand = false;
  
-         if ( tabComplete.getCursor().startsWith( "/" ) )
 -- 
 2.30.1 (Apple Git-130)
 
