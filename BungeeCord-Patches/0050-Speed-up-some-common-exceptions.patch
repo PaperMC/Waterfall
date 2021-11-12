@@ -1,4 +1,4 @@
-From 4bd6ac47556d016ac1415c4d929107b8b7040f9b Mon Sep 17 00:00:00 2001
+From 8bcafa4ef75dec34e916726104eae43f65bd6df3 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -146,10 +146,10 @@ index 8b7e0708..37d28c01 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 80a66a2b..d07f60c9 100644
+index b634d256..2d7101ff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -12,6 +12,8 @@ import java.util.List;
+@@ -14,6 +14,8 @@ import java.util.Set;
  import java.util.UUID;
  import java.util.logging.Level;
  import javax.crypto.SecretKey;
@@ -158,7 +158,7 @@ index 80a66a2b..d07f60c9 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -420,6 +422,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -419,6 +421,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.30.1 (Apple Git-130)
+2.33.0
 

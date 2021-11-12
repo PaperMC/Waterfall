@@ -1,4 +1,4 @@
-From 1a5e92a62801a3c7ee5093b73ae1d963579b8472 Mon Sep 17 00:00:00 2001
+From d465f043c5f09769e7e2cacb6f450ec496eeb62e Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -6,19 +6,19 @@ Subject: [PATCH] Don't access a ByteBuf's underlying array
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index af16ead8..c652ffb4 100644
+index 6f9fc6c3..4f3a8c72 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-@@ -4,6 +4,7 @@ import com.google.common.base.Function;
+@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+ import com.google.common.base.Function;
  import com.google.common.base.Preconditions;
- import com.google.common.base.Predicate;
  import io.netty.buffer.ByteBuf;
 +import io.netty.buffer.ByteBufUtil; // Waterfall
  import java.io.ByteArrayInputStream;
  import java.io.DataInput;
  import java.io.DataInputStream;
-@@ -56,10 +57,23 @@ public class PluginMessage extends DefinedPacket
-             return ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) || input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) ) && input.getData().length < Byte.MAX_VALUE;
+@@ -47,10 +48,23 @@ public class PluginMessage extends DefinedPacket
+             return "legacy:" + tag.toLowerCase( Locale.ROOT );
          }
      };
 -    //
@@ -43,10 +43,10 @@ index af16ead8..c652ffb4 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7b705d99..b4661cfb 100644
+index 7c082d46..5c74d5f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -240,7 +240,7 @@ public class ServerConnector extends PacketHandler
+@@ -249,7 +249,7 @@ public class ServerConnector extends PacketHandler
              {
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                  DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -86,5 +86,5 @@ index 1533eadc..a715ec8a 100644
      {
          @Override
 -- 
-2.30.1 (Apple Git-130)
+2.33.0
 
