@@ -1,4 +1,4 @@
-From 38e0957a49bfe1731d9b2373b8088629b0e8190f Mon Sep 17 00:00:00 2001
+From cc0e0d5dba2796f0ab090d54f600c578f93946de Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,11 +57,11 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9b44f6a5..134d4356 100644
+index 5595278b..9e74d158 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -231,7 +231,7 @@ public class ServerConnector extends PacketHandler
-             ch.write( message );
+@@ -240,7 +240,7 @@ public class ServerConnector extends PacketHandler
+             ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
 -        if ( user.getSettings() != null )
@@ -69,7 +69,7 @@ index 9b44f6a5..134d4356 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -284,6 +284,7 @@ public class ServerConnector extends PacketHandler
+@@ -293,6 +293,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -77,7 +77,7 @@ index 9b44f6a5..134d4356 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -296,6 +297,7 @@ public class ServerConnector extends PacketHandler
+@@ -305,6 +306,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -85,7 +85,7 @@ index 9b44f6a5..134d4356 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -314,12 +316,35 @@ public class ServerConnector extends PacketHandler
+@@ -323,12 +325,35 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.30.1 (Apple Git-130)
+2.33.0
 
