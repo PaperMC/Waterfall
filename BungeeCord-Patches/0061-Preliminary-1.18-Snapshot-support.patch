@@ -1,19 +1,19 @@
-From 6703a6b52e3fb04b8a25759fb8ea3dd367b3c7af Mon Sep 17 00:00:00 2001
+From 2a67e8a988e73c7ccacdd91a583d0e8225f4d8d6 Mon Sep 17 00:00:00 2001
 From: LemonCaramel <admin@caramel.moe>
 Date: Fri, 17 Sep 2021 03:59:41 +0900
 Subject: [PATCH] Preliminary 1.18 Snapshot support
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index bb37ba04..80661421 100644
+index e4c970e1..84d3e2ab 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -36,7 +36,7 @@ public class ProtocolConstants
      public static final int MINECRAFT_1_16_4 = 754;
      public static final int MINECRAFT_1_17 = 755;
      public static final int MINECRAFT_1_17_1 = 756;
--    public static final int MINECRAFT_1_18 = 1073741868;
-+    public static final int MINECRAFT_1_18 = (1 << 30) | 49;
+-    public static final int MINECRAFT_1_18 = 1073741873;
++    public static final int MINECRAFT_1_18 = (1 << 30) | 49; // 1.18 pre-1 / 757
      public static final List<String> SUPPORTED_VERSIONS;
      public static final List<Integer> SUPPORTED_VERSION_IDS;
  
@@ -41,40 +41,6 @@ index bb37ba04..80661421 100644
          {
              supportedVersions.add( "1.18.x" );
              supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_18 );
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-index 29440533..c8676eb5 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientSettings.java
-@@ -24,6 +24,7 @@ public class ClientSettings extends DefinedPacket
-     private byte skinParts;
-     private int mainHand;
-     private boolean disableTextFiltering;
-+    private boolean allowsListing;
- 
-     @Override
-     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-@@ -41,6 +42,10 @@ public class ClientSettings extends DefinedPacket
-         {
-             disableTextFiltering = buf.readBoolean();
-         }
-+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_18 )
-+        {
-+            allowsListing = buf.readBoolean();
-+        }
-     }
- 
-     @Override
-@@ -65,6 +70,10 @@ public class ClientSettings extends DefinedPacket
-         {
-             buf.writeBoolean( disableTextFiltering );
-         }
-+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_18 )
-+        {
-+            buf.writeBoolean( allowsListing );
-+        }
-     }
- 
-     @Override
 -- 
 2.28.0.windows.1
 
