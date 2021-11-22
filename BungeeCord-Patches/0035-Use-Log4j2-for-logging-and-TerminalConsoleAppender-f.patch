@@ -1,4 +1,4 @@
-From e3eed9c5a14fee7d77e7c09be190cbc83cd4fbc3 Mon Sep 17 00:00:00 2001
+From 86267d95b32f5968d389e0e34f388831d1b5e994 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -39,7 +39,7 @@ index b3a70840..00ce099c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..f12968bc
+index 00000000..503836e0
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -63,7 +63,7 @@ index 00000000..f12968bc
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
-+        <log4j2.version>2.14.0</log4j2.version>
++        <log4j2.version>2.14.1</log4j2.version>
 +    </properties>
 +
 +    <dependencies>
@@ -86,7 +86,7 @@ index 00000000..f12968bc
 +        <dependency>
 +            <groupId>com.lmax</groupId>
 +            <artifactId>disruptor</artifactId>
-+            <version>3.4.2</version>
++            <version>3.4.4</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +    </dependencies>
