@@ -1,4 +1,4 @@
-From faa6ff1b3610328f224270cdc6db17d4505328eb Mon Sep 17 00:00:00 2001
+From 0e67fd377b8bb24b24252fb426beb45938d6b008 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index a8ed49ed..adc91449 100644
+index f291fb2e..65ede623 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,42 @@
@@ -175,7 +175,7 @@ index 0c244852..0ad5dd16 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index a6f34c99..011d3ce7 100644
+index 318ea6ef..2caffc27 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,19 @@
@@ -483,7 +483,7 @@ index aa62ce2a..1eff2c93 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 311db811..d90a79fb 100644
+index c638ef32..a9070b46 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -579,8 +579,8 @@ index 311db811..d90a79fb 100644
 +        </snapshotRepository>
      </distributionManagement>
  
-     <properties>
-@@ -124,12 +139,21 @@
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+@@ -139,12 +154,21 @@
                      </execution>
                  </executions>
              </plugin>
@@ -602,7 +602,7 @@ index 311db811..d90a79fb 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.1.2</version>
-@@ -154,6 +178,7 @@
+@@ -169,6 +193,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -610,7 +610,7 @@ index 311db811..d90a79fb 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -290,6 +315,7 @@
+@@ -305,6 +330,7 @@
                                      <!-- lombok does not add @return or @param which causes warnings, so ignore -->
                                      <doclint>none</doclint>
                                      <sourcepath>${project.build.directory}/delombok</sourcepath>
@@ -618,7 +618,7 @@ index 311db811..d90a79fb 100644
                                  </configuration>
                              </execution>
                          </executions>
-@@ -321,5 +347,88 @@
+@@ -336,5 +362,88 @@
                  </plugins>
              </build>
          </profile>
@@ -708,7 +708,7 @@ index 311db811..d90a79fb 100644
      </profiles>
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index e7a492f6..a783d9b0 100644
+index 6e23170f..c62e0175 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,19 @@
@@ -735,9 +735,9 @@ index e7a492f6..a783d9b0 100644
 +    <name>Waterfall-Protocol</name>
 +    <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
  
-     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
-     <repositories>
-@@ -41,8 +41,8 @@
+     <dependencies>
+         <dependency>
+@@ -26,8 +26,8 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
