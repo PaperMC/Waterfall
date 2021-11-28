@@ -15,7 +15,7 @@ if [ ! -z "$bungee" ]; then
     logsuffix="$logsuffix\n\nBungeeCord Changes:\n$bungee"
     if [ -z "$updated" ]; then updated="BungeeCord"; else updated="$updated/BungeeCord"; fi
 fi
-disclaimer="Upstream has released updates that appears to apply and compile correctly.\nThis update has not been tested by PaperMC and as with ANY update, please do your own testing"
+disclaimer="Upstream has released updates that appear to apply and compile correctly.\nThis update has not been tested by PaperMC and as with ANY update, please do your own testing"
 
 if [ ! -z "$1" ]; then
     disclaimer="$@"
