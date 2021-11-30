@@ -15,7 +15,7 @@ if [ ! -z "$waterfall" ]; then
     logsuffix="$logsuffix\n\nWaterfall Changes:\n$waterfall"
     if [ -z "$updated" ]; then updated="Waterfall"; else updated="$updated/Waterfall"; fi
 fi
-disclaimer="Upstream has released updates that appears to apply and compile correctly.\nThis update has not been tested by 2LStudios and as with ANY update, please do your own testing"
+disclaimer="Upstream has released updates that appear to apply and compile correctly.\nThis update has not been tested by 2LStudios and as with ANY update, please do your own testing"
 
 if [ ! -z "$1" ]; then
     disclaimer="$@"

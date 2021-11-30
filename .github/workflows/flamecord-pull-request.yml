@@ -14,14 +14,14 @@ jobs:
     # latest version up to the moment.
     strategy:
       matrix:
-        java: [8, 11, 16]
+        java: [8, 11, 17]
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
       
     - name: Setup JAVA ${{ matrix.java }}
-      uses: actions/setup-java@v2.1.0
+      uses: actions/setup-java@v2
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt'
@@ -29,7 +29,7 @@ jobs:
     
     # The corresponding dependencies are stored in the cache to speed up the test.
     - name: Cache Maven Packages
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -43,7 +43,7 @@ jobs:
       
     # An artifact is generated in a compressed file according to each JDK build version.
     - name: Upload FlameCord
-      uses: actions/upload-artifact@v2.2.4
+      uses: actions/upload-artifact@v2
       with:
         name: FlameCord-JDK${{ matrix.java }}
         path: FlameCord-Proxy/bootstrap/target/FlameCord.jar
