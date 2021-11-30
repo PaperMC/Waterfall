@@ -1,4 +1,4 @@
-From 4448ba222341e511e7b2add8e6c10c315d3d6a73 Mon Sep 17 00:00:00 2001
+From 157518ad0bfc96a066af7348b3cf01fc3efd24bf Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 22:54:44 -0300
 Subject: [PATCH] Firewall System
@@ -303,10 +303,10 @@ index bf6f8538..fa0b59c2 100644
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 3b1e4adc..ab9d3ca8 100644
+index 3a41769a..f2805229 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -166,6 +166,9 @@ public class ServerConnector extends PacketHandler
+@@ -167,6 +167,9 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
@@ -317,10 +317,10 @@ index 3b1e4adc..ab9d3ca8 100644
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 44794011..8f142f48 100644
+index d637999f..f2957c01 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -156,6 +156,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -159,6 +159,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -330,7 +330,7 @@ index 44794011..8f142f48 100644
              throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
-@@ -400,6 +403,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -399,6 +402,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -340,7 +340,7 @@ index 44794011..8f142f48 100644
                  throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
          }
      }
-@@ -414,6 +420,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -413,6 +419,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              disconnect( bungee.getTranslation( "name_invalid" ) );
              return;
          }
@@ -445,5 +445,5 @@ index b3bdfd05..49d53f17 100644
                  throw new IllegalStateException( "Invalid data request packet" );
              }
 -- 
-2.33.0.windows.2
+2.32.0.windows.1
 

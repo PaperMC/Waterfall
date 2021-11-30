@@ -1,11 +1,11 @@
-From accb1c7028ac8f8eebbd8116d350d93cc0da1215 Mon Sep 17 00:00:00 2001
+From b5f7d605923205d2127b60c04a34f76db4259d55 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 08:56:43 -0500
 Subject: [PATCH] POM Changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 87c17046..f85369c5 100644
+index 9b29dfca..bfb96040 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -5,41 +5,41 @@
@@ -14,14 +14,14 @@ index 87c17046..f85369c5 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-api</artifactId>
 +    <artifactId>flamecord-api</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-API</name>
@@ -58,33 +58,31 @@ index 87c17046..f85369c5 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 7a9e8258..c302b3b1 100644
+index 00ce099c..5b0c348f 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-bootstrap</artifactId>
 +    <artifactId>flamecord-bootstrap</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Bootstrap</name>
--    <description>Java 1.6 loader for Waterfall</description>
 +    <name>FlameCord-Bootstrap</name>
-+    <description>Java 1.6 loader for FlameCord</description>
+     <description>Java 1.6 loader for Waterfall</description>
  
      <properties>
-         <maven.deploy.skip>true</maven.deploy.skip>
-@@ -30,14 +30,14 @@
+@@ -30,7 +30,7 @@
      <dependencies>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -93,70 +91,58 @@ index 7a9e8258..c302b3b1 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-     </dependencies>
- 
-     <build>
--        <finalName>Waterfall</finalName>
-+        <finalName>FlameCord</finalName>
-         <plugins>
-             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index cfa0e16e..8179e4ae 100644
+index 0ad5dd16..48c0029f 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-chat</artifactId>
 +    <artifactId>flamecord-chat</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Chat</name>
--    <description>Minecraft JSON chat API intended for use with Waterfall</description>
 +    <name>FlameCord-Chat</name>
-+    <description>Minecraft JSON chat API intended for use with FlameCord</description>
+     <description>Minecraft JSON chat API intended for use with Waterfall</description>
  
      <dependencies>
-         <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 6c122954..7edb1ba5 100644
+index 2caffc27..5a7c9993 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-config</artifactId>
 +    <artifactId>flamecord-config</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Config</name>
--    <description>Generic java configuration API intended for use with Waterfall</description>
 +    <name>FlameCord-Config</name>
-+    <description>Generic java configuration API intended for use with FlameCord</description>
+     <description>Generic java configuration API intended for use with Waterfall</description>
  
      <dependencies>
-         <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index 563783e9..52154fd0 100644
+index e2432463..ade69b60 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -5,16 +5,16 @@
@@ -165,48 +151,45 @@ index 563783e9..52154fd0 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-event</artifactId>
 +    <artifactId>flamecord-event</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Event</name>
--    <description>Generic java event dispatching API intended for use with Waterfall.</description>
 +    <name>FlameCord-Event</name>
-+    <description>Generic java event dispatching API intended for use with FlameCord.</description>
+     <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 3663d6d9..e3995bdd 100644
+index 465ebbf2..acf53b43 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log</artifactId>
 +    <artifactId>flamecord-log</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
--    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +    <name>FlameCord-Log</name>
-+    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with FlameCord and Minecraft related applications.</description>
+     <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
  
      <dependencies>
-         <dependency>
 @@ -27,7 +27,7 @@
          </dependency>
          <dependency>
@@ -217,59 +200,32 @@ index 3663d6d9..e3995bdd 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 7ec6e530..78d92f27 100644
+index 34740637..09fb31d5 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
-@@ -4,18 +4,18 @@
+@@ -4,17 +4,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log4j</artifactId>
 +    <artifactId>flamecord-log4j</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
--    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +    <name>FlameCord-Log</name>
-+    <description>Simplistic and performant Log4j2 based logger and console API designed for use with FlameCord and Minecraft related applications.</description>
+     <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.14.0</log4j2.version>
-@@ -50,5 +50,24 @@
-             <version>3.4.2</version>
-             <scope>runtime</scope>
-         </dependency>
-+        <!-- Console improvements -->
-+        <dependency>
-+            <groupId>net.minecrell</groupId>
-+            <artifactId>terminalconsoleappender</artifactId>
-+            <version>1.0.0</version>
-+        </dependency>
-+        <dependency>
-+            <groupId>net.java.dev.jna</groupId>
-+            <artifactId>jna</artifactId>
-+            <version>4.4.0</version>
-+            <scope>runtime</scope>
-+        </dependency>
-+
-+        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
-+            <artifactId>flamecord-chat</artifactId>
-+            <version>${project.version}</version>
-+            <scope>compile</scope>
-+        </dependency>
-     </dependencies>
- </project>
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
-index 11e990d9..1bfcf47e 100644
+index b41791f1..6b53066f 100644
 --- a/module/cmd-alert/pom.xml
 +++ b/module/cmd-alert/pom.xml
 @@ -5,13 +5,13 @@
@@ -278,18 +234,18 @@ index 11e990d9..1bfcf47e 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-alert</artifactId>
 +    <artifactId>flamecord-module-cmd-alert</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-find/pom.xml b/module/cmd-find/pom.xml
-index b732d67f..5f57af9e 100644
+index a17080ab..b8d562cf 100644
 --- a/module/cmd-find/pom.xml
 +++ b/module/cmd-find/pom.xml
 @@ -5,13 +5,13 @@
@@ -298,18 +254,18 @@ index b732d67f..5f57af9e 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-find</artifactId>
 +    <artifactId>flamecord-module-cmd-find</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-list/pom.xml b/module/cmd-list/pom.xml
-index d17cb787..45656595 100644
+index 16003086..f7cebd89 100644
 --- a/module/cmd-list/pom.xml
 +++ b/module/cmd-list/pom.xml
 @@ -5,13 +5,13 @@
@@ -318,18 +274,18 @@ index d17cb787..45656595 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-list</artifactId>
 +    <artifactId>flamecord-module-cmd-list</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-send/pom.xml b/module/cmd-send/pom.xml
-index d1972708..b3bf39c8 100644
+index ba084281..62e7d4f4 100644
 --- a/module/cmd-send/pom.xml
 +++ b/module/cmd-send/pom.xml
 @@ -5,13 +5,13 @@
@@ -338,18 +294,18 @@ index d1972708..b3bf39c8 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-send</artifactId>
 +    <artifactId>flamecord-module-cmd-send</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/cmd-server/pom.xml b/module/cmd-server/pom.xml
-index 3b2c4952..b66c2cff 100644
+index cb4d2932..5c6253ac 100644
 --- a/module/cmd-server/pom.xml
 +++ b/module/cmd-server/pom.xml
 @@ -5,13 +5,13 @@
@@ -358,43 +314,36 @@ index 3b2c4952..b66c2cff 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module-cmd-server</artifactId>
 +    <artifactId>flamecord-module-cmd-server</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 diff --git a/module/pom.xml b/module/pom.xml
-index 0ef98d58..c6668ffc 100644
+index 350a49b8..415de113 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,13 +5,13 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-module</artifactId>
 +    <artifactId>flamecord-module</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
--    <name>Waterfall Modules</name>
--    <description>Parent project for all Waterfall modules.</description>
-+    <name>FlameCord Modules</name>
-+    <description>Parent project for all FlameCord modules.</description>
- 
-     <modules>
-         <module>cmd-alert</module>
 @@ -36,7 +36,7 @@
      <dependencies>
          <dependency>
@@ -405,57 +354,48 @@ index 0ef98d58..c6668ffc 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/module/reconnect-yaml/pom.xml b/module/reconnect-yaml/pom.xml
-index b88398cf..621bf1c2 100644
+index d3476fc5..ee786715 100644
 --- a/module/reconnect-yaml/pom.xml
 +++ b/module/reconnect-yaml/pom.xml
-@@ -5,13 +5,13 @@
+@@ -5,7 +5,7 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-module</artifactId>
 +        <artifactId>flamecord-module</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
- 
-     <groupId>io.github.waterfallmc</groupId>
--    <artifactId>waterfall-module-reconnect-yaml</artifactId>
-+    <artifactId>flamecord-module-reconnect-yaml</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
-     <packaging>jar</packaging>
- 
 diff --git a/native/pom.xml b/native/pom.xml
-index 652a869d..b56fdc51 100644
+index 1eff2c93..58fc77b4 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-native</artifactId>
 +    <artifactId>flamecord-native</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Native</name>
--    <description>Optional native code to speed up and enhance Waterfall functionality.</description>
 +    <name>FlameCord-Native</name>
-+    <description>Optional native code to speed up and enhance FlameCord functionality.</description>
+     <description>Optional native code to speed up and enhance Waterfall functionality.</description>
  
      <dependencies>
-         <dependency>
 diff --git a/pom.xml b/pom.xml
-index fd71cdbd..26e85fb8 100644
+index 94fad2cc..db494b4c 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -5,19 +5,19 @@
+@@ -5,23 +5,23 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
@@ -468,7 +408,7 @@ index fd71cdbd..26e85fb8 100644
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-parent</artifactId>
 +    <artifactId>flamecord-parent</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall-Parent</name>
@@ -476,56 +416,81 @@ index fd71cdbd..26e85fb8 100644
 -    <url>https://github.com/WaterfallMC/Waterfall</url>
 +    <name>FlameCord-Parent</name>
 +    <description>Parent project for all FlameCord modules.</description>
-+    <url>https://github.com/2lstudios-mc/FlameCord</url>
++    <url>https://github.com/2LStudios-MC/FlameCord</url>
      <inceptionYear>2015</inceptionYear>
      <organization>
-         <name>WaterfallMC</name>
-@@ -66,13 +66,13 @@
+-        <name>WaterfallMC</name>
+-        <url>https://github.com/WaterfallMC</url>
++        <name>2LStudios</name>
++        <url>https://github.com/2LStudios-MC</url>
+     </organization>
+     <licenses>
+         <license>
+@@ -47,6 +47,9 @@
+         <developer>
+             <id>fuzzybot</id>
+         </developer>
++        <developer>
++            <id>LinsaFTW</id>
++        </developer>
+     </developers>
+ 
+     <modules>
+@@ -66,13 +69,13 @@
      </modules>
  
      <scm>
 -        <connection>scm:git:git@github.com:com:WaterfallMC/Waterfall.git</connection>
 -        <developerConnection>scm:git:git@github.com:WaterfallMC/Waterfall.git</developerConnection>
 -        <url>git@github.com:WaterfallMC/Waterfall.git</url>
-+        <connection>scm:git:git@github.com:com:2lstudios-mc/FlameCord.git</connection>
-+        <developerConnection>scm:git:git@github.com:2lstudios-mc/FlameCord.git</developerConnection>
-+        <url>git@github.com:2lstudios-mc/FlameCord.git</url>
++        <connection>scm:git:git@github.com:com:2LStudios-MC/FlameCord.git</connection>
++        <developerConnection>scm:git:git@github.com:2LStudios-MC/FlameCord.git</developerConnection>
++        <url>git@github.com:2LStudios-MC/FlameCord.git</url>
      </scm>
      <issueManagement>
          <system>GitHub</system>
 -        <url>https://github.com/PaperMC/Waterfall/issues</url>
-+        <url>https://github.com/2lstudios-mc/FlameCord/issues</url>
++        <url>https://github.com/2LStudios-MC/FlameCord/issues</url>
      </issueManagement>
  
      <distributionManagement>
+@@ -412,8 +415,8 @@
+                                 </goals>
+                                 <inherited>false</inherited>
+                                 <configuration>
+-                                    <doctitle>Waterfall ${project.version} API</doctitle>
+-                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
++                                    <doctitle>FlameCord ${project.version} API</doctitle>
++                                    <windowtitle>FlameCord ${project.version} API</windowtitle>
+                                     <sourcepath>
+                                         api/target/generated-sources/delombok;
+                                         chat/target/generated-sources/delombok
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index dbc0a3ab..433fbfe0 100644
+index c62e0175..27e4096d 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-protocol</artifactId>
 +    <artifactId>flamecord-protocol</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Protocol</name>
--    <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
 +    <name>FlameCord-Protocol</name>
-+    <description>Minimal implementation of the Minecraft protocol for use in FlameCord</description>
+     <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
  
-     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
-     <repositories>
-@@ -42,7 +42,7 @@
+     <dependencies>
+@@ -27,7 +27,7 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -535,7 +500,7 @@ index dbc0a3ab..433fbfe0 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index c3a2eeb6..7bfe7d6b 100644
+index 22c4f71b..171171c2 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -5,17 +5,17 @@
@@ -544,14 +509,14 @@ index c3a2eeb6..7bfe7d6b 100644
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-proxy</artifactId>
 +    <artifactId>flamecord-proxy</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Proxy</name>
@@ -596,46 +561,31 @@ index c3a2eeb6..7bfe7d6b 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 338c30d3..2ba0ab64 100644
---- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-+++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -20,7 +20,7 @@ public class JenkinsModuleSource implements ModuleSource
-         {
-             final String url = String.format(
-                 "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
--                "waterfall",
-+                "flamecord", // FlameCord
-                 net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
-                 version.getBuild(),
-                 module.getName()
 diff --git a/query/pom.xml b/query/pom.xml
-index dea7d85f..b4570001 100644
+index 081bff62..550a463e 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
-@@ -5,18 +5,18 @@
+@@ -5,17 +5,17 @@
  
      <parent>
          <groupId>io.github.waterfallmc</groupId>
 -        <artifactId>waterfall-parent</artifactId>
 +        <artifactId>flamecord-parent</artifactId>
-         <version>1.17-R0.1-SNAPSHOT</version>
+         <version>1.18-R0.1-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
      <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-query</artifactId>
 +    <artifactId>flamecord-query</artifactId>
-     <version>1.17-R0.1-SNAPSHOT</version>
+     <version>1.18-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Query</name>
--    <description>Minecraft query implementation based on the Waterfall API.</description>
 +    <name>FlameCord-Query</name>
-+    <description>Minecraft query implementation based on the FlameCord API.</description>
+     <description>Minecraft query implementation based on the Waterfall API.</description>
  
      <dependencies>
-         <dependency>
 @@ -27,7 +27,7 @@
          </dependency>
          <dependency>

@@ -1,4 +1,4 @@
-From 60a16fffd914c3eb6cca576b85fe34d02c135768 Mon Sep 17 00:00:00 2001
+From b3bb0138f7cd3923259af7c6d484ce0c3d783bf8 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 17:59:15 +0800
 Subject: [PATCH] FlameCord POM Changes
@@ -6,7 +6,7 @@ Subject: [PATCH] FlameCord POM Changes
 
 diff --git a/flamecord/pom.xml b/flamecord/pom.xml
 new file mode 100644
-index 00000000..ed4c392c
+index 00000000..fc24d714
 --- /dev/null
 +++ b/flamecord/pom.xml
 @@ -0,0 +1,44 @@
@@ -17,13 +17,13 @@ index 00000000..ed4c392c
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>flamecord-parent</artifactId>
-+        <version>1.17-R0.1-SNAPSHOT</version>
++        <version>1.18-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>dev._2lstudios</groupId>
 +    <artifactId>flamecord-flamecord</artifactId>
-+    <version>1.17-R0.1-SNAPSHOT</version>
++    <version>1.18-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>FlameCord-FlameCord</name>
@@ -55,10 +55,10 @@ index 00000000..ed4c392c
 +    </build>
 +</project>
 diff --git a/pom.xml b/pom.xml
-index 26e85fb8..b305e245 100644
+index db494b4c..0c856cc2 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -63,6 +63,9 @@
+@@ -66,6 +66,9 @@
          <module>query</module>
          <!--<module>slf4j</module>-->
          <module>native</module>
@@ -69,10 +69,10 @@ index 26e85fb8..b305e245 100644
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 433fbfe0..22319300 100644
+index 27e4096d..cfaa38c2 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -64,5 +64,14 @@
+@@ -49,5 +49,14 @@
              <version>1.3.0</version>
              <scope>compile</scope>
          </dependency>
@@ -88,7 +88,7 @@ index 433fbfe0..22319300 100644
      </dependencies>
  </project>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 7bfe7d6b..d9a375e7 100644
+index 171171c2..77fda7a9 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -150,6 +150,51 @@
@@ -134,7 +134,7 @@ index 7bfe7d6b..d9a375e7 100644
 +            <scope>compile</scope>
 +        </dependency>
 +        <dependency>
-+            <groupId>io.github.waterfallmc</groupId>
++            <groupId>net.md-5</groupId>
 +            <artifactId>flamecord-module-reconnect-yaml</artifactId>
 +            <version>${project.version}</version>
 +            <scope>compile</scope>

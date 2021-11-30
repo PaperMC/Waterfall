@@ -1,14 +1,14 @@
-From 21ea3112cf27d28dbf72ded9b702fd031c9336a5 Mon Sep 17 00:00:00 2001
+From d1b196832e3a6920299a047bfa7478254fab1182 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:25:03 +0800
 Subject: [PATCH] Change state to encrypt only if onlineMode is true
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5efcb9b2c..751643a68 100644
+index 1ec75614..5f583e6b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -448,6 +448,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -447,6 +447,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      thisState = State.ENCRYPT;
                      unsafe().sendPacket( request = EncryptionUtil.encryptRequest() );

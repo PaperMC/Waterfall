@@ -1,11 +1,11 @@
-From 34b303a44be51266612eb4e68bef0c157449cea5 Mon Sep 17 00:00:00 2001
+From 5be0acb0644d94bb1a2e94ed6ec680e6166f16e7 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index aafd99d8c..c005e6864 100644
+index aafd99d8..16e5909a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -6,12 +6,33 @@ import java.util.ArrayList;
@@ -53,10 +53,10 @@ index aafd99d8c..c005e6864 100644
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
              this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5fd105410..c51aeb445 100644
+index d1f2ea13..51b5afc2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -254,7 +254,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -253,7 +253,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );

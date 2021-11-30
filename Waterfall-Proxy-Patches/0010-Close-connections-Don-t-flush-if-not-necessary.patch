@@ -1,14 +1,14 @@
-From f1b73e099fe0f7d5ca594ed2457f2e2e2c52514b Mon Sep 17 00:00:00 2001
+From 7c85f2aea606560d42e89e74c5f59feec583114c Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5132c537f..5efcb9b2c 100644
+index 23571d40..1ec75614 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -196,6 +196,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -195,6 +195,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -22,7 +22,7 @@ index 5132c537f..5efcb9b2c 100644
                  String kickMessage;
  
                  if ( v1_5 )
-@@ -261,6 +268,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -260,6 +267,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -40,7 +40,7 @@ index 5132c537f..5efcb9b2c 100644
                          // FlameCord start - 1.7.x support
                          Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
                          if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
-@@ -305,11 +323,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -304,11 +322,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(PingPacket ping) throws Exception
      {
@@ -58,7 +58,7 @@ index 5132c537f..5efcb9b2c 100644
      }
  
      @Override
-@@ -618,7 +638,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -617,7 +637,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -69,7 +69,7 @@ index 5132c537f..5efcb9b2c 100644
          {
              ch.close();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f5..5c05f2b94 100644
+index 6dc5633f..5c05f2b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -80,40 +80,27 @@ public class ChannelWrapper
@@ -121,7 +121,7 @@ index 6dc5633f5..5c05f2b94 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5eb..654203abb 100644
+index 96704d5e..654203ab 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -162,7 +162,7 @@ index 96704d5eb..654203abb 100644
      }
  }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 0c1ecfb8e..b3bdfd05e 100644
+index 0c1ecfb8..b3bdfd05 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>

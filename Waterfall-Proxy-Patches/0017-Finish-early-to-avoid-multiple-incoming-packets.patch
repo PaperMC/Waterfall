@@ -1,14 +1,14 @@
-From 7824c3357547e77f9e307d2fcdd19e1122a7bcd8 Mon Sep 17 00:00:00 2001
+From 6515f2b44123bddf35ab541ed9a7489498e10099 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:36:08 +0800
 Subject: [PATCH] Finish early to avoid multiple incoming packets
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 6a9f1bd8e..674b3ead8 100644
+index ea4f37c5..6018dccf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -467,6 +467,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -466,6 +466,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
  
@@ -17,7 +17,7 @@ index 6a9f1bd8e..674b3ead8 100644
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
          if (sharedKey instanceof SecretKeySpec) {
-@@ -526,6 +528,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -525,6 +527,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {

@@ -1,4 +1,4 @@
-From 624c0d36a8479146327e29383fe1d1b2fbbba34f Mon Sep 17 00:00:00 2001
+From adc72a242925985dee8270c4b7233a14f8d7938c Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -249,19 +249,19 @@ index b914b5c2..719e73e4 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 191ca1a6..3b1e4adc 100644
+index 2ee16684..3a41769a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -1,6 +1,8 @@
- package net.md_5.bungee;
+@@ -2,6 +2,8 @@ package net.md_5.bungee;
  
+ import com.google.common.base.Joiner;
  import com.google.common.base.Preconditions;
 +
 +import dev._2lstudios.flamecord.FlameCord;
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -164,7 +166,7 @@ public class ServerConnector extends PacketHandler
+@@ -165,7 +167,7 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
@@ -271,7 +271,7 @@ index 191ca1a6..3b1e4adc 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c87f8a61..70778443 100644
+index 9b04f7ca..c63a2b5b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -36,6 +36,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -290,7 +290,7 @@ index c87f8a61..70778443 100644
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -391,9 +393,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -388,9 +390,11 @@ public final class UserConnection implements ProxiedPlayer
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
                  .remoteAddress( target.getAddress() );
          // Windows is bugged, multi homed users will just have to live with random connecting IPs
@@ -305,10 +305,10 @@ index c87f8a61..70778443 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 72e0098d..44794011 100644
+index cec2fc00..d637999f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -17,6 +17,8 @@ import java.util.logging.Level;
+@@ -19,6 +19,8 @@ import java.util.logging.Level;
  import javax.crypto.SecretKey;
  import javax.crypto.spec.SecretKeySpec;
  
@@ -317,7 +317,7 @@ index 72e0098d..44794011 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -154,7 +156,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -157,7 +159,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -365,5 +365,5 @@ index 654203ab..a840bc70 100644
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
 -- 
-2.33.0.windows.2
+2.32.0.windows.1
 
