@@ -1,4 +1,4 @@
-From 89ccd74999f91c9f795e60c083017a1dc74c3e02 Mon Sep 17 00:00:00 2001
+From 852b9a521e5d663cf4c687b6d80fa320bad97f90 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -8,7 +8,7 @@ Manually decode uuids to and from hex.
 
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 new file mode 100644
-index 00000000..ece5f798
+index 00000000..4a169ebc
 --- /dev/null
 +++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
 @@ -0,0 +1,113 @@
@@ -51,7 +51,7 @@ index 00000000..ece5f798
 +
 +    public static void decode(CharSequence chars, int charOffset, byte[] dest, int offset, int length) {
 +        Objects.requireNonNull(chars, "Null chars");
-+        Objects.requireNonNull(chars, "Null destination");
++        Objects.requireNonNull(dest, "Null destination");
 +        final int numChars = chars.length();
 +        if ((numChars & 0x01) != 0) {
 +            throw new IllegalArgumentException("Odd number of characters: " + numChars);
@@ -79,7 +79,7 @@ index 00000000..ece5f798
 +
 +    public static void encode(char[] chars, int charOffset, byte[] source, int offset, int length) {
 +        Objects.requireNonNull(chars, "Null chars");
-+        Objects.requireNonNull(chars, "Null bytes");
++        Objects.requireNonNull(source, "Null bytes");
 +        if (offset < 0 || charOffset < 0 || length < 0 || length * 2 > chars.length - charOffset || length > source.length - offset) {
 +            throw new IndexOutOfBoundsException();
 +        } else if (length == 0) {
@@ -125,7 +125,6 @@ index 00000000..ece5f798
 +        return ENCODE_TABLE[b];
 +    }
 +}
-\ No newline at end of file
 diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/UUIDUtils.java
 new file mode 100644
 index 00000000..cc24dd35
@@ -264,5 +263,5 @@ index 89f2d9fe..c254379a 100644
  
      @Override
 -- 
-2.33.0
+2.34.0
 
