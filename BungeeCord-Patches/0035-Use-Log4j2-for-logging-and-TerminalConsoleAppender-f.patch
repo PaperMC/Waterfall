@@ -1,4 +1,4 @@
-From a9a135afeafbb77749b3799d422ff956c0ae9161 Mon Sep 17 00:00:00 2001
+From 5da42b118748243d7531199cdca0dfdfc9faac1b Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -39,10 +39,10 @@ index b3a70840..00ce099c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..be4d2484
+index 00000000..2059f841
 --- /dev/null
 +++ b/log4j/pom.xml
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,48 @@
 +<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 +         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 +    <modelVersion>4.0.0</modelVersion>
@@ -63,7 +63,7 @@ index 00000000..be4d2484
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
-+        <log4j2.version>2.15.0-SNAPSHOT</log4j2.version>
++        <log4j2.version>2.15.0</log4j2.version>
 +    </properties>
 +
 +    <dependencies>
@@ -90,13 +90,6 @@ index 00000000..be4d2484
 +            <scope>runtime</scope>
 +        </dependency>
 +    </dependencies>
-+
-+    <repositories>
-+        <repository>
-+            <id>apache-snapshots</id>
-+            <url>https://repository.apache.org/content/groups/snapshots/</url>
-+        </repository>
-+    </repositories>
 +</project>
 diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
 new file mode 100644
