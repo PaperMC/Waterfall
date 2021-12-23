@@ -1,4 +1,4 @@
-From 4c235b1c7e2114a1b3efce3facba152d9f199a1c Mon Sep 17 00:00:00 2001
+From b0958a14cf456ede7b7278e4af7237bd251a6998 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -233,7 +233,7 @@ index 00000000..93ce3b14
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index a9070b46..94fad2cc 100644
+index f371e3dd..505d1d14 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -251,7 +251,7 @@ index a9070b46..94fad2cc 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 7a14b969..22c4f71b 100644
+index 6fd55644..cca0ef95 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -279,7 +279,7 @@ index 7a14b969..22c4f71b 100644
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
 @@ -130,6 +131,25 @@
-             <version>1.7.0</version>
+             <version>1.7.2</version>
              <scope>runtime</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->
@@ -523,7 +523,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index d9495ea7..00000000
+index 293597b6..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -557,17 +557,17 @@ index d9495ea7..00000000
 -        <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>slf4j-api</artifactId>
--            <version>1.7.30</version>
+-            <version>1.7.32</version>
 -            <scope>compile</scope>
 -        </dependency>
 -    </dependencies>
 -</project>
 diff --git a/slf4j/src/main/java/org/slf4j/impl/JDK14LoggerAdapter.java b/slf4j/src/main/java/org/slf4j/impl/JDK14LoggerAdapter.java
 deleted file mode 100644
-index 7cfafc88..00000000
+index 49589454..00000000
 --- a/slf4j/src/main/java/org/slf4j/impl/JDK14LoggerAdapter.java
 +++ /dev/null
-@@ -1,694 +0,0 @@
+@@ -1,700 +0,0 @@
 -/**
 - * Copyright (c) 2004-2011 QOS.ch
 - * All rights reserved.
@@ -1155,6 +1155,8 @@ index 7cfafc88..00000000
 -    static String SELF = JDK14LoggerAdapter.class.getName();
 -    static String SUPER = MarkerIgnoringBase.class.getName();
 -
+-    private static final boolean FILL_CALLER_DATA = Boolean.getBoolean( "net.md_5.bungee.slf4j-caller-data" );
+-
 -    /**
 -     * Fill in caller data if possible.
 -     * 
@@ -1162,6 +1164,10 @@ index 7cfafc88..00000000
 -     *          The record to update
 -     */
 -    final private void fillCallerData(String callerFQCN, LogRecord record) {
+-        if ( !FILL_CALLER_DATA )
+-        {
+-            return;
+-        }
 -        StackTraceElement[] steArray = new Throwable().getStackTrace();
 -
 -        int selfIndex = -1;
@@ -1585,5 +1591,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.34.1.windows.1
+2.33.0
 
