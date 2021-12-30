@@ -1,11 +1,11 @@
-From 295841ad76a439554074bfde7813de1a487d20a5 Mon Sep 17 00:00:00 2001
+From 772e70bce0c9626cb3c724b7c30c4802f7311e63 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:10:30 +0800
 Subject: [PATCH] Packet Checks
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 01d35f41a..ec07ae6fd 100644
+index ac83e325..4b9b80b9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -38,6 +38,19 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -29,7 +29,7 @@ index 01d35f41a..ec07ae6fd 100644
  
          Object packetTypeInfo = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index f8d6becd6..336050075 100644
+index f8d6becd..33605007 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -78,6 +78,15 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -49,5 +49,5 @@ index f8d6becd6..336050075 100644
          {
              HAProxyMessage proxy = (HAProxyMessage) msg;
 -- 
-2.32.0.windows.1
+2.32.0
 
