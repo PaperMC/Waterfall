@@ -1,4 +1,4 @@
-From 779447f42a5b9620558026700f0f2c868c76ca1c Mon Sep 17 00:00:00 2001
+From 0351cf0fcc7bcbad009800208fda7a8f1f34135c Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -442,14 +442,17 @@ index c2512dd5..0db3d76a 100644
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
 deleted file mode 100644
-index bd52d880..00000000
+index 3e5ca394..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
 +++ /dev/null
-@@ -1,25 +0,0 @@
+@@ -1,38 +0,0 @@
 -package net.md_5.bungee.command;
 -
 -import java.util.ArrayList;
 -import java.util.List;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.stream.Collectors;
 -import jline.console.completer.Completer;
 -import lombok.RequiredArgsConstructor;
 -import net.md_5.bungee.api.ProxyServer;
@@ -463,11 +466,21 @@ index bd52d880..00000000
 -    @Override
 -    public int complete(String buffer, int cursor, List<CharSequence> candidates)
 -    {
--        List<String> suggestions = new ArrayList<>();
--        proxy.getPluginManager().dispatchCommand( proxy.getConsole(), buffer, suggestions );
--        candidates.addAll( suggestions );
--
 -        int lastSpace = buffer.lastIndexOf( ' ' );
+-        if ( lastSpace == -1 )
+-        {
+-            String lowerCase = buffer.toLowerCase( Locale.ROOT );
+-            candidates.addAll( proxy.getPluginManager().getCommands().stream()
+-                    .map( Map.Entry::getKey )
+-                    .filter( (name) -> name.toLowerCase( Locale.ROOT ).startsWith( lowerCase ) )
+-                    .collect( Collectors.toList() ) );
+-        } else
+-        {
+-            List<String> suggestions = new ArrayList<>();
+-            proxy.getPluginManager().dispatchCommand( proxy.getConsole(), buffer, suggestions );
+-            candidates.addAll( suggestions );
+-        }
+-
 -        return ( lastSpace == -1 ) ? cursor - buffer.length() : cursor - ( buffer.length() - lastSpace - 1 );
 -    }
 -}
