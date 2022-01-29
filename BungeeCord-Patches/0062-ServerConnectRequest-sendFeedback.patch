@@ -1,4 +1,4 @@
-From 8e2bdaf9cb2da6becb7065bd7a9ef94c18665f66 Mon Sep 17 00:00:00 2001
+From 58b01511fca0b3add7805775d42b9ea4661396a2 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 16 Apr 2021 06:29:28 +0100
 Subject: [PATCH] ServerConnectRequest#sendFeedback
@@ -31,10 +31,29 @@ index c81b0a4e..d21370be 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 871a2990..8e274169 100644
+index 871a2990..8e85f0e6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -321,7 +321,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -268,12 +268,16 @@ public final class UserConnection implements ProxiedPlayer
+         connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
+     }
+ 
+-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout)
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout) {
++        this.connect(info, callback, retry, reason, timeout, true);
++    }
++
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout, boolean sendFeedback)
+     {
+         // Waterfall end
+         Preconditions.checkNotNull( info, "info" );
+ 
+-        ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info );
++        ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
+         builder.connectTimeout(timeout); // Waterfall
+         if ( callback != null )
+         {
+@@ -321,7 +325,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -43,7 +62,7 @@ index 871a2990..8e274169 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -331,7 +331,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -331,7 +335,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -52,13 +71,14 @@ index 871a2990..8e274169 100644
              return;
          }
  
-@@ -367,14 +367,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -367,14 +371,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
 -                        sendMessage( bungee.getTranslation( "fallback_lobby" ) );
+-                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
 +                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
-                         connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
++                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
                      } else if ( dimensionChange )
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
