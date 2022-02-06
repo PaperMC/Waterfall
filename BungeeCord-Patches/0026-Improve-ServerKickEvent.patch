@@ -1,4 +1,4 @@
-From 8820915bd0c7783f42ac4f0eca4da2d9b03fe97d Mon Sep 17 00:00:00 2001
+From 4b776b6e9f93f2e3eb2d778afbacd11748a2c9b6 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -75,18 +75,10 @@ index 175150c7..5595278b 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index dd742d01..314b08bc 100644
+index f8691bc4..98bebb94 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -12,6 +12,7 @@ import com.mojang.brigadier.context.StringRange;
- import com.mojang.brigadier.suggestion.Suggestion;
- import com.mojang.brigadier.suggestion.Suggestions;
- import com.mojang.brigadier.tree.LiteralCommandNode;
-+import java.util.Objects; // Waterfall
- import io.netty.buffer.ByteBuf;
- import io.netty.buffer.ByteBufAllocator;
- import io.netty.buffer.Unpooled;
-@@ -80,16 +81,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -87,16 +87,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -111,7 +103,7 @@ index dd742d01..314b08bc 100644
      }
  
      @Override
-@@ -104,7 +108,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -111,7 +114,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -132,12 +124,12 @@ index dd742d01..314b08bc 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -558,7 +574,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -565,7 +580,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
 -        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED ) );
-+        if ( Objects.equals( server.getInfo(), def ) )
++        if ( java.util.Objects.equals( server.getInfo(), def ) )
 +        {
 +            def = null;
 +        }
@@ -146,5 +138,5 @@ index dd742d01..314b08bc 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.33.0
+2.35.1
 

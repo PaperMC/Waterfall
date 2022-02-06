@@ -1,4 +1,4 @@
-From 90ea2cbbd4de639e9705f149d7d77ee528fc86f6 Mon Sep 17 00:00:00 2001
+From 077875d87eb6f03098bcd12615c74b6aab38a68c Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,10 +123,10 @@ index 5595278b..9e74d158 100644
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index af163836..871a2990 100644
+index 2cbf002e..17f68fd7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -765,4 +765,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -758,4 +758,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -138,10 +138,10 @@ index af163836..871a2990 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index b205cc0f..9f7dd038 100644
+index b5f8c473..01b29247 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -665,6 +665,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -671,6 +671,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -149,7 +149,7 @@ index b205cc0f..9f7dd038 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -676,6 +677,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -682,6 +683,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -234,5 +234,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.34.0
+2.35.1
 

@@ -1,4 +1,4 @@
-From b5bfb337c5c2ecd316ecdac721be5767e7ab3aac Mon Sep 17 00:00:00 2001
+From 50b4c8768067c05fd7eb4214b637b44cb294929d Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,20 +54,10 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9f7dd038..4c70fc90 100644
+index 01b29247..e2adf3f2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -12,7 +12,8 @@ import com.mojang.brigadier.context.StringRange;
- import com.mojang.brigadier.suggestion.Suggestion;
- import com.mojang.brigadier.suggestion.Suggestions;
- import com.mojang.brigadier.tree.LiteralCommandNode;
--import java.util.Objects; // Waterfall
-+
-+import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
- import io.netty.buffer.ByteBuf;
- import io.netty.buffer.ByteBufAllocator;
- import io.netty.buffer.Unpooled;
-@@ -20,8 +21,10 @@ import io.netty.channel.unix.DomainSocketAddress;
+@@ -19,8 +19,10 @@ import io.netty.channel.unix.DomainSocketAddress;
  import java.io.DataInput;
  import java.net.InetSocketAddress;
  import java.util.ArrayList;
@@ -78,7 +68,7 @@ index 9f7dd038..4c70fc90 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
-@@ -700,9 +703,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -706,9 +708,25 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -94,7 +84,7 @@ index 9f7dd038..4c70fc90 100644
 +            }
 +        }
 +
-+        ProxyDefineCommandsEvent event = new ProxyDefineCommandsEvent( this.server, this.con, commandMap );
++        io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent event = new io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent( this.server, this.con, commandMap );
 +        bungee.getPluginManager().callEvent( event );
 +
 +        for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
@@ -104,8 +94,8 @@ index 9f7dd038..4c70fc90 100644
 +            if ( true ) // Moved up
 +            // Waterfall end
              {
-                 LiteralCommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() )
+                 CommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() ).executes( DUMMY_COMMAND )
                          .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
 -- 
-2.30.1 (Apple Git-130)
+2.35.1
 

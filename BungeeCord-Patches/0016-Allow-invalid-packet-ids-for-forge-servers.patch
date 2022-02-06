@@ -1,4 +1,4 @@
-From fe301104656417e3c8e22538170a3fb75518e669 Mon Sep 17 00:00:00 2001
+From 1b443aab6b802b9a74a94d2a68f4ad2f6e77ce24 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -9,7 +9,7 @@ Vanilla servers still error on negative/invalid packets.
 Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index d36b7f3c..5e03e175 100644
+index 773e954c..57bd22b7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -16,6 +16,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -93,10 +93,10 @@ index d1715b9c..0825a5a1 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8979ac22..d4348eb7 100644
+index 04a3a73c..ef6b3ed6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -73,6 +73,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -72,6 +72,7 @@ public final class UserConnection implements ProxiedPlayer
      @NonNull
      private final ProxyServer bungee;
      @NonNull
@@ -122,5 +122,5 @@ index 23715f68..7d970ad8 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.33.0
+2.35.1
 
