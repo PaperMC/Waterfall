@@ -1,4 +1,4 @@
-From 9fd7c7d549ca2bffbf5121a98dbc425c197995e3 Mon Sep 17 00:00:00 2001
+From 4df5486ea459a830df12c18a10434cf69306cedf Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:40:55 +0800
 Subject: [PATCH] Change IllegalStateException to QuietException and explain
@@ -6,10 +6,10 @@ Subject: [PATCH] Change IllegalStateException to QuietException and explain
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 43042c6a..9b04f7ca 100644
+index adc25165..935d2e30 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -308,7 +308,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -311,7 +311,8 @@ public final class UserConnection implements ProxiedPlayer
  
              if ( getServer() == null && !ch.isClosing() )
              {
