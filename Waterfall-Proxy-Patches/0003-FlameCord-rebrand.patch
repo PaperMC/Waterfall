@@ -1,4 +1,4 @@
-From fc1fff4cbc31017a66ef2e1fc02ad66f344983b4 Mon Sep 17 00:00:00 2001
+From 0f33be9482102e95dcc45eafab586d9538b89ef2 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 8 Jun 2021 22:24:27 -0300
 Subject: [PATCH] FlameCord rebrand
@@ -19,7 +19,7 @@ index e31fb00a..ff4bbf34 100644
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a4b58d9c..53b78a2f 100644
+index a4b58d9c..8b655261 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -545,7 +545,7 @@ public class BungeeCord extends ProxyServer
@@ -44,6 +44,20 @@ index 820f7b03..aeda7963 100644
 +        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bLinsaFTW & Sammwy&e." ) );
      }
  }
+diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+index 0c1ecfb8..b2b19996 100644
+--- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
++++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
+@@ -103,7 +103,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+             // Waterfall start
+             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
+ 
+-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
++            // FlameCord - Rebrand
++            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "FlameCord_Proxy",
+                     bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
+                     listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
+             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 -- 
 2.32.0
 

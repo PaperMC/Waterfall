@@ -1,11 +1,11 @@
-From 28b2466c5993962d31f07bcf0d7bb6e2d5a8f314 Mon Sep 17 00:00:00 2001
+From 14465987214fcf28c77f371a15f1854780cafe49 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 8bb61ac1..aafd99d8 100644
+index 374ff1b6..1d875b56 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,16 @@ import net.md_5.bungee.config.Configuration;
@@ -38,10 +38,10 @@ index 8bb61ac1..aafd99d8 100644
              this.firewallNotify = setIfUnexistant("firewall.notify", this.firewallNotify, configuration);
              this.firewallSeconds = setIfUnexistant("firewall.seconds", this.firewallSeconds, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f2957c01..d1f2ea13 100644
+index d2ca464d..45193515 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -373,7 +373,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -370,7 +370,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -51,7 +51,7 @@ index f2957c01..d1f2ea13 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -382,7 +383,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -379,7 +380,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -62,7 +62,7 @@ index f2957c01..d1f2ea13 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 22414686..fbc19f66 100644
+index d46d255b..2f281d0c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -47,7 +47,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -102,13 +102,22 @@ index 22414686..fbc19f66 100644
  
                      channel.setRemoteAddress( newAddress );
                  }
-@@ -147,6 +151,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -147,8 +151,6 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
          {
              boolean logExceptions = !( handler instanceof PingHandler );
  
-+            // FlameCord - Option to log exceptions
-+            logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
-+
+-<<<<<<< Updated upstream
+-=======
+             // FlameCord - Option to log exceptions
+             logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
+ 
+@@ -157,8 +159,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             {
+                 FlameCord.getInstance().getFirewallManager().addFirewalled( ctx.channel().remoteAddress() );
+             }
+-
+->>>>>>> Stashed changes
++            
              if ( logExceptions )
              {
                  if ( cause instanceof ReadTimeoutException )
