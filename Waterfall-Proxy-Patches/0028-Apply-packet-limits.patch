@@ -1,11 +1,30 @@
-From d85700309c2f2e6dcb87a572566072dfea72d82b Mon Sep 17 00:00:00 2001
+From 8af01fbf2f309700676e8c23474362f7bca3d8db Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Jun 2021 11:30:19 -0300
 Subject: [PATCH] Apply packet limits
 
 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+index 86182cdd..b28f4081 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
+@@ -61,4 +61,14 @@ public class EncryptionRequest extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    @Override
++    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 20 + 256 + 256; // FlameCord - Apply packet limits
++    }
++
++    @Override
++    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        return 20 + 1 + 1; // FlameCord - Apply packet limits
++    }
+ }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
-index 7dbbfd3c..e903313d 100644
+index 7dbbfd3c..b7842055 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
 @@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
@@ -23,12 +42,12 @@ index 7dbbfd3c..e903313d 100644
 +
 +    @Override
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-+        return 1036 + 256; // FlameCord - Apply packet limits (by Janmm14)
++        return 1036 + 256; // FlameCord - Apply packet limits
 +    }
 +
 +    @Override
 +    public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-+        return 5; // FlameCord - Apply packet limits (by Janmm14)
++        return 5; // FlameCord - Apply packet limits
 +    }
  }
 -- 
