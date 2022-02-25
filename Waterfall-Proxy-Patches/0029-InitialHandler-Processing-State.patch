@@ -1,0 +1,62 @@
+From 3534b38cccbcdd2838d7c994f51cfcf3977f0937 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Fri, 25 Feb 2022 12:28:31 -0300
+Subject: [PATCH] InitialHandler Processing State
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 4295fd68..5296a5ae 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -128,7 +128,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     private enum State
+     {
+ 
+-        HANDSHAKE, STATUS, PING, USERNAME, ENCRYPT, FINISHING;
++        PROCESSING, HANDSHAKE, STATUS, PING, USERNAME, ENCRYPT, FINISHING;
+     }
+ 
+     private boolean canSendKickMessage()
+@@ -248,6 +248,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(StatusRequest statusRequest) throws Exception
+     {
+         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
++        thisState = State.PROCESSING;
+ 
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+         // FlameCord - Custom motd
+@@ -328,6 +329,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         // FlameCord - Never accept invalid packets
+         Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
++        thisState = State.PROCESSING;
+ 
+         unsafe.sendPacket( ping );
+ 
+@@ -339,6 +341,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(Handshake handshake) throws Exception
+     {
+         Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
++        thisState = State.PROCESSING;
+         this.handshake = handshake;
+         ch.setVersion( handshake.getProtocolVersion() );
+ 
+@@ -411,6 +414,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(LoginRequest loginRequest) throws Exception
+     {
+         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
++        thisState = State.PROCESSING;
+ 
+         if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {
+@@ -478,6 +482,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(final EncryptionResponse encryptResponse) throws Exception
+     {
+         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
++        thisState = State.PROCESSING;
+ 
+         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
+         // Waterfall start
+-- 
+2.32.0
+
