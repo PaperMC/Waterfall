@@ -1,11 +1,11 @@
-From cf468c96ce1390300c7ec73f3bf3a78df012cd10 Mon Sep 17 00:00:00 2001
+From b15eb1a4f0883814e41941d423325256e3306fc6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 12:28:31 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4295fd68..26a3dd25 100644
+index 4295fd68..bf5e49e2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -128,7 +128,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -37,7 +37,7 @@ index 4295fd68..26a3dd25 100644
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
-+        thisState = State.PROCESSING_USERNAME;
++        thisState = State.PROCESSING;
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
  
@@ -45,7 +45,7 @@ index 4295fd68..26a3dd25 100644
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
-+        thisState = State.PROCESSING;
++        thisState = State.PROCESSING_USERNAME;
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
