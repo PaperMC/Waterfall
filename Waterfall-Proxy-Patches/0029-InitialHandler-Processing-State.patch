@@ -1,14 +1,14 @@
-From b15eb1a4f0883814e41941d423325256e3306fc6 Mon Sep 17 00:00:00 2001
+From 4c9f429e23271a52826f3c50bbdb35d7955f2073 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 12:28:31 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4295fd68..bf5e49e2 100644
+index 4295fd68..75a73df3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -128,7 +128,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -128,12 +128,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      private enum State
      {
  
@@ -17,6 +17,12 @@ index 4295fd68..bf5e49e2 100644
      }
  
      private boolean canSendKickMessage()
+     {
+-        return thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
++        return thisState == State.PROCESSING_USERNAME || thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
+     }
+ 
+     @Override
 @@ -248,6 +248,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(StatusRequest statusRequest) throws Exception
      {
