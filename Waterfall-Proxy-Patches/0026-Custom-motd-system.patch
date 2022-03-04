@@ -1,11 +1,11 @@
-From 6727e94ac5d06809541d0d437985d742cdd49137 Mon Sep 17 00:00:00 2001
+From 4c4837561bfbec01a8d9e671bc40d262b78f48df Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 1d875b56..d320fa94 100644
+index 70d0fb61..b3491271 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -6,12 +6,33 @@ import java.util.ArrayList;
@@ -42,7 +42,7 @@ index 1d875b56..d320fa94 100644
      @Getter
      private boolean loggerInitialhandler = false;
      @Getter
-@@ -44,6 +65,9 @@ public class FlameCordConfiguration {
+@@ -34,6 +55,9 @@ public class FlameCordConfiguration {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -53,7 +53,7 @@ index 1d875b56..d320fa94 100644
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
              this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 220b7924..4295fd68 100644
+index cfd6249e..0c608e0f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -250,7 +250,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection

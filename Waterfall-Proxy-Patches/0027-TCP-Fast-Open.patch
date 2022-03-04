@@ -1,11 +1,11 @@
-From 78aa1b77b4919f816e9ca983c500f688d4c3643e Mon Sep 17 00:00:00 2001
+From a4b23efe724a4a64f8004583cb9667b8dcae62d6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d320fa94..d0fb0de2 100644
+index b3491271..3bf73d9e 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index d320fa94..d0fb0de2 100644
      private List<String> colors(final List<String> strings) {
          for (int i = 0; i < strings.size(); i++) {
              strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
-@@ -65,6 +69,8 @@ public class FlameCordConfiguration {
+@@ -55,6 +59,8 @@ public class FlameCordConfiguration {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -29,10 +29,10 @@ index d320fa94..d0fb0de2 100644
              this.customMotdMotds = colors(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f7455a7e..b762d58d 100644
+index a840bc70..f4bf745c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -206,6 +206,8 @@ public class PipelineUtils
+@@ -198,6 +198,8 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );
