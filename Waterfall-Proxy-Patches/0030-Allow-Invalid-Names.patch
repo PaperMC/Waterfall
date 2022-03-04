@@ -1,0 +1,46 @@
+From 1b786bef7bb3a52c0f246b82e930290f518fc8db Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Fri, 4 Mar 2022 14:09:35 -0300
+Subject: [PATCH] Allow Invalid Names
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index 1a445ec8..25cfc0bd 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration {
++    // FlameCord - Allow Invalid Names
++    @Getter
++    private boolean allowInvalidNames = false;
++
+     // FlameCord start - Antibot System
+     @Getter
+     private boolean antibotAccountsEnabled = true;
+@@ -134,6 +138,8 @@ public class FlameCordConfiguration {
+                 configuration = configurationProvider.load(configurationFile);
+             }
+ 
++            this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
++
+             loadAntibot(configuration);
+ 
+             this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 56793ae7..49bb7ade 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -444,7 +444,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
+         thisState = State.PROCESSING_USERNAME;
+ 
+-        if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
++        if ( !FlameCord.getInstance().getFlameCordConfiguration().isAllowInvalidNames() && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {
+             disconnect( bungee.getTranslation( "name_invalid" ) );
+             return;
+-- 
+2.32.0
+
