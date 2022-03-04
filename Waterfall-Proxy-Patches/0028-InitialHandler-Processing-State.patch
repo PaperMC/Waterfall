@@ -8,7 +8,7 @@ diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java 
 index 0c608e0f..4d9e9b89 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -128,7 +128,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -128,12 +128,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      private enum State
      {
  
@@ -17,6 +17,12 @@ index 0c608e0f..4d9e9b89 100644
      }
  
      private boolean canSendKickMessage()
+     {
+-        return thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
++        return thisState == State.PROCESSING_USERNAME || thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
+     }
+ 
+     @Override
 @@ -248,6 +248,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(StatusRequest statusRequest) throws Exception
      {
