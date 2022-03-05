@@ -1,0 +1,58 @@
+From 99606ff5af524a4f89bd9c3c1743f657aa9b5161 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Sat, 5 Mar 2022 10:24:11 -0300
+Subject: [PATCH] Avoid Copying Buf
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 3992f521..6b46177d 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -39,6 +39,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         }
+ 
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
++        int readerIndex = in.readerIndex(); // FlameCord - Avoid Copying Buf
+         
+         // FlameCord - Check size before decoding
+         if (prot == protocol.TO_SERVER) {
+@@ -52,8 +53,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             }
+         }
+ 
+-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+-
+         Object packetTypeInfo = null;
+         try
+         {
+@@ -92,8 +91,10 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 in.skipBytes( in.readableBytes() );
+             }
+ 
+-            out.add( new PacketWrapper( packet, slice ) );
+-            slice = null;
++            // FlameCord start - Avoid Copying Buf
++            in.readerIndex( readerIndex );
++            out.add( new PacketWrapper( packet, in.retain() ) );
++            // FlameCord end - Avoid Copying Buf
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             // Waterfall start: Additional DoS mitigations
+             if(!DEBUG) {
+@@ -108,13 +109,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
+-            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
+-        } finally
+-        {
+-            if ( slice != null )
+-            {
+-                slice.release();
+-            }
++            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(in), e); // Waterfall
+         }
+     }
+ 
+-- 
+2.32.0
+
