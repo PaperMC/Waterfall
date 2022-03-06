@@ -1,4 +1,4 @@
-From bced3b6f79614a6580b98f1d2935ab0bbaba75d6 Mon Sep 17 00:00:00 2001
+From f0f3d12f41102a0cff279933451834be28d79ba1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -6,7 +6,7 @@ Subject: [PATCH] Antibot System
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..5f2bc8e8
+index 00000000..5a390f99
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 @@ -0,0 +1,32 @@
@@ -30,7 +30,7 @@ index 00000000..5f2bc8e8
 +        if (config.isAntibotAccountsEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
 +
-+            if (addressData.getAccounts().size() >= config.getAntibotAccountsLimit()) {
++            if (addressData.getNicknames().size() >= config.getAntibotAccountsLimit()) {
 +                if (config.isAntibotAccountsFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -44,10 +44,10 @@ index 00000000..5f2bc8e8
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..1ee8b52d
+index 00000000..40b8b32c
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,114 @@
 +package dev._2lstudios.antibot;
 +
 +import java.util.Collection;
@@ -56,8 +56,8 @@ index 00000000..1ee8b52d
 +import dev._2lstudios.flamecord.FlameCord;
 +
 +public class AddressData {
-+    private final Collection<String> accounts = new HashSet<>();
-+    private String lastAccount = "";
++    private final Collection<String> nicknames = new HashSet<>();
++    private String lastNickname = "";
 +    private long lastPing = 0;
 +    private long penultimateConnection = 0;
 +    private long lastConnection = 0;
@@ -67,17 +67,23 @@ index 00000000..1ee8b52d
 +    private int connectionsSecond = 0;
 +    private int totalConnections = 0;
 +
-+    public Collection<String> getAccounts() {
-+        return accounts;
++    public Collection<String> getNicknames() {
++        return nicknames;
 +    }
 +
-+    public String getLastAccount() {
-+        return lastAccount;
++    public String getLastNickname() {
++        return lastNickname;
 +    }
 +
-+    public void addAccount(final String account) {
-+        this.lastAccount = account;
-+        this.accounts.add(account);
++    public void addNickname(final String nickname) {
++        if (!lastNickname.equals(nickname)) {
++            this.lastNickname = nickname;
++            this.totalConnections = 1;
++        }
++
++        if (!this.nicknames.contains(nickname)) {
++            this.nicknames.add(nickname);
++        }
 +    }
 +
 +    public long getPenultimateConnection() {
@@ -314,7 +320,7 @@ index 00000000..ffa48b92
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..035148db
+index 00000000..e0e836e0
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 @@ -0,0 +1,71 @@
@@ -365,7 +371,7 @@ index 00000000..035148db
 +
 +        if (config.isAntibotNicknameEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
-+            final String nickname = addressData.getLastAccount();
++            final String nickname = addressData.getLastNickname();
 +
 +            if (isBlacklisted(config, nickname)) {
 +                if (config.isAntibotNicknameFirewall()) {
@@ -391,7 +397,7 @@ index 00000000..035148db
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
 new file mode 100644
-index 00000000..64400605
+index 00000000..8ffe1e21
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
 @@ -0,0 +1,62 @@
@@ -435,7 +441,7 @@ index 00000000..64400605
 +                    || passwordMessage.contains("/register ")
 +                    || passwordMessage.contains("/reg ")) {
 +                final AddressData addressData = addressDataManager.getAddressData(socketAddress);
-+                final String nickname = addressData.getLastAccount();
++                final String nickname = addressData.getLastNickname();
 +                final String password = passwordMessage.split(" ")[1];
 +
 +                updatePassword(config, nickname, password);
@@ -685,7 +691,7 @@ index 57462992..0490b7f6 100644
  			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
  			setIfUnexistant("flamecord_help",
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4ced9bd6..9df6b16e 100644
+index 4ced9bd6..8c0d59f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import java.util.logging.Level;
@@ -752,7 +758,7 @@ index 4ced9bd6..9df6b16e 100644
 +        CheckManager checkManager = FlameCord.getInstance().getCheckManager();
 +        AddressData addressData = FlameCord.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
 +
-+        addressData.addAccount( loginRequest.getData() );
++        addressData.addNickname( loginRequest.getData() );
 +
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
 +        {
@@ -762,7 +768,7 @@ index 4ced9bd6..9df6b16e 100644
 +
 +        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress() ) )
 +        {
-+            disconnect( bungee.getTranslation( "antibot_accounts", addressData.getAccounts().size() ) );
++            disconnect( bungee.getTranslation( "antibot_accounts", addressData.getNicknames().size() ) );
 +            return;
 +        }
 +
