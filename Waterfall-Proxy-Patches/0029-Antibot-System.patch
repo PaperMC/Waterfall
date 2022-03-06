@@ -1,4 +1,4 @@
-From 59f4c0db582075e42dbd24f1edb7796c973a2f1b Mon Sep 17 00:00:00 2001
+From b47344c51a3e6387263877d9ce93932f873d08df Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -314,10 +314,10 @@ index 00000000..ffa48b92
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..9599ad3d
+index 00000000..035148db
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,71 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -327,6 +327,7 @@ index 00000000..9599ad3d
 +
 +public class NicknameCheck {
 +    private AddressDataManager addressDataManager;
++    private String lastNickname = "";
 +    private int lastLength = 0;
 +    private int lengthRepeatCount = 0;
 +
@@ -338,7 +339,7 @@ index 00000000..9599ad3d
 +        final int length = nickname.length();
 +
 +        if (lastLength == length) {
-+            if (lengthRepeatCount < config.getAntibotNicknameLimit()) {
++            if (lengthRepeatCount < config.getAntibotNicknameLimit() && !nickname.equals(lastNickname)) {
 +                lengthRepeatCount++;
 +            }
 +        } else if (lengthRepeatCount > 0) {
@@ -346,6 +347,7 @@ index 00000000..9599ad3d
 +        }
 +
 +        lastLength = length;
++        lastNickname = nickname;
 +    }
 +
 +    private boolean isBlacklisted(final FlameCordConfiguration config, final String nickname) {
@@ -364,6 +366,14 @@ index 00000000..9599ad3d
 +        if (config.isAntibotNicknameEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
 +            final String nickname = addressData.getLastAccount();
++
++            if (isBlacklisted(config, nickname)) {
++                if (config.isAntibotNicknameFirewall()) {
++                    addressData.firewall();
++                }
++
++                return true;
++            }
 +
 +            updateNickname(config, nickname);
 +
