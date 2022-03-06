@@ -1,4 +1,4 @@
-From bd296fecf532bf07f59fb6a79acdbe7b888f004c Mon Sep 17 00:00:00 2001
+From 64e6384ad6a59b910e932735b6d505038104ea72 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -45,12 +45,56 @@ index 00000000..252612a3
 +    }
 +}
 \ No newline at end of file
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
+new file mode 100644
+index 00000000..cfbd55c3
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
+@@ -0,0 +1,38 @@
++package dev._2lstudios.flamecord.configuration;
++
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.HashSet;
++
++import net.md_5.bungee.config.Configuration;
++
++public class FlameConfig {
++    int setIfUnexistant(final String arg1, final int arg2, final Configuration configuration) {
++        return (int) setIfUnexistant(arg1, (Object) arg2, configuration);
++    }
++
++    boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
++        return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
++    }
++
++    Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
++        if (!configuration.contains(arg1)) {
++            configuration.set(arg1, arg2);
++
++            return arg2;
++        } else {
++            return configuration.get(arg1);
++        }
++    }
++
++    Collection<String> setIfUnexistant(final String arg1, final Collection<String> arg2,
++            final Configuration configuration) {
++        if (!configuration.contains(arg1)) {
++            configuration.set(arg1, new ArrayList<>(arg2));
++
++            return arg2;
++        } else {
++            return new HashSet<>(configuration.getStringList(arg1));
++        }
++    }
++}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 new file mode 100644
-index 00000000..81ded224
+index 00000000..c8148e90
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,33 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -64,7 +108,7 @@ index 00000000..81ded224
 +import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
-+public class FlameCordConfiguration {
++public class FlameCordConfiguration extends FlameConfig {
 +    public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
 +        try {
 +            final String fileName = "./flamecord.yml";
@@ -78,40 +122,9 @@ index 00000000..81ded224
 +                configuration = configurationProvider.load(configurationFile);
 +            }
 +
-+            if (!configurationExists) {
-+                configurationProvider.save(configuration, configurationFile);
-+            }
++            configurationProvider.save(configuration, configurationFile);
 +        } catch (final IOException e) {
 +            e.printStackTrace();
-+        }
-+    }
-+
-+    private int setIfUnexistant(final String arg1, final int arg2, final Configuration configuration) {
-+        return (int) setIfUnexistant(arg1, (Object) arg2, configuration);
-+    }
-+
-+    private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
-+        return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
-+    }
-+
-+    private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
-+        if (!configuration.contains(arg1)) {
-+            configuration.set(arg1, arg2);
-+
-+            return arg2;
-+        } else {
-+            return configuration.get(arg1);
-+        }
-+    }
-+
-+    private Collection<String> setIfUnexistant(final String arg1, final Collection<String> arg2,
-+            final Configuration configuration) {
-+        if (!configuration.contains(arg1)) {
-+            configuration.set(arg1, new ArrayList<>(arg2));
-+
-+            return arg2;
-+        } else {
-+            return new HashSet<>(configuration.getStringList(arg1));
 +        }
 +    }
 +}
@@ -191,7 +204,7 @@ index 00000000..a323598e
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1fe08b80..4902d4f3 100644
+index 3ea5518f..2ca3e2b3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;

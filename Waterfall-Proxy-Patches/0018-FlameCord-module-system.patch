@@ -1,4 +1,4 @@
-From d67854d0c57edad3fc8a7ed3ffaf7f537c19c810 Mon Sep 17 00:00:00 2001
+From e35251dcc5fc75498efeb2a829ff9cb76cac5620 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
@@ -35,10 +35,10 @@ index 252612a3..2e317533 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
-index 00000000..e82c4844
+index 00000000..6c5bb961
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,49 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -47,32 +47,15 @@ index 00000000..e82c4844
 +import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
-+public class ModulesConfiguration {
-+        // Reconnect Module
++public class ModulesConfiguration extends FlameConfig {
 +        public boolean reconnectEnabled = false;
-+
-+        // Alert Module
 +        public boolean alertEnabled = true;
-+
-+        // Find Module
 +        public boolean findEnabled = true;
-+
-+        // IP Module
 +        public boolean ipEnabled = true;
-+
-+        // List Module
 +        public boolean listEnabled = true;
-+
-+        // Perms Module
 +        public boolean permsEnabled = true;
-+
-+        // Reload Module
 +        public boolean reloadEnabled = true;
-+
-+        // Send Module
 +        public boolean sendEnabled = true;
-+
-+        // Server
 +        public boolean serverEnabled = true;
 +
 +        public ModulesConfiguration(final ConfigurationProvider configurationProvider) {
@@ -89,52 +72,24 @@ index 00000000..e82c4844
 +                        }
 +
 +                        this.alertEnabled = setIfUnexistant("alert.enabled", this.alertEnabled, configuration);
-+
 +                        this.findEnabled = setIfUnexistant("find.enabled", this.findEnabled, configuration);
-+
 +                        this.ipEnabled = setIfUnexistant("ip.enabled", this.ipEnabled, configuration);
-+
 +                        this.listEnabled = setIfUnexistant("list.enabled", this.listEnabled, configuration);
-+
 +                        this.permsEnabled = setIfUnexistant("perms.enabled", this.permsEnabled, configuration);
-+
 +                        this.reloadEnabled = setIfUnexistant("reload.enabled", this.reloadEnabled, configuration);
-+
 +                        this.sendEnabled = setIfUnexistant("send.enabled", this.sendEnabled, configuration);
-+
 +                        this.serverEnabled = setIfUnexistant("server.enabled", this.serverEnabled, configuration);
-+
 +                        this.reconnectEnabled = setIfUnexistant("reconnect.enabled", this.reconnectEnabled,
 +                                        configuration);
 +
-+                        if (!configurationExists) {
-+                                configurationProvider.save(configuration, configurationFile);
-+                        }
++                        configurationProvider.save(configuration, configurationFile);
 +                } catch (final IOException e) {
 +                        e.printStackTrace();
 +                }
 +        }
-+
-+        private String setIfUnexistant(final String arg1, final String arg2, final Configuration configuration) {
-+                return (String) setIfUnexistant(arg1, (Object) arg2, configuration);
-+        }
-+
-+        private boolean setIfUnexistant(final String arg1, final boolean arg2, final Configuration configuration) {
-+                return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
-+        }
-+
-+        private Object setIfUnexistant(final String arg1, final Object arg2, final Configuration configuration) {
-+                if (!configuration.contains(arg1)) {
-+                        configuration.set(arg1, arg2);
-+
-+                        return arg2;
-+                } else {
-+                        return configuration.get(arg1);
-+                }
-+        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 4902d4f3..82f5f65c 100644
+index 2ca3e2b3..93f57747 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;

@@ -1,17 +1,17 @@
-From 0b4b916937b76ef836e07d55d2654757a1390246 Mon Sep 17 00:00:00 2001
+From 17e051173143aa7d903059ba7acedab551dcbcdd Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 1a445ec8..25cfc0bd 100644
+index df8c90e6..2385ae93 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
- public class FlameCordConfiguration {
+ public class FlameCordConfiguration extends FlameConfig {
 +    // FlameCord - Allow Invalid Names
 +    @Getter
 +    private boolean allowInvalidNames = false;
@@ -19,7 +19,7 @@ index 1a445ec8..25cfc0bd 100644
      // FlameCord start - Antibot System
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -134,6 +138,8 @@ public class FlameCordConfiguration {
+@@ -134,6 +138,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  

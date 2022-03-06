@@ -1,17 +1,17 @@
-From a4b23efe724a4a64f8004583cb9667b8dcae62d6 Mon Sep 17 00:00:00 2001
+From 216628c6de6f3697ed82a84be11d73301705e170 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index b3491271..3bf73d9e 100644
+index 48deace6..d972fcea 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
- public class FlameCordConfiguration {
+ public class FlameCordConfiguration extends FlameConfig {
 +    // FlameCord - TCP Fast Open
 +    @Getter
 +    private int tcpFastOpen = 3;
@@ -19,7 +19,7 @@ index b3491271..3bf73d9e 100644
      private List<String> colors(final List<String> strings) {
          for (int i = 0; i < strings.size(); i++) {
              strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
-@@ -55,6 +59,8 @@ public class FlameCordConfiguration {
+@@ -55,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  

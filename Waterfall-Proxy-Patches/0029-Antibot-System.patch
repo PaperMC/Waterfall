@@ -1,4 +1,4 @@
-From b47344c51a3e6387263877d9ce93932f873d08df Mon Sep 17 00:00:00 2001
+From bced3b6f79614a6580b98f1d2935ab0bbaba75d6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -569,13 +569,13 @@ index 8957c79a..53148d68 100644
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 3bf73d9e..1a445ec8 100644
+index d972fcea..df8c90e6 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,81 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
- public class FlameCordConfiguration {
+ public class FlameCordConfiguration extends FlameConfig {
 +    // FlameCord start - Antibot System
 +    @Getter
 +    private boolean antibotAccountsEnabled = true;
@@ -654,7 +654,7 @@ index 3bf73d9e..1a445ec8 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -59,6 +134,8 @@ public class FlameCordConfiguration {
+@@ -59,6 +134,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -664,10 +664,10 @@ index 3bf73d9e..1a445ec8 100644
  
              this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index a32522fe..9b628ad5 100644
+index 57462992..0490b7f6 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -81,6 +81,16 @@ public class MessagesConfiguration {
+@@ -81,6 +81,16 @@ public class MessagesConfiguration extends FlameConfig {
  			setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
  			setIfUnexistant("illegal_chat_characters", "&cIllegal characters in chat ({0})", configuration);
  
