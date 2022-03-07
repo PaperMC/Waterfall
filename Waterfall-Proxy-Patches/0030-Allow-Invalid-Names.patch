@@ -1,11 +1,11 @@
-From 17e051173143aa7d903059ba7acedab551dcbcdd Mon Sep 17 00:00:00 2001
+From 45096bd8e219897f49fc57711842e338a381dd7d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index df8c90e6..2385ae93 100644
+index 760b08d3..eff356e8 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index df8c90e6..2385ae93 100644
      // FlameCord start - Antibot System
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -134,6 +138,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -131,6 +135,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -29,7 +29,7 @@ index df8c90e6..2385ae93 100644
  
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9df6b16e..3f6bcd8a 100644
+index 8c0d59f1..cf51f119 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -444,7 +444,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

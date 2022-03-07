@@ -1,4 +1,4 @@
-From cfbb1db6b2378c236e43e05fac4fde78af791934 Mon Sep 17 00:00:00 2001
+From 015789eed372670ab8438bf252690093b089ac3a Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -320,10 +320,10 @@ index 00000000..ffa48b92
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..e0e836e0
+index 00000000..83b2f266
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,43 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -333,27 +333,9 @@ index 00000000..e0e836e0
 +
 +public class NicknameCheck {
 +    private AddressDataManager addressDataManager;
-+    private String lastNickname = "";
-+    private int lastLength = 0;
-+    private int lengthRepeatCount = 0;
 +
 +    public NicknameCheck(final AddressDataManager addressDataManager) {
 +        this.addressDataManager = addressDataManager;
-+    }
-+
-+    public void updateNickname(final FlameCordConfiguration config, final String nickname) {
-+        final int length = nickname.length();
-+
-+        if (lastLength == length) {
-+            if (lengthRepeatCount < config.getAntibotNicknameLimit() && !nickname.equals(lastNickname)) {
-+                lengthRepeatCount++;
-+            }
-+        } else if (lengthRepeatCount > 0) {
-+            lengthRepeatCount--;
-+        }
-+
-+        lastLength = length;
-+        lastNickname = nickname;
 +    }
 +
 +    private boolean isBlacklisted(final FlameCordConfiguration config, final String nickname) {
@@ -374,16 +356,6 @@ index 00000000..e0e836e0
 +            final String nickname = addressData.getLastNickname();
 +
 +            if (isBlacklisted(config, nickname)) {
-+                if (config.isAntibotNicknameFirewall()) {
-+                    addressData.firewall();
-+                }
-+
-+                return true;
-+            }
-+
-+            updateNickname(config, nickname);
-+
-+            if (isBlacklisted(config, nickname) || lengthRepeatCount >= config.getAntibotNicknameLimit()) {
 +                if (config.isAntibotNicknameFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -575,10 +547,10 @@ index 8957c79a..53148d68 100644
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..5aef0c7b 100644
+index d972fcea..760b08d3 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,81 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,78 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -604,9 +576,7 @@ index d972fcea..5aef0c7b 100644
 +    @Getter
 +    private boolean antibotNicknameFirewall = true;
 +    @Getter
-+    private int antibotNicknameLimit = 3;
-+    @Getter
-+    private Collection<String> antibotNicknameBlacklist = Arrays.asList("mcspam");
++    private Collection<String> antibotNicknameBlacklist = Arrays.asList("mcstorm", "mcdown", "mcbot", "theresa_bot", "dropbot", "kingbot");
 +    @Getter
 +    private boolean antibotPasswordEnabled = true;
 +    @Getter
@@ -641,7 +611,6 @@ index d972fcea..5aef0c7b 100644
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.fastchat.time", this.antibotFirewallExpire, config);
 +        this.antibotNicknameEnabled = setIfUnexistant("antibot.nickname.enabled", this.antibotNicknameEnabled, config);
 +        this.antibotNicknameFirewall = setIfUnexistant("antibot.nickname.firewall", this.antibotNicknameFirewall, config);
-+        this.antibotNicknameLimit = setIfUnexistant("antibot.nickname.limit", this.antibotNicknameLimit, config);
 +        this.antibotNicknameBlacklist = setIfUnexistant("antibot.nickname.blacklist", this.antibotNicknameBlacklist, config);
 +        this.antibotPasswordEnabled = setIfUnexistant("antibot.password.enabled", this.antibotPasswordEnabled, config);
 +        this.antibotPasswordFirewall = setIfUnexistant("antibot.password.firewall", this.antibotPasswordFirewall, config);
@@ -660,7 +629,7 @@ index d972fcea..5aef0c7b 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -59,6 +134,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -59,6 +131,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
