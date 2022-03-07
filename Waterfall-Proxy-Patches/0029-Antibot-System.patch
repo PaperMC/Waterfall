@@ -1,4 +1,4 @@
-From f0f3d12f41102a0cff279933451834be28d79ba1 Mon Sep 17 00:00:00 2001
+From cfbb1db6b2378c236e43e05fac4fde78af791934 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -575,7 +575,7 @@ index 8957c79a..53148d68 100644
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..df8c90e6 100644
+index d972fcea..5aef0c7b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,81 @@ import net.md_5.bungee.config.Configuration;
@@ -620,7 +620,7 @@ index d972fcea..df8c90e6 100644
 +    @Getter
 +    private int antibotRatelimitConnectionsPerSecond = 3;
 +    @Getter
-+    private int antibotRatelimitPingsPerSecond = 8;
++    private int antibotRatelimitPingsPerSecond = 16;
 +    @Getter
 +    private boolean antibotReconnectEnabled = true;
 +    @Getter
