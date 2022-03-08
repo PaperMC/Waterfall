@@ -1,4 +1,4 @@
-From 015789eed372670ab8438bf252690093b089ac3a Mon Sep 17 00:00:00 2001
+From fc67c21e56c8c6c490c9ea6b8c699e114fa1ee5f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -6,12 +6,13 @@ Subject: [PATCH] Antibot System
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..5a390f99
+index 00000000..765bf829
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,33 @@
 +package dev._2lstudios.antibot;
 +
++import java.net.InetSocketAddress;
 +import java.net.SocketAddress;
 +
 +import dev._2lstudios.flamecord.FlameCord;
@@ -44,7 +45,7 @@ index 00000000..5a390f99
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..40b8b32c
+index 00000000..e9cd8b5e
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 @@ -0,0 +1,114 @@
@@ -114,8 +115,8 @@ index 00000000..40b8b32c
 +    }
 +
 +    public void addPing() {
-+        lastPing = System.currentTimeMillis();
 +        updatePingsSecond();
++        lastPing = System.currentTimeMillis();
 +        pingsSecond++;
 +        totalPings++;
 +    }
@@ -437,7 +438,7 @@ index 00000000..8ffe1e21
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
 new file mode 100644
-index 00000000..40edb98c
+index 00000000..f9ab936b
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
 @@ -0,0 +1,33 @@
@@ -463,12 +464,12 @@ index 00000000..40edb98c
 +
 +            if (addressData.getConnectionsSecond() >= config.getAntibotRatelimitConnectionsPerSecond()
 +                    || addressData.getPingsSecond() >= config.getAntibotRatelimitPingsPerSecond()) {
-+                        if (config.isAntibotRatelimitFirewall()) {
-+                            addressData.firewall();
-+                        }
-+        
-+                        return true;
-+                    }
++                if (config.isAntibotRatelimitFirewall()) {
++                    addressData.firewall();
++                }
++
++                return true;
++            }
 +        }
 +
 +        return false;
@@ -547,10 +548,10 @@ index 8957c79a..53148d68 100644
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..760b08d3 100644
+index d972fcea..e2674c3a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,78 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,99 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -562,15 +563,21 @@ index d972fcea..760b08d3 100644
 +    @Getter
 +    private int antibotAccountsLimit = 3;
 +    @Getter
++    private boolean antibotAccountsLog = true;
++    @Getter
 +    private boolean antibotFastChatEnabled = true;
 +    @Getter
 +    private boolean antibotFastChatFirewall = true;
 +    @Getter
 +    private int antibotFastChatTime = 1000;
 +    @Getter
++    private boolean antibotFastChatLog = true;
++    @Getter
 +    private boolean antibotFirewallEnabled = true;
 +    @Getter
 +    private int antibotFirewallExpire = 30000;
++    @Getter
++    private boolean antibotFirewallLog = true;
 +    @Getter
 +    private boolean antibotNicknameEnabled = true;
 +    @Getter
@@ -578,11 +585,15 @@ index d972fcea..760b08d3 100644
 +    @Getter
 +    private Collection<String> antibotNicknameBlacklist = Arrays.asList("mcstorm", "mcdown", "mcbot", "theresa_bot", "dropbot", "kingbot");
 +    @Getter
++    private boolean antibotNicknameLog = true;
++    @Getter
 +    private boolean antibotPasswordEnabled = true;
 +    @Getter
 +    private boolean antibotPasswordFirewall = true;
 +    @Getter
 +    private int antibotPasswordLimit = 3;
++    @Getter
++    private boolean antibotPasswordLog = true;
 +    @Getter
 +    private boolean antibotRatelimitEnabled = true;
 +    @Getter
@@ -592,6 +603,8 @@ index d972fcea..760b08d3 100644
 +    @Getter
 +    private int antibotRatelimitPingsPerSecond = 16;
 +    @Getter
++    private boolean antibotRatelimitLog = true;
++    @Getter
 +    private boolean antibotReconnectEnabled = true;
 +    @Getter
 +    private int antibotReconnectAttempts = 2;
@@ -599,37 +612,46 @@ index d972fcea..760b08d3 100644
 +    private int antibotReconnectPings = 0;
 +    @Getter
 +    private int antibotReconnectMaxTime = 10000;
++    @Getter
++    private boolean antibotReconnectLog = true;
 +
 +    public void loadAntibot(final Configuration config) {
 +        this.antibotAccountsEnabled = setIfUnexistant("antibot.accounts.enabled", this.antibotAccountsEnabled, config);
 +        this.antibotAccountsFirewall = setIfUnexistant("antibot.accounts.firewall", this.antibotAccountsFirewall, config);
 +        this.antibotAccountsLimit = setIfUnexistant("antibot.accounts.limit", this.antibotAccountsLimit, config);
++        this.antibotAccountsLog = setIfUnexistant("antibot.accounts.log", this.antibotAccountsLog, config);
 +        this.antibotFastChatEnabled = setIfUnexistant("antibot.fastchat.enabled", this.antibotFastChatEnabled, config);
 +        this.antibotFastChatFirewall = setIfUnexistant("antibot.fastchat.firewall", this.antibotFastChatFirewall, config);
 +        this.antibotFastChatTime = setIfUnexistant("antibot.fastchat.time", this.antibotFastChatTime, config);
-+        this.antibotFirewallEnabled = setIfUnexistant("antibot.fastchat.firewall", this.antibotFirewallEnabled, config);
-+        this.antibotFirewallExpire = setIfUnexistant("antibot.fastchat.time", this.antibotFirewallExpire, config);
++        this.antibotFastChatLog = setIfUnexistant("antibot.fastchat.log", this.antibotFastChatLog, config);
++        this.antibotFirewallEnabled = setIfUnexistant("antibot.firewall.firewall", this.antibotFirewallEnabled, config);
++        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
++        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
 +        this.antibotNicknameEnabled = setIfUnexistant("antibot.nickname.enabled", this.antibotNicknameEnabled, config);
 +        this.antibotNicknameFirewall = setIfUnexistant("antibot.nickname.firewall", this.antibotNicknameFirewall, config);
 +        this.antibotNicknameBlacklist = setIfUnexistant("antibot.nickname.blacklist", this.antibotNicknameBlacklist, config);
++        this.antibotNicknameLog = setIfUnexistant("antibot.nickname.log", this.antibotNicknameLog, config);
 +        this.antibotPasswordEnabled = setIfUnexistant("antibot.password.enabled", this.antibotPasswordEnabled, config);
 +        this.antibotPasswordFirewall = setIfUnexistant("antibot.password.firewall", this.antibotPasswordFirewall, config);
 +        this.antibotPasswordLimit = setIfUnexistant("antibot.password.limit", this.antibotPasswordLimit, config);
++        this.antibotPasswordLog = setIfUnexistant("antibot.password.log", this.antibotPasswordLog, config);
 +        this.antibotRatelimitEnabled = setIfUnexistant("antibot.ratelimit.enabled", this.antibotRatelimitEnabled, config);
 +        this.antibotRatelimitFirewall = setIfUnexistant("antibot.ratelimit.firewall", this.antibotRatelimitFirewall, config);
 +        this.antibotRatelimitConnectionsPerSecond = setIfUnexistant("antibot.ratelimit.connections-per-second", this.antibotRatelimitConnectionsPerSecond, config);
 +        this.antibotRatelimitPingsPerSecond = setIfUnexistant("antibot.ratelimit.pings-per-second", this.antibotRatelimitPingsPerSecond, config);
++        this.antibotRatelimitLog = setIfUnexistant("antibot.ratelimit.log", this.antibotRatelimitLog, config);
 +        this.antibotReconnectEnabled = setIfUnexistant("antibot.reconnect.enabled", this.antibotReconnectEnabled, config);
 +        this.antibotReconnectAttempts = setIfUnexistant("antibot.reconnect.attempts", this.antibotReconnectAttempts, config);
 +        this.antibotReconnectPings = setIfUnexistant("antibot.reconnect.pings", this.antibotReconnectPings, config);
 +        this.antibotReconnectMaxTime = setIfUnexistant("antibot.reconnect.max-time", this.antibotReconnectMaxTime, config);
++        this.antibotReconnectLog = setIfUnexistant("antibot.reconnect.log", this.antibotReconnectLog, config);
 +    }
 +    // FlameCord end - Antibot System
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -59,6 +131,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -59,6 +152,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -660,7 +682,7 @@ index 57462992..0490b7f6 100644
  			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
  			setIfUnexistant("flamecord_help",
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4ced9bd6..8c0d59f1 100644
+index 4ced9bd6..2796486e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import java.util.logging.Level;
@@ -684,7 +706,7 @@ index 4ced9bd6..8c0d59f1 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -382,6 +389,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -382,6 +389,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -694,6 +716,11 @@ index 4ced9bd6..8c0d59f1 100644
 +
 +                if ( checkManager.getRatelimitCheck().check( ch.getRemoteAddress() ) )
 +                {
++                    if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotRatelimitLog() )
++                    {
++                        bungee.getLogger().log( Level.INFO, "[{0}] is pinging too many times", ch.getRemoteAddress() );
++                    }
++
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getPingsSecond() ) );
 +                    return;
 +                }
@@ -702,7 +729,7 @@ index 4ced9bd6..8c0d59f1 100644
                  break;
              case 2:
                  // Login
-@@ -393,6 +411,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -393,6 +416,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -711,6 +738,11 @@ index 4ced9bd6..8c0d59f1 100644
 +
 +                if ( checkManager.getRatelimitCheck().check( ch.getRemoteAddress() ) )
 +                {
++                    if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotRatelimitLog() )
++                    {
++                        bungee.getLogger().log( Level.INFO, "[{0}] is connecting too many times", ch.getRemoteAddress() );
++                    }
++
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getConnectionsSecond() ) );
 +                    return;
 +                }
@@ -719,7 +751,7 @@ index 4ced9bd6..8c0d59f1 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -430,6 +458,31 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -430,6 +468,46 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -731,18 +763,33 @@ index 4ced9bd6..8c0d59f1 100644
 +
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
 +        {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotNicknameLog() )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has a blacklisted nickname", ch.getRemoteAddress() );
++            }
++
 +            disconnect( bungee.getTranslation( "antibot_nickname", loginRequest.getData() ) );
 +            return;
 +        }
 +
 +        if ( checkManager.getAccountsCheck().check( ch.getRemoteAddress() ) )
 +        {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotAccountsLog() )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has too many accounts", ch.getRemoteAddress() );
++            }
++
 +            disconnect( bungee.getTranslation( "antibot_accounts", addressData.getNicknames().size() ) );
 +            return;
 +        }
 +
 +        if ( checkManager.getReconnectCheck().check( ch.getRemoteAddress() ) )
 +        {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotReconnectLog() )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has to reconnect to join", ch.getRemoteAddress() );
++            }
++
 +            disconnect( bungee.getTranslation( "antibot_reconnect", FlameCord.getInstance().getFlameCordConfiguration().getAntibotReconnectAttempts() - addressData.getTotalConnections() ) );
 +            return;
 +        }
@@ -752,10 +799,10 @@ index 4ced9bd6..8c0d59f1 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e354032a..dd424439 100644
+index e354032a..976c37e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
+@@ -4,10 +4,15 @@ import com.google.common.base.Preconditions;
  import com.mojang.brigadier.context.StringRange;
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
@@ -765,7 +812,13 @@ index e354032a..dd424439 100644
  import io.netty.channel.Channel;
  import java.util.ArrayList;
  import java.util.LinkedList;
-@@ -166,6 +169,22 @@ public class UpstreamBridge extends PacketHandler
+ import java.util.List;
++import java.util.logging.Level;
++
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.ServerConnection.KeepAliveData;
+ import net.md_5.bungee.UserConnection;
+@@ -166,6 +171,32 @@ public class UpstreamBridge extends PacketHandler
          }
          Preconditions.checkArgument(!empty, "Chat message is empty");
  
@@ -774,12 +827,22 @@ index e354032a..dd424439 100644
 +
 +        if ( checkManager.getFastChatCheck().check( con.getCh().getRemoteAddress() ) )
 +        {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotFastChatLog() )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] is chatting too fast", con.getCh().getRemoteAddress() );
++            }
++
 +            con.disconnect( bungee.getTranslation( "antibot_fastchat" ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }
 +
 +        if ( checkManager.getPasswordCheck().check( con.getCh().getRemoteAddress(), chat.getMessage() ) )
 +        {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotPasswordLog() )
++            {
++                bungee.getLogger().log( Level.INFO, "[{0}] has entered a repeated password", con.getCh().getRemoteAddress() );
++            }
++
 +            con.disconnect( bungee.getTranslation( "antibot_password", checkManager.getPasswordCheck().getRepeatCount() ) );
 +            throw CancelSendSignal.INSTANCE;
 +        }

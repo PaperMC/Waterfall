@@ -1,11 +1,11 @@
-From 45096bd8e219897f49fc57711842e338a381dd7d Mon Sep 17 00:00:00 2001
+From 34fa9f25ab794f26d34f99db1fe18f3ce9b1f93a Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 760b08d3..eff356e8 100644
+index e2674c3a..97b5887e 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index 760b08d3..eff356e8 100644
      // FlameCord start - Antibot System
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -131,6 +135,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -152,6 +156,8 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
@@ -29,10 +29,10 @@ index 760b08d3..eff356e8 100644
  
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 8c0d59f1..cf51f119 100644
+index 2796486e..12ab15cf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -444,7 +444,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -454,7 +454,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME;
  
