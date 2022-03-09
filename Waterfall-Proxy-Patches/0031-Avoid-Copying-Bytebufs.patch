@@ -1,0 +1,85 @@
+From ac51cce7a1881d4247b90cfbdf5ebe286b6e6fbe Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Tue, 8 Mar 2022 23:02:29 -0300
+Subject: [PATCH] Avoid Copying Bytebufs
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 3992f521..01504c75 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -52,7 +52,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             }
+         }
+ 
+-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
++        // FlameCord - Avoid Copying Bytebufs
++        int oldReaderIndex = in.readerIndex();
+ 
+         Object packetTypeInfo = null;
+         try
+@@ -92,8 +93,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 in.skipBytes( in.readableBytes() );
+             }
+ 
+-            out.add( new PacketWrapper( packet, slice ) );
+-            slice = null;
++            // Flamecord start - Avoid Copying Bytebufs
++            in.readerIndex(oldReaderIndex);
++            in = in.retain();
++            out.add( new PacketWrapper( packet, in ) );
++            // Flamecord end - Avoid Copying Bytebufs
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             // Waterfall start: Additional DoS mitigations
+             if(!DEBUG) {
+@@ -108,13 +112,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
+-            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
+-        } finally
+-        {
+-            if ( slice != null )
+-            {
+-                slice.release();
+-            }
++            
++            // Flamecord start - Avoid Copying Bytebufs
++            in.readerIndex(oldReaderIndex);
++            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(in), e); // Waterfall
++            // Flamecord end - Avoid Copying Bytebufs
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+index 5ce42f62..f32f7681 100644
+--- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
++++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
+@@ -38,7 +38,8 @@ class EntityMap_1_7_6 extends EntityMap_1_7_2
+                     if ( profile != null && profile.getProperties() != null
+                             && profile.getProperties().length >= 1 )
+                     {
+-                        ByteBuf rest = packet.copy();
++                        // Flamecord - Avoid Copying Bytebufs
++                        int oldReaderIndex = packet.readerIndex();
+                         packet.readerIndex( readerIndex );
+                         packet.writerIndex( readerIndex + packetIdLength + idLength );
+                         DefinedPacket.writeString( player.getUniqueId().toString(), packet );
+@@ -50,8 +51,12 @@ class EntityMap_1_7_6 extends EntityMap_1_7_2
+                             DefinedPacket.writeString( property.getValue(), packet );
+                             DefinedPacket.writeString( property.getSignature(), packet );
+                         }
+-                        packet.writeBytes( rest );
+-                        rest.release();
++                        // Flamecord start - Avoid Copying Bytebufs
++                        int newReaderIndex = packet.readerIndex();
++                        packet.readerIndex( oldReaderIndex );
++                        packet.writeBytes( packet );
++                        packet.readerIndex( newReaderIndex );
++                        // Flamecord end - Avoid Copying Bytebufs
+                     }
+                 }
+             }
+-- 
+2.32.0
+

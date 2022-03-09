@@ -1,4 +1,4 @@
-From fc67c21e56c8c6c490c9ea6b8c699e114fa1ee5f Mon Sep 17 00:00:00 2001
+From 177c5397f7d374466b86da79bd6a3a00b88c5b60 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -321,7 +321,7 @@ index 00000000..ffa48b92
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..83b2f266
+index 00000000..f9b1ad70
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 @@ -0,0 +1,43 @@
@@ -341,7 +341,7 @@ index 00000000..83b2f266
 +
 +    private boolean isBlacklisted(final FlameCordConfiguration config, final String nickname) {
 +        for (final String blacklisted : config.getAntibotNicknameBlacklist()) {
-+            if (nickname.startsWith(blacklisted)) {
++            if (nickname.toLowerCase().contains(blacklisted)) {
 +                return true;
 +            }
 +        }
@@ -548,7 +548,7 @@ index 8957c79a..53148d68 100644
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..e2674c3a 100644
+index d972fcea..1f354631 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,99 @@ import net.md_5.bungee.config.Configuration;
@@ -601,7 +601,7 @@ index d972fcea..e2674c3a 100644
 +    @Getter
 +    private int antibotRatelimitConnectionsPerSecond = 3;
 +    @Getter
-+    private int antibotRatelimitPingsPerSecond = 16;
++    private int antibotRatelimitPingsPerSecond = 8;
 +    @Getter
 +    private boolean antibotRatelimitLog = true;
 +    @Getter
