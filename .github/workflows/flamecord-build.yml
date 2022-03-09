@@ -2,7 +2,7 @@
 # each push to the branch master to check its correct 
 # compilation and will deliver an artifact to check 
 # if the change is working properly.
-name: FlameCord Maven Build
+name: FlameCord Build (master)
 
 on: [push]
 
@@ -15,7 +15,7 @@ jobs:
     # latest version up to the moment.
     strategy:
       matrix:
-        java: [8, 11]
+        java: [8, 11, 17]
 
     steps:
     - name: Checkout Repository

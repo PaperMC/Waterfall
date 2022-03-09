@@ -1,7 +1,7 @@
 # This workflow will perform a compilation test on each 
 # pull request to check its correct compilation and will deliver 
 # an artifact to check if the change is working properly.
-name: FlameCord Pull Request
+name: FlameCord Build (pull request)
 
 on: [pull_request]
 
@@ -14,7 +14,7 @@ jobs:
     # latest version up to the moment.
     strategy:
       matrix:
-        java: [8, 11]
+        java: [8, 11, 17]
 
     steps:
     - name: Checkout Repository
