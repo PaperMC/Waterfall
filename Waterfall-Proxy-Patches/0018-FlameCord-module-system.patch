@@ -1,11 +1,11 @@
-From e35251dcc5fc75498efeb2a829ff9cb76cac5620 Mon Sep 17 00:00:00 2001
+From c701401d36a6cee1d4ba6a651eaec3148939b62c Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 252612a3..2e317533 100644
+index 8e69160d..ac37eaa3 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -16,23 +16,21 @@ index 252612a3..2e317533 100644
  import lombok.Getter;
  import net.md_5.bungee.config.ConfigurationProvider;
  import net.md_5.bungee.config.YamlConfiguration;
-@@ -14,6 +15,8 @@ public class FlameCord {
-     @Getter
-     private final FlameCordConfiguration flameCordConfiguration;
-     @Getter
-+    private final ModulesConfiguration modulesConfiguration;
-+    @Getter
-     private boolean running = true;
+@@ -22,11 +23,14 @@ public class FlameCord {
  
-     public static void renew(final Logger logger, final Collection<String> whitelistedAddresses) {
-@@ -30,5 +33,6 @@ public class FlameCord {
+     @Getter
+     private FlameCordConfiguration flameCordConfiguration;
++    @Getter
++    private ModulesConfiguration modulesConfiguration;
+ 
+     private void reload(final Logger logger) {
          final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
  
          this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
 +        this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
      }
- }
-\ No newline at end of file
+ 
+     private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
 index 00000000..6c5bb961
@@ -89,7 +87,7 @@ index 00000000..6c5bb961
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2ca3e2b3..93f57747 100644
+index a09d6baf..ed5ce6e6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;
