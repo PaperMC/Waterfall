@@ -1,4 +1,4 @@
-From 77f474120462359d93992cb5e3727c8be41b9046 Mon Sep 17 00:00:00 2001
+From eddab2cf05a5d80fa734db35a1c0d6c7bc7a75ce Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -266,10 +266,10 @@ index 00000000..ebf37a2b
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 new file mode 100644
-index 00000000..b2981fdb
+index 00000000..5cb5021a
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
-@@ -0,0 +1,142 @@
+@@ -0,0 +1,140 @@
 +package dev._2lstudios.antibot;
 +
 +import java.io.File;
@@ -397,8 +397,6 @@ index 00000000..b2981fdb
 +                country = getIsoCode(((InetSocketAddress) socketAddress).getAddress());
 +                addressData.setCountry(country);
 +            }
-+
-+            System.out.println(country);
 +
 +            if (country != null && isBlacklisted(config, country)) {
 +                if (config.isAntibotNicknameFirewall()) {
