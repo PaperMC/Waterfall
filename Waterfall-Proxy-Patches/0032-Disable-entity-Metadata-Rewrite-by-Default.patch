@@ -1,0 +1,22 @@
+From d77efb7c81a4826148fd305a6703e746bb82592a Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Thu, 10 Mar 2022 20:04:08 -0300
+Subject: [PATCH] Disable entity Metadata Rewrite by Default
+
+
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index ff4bbf34..0c8622cc 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -42,7 +42,7 @@ public class WaterfallConfiguration extends Configuration {
+     private int tabThrottle = 1000;
+     private boolean disableModernTabLimiter = true;
+ 
+-    private boolean disableEntityMetadataRewrite = false;
++    private boolean disableEntityMetadataRewrite = true; // FlameCord - Disable entity Metadata Rewrite by Default
+     private boolean disableTabListRewrite = false;
+ 
+     /*
+-- 
+2.32.0
+
