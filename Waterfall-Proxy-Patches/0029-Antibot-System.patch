@@ -1,4 +1,4 @@
-From 296528e63d4a653bfc88eaf498d59002c3e27cce Mon Sep 17 00:00:00 2001
+From 397d14b6036461dbee94f15ff2bb0452e6852a41 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -61,7 +61,7 @@ index 00000000..765bf829
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..e09a7093
+index 00000000..21755811
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 @@ -0,0 +1,145 @@
@@ -175,7 +175,7 @@ index 00000000..e09a7093
 +
 +    public boolean isFirewalled() {
 +        return System.currentTimeMillis() - lastFirewall < FlameCord.getInstance().getFlameCordConfiguration()
-+                .getAntibotFirewallExpire();
++                .getAntibotFirewallExpire() * 1000;
 +    }
 +
 +    public String getHostString() {
@@ -752,7 +752,7 @@ index c78ab3a7..4079caa5 100644
  
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..dc9ba8f0 100644
+index d972fcea..0c6590ef 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -5,7 +5,6 @@ import java.io.IOException;
@@ -797,7 +797,7 @@ index d972fcea..dc9ba8f0 100644
 +    @Getter
 +    private boolean antibotFirewallIpset = true;
 +    @Getter
-+    private int antibotFirewallExpire = 30000;
++    private int antibotFirewallExpire = 30;
 +    @Getter
 +    private boolean antibotFirewallLog = true;
 +    @Getter
