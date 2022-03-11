@@ -1,4 +1,4 @@
-From aa6407df7daef6d3fa424d942c50b0dec1115eef Mon Sep 17 00:00:00 2001
+From 296528e63d4a653bfc88eaf498d59002c3e27cce Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -61,10 +61,10 @@ index 00000000..765bf829
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..3a6565c7
+index 00000000..e09a7093
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
-@@ -0,0 +1,143 @@
+@@ -0,0 +1,145 @@
 +package dev._2lstudios.antibot;
 +
 +import java.io.IOException;
@@ -183,17 +183,19 @@ index 00000000..3a6565c7
 +    }
 +
 +    public void firewall() {
-+        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallIpset()) {
-+            Runtime runtime = Runtime.getRuntime();
++        if (!hostString.equals("127.0.0.1")) {
++            if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallIpset()) {
++                Runtime runtime = Runtime.getRuntime();
 +
-+            try {
-+                runtime.exec("ipset add flamecord_blacklist " + getHostString());
-+            } catch (IOException exception) {
-+                // Ignored
++                try {
++                    runtime.exec("ipset add flamecord_blacklist " + hostString);
++                } catch (IOException exception) {
++                    // Ignored
++                }
 +            }
-+        }
 +
-+        this.lastFirewall = System.currentTimeMillis();
++            this.lastFirewall = System.currentTimeMillis();
++        }
 +    }
 +
 +    public void setTotalConnections(final int totalConnections) {
