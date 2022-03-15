@@ -1,11 +1,11 @@
-From dde05524ed1972ad06fb3aa975d5992f6b00ea57 Mon Sep 17 00:00:00 2001
+From ef2217060030ca38439852c119e8b43c8af79746 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
 
 
 diff --git a/flamecord/pom.xml b/flamecord/pom.xml
-index f4bf5ec6..4a0d8e5d 100644
+index f4bf5ec6e..4a0d8e5da 100644
 --- a/flamecord/pom.xml
 +++ b/flamecord/pom.xml
 @@ -30,6 +30,11 @@
@@ -22,7 +22,7 @@ index f4bf5ec6..4a0d8e5d 100644
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..65aefa21
+index 000000000..83b0fe73a
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 @@ -0,0 +1,32 @@
@@ -46,7 +46,7 @@ index 00000000..65aefa21
 +        if (config.isAntibotAccountsEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
 +
-+            if (!addressData.hasNickname(nickname) && addressData.getNicknames().size() + 1 >= config.getAntibotAccountsLimit()) {
++            if (!addressData.hasNickname(nickname) && addressData.getNicknames().size() + 1 > config.getAntibotAccountsLimit()) {
 +                if (config.isAntibotAccountsFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -60,7 +60,7 @@ index 00000000..65aefa21
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..cd8220d1
+index 000000000..cd8220d18
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 @@ -0,0 +1,149 @@
@@ -215,7 +215,7 @@ index 00000000..cd8220d1
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
 new file mode 100644
-index 00000000..3f6e4186
+index 000000000..3f6e4186b
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
 @@ -0,0 +1,25 @@
@@ -246,7 +246,7 @@ index 00000000..3f6e4186
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java
 new file mode 100644
-index 00000000..137ed980
+index 000000000..137ed9808
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java
 @@ -0,0 +1,41 @@
@@ -293,7 +293,7 @@ index 00000000..137ed980
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 new file mode 100644
-index 00000000..5cb5021a
+index 000000000..5cb5021ab
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 @@ -0,0 +1,140 @@
@@ -439,7 +439,7 @@ index 00000000..5cb5021a
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
 new file mode 100644
-index 00000000..76902c27
+index 000000000..76902c279
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
 @@ -0,0 +1,32 @@
@@ -477,7 +477,7 @@ index 00000000..76902c27
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/FirewallCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/FirewallCheck.java
 new file mode 100644
-index 00000000..d3b77f03
+index 000000000..d3b77f03f
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/FirewallCheck.java
 @@ -0,0 +1,42 @@
@@ -525,7 +525,7 @@ index 00000000..d3b77f03
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..f9b1ad70
+index 000000000..f9b1ad70b
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 @@ -0,0 +1,43 @@
@@ -574,7 +574,7 @@ index 00000000..f9b1ad70
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
 new file mode 100644
-index 00000000..8ffe1e21
+index 000000000..8ffe1e216
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
 @@ -0,0 +1,62 @@
@@ -642,7 +642,7 @@ index 00000000..8ffe1e21
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
 new file mode 100644
-index 00000000..f9ab936b
+index 000000000..f9ab936b1
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
 @@ -0,0 +1,33 @@
@@ -681,7 +681,7 @@ index 00000000..f9ab936b
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
 new file mode 100644
-index 00000000..f958a6f2
+index 000000000..f958a6f23
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
 @@ -0,0 +1,33 @@
@@ -719,7 +719,7 @@ index 00000000..f958a6f2
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index c78ab3a7..4079caa5 100644
+index c78ab3a7c..4079caa5d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -3,6 +3,8 @@ package dev._2lstudios.flamecord;
@@ -757,7 +757,7 @@ index c78ab3a7..4079caa5 100644
  
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index d972fcea..4a145a11 100644
+index d972fcea2..4a145a110 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -5,7 +5,6 @@ import java.io.IOException;
@@ -893,7 +893,7 @@ index d972fcea..4a145a11 100644
  
              this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 57462992..ee0295c7 100644
+index 574629920..ee0295c73 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -81,6 +81,17 @@ public class MessagesConfiguration extends FlameConfig {
@@ -915,7 +915,7 @@ index 57462992..ee0295c7 100644
  			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
  			setIfUnexistant("flamecord_help",
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4ced9bd6..da7ad71a 100644
+index 4ced9bd6a..da7ad71a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -19,6 +19,8 @@ import java.util.logging.Level;
@@ -1044,7 +1044,7 @@ index 4ced9bd6..da7ad71a 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e354032a..976c37e1 100644
+index e354032aa..976c37e10 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,10 +4,15 @@ import com.google.common.base.Preconditions;
@@ -1097,7 +1097,7 @@ index e354032a..976c37e1 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index cef44d8a..8fe2b37f 100644
+index cef44d8a6..8fe2b37f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -152,6 +152,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -1115,7 +1115,7 @@ index cef44d8a..8fe2b37f 100644
              logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
              
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f4bf745c..eaedb459 100644
+index f4bf745c8..eaedb4593 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,6 +63,14 @@ public class PipelineUtils
