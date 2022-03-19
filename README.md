@@ -24,7 +24,7 @@ FlameCord will track upstream Waterfall and merge changes as needed.
 
 You can support the development of FlameCord by purchasing it at [MC-Market](https://www.mc-market.org/resources/13492/). Or you can download it for free in the [releases tab](https://github.com/2lstudios-mc/FlameCord/releases). 
 
-FlameCord requires **JRE 8** or above.
+FlameCord requires **Java 8** or above.
 
 ## How To (Compiling from source)
 
