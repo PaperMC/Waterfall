@@ -1,12 +1,19 @@
-From d92a53555ebe6363d56184c39d60d263f519b3ed Mon Sep 17 00:00:00 2001
+From 7221b508d3c28eabee2cbcf6f6f02aa0a7dca43c Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
 
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
+diff --git a/native/mbedtls b/native/mbedtls
+index 8df2f8e7..e483a77c 160000
+--- a/native/mbedtls
++++ b/native/mbedtls
+@@ -1 +1 @@
+-Subproject commit 8df2f8e7b9c7bb9390ac74bb7bace27edca81a2b
++Subproject commit e483a77c85e1f9c1dd2eb1c5a8f552d2617fe400
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 6f9fc6c3..4f3a8c72 100644
+index 70b292f0..91f71c09 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
@@ -69,22 +76,18 @@ index 257779bf..c0cd8570 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1533eadc..a715ec8a 100644
+index 56563346..61165e43 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -49,9 +49,9 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -47,7 +47,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  public class PipelineUtils
  {
  
 -    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.valueOf( "ListerInfo" );
--    public static final AttributeKey<UserConnection> USER = AttributeKey.valueOf( "User" );
--    public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.valueOf( "Target" );
-+    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
-+    public static final AttributeKey<UserConnection> USER = AttributeKey.newInstance("User");
-+    public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.newInstance("Target");
++    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance( "ListerInfo" );
      public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
      {
          @Override
 -- 
-2.35.1
+2.32.0 (Apple Git-132)
 

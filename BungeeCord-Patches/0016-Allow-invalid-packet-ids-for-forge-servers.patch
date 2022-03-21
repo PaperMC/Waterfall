@@ -1,4 +1,4 @@
-From ccd9cbc89900f06d54463678d3647587ec34b112 Mon Sep 17 00:00:00 2001
+From b0b475097ab0749bce066f1d1d967318f42de5f7 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,7 +37,7 @@ index 773e954c..57bd22b7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 9c8a7118..220365dd 100644
+index 21f4a5d5..220365dd 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -522,14 +522,23 @@ public enum Protocol
@@ -60,7 +60,7 @@ index 9c8a7118..220365dd 100644
              {
                  throw new BadPacketException( "Unsupported protocol version " + version );
              }
--            if ( id > MAX_PACKET_ID )
+-            if ( id > MAX_PACKET_ID || id < 0 )
 +            if ( !hasPacket(id, supportsForge) )
              {
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
@@ -122,5 +122,5 @@ index 75164c67..f87ce538 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.35.1
+2.32.0 (Apple Git-132)
 
