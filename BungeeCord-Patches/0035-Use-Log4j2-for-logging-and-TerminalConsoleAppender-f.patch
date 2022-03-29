@@ -1,4 +1,4 @@
-From 0351cf0fcc7bcbad009800208fda7a8f1f34135c Mon Sep 17 00:00:00 2001
+From 54524d2da5ce3339bb6d38a0086fe00359ddad25 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -206,12 +206,12 @@ index 00000000..e43f5dac
 +log4j.skipJansi=true
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 new file mode 100644
-index 00000000..93ce3b14
+index 00000000..cfd039cd
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -0,0 +1,22 @@
 +<?xml version="1.0" encoding="UTF-8"?>
-+<Configuration status="warn">
++<Configuration status="warn" shutdownHook="disable">
 +    <Appenders>
 +        <TerminalConsole name="TerminalConsole">
 +            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
@@ -350,7 +350,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1db22fc6..f281dfa1 100644
+index 1db22fc6..66d38b40 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -46,7 +46,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -417,6 +417,18 @@ index 1db22fc6..f281dfa1 100644
  
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
+@@ -494,10 +497,7 @@ public class BungeeCord extends ProxyServer
+ 
+         getLogger().info( "Thank you and goodbye" );
+         // Need to close loggers after last message!
+-        for ( Handler handler : getLogger().getHandlers() )
+-        {
+-            handler.close();
+-        }
++        org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
+ 
+         // Unlock the thread before optionally calling system exit, which might invoke this function again.
+         // If that happens, the system will obtain the lock, and then see that isRunning == false and return without doing anything.
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 index c2512dd5..0db3d76a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
@@ -1604,5 +1616,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.34.1
+2.35.1
 
