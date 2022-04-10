@@ -1,0 +1,26 @@
+From c44313b884ec14566bbb4c09719c829a18027882 Mon Sep 17 00:00:00 2001
+From: MG8853 <qq3082499405@icloud.com>
+Date: Mon, 11 Apr 2022 02:05:36 +0900
+Subject: [PATCH] Waterfall shows to everyone ip behind backend servers if
+ there are not online
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 0d6aff64..3be717c2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -399,8 +399,9 @@ public final class UserConnection implements ProxiedPlayer
+     private String connectionFailMessage(Throwable cause)
+     {
+         // Waterfall start
++        return groups.contains( "admin" ) ? Util.exception( cause, false ) : cause.getClass().getName();
+-        cause.printStackTrace();
+-        return "";
++//        cause.printStackTrace();
++//        return "";
+         //return Util.exception( cause, false );
+         // Waterfall end
+     }
+--
+2.35.1.windows.2
+
