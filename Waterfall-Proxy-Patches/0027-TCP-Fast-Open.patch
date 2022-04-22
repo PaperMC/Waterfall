@@ -1,14 +1,14 @@
-From 216628c6de6f3697ed82a84be11d73301705e170 Mon Sep 17 00:00:00 2001
+From 84a9655972b3e051e914e26484dd7dbb5de8c05d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 48deace6..d972fcea 100644
+index 236940e1..a70ce1ab 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
+@@ -13,6 +13,10 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -19,15 +19,14 @@ index 48deace6..d972fcea 100644
      private List<String> colors(final List<String> strings) {
          for (int i = 0; i < strings.size(); i++) {
              strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
-@@ -55,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
-                 configuration = configurationProvider.load(configurationFile);
-             }
- 
+@@ -108,6 +112,7 @@ public class FlameCordConfiguration extends FlameConfig {
+             this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
+             this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
+             this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
 +            this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
-+
-             this.customMotdEnabled = setIfUnexistant("custom-motd.enabled", this.customMotdEnabled, configuration);
-             this.customMotdMotds = colors(new ArrayList<>(setIfUnexistant("custom-motd.motds", this.customMotdMotds, configuration)));
  
+             this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
+             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 index a840bc70..f4bf745c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
