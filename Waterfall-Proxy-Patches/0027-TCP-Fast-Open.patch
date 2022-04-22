@@ -1,14 +1,14 @@
-From 84a9655972b3e051e914e26484dd7dbb5de8c05d Mon Sep 17 00:00:00 2001
+From d520f9c83d7a5a455fd08bfa57f598140f512024 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 236940e1..a70ce1ab 100644
+index 25716fa7..a77cecf0 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -13,6 +13,10 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -19,7 +19,7 @@ index 236940e1..a70ce1ab 100644
      private List<String> colors(final List<String> strings) {
          for (int i = 0; i < strings.size(); i++) {
              strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
-@@ -108,6 +112,7 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -111,6 +115,7 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
