@@ -1,0 +1,66 @@
+From d63d977ab6d6bdb5591bc838fc96fae5394298f5 Mon Sep 17 00:00:00 2001
+From: xIsm4 <minelatinsoporte@gmail.com>
+Date: Mon, 25 Apr 2022 04:25:32 +0200
+Subject: [PATCH] Dont show extra info in connect errors
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
+index 70bf87f7..df5f33d1 100644
+--- a/api/src/main/java/net/md_5/bungee/Util.java
++++ b/api/src/main/java/net/md_5/bungee/Util.java
+@@ -92,23 +92,11 @@ public class Util
+      */
+     public static String exception(Throwable t)
+     {
+-        return exception( t, true );
+-    }
+-
+-    /**
+-     * Constructs a pretty one line version of a {@link Throwable}. Useful for
+-     * debugging.
+-     *
+-     * @param t the {@link Throwable} to format.
+-     * @param includeLineNumbers whether to include line numbers
+-     * @return a string representing information about the {@link Throwable}
+-     */
+-    public static String exception(Throwable t, boolean includeLineNumbers)
+-    {
++        //FlameCord remove aditional information
+         // TODO: We should use clear manually written exceptions
+         StackTraceElement[] trace = t.getStackTrace();
+         return t.getClass().getSimpleName() + " : " + t.getMessage()
+-                + ( ( includeLineNumbers && trace.length > 0 ) ? " @ " + t.getStackTrace()[0].getClassName() + ":" + t.getStackTrace()[0].getLineNumber() : "" );
++                + ( (trace.length > 0 ) ? " @ " + t.getStackTrace()[0].getClassName() + ":" + t.getStackTrace()[0].getLineNumber() : "" );
+     }
+ 
+     public static String csv(Iterable<?> objects)
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 723b004a..725896ff 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Multimap;
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
++import io.netty.channel.ConnectTimeoutException;
+ import io.netty.channel.ChannelFuture;
+ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelInitializer;
+@@ -399,7 +400,13 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     private String connectionFailMessage(Throwable cause)
+     {
+-        return Util.exception( cause, false );
++        if ( cause instanceof ConnectTimeoutException )
++        {
++            return bungee.getTranslation( "timeout" );
++        } else
++        {
++            return cause.getClass().getName();
++        }
+     }
+ 
+     @Override
+-- 
+2.34.1.windows.1
+
