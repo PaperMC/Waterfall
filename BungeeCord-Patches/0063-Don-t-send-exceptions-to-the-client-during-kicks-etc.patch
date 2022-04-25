@@ -1,4 +1,4 @@
-From 951b7e18e37abebc4c74643aaa820648114f0343 Mon Sep 17 00:00:00 2001
+From 5b153f56ace64a77b2194c64ea8948c536872998 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Tue, 22 Mar 2022 14:56:44 +0000
 Subject: [PATCH] Don't send exceptions to the client during kicks, etc
@@ -13,22 +13,19 @@ allows for retaining much of the overall context here, i.e. who
 was this exception assocated with?
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4a858f31..0d6aff64 100644
+index 888218a0..7c52ee9a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -398,7 +398,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -398,7 +398,8 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
--        return Util.exception( cause, false );
-+        // Waterfall start
-+        cause.printStackTrace();
-+        return "";
-+        //return Util.exception( cause, false );
-+        // Waterfall end
+-        return groups.contains( "admin" ) ? Util.exception( cause, false ) : cause.getClass().getName();
++        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
++        return ""; // Waterfall
      }
  
      @Override
 -- 
-2.35.1
+2.36.0
 
