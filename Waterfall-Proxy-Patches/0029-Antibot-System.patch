@@ -1,4 +1,4 @@
-From f46da0d9a58d8a72acf3e144b6e59d96ca0c3aca Mon Sep 17 00:00:00 2001
+From f29028455593a9899431f5cb3631cd176c6c958a Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1093,7 +1093,7 @@ index e354032a..976c37e1 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index cef44d8a..8fe2b37f 100644
+index 20c4c0a4..a2086b45 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -152,6 +152,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
@@ -1111,10 +1111,10 @@ index cef44d8a..8fe2b37f 100644
              logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
              
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f4bf745c..eaedb459 100644
+index ffea1599..eacc8aae 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -63,6 +63,14 @@ public class PipelineUtils
+@@ -59,6 +59,14 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  

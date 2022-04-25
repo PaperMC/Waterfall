@@ -1,4 +1,4 @@
-From d520f9c83d7a5a455fd08bfa57f598140f512024 Mon Sep 17 00:00:00 2001
+From 4604b7da5875a338c84ebe9d8ed00491178890f6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
@@ -28,10 +28,10 @@ index 25716fa7..a77cecf0 100644
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a840bc70..f4bf745c 100644
+index a4c3bd71..ffea1599 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -198,6 +198,8 @@ public class PipelineUtils
+@@ -194,6 +194,8 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );

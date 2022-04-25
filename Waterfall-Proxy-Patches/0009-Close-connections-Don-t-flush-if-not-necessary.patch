@@ -1,4 +1,4 @@
-From 4487e175bf2121239ffe3d12bb584c51fddb3e09 Mon Sep 17 00:00:00 2001
+From fe19c98e455af24d9970a73215de3b651545d919 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
@@ -121,7 +121,7 @@ index 6dc5633f..5c05f2b9 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5e..654203ab 100644
+index 2a21243b..a95193ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -132,7 +132,7 @@ index 96704d5e..654203ab 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -102,6 +103,14 @@ public class PipelineUtils
+@@ -98,6 +99,14 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
@@ -147,7 +147,7 @@ index 96704d5e..654203ab 100644
      };
      public static final Base BASE = new Base();
      private static final KickStringWriter legacyKicker = new KickStringWriter();
-@@ -196,5 +205,13 @@ public class PipelineUtils
+@@ -192,5 +201,13 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }
@@ -162,7 +162,7 @@ index 96704d5e..654203ab 100644
      }
  }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 0c1ecfb8..b3bdfd05 100644
+index b2b19996..b1ecb7ef 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>

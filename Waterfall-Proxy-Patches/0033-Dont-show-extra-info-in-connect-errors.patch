@@ -1,11 +1,11 @@
-From d63d977ab6d6bdb5591bc838fc96fae5394298f5 Mon Sep 17 00:00:00 2001
+From e5ad77a97d771020af50ba542a3d5563a8bac0ad Mon Sep 17 00:00:00 2001
 From: xIsm4 <minelatinsoporte@gmail.com>
 Date: Mon, 25 Apr 2022 04:25:32 +0200
 Subject: [PATCH] Dont show extra info in connect errors
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 70bf87f7..df5f33d1 100644
+index 70bf87f7..fdac341b 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
 @@ -92,23 +92,11 @@ public class Util
@@ -35,7 +35,7 @@ index 70bf87f7..df5f33d1 100644
  
      public static String csv(Iterable<?> objects)
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 723b004a..725896ff 100644
+index c3e9d24b..725896ff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
@@ -46,11 +46,12 @@ index 723b004a..725896ff 100644
  import io.netty.channel.ChannelFuture;
  import io.netty.channel.ChannelFutureListener;
  import io.netty.channel.ChannelInitializer;
-@@ -399,7 +400,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -399,8 +400,13 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
--        return Util.exception( cause, false );
+-        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
+-        return ""; // Waterfall
 +        if ( cause instanceof ConnectTimeoutException )
 +        {
 +            return bungee.getTranslation( "timeout" );
@@ -62,5 +63,5 @@ index 723b004a..725896ff 100644
  
      @Override
 -- 
-2.34.1.windows.1
+2.32.0
 

@@ -1,4 +1,4 @@
-From d22662f6826b0cced8e7cd3c4052fb87b502d0d7 Mon Sep 17 00:00:00 2001
+From a102b1a867083a5fa6873b59eb015dfdddf651fd Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -205,7 +205,7 @@ index 00000000..91d60bfb
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0de754d5..a09d6baf 100644
+index 0b02ae7d..774439c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;
@@ -251,7 +251,7 @@ index 0de754d5..a09d6baf 100644
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -577,9 +589,7 @@ public class BungeeCord extends ProxyServer
+@@ -574,9 +586,7 @@ public class BungeeCord extends ProxyServer
          String translation = "<translation '" + name + "' missing>";
          try
          {
@@ -285,7 +285,7 @@ index 2ee16684..3a41769a 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 935d2e30..e8eb555c 100644
+index 5cc50806..ff9fd071 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -353,7 +353,7 @@ index a409d440..3503c089 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 33605007..89a6d14a 100644
+index 675fa8f1..c8748ce5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,8 @@
@@ -366,7 +366,7 @@ index 33605007..89a6d14a 100644
  import io.netty.channel.ChannelInboundHandlerAdapter;
  import io.netty.handler.codec.CorruptedFrameException;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 654203ab..a840bc70 100644
+index a95193ba..a4c3bd71 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,6 +1,8 @@
