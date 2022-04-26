@@ -1,0 +1,34 @@
+From f1f00b0c2e5d89472ad23b951181797c55b92424 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Tue, 26 Apr 2022 10:58:11 -0300
+Subject: [PATCH] Command List Format
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index ee0295c7..1ba8c8a5 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -35,6 +35,7 @@ public class MessagesConfiguration extends FlameConfig {
+ 			setIfUnexistant("already_connected", "&cYou are already connected to this server!", configuration);
+ 			setIfUnexistant("already_connected_proxy", "&cYou are already connected to this proxy!", configuration);
+ 			setIfUnexistant("already_connecting", "&cAlready connecting to this server!", configuration);
++			setIfUnexistant("command_list_format", "&aServers:&r", configuration);
+ 			setIfUnexistant("command_list", "&a[{0}] &e({1}): &r{2}", configuration);
+ 			setIfUnexistant("connect_kick", "&cKicked whilst connecting to {0}: {1}", configuration);
+ 			setIfUnexistant("current_server", "&6You are currently connected to {0}.", configuration);
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+index c2227110..d9c8e352 100644
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+@@ -25,6 +25,8 @@ public class CommandList extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_list_format" ) );
++
+         for ( ServerInfo server : ProxyServer.getInstance().getServers().values() )
+         {
+             if ( !server.canAccess( sender ) )
+-- 
+2.32.0
+
