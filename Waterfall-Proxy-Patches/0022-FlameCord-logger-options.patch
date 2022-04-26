@@ -1,14 +1,14 @@
-From d49ffb31a988bab4c7b0d2e2b652f65ce240c087 Mon Sep 17 00:00:00 2001
+From 8b4d2b4a334c1c60e707e785f16dfc6422b02854 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index c8148e90..701db67c 100644
+index c8148e90..c327841a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -12,6 +12,15 @@ import net.md_5.bungee.config.Configuration;
+@@ -12,6 +12,17 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -20,22 +20,49 @@ index c8148e90..701db67c 100644
 +    private boolean loggerDump = false;
 +    @Getter
 +    private boolean loggerHaProxy = false;
++    @Getter
++    private boolean loggerDetailedConnection = false;
 +
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
          try {
              final String fileName = "./flamecord.yml";
-@@ -25,6 +34,11 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -25,6 +36,12 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
 +            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
 +            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
 +            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
-+            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);            
++            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
++            this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
 +
              configurationProvider.save(configuration, configurationFile);
          } catch (final IOException e) {
              e.printStackTrace();
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index ff9fd071..849b4774 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Multimap;
++import dev._2lstudios.flamecord.FlameCord;
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFuture;
+@@ -404,7 +405,10 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     private String connectionFailMessage(Throwable cause)
+     {
+-        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
++        //FlameCord - Allow for toggle the logging of connection failures
++        if(FlameCord.getInstance().getFlameCordConfiguration().isLoggerDetailedConnection()) {
++            bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception(cause, false)); // Waterfall
++        }
+         return ""; // Waterfall
+     }
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index 39c54cf1..cfd6249e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
@@ -61,7 +88,7 @@ index 39c54cf1..cfd6249e 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 89a6d14a..8eda3110 100644
+index c8748ce5..778deb63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -46,7 +46,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter

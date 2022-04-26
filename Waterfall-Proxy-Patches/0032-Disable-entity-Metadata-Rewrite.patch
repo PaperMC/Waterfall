@@ -1,4 +1,4 @@
-From 6ea893947c44bc8002a84ca44e31dfc636c0bde0 Mon Sep 17 00:00:00 2001
+From bad778afeee50f6043077174f44ee97afcc8bd5b Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -324,10 +324,10 @@ index 3a41769a..d2bf095a 100644
              // Waterfall end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ff9fd071..c3e9d24b 100644
+index 849b4774..6131d7ea 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -43,7 +43,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+@@ -44,7 +44,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
  import net.md_5.bungee.api.score.Scoreboard;
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.connection.InitialHandler;
@@ -335,7 +335,7 @@ index ff9fd071..c3e9d24b 100644
  import net.md_5.bungee.forge.ForgeClientHandler;
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.forge.ForgeServerHandler;
-@@ -135,8 +134,6 @@ public final class UserConnection implements ProxiedPlayer
+@@ -136,8 +135,6 @@ public final class UserConnection implements ProxiedPlayer
      /*========================================================================*/
      @Getter
      private String displayName;
@@ -344,7 +344,7 @@ index ff9fd071..c3e9d24b 100644
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -157,8 +154,6 @@ public final class UserConnection implements ProxiedPlayer
+@@ -158,8 +155,6 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -353,7 +353,7 @@ index ff9fd071..c3e9d24b 100644
          this.displayName = name;
  
          tabListHandler = new ServerUnique( this );
-@@ -772,10 +767,4 @@ public final class UserConnection implements ProxiedPlayer
+@@ -776,10 +771,4 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
