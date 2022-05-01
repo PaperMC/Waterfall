@@ -1,4 +1,4 @@
-From 54524d2da5ce3339bb6d38a0086fe00359ddad25 Mon Sep 17 00:00:00 2001
+From 229256284f51ef81fc9771c0fc7bccb4d65e4c5e Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -39,7 +39,7 @@ index b3a70840..00ce099c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..70f112fd
+index 00000000..08316eea
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -63,7 +63,7 @@ index 00000000..70f112fd
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
-+        <log4j2.version>2.17.1</log4j2.version>
++        <log4j2.version>2.17.2</log4j2.version>
 +    </properties>
 +
 +    <dependencies>
@@ -251,7 +251,7 @@ index f371e3dd..505d1d14 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 6fd55644..cca0ef95 100644
+index c3ef3c8e..23bfa61d 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -286,18 +286,18 @@ index 6fd55644..cca0ef95 100644
 +        <dependency>
 +            <groupId>org.slf4j</groupId>
 +            <artifactId>slf4j-jdk14</artifactId>
-+            <version>1.7.30</version>
++            <version>1.7.36</version>
 +            <scope>compile</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.minecrell</groupId>
 +            <artifactId>terminalconsoleappender</artifactId>
-+            <version>1.2.0</version>
++            <version>1.3.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
 +            <artifactId>jline-terminal-jansi</artifactId>
-+            <version>3.12.1</version>
++            <version>3.21.0</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <!-- Waterfall end -->
@@ -1616,5 +1616,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.35.1
+2.36.0
 
