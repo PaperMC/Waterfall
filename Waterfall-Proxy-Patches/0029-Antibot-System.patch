@@ -1,4 +1,4 @@
-From 3ccc4c5dfc0f960aa55b79124c1643b7f6fcfc04 Mon Sep 17 00:00:00 2001
+From 7a0dd6f334550dbdd859b74172434f2905219cc5 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -716,10 +716,10 @@ index 00000000..c236160a
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
 new file mode 100644
-index 00000000..f0c72962
+index 00000000..71904b0c
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,52 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -729,6 +729,8 @@ index 00000000..f0c72962
 +
 +public class ReconnectCheck {
 +    private final AddressDataManager addressDataManager;
++    private int connections = 0;
++    private long lastConnection = 0;
 +
 +    public ReconnectCheck(final AddressDataManager addressDataManager) {
 +        this.addressDataManager = addressDataManager;
@@ -738,6 +740,14 @@ index 00000000..f0c72962
 +        final FlameCordConfiguration config = FlameCord.getInstance().getFlameCordConfiguration();
 +
 +        if (config.isAntibotReconnectEnabled()) {
++            final long currentTime = System.currentTimeMillis();
++
++            if (currentTime - lastConnection > config.getAntibotReconnectConnectionThresholdLimit()) {
++                lastConnection = currentTime;
++                connections = 0;
++            }
++
++            if (++connections > config.getAntibotReconnectConnectionThreshold()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
 +            final boolean needsAttempts = addressData.getTotalConnections() < config.getAntibotReconnectAttempts()
 +                    || addressData.getTotalPings() < config.getAntibotReconnectPings();
@@ -756,6 +766,7 @@ index 00000000..f0c72962
 +
 +                return needsAttempts;
 +            }
++        }
 +        }
 +
 +        return false;
@@ -800,10 +811,10 @@ index c78ab3a7..4079caa5 100644
  
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 5d92c20c..53e5ecee 100644
+index 5d92c20c..da3f915f 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,114 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,120 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -875,6 +886,10 @@ index 5d92c20c..53e5ecee 100644
 +    @Getter
 +    private int antibotReconnectMaxTime = 10000;
 +    @Getter
++    private int antibotReconnectConnectionThreshold = 1;
++    @Getter
++    private int antibotReconnectConnectionThresholdLimit = 8000;
++    @Getter
 +    private boolean antibotReconnectLog = true;
 +
 +    public void loadAntibot(final Configuration config) {
@@ -911,6 +926,8 @@ index 5d92c20c..53e5ecee 100644
 +        this.antibotReconnectAttempts = setIfUnexistant("antibot.reconnect.attempts", this.antibotReconnectAttempts, config);
 +        this.antibotReconnectPings = setIfUnexistant("antibot.reconnect.pings", this.antibotReconnectPings, config);
 +        this.antibotReconnectMaxTime = setIfUnexistant("antibot.reconnect.max-time", this.antibotReconnectMaxTime, config);
++        this.antibotReconnectConnectionThreshold = setIfUnexistant("antibot.reconnect.connection-threshold", this.antibotReconnectConnectionThreshold, config);
++        this.antibotReconnectConnectionThresholdLimit = setIfUnexistant("antibot.reconnect.connection-threshold-limit", this.antibotReconnectConnectionThresholdLimit, config);
 +        this.antibotReconnectLog = setIfUnexistant("antibot.reconnect.log", this.antibotReconnectLog, config);
 +    }
 +    // FlameCord end - Antibot System
@@ -918,7 +935,7 @@ index 5d92c20c..53e5ecee 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -117,6 +225,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -117,6 +231,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
