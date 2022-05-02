@@ -1,4 +1,4 @@
-From e5616ba6e102d223ec1d68f70df71d3a5a70bee0 Mon Sep 17 00:00:00 2001
+From 3ccc4c5dfc0f960aa55b79124c1643b7f6fcfc04 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -22,10 +22,10 @@ index f4bf5ec6..4a0d8e5d 100644
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..dfee9bf8
+index 00000000..89323f4b
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,40 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -51,6 +51,10 @@ index 00000000..dfee9bf8
 +            if (nicknames.size() > config.getAntibotAccountsLimit()) {
 +                nicknames.remove(nickname);
 +
++                if (config.isAntibotAccountsLog()) {
++                    System.out.println("[FlameCord] The player [" + nickname + "] has too many accounts!");
++                }
++
 +                if (config.isAntibotAccountsFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -64,10 +68,10 @@ index 00000000..dfee9bf8
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
 new file mode 100644
-index 00000000..cd8220d1
+index 00000000..c53a46d0
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
-@@ -0,0 +1,149 @@
+@@ -0,0 +1,153 @@
 +package dev._2lstudios.antibot;
 +
 +import java.io.IOException;
@@ -190,6 +194,10 @@ index 00000000..cd8220d1
 +            if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallIpset()) {
 +                Runtime runtime = Runtime.getRuntime();
 +
++                if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallLog()) {
++                    System.out.println("[FlameCord] The IP [" + hostString + "] was blacklisted!");
++                }
++
 +                try {
 +                    runtime.exec("ipset add flamecord_blacklist " + hostString);
 +                } catch (IOException exception) {
@@ -297,10 +305,10 @@ index 00000000..137ed980
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 new file mode 100644
-index 00000000..5cb5021a
+index 00000000..bc589302
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,145 @@
 +package dev._2lstudios.antibot;
 +
 +import java.io.File;
@@ -430,7 +438,12 @@ index 00000000..5cb5021a
 +            }
 +
 +            if (country != null && isBlacklisted(config, country)) {
-+                if (config.isAntibotNicknameFirewall()) {
++                if (config.isAntibotCountryLog()) {
++                    System.out.println("[FlameCord] The IP [" + addressData.getHostString()
++                            + "] comes from a blocked country! [" + country + "]");
++                }
++
++                if (config.isAntibotCountryFirewall()) {
 +                    addressData.firewall();
 +                }
 +
@@ -443,10 +456,10 @@ index 00000000..5cb5021a
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
 new file mode 100644
-index 00000000..76902c27
+index 00000000..927c1de3
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,37 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -468,6 +481,11 @@ index 00000000..76902c27
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
 +
 +            if (addressData.getTimeSinceLastConnection() <= config.getAntibotFastChatTime()) {
++                if (config.isAntibotFastChatLog()) {
++                    System.out.println(
++                            "[FlameCord] The IP [" + addressData.getHostString() + "] is using the chat too fast!");
++                }
++
 +                if (config.isAntibotFastChatFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -529,10 +547,10 @@ index 00000000..d3b77f03
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
 new file mode 100644
-index 00000000..f9b1ad70
+index 00000000..9105cdf4
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,47 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -565,6 +583,10 @@ index 00000000..f9b1ad70
 +            final String nickname = addressData.getLastNickname();
 +
 +            if (isBlacklisted(config, nickname)) {
++                if (config.isAntibotNicknameLog()) {
++                    System.out.println("[FlameCord] The player [" + nickname + "] has a blacklisted nickname!");
++                }
++
 +                if (config.isAntibotNicknameFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -578,10 +600,10 @@ index 00000000..f9b1ad70
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
 new file mode 100644
-index 00000000..8ffe1e21
+index 00000000..ff1708cc
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,66 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -628,6 +650,10 @@ index 00000000..8ffe1e21
 +                updatePassword(config, nickname, password);
 +
 +                if (repeatCount >= config.getAntibotPasswordLimit()) {
++                    if (config.isAntibotPasswordLog()) {
++                        System.out.println("[FlameCord] The player [" + nickname + "] has a repeated password!");
++                    }
++
 +                    if (config.isAntibotPasswordFirewall()) {
 +                        addressData.firewall();
 +                    }
@@ -646,10 +672,10 @@ index 00000000..8ffe1e21
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
 new file mode 100644
-index 00000000..f9ab936b
+index 00000000..c236160a
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,38 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -672,6 +698,11 @@ index 00000000..f9ab936b
 +
 +            if (addressData.getConnectionsSecond() >= config.getAntibotRatelimitConnectionsPerSecond()
 +                    || addressData.getPingsSecond() >= config.getAntibotRatelimitPingsPerSecond()) {
++                if (config.isAntibotRatelimitLog()) {
++                    System.out.println(
++                            "[FlameCord] The IP [" + addressData.getHostString() + "] is connecting too fast!");
++                }
++
 +                if (config.isAntibotRatelimitFirewall()) {
 +                    addressData.firewall();
 +                }
@@ -685,10 +716,10 @@ index 00000000..f9ab936b
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
 new file mode 100644
-index 00000000..f958a6f2
+index 00000000..f0c72962
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,41 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.SocketAddress;
@@ -708,13 +739,21 @@ index 00000000..f958a6f2
 +
 +        if (config.isAntibotReconnectEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(socketAddress);
-+            final boolean needsAttempts = addressData.getTotalConnections() < config.getAntibotReconnectAttempts() || addressData.getTotalPings() < config.getAntibotReconnectPings();
-+            final boolean tooSlow = addressData.getTimeSincePenultimateConnection() > config.getAntibotReconnectMaxTime();
++            final boolean needsAttempts = addressData.getTotalConnections() < config.getAntibotReconnectAttempts()
++                    || addressData.getTotalPings() < config.getAntibotReconnectPings();
++            final boolean tooSlow = addressData.getTimeSincePenultimateConnection() > config
++                    .getAntibotReconnectMaxTime();
 +
 +            if (tooSlow) {
 +                addressData.setTotalConnections(0);
-+                return false;
++                return true;
 +            } else {
++                if (config.isAntibotReconnectLog() && needsAttempts) {
++                    System.out.println(
++                            "[FlameCord] The IP [" + addressData.getHostString()
++                                    + "] needs to reconnect before joining!");
++                }
++
 +                return needsAttempts;
 +            }
 +        }
@@ -1130,5 +1169,5 @@ index ffea1599..eacc8aae 100644
              {
                  ch.close();
 -- 
-2.32.0
+2.34.1
 
