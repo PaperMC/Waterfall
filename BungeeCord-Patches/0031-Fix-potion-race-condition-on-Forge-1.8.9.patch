@@ -1,4 +1,4 @@
-From 18f888bac2b5402d2ed2e688e184099b4373730d Mon Sep 17 00:00:00 2001
+From 406c4652df1c052e7b0219f8a4e400a34aee01ef Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index 35236382..558d0dbb 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index c4434b24..4a07e5be 100644
+index ad0c66a5..014383b3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -66,11 +66,10 @@ index c4434b24..4a07e5be 100644
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
-@@ -618,10 +634,11 @@ public enum Protocol
-                         mappingIndex++;
-                     }
+@@ -620,9 +636,11 @@ public enum Protocol
+                     break;
                  }
--
+ 
 +            if (mapping.packetID != Integer.MIN_VALUE) { // Waterfall
                  ProtocolData data = protocols.get( protocol );
                  data.packetMap.put( packetClass, mapping.packetID );
@@ -281,5 +280,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.35.3
+2.36.1.windows.1
 
