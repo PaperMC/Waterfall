@@ -1,14 +1,14 @@
-From fe19c98e455af24d9970a73215de3b651545d919 Mon Sep 17 00:00:00 2001
+From 3eb1986d6a7a41e141243a72281ca574cc258bca Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 23571d40..1ec75614 100644
+index 3372fb71..02e36035 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -195,6 +195,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -197,6 +197,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -22,7 +22,7 @@ index 23571d40..1ec75614 100644
                  String kickMessage;
  
                  if ( v1_5 )
-@@ -260,6 +267,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -262,6 +269,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -40,7 +40,7 @@ index 23571d40..1ec75614 100644
                          // FlameCord start - 1.7.x support
                          Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
                          if ( ProtocolConstants.isBeforeOrEq( handshake.getProtocolVersion() , ProtocolConstants.MINECRAFT_1_8 ) )
-@@ -304,11 +322,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -306,11 +324,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(PingPacket ping) throws Exception
      {
@@ -58,7 +58,7 @@ index 23571d40..1ec75614 100644
      }
  
      @Override
-@@ -617,7 +637,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -644,7 +664,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -175,5 +175,5 @@ index b2b19996..b1ecb7ef 100644
          }
  
 -- 
-2.32.0
+2.36.1.windows.1
 

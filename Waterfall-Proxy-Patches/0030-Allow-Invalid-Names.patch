@@ -1,4 +1,4 @@
-From 478e6dc923312f50c739de42076d0c872925e506 Mon Sep 17 00:00:00 2001
+From f1ef24bf5679ec5b5f06df202a1f3952a8f2f65e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
@@ -29,10 +29,10 @@ index da3f915f..31631626 100644
  
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 813f0e9b..7fa3217e 100644
+index 716949ae..7c539248 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -498,7 +498,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -500,7 +500,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME;
  
@@ -42,5 +42,5 @@ index 813f0e9b..7fa3217e 100644
              disconnect( bungee.getTranslation( "name_invalid" ) );
              return;
 -- 
-2.34.1
+2.36.1.windows.1
 
