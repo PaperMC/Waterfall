@@ -1,4 +1,4 @@
-From 8b4d2b4a334c1c60e707e785f16dfc6422b02854 Mon Sep 17 00:00:00 2001
+From 409d6c896abd462511e28f1932a124d9966de6e1 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
@@ -40,7 +40,7 @@ index c8148e90..c327841a 100644
          } catch (final IOException e) {
              e.printStackTrace();
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ff9fd071..849b4774 100644
+index 849ec128..dd7c8532 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -51,7 +51,7 @@ index ff9fd071..849b4774 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -404,7 +405,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -405,7 +406,10 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
@@ -64,10 +64,10 @@ index ff9fd071..849b4774 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 39c54cf1..cfd6249e 100644
+index c6d552e7..477ca39a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -370,7 +370,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -372,7 +372,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -77,7 +77,7 @@ index 39c54cf1..cfd6249e 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -379,7 +380,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -381,7 +382,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -139,5 +139,5 @@ index c8748ce5..778deb63 100644
              {
                  if ( cause instanceof ReadTimeoutException )
 -- 
-2.32.0
+2.36.1.windows.1
 
