@@ -1,4 +1,4 @@
-From 6fc97a975ad60d87355e86db978659976d798327 Mon Sep 17 00:00:00 2001
+From 812f4f17431150febe8af3f63cb3d6c9e94671f4 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -206,10 +206,10 @@ index 00000000..e43f5dac
 +log4j.skipJansi=true
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 new file mode 100644
-index 00000000..cfd039cd
+index 00000000..e32dd7b5
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2.xml
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<Configuration status="warn" shutdownHook="disable">
 +    <Appenders>
@@ -232,311 +232,155 @@ index 00000000..cfd039cd
 +        </Root>
 +    </Loggers>
 +</Configuration>
-diff --git a/log4j/target/classes/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.class b/log4j/target/classes/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.class
-new file mode 100644
-index 0000000000000000000000000000000000000000..20c55d8a1db4bbb0c69798c0b3adaca184d6700d
-GIT binary patch
-literal 3100
-zcmbVO*;m|D9R4oMkTRq~vDji)y1)$E)JoT>XiGs_2U-iFZQU{<%mgyYm}F?H)_wmI
-zeDJl;Jx9Bq)8kVgJpM@@^}9)!36uekFUh^X`&+-?a_=91KY9XS1V5$Fgk}W^6-l%R
-zbT4YlTDIz&R@QQgMbj>3CpCNCGF*X{Gp23&qXNz8%$$NP0=;!^-Ldtm>l(J79jh%T
-zHLo<KRZ>vU+=@1+3bv|v4($TROeb43{Zh4%y`lMryP#QCS+B39`H{tJp5Kf7)SO7_
-znqD#l+VgeWG?7bD{WcYycwQi7dK4*Y1&fUP(=kpe4PxT)6+?I2`CR5&3SD?X!44HW
-z(Jip6uJ;*kfvrWum%0siS}Rlg_H-sxZ)t>T#&?Mrec6TG3ihbji+uunb*G#yI!@6t
-zvRsxOJ6q5^BjWZ1+U%-j%{t@dihqlsMh?d{u4AN=`Rh?}00#w<TBTx9bl-|MK>`=5
-zw(gs>HW4jyZ8(fx1$`>g$S|0CsDzN1(z{C4H!dukEqKhNz*yXuONB*4_j55gpS2Ko
-zG~!n<K+hbvnAIvWceTPIykUlkrcA<+ieZ_76fvGMJWnecl6*wPOE@a9jpQqa=Tu$Y
-zI9HW5DX@E0z^hN0h7lZ7a9qU+nTDP9Xjd}|v{H4LI|Zi%4%9iPOwVIVR|Ljy>PAIk
-zDjmzIID=ONw#b?=mJN%=v&x@Z{m4VQ^D16ba8|`Rj0p@jL}amQWdnV)u4a3d<~wXY
-z#djhbxpfOVFp<eOR2m4=hc1k(n852{DPPuHmNDCpRoIozT#waqEqfQ(tPRzc!#ri9
-zd`&oRS*s^+5^u=4k{3wF3n^-ob*yFPq=(ZgF5z;Rmf4c)+^_|9tRNe-ML?DP&64iN
-z6%{j><y<1*0)_NuC^SA_6HZj?YfNV5q|rHP^lgEQo0|*DDc;U8nCp>b<{0seS+q63
-z>aw=a#~O|8c_t<l0oXW>a75)sa{`GmXP(;H^QLV~SIY&%oec+LXWr2@Yff`bxsQkm
-zzhtr&PUQdBc&0g}QY~1fSK55=GTat77{UU3VzJh`rZ%I=D2eh8>e)1Ax)5bipz~SG
-zI4rHOSNCtAD(EJ*$c(S)O9VeaN5PUn$J%5nD09R&Y>=pFlM7Z=f|ArN$74EDGr=62
-zFy$26&UD3ZxnXI8rp`Hz@A<A)nKJy6Gw-#xz)zuyWd%1>+yp0nII4o$GVNt&$;jrl
-za$#PhgtnmR935n8V~f{!f5uxe5(*83m#lXv?>I}<O1$`23a%dfD#6)X6(i36-w#8R
-z8_UM;lt}X!Ukfv)Z{#}g$(kE8np<(9h(!2qr|=m*SMY_3FY%SY!Nz%Wic^}+D~LrW
-zuZOUsI11zFMX+o%c7wX5n>40gux-N~voy~$JO$qg9BzQ;>O?5`ffcqfD_bPY8us%c
-z)Wo*|t6#pf_<x7HCR{~=e?Ia^xyIEfnz;fx`tL*ZKZbJkK3ac6>TbY&onQGh1a?ra
-z8}D+ZhWvOB?{g>c0X__MiD7C@l6Jd);2t`DM&fS&uSjvd{Q+KlM3?Xohnn#_`lm=7
-zoaQI{6x-x)=pJ64zJuiH1b3$&U^G~qe~Mo2&p-JEdk4D{k1=_5Nbc|BB7aj4@n!;d
-z(7_`~=Kie&?$ViIUiGJOlA*}}j$<pod$5J?uvYZQw-Wkrh+MtoOOvyYH~0X?F^E|V
-z!9f<E^06U<9SH-9f@NsXP@sha)U0Ek(DY#r1{P>*oED2H5h#<AJxI3xgCj^NXj9Oo
-zpkKivgo2aeFC0~1NgVB39tJ2P^C0TL%M<~}VxWr}=+5SXr`8c{MujSy@DW`8r3W4z
-U|Cr%^jc-Uvk@79R$B*d#7q?+y00000
-
-literal 0
-HcmV?d00001
-
-diff --git a/log4j/target/classes/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.class b/log4j/target/classes/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.class
-new file mode 100644
-index 0000000000000000000000000000000000000000..128532ec6dbe11cc417d4af9b40669a217ed883c
-GIT binary patch
-literal 1923
-zcma)7ZC4XV6n=(m*d#6m5eg_E7H#uFSya@PSgKG`!G+L7W7WP*vcqQSlJyK5diuS;
-zq+j~A^+V*e=lBEqS9<!rpK9-HHX@#oLe635&fJ&h-uuj*KmYyxC4fcLQ|LoXhh`v-
-zeukl4e!xwSHypEA-4(Tfq5rnqaD!!rSUOWlA%Uchlz}ra7-oIxnEV;9)rIN#j^mOY
-zeHV94%Xc<;gF8Yp3^*bv`F=oqp*)+;SiKBMDWAeS7}POj;4Fq2uAHdv`sTX7(sVsr
-zg-Y)DvJ++_{l8Iq;CRz-K8X>G>Uh_{7{(c<Pefyh1K}}f>sy5)!%PnVN-@mxynzdt
-zWJv6bATnR?g*-GoEpS!FX#*EAL%pr4Ds4-*5tIWd_#VR;bt3FIW&6ef;d&3VIxZWy
-zg7=THqWt52Ajq<x&=#9SkMVR@51ERpS=vBG6)e71Diur0YtF!&a;fasq)cF*0Vyot
-zs*Y<0u49p0hLD<p>%Asbr>9AxQfECMMGo0Y84>yNQ9500DW?V8G;j+aF^o|3hx=li
-zOVJ4K@rLaQxle6NKT#B4z><MHZZn*ra7V|}>CDr1vd8>K3Sod{1E1m!QC^BY|3E}X
-z#Fz+cS3^~+6|Cy`%)lB7)Rry<XcH@T*RmKUx}XTD6Jofh2(`{I*)3*UEmP5PpWz0z
-z-Eo6@vuggp10i>~=k3*w)<<`Faf7NJWs|}NVya4828t@#6u0f@EP*dbUTHQQAy$29
-z>nNW(%%cv3PJ^{o-xdsmmfH|p&AqCS4|vt1ongzbaj(LqtK?`?3+gWQ@RoJDq~3~_
-zCrZ}nQUv6FvU4krb*qhv^z?e0Fbo&E^dTw)=_RDFT^Y{MOFafbI21`;lQbe3&Uf+o
-zI`lv};I;2J`Li%*9W{oFC(okLvksL}FWyqa%6?PUM8Q?X9eJxV^NNhPiW0pP>aUM}
-z^j3i30ZG^COE(zt><h5p!sCbZUp*_JH$sDf3ayN`5+318l9G6gCy|4{5hG{7?jiL1
-z*+UFG$GH|JT9`V-rMCP*N6rp^cnH(V#ag(LYvJR~xtGhao7$*0^)p82Mzw28@!Ukb
-zg-?Fc*e|dC%00*37Cz7YfsMy6V70J0yiNAMQnVNp%6UQv3=+yA8dhg<8Rw9tl}Tg1
-zfN@y#En$+-PQj)jsxp}&+X5keim#{)8g}qCzM=gr?%-Q|M_F-_#?bc)ONi^J>R8ZW
-PGb++Qw9Uvs)zJA5?R^HT
-
-literal 0
-HcmV?d00001
-
-diff --git a/log4j/target/classes/log4j2-bungee.xml b/log4j/target/classes/log4j2-bungee.xml
-new file mode 100644
-index 00000000..1c3265ed
---- /dev/null
-+++ b/log4j/target/classes/log4j2-bungee.xml
-@@ -0,0 +1,34 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<!-- Log4j configuration that replicates the old BungeeCord logging setup -->
-+<Configuration status="warn">
-+    <Appenders>
-+        <TerminalConsole name="TerminalConsole">
-+            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}%n%ex}">
-+                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}%n%ex}" />
-+                </LoggerNamePatternSelector>
-+            </PatternLayout>
-+        </TerminalConsole>
-+        <RollingRandomAccessFile name="File" fileName="proxy.log.0" filePattern="proxy.log.%i" immediateFlush="false">
-+            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}{strip}%n%ex">
-+                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}{strip}%n%ex" />
-+                </LoggerNamePatternSelector>
-+            </PatternLayout>
-+            <Policies>
-+                <OnStartupTriggeringPolicy />
-+                <SizeBasedTriggeringPolicy size="8 MB" />
-+            </Policies>
-+            <DefaultRolloverStrategy fileIndex="min" max="8" />
-+        </RollingRandomAccessFile>
-+    </Appenders>
-+
-+    <Loggers>
-+        <Root level="info">
-+            <AppenderRef ref="TerminalConsole" />
-+            <AppenderRef ref="File" />
-+        </Root>
-+    </Loggers>
-+</Configuration>
-diff --git a/log4j/target/classes/log4j2.component.properties b/log4j/target/classes/log4j2.component.properties
-new file mode 100644
-index 00000000..e43f5dac
---- /dev/null
-+++ b/log4j/target/classes/log4j2.component.properties
-@@ -0,0 +1,2 @@
-+log4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
-+log4j.skipJansi=true
-diff --git a/log4j/target/classes/log4j2.xml b/log4j/target/classes/log4j2.xml
-new file mode 100644
-index 00000000..a42d63fa
---- /dev/null
-+++ b/log4j/target/classes/log4j2.xml
-@@ -0,0 +1,32 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<Configuration status="warn">
-+    <Appenders>
-+        <TerminalConsole name="TerminalConsole">
-+            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %paperMinecraftFormatting{%msg}%n%xEx}">
-+                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %paperMinecraftFormatting{%msg}%n%xEx}" />
-+                </LoggerNamePatternSelector>
-+            </PatternLayout>
-+        </TerminalConsole>
-+        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
-+            <PatternLayout>
-+                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %paperMinecraftFormatting{%msg}{strip}%n">
-+                    <!-- Log root and BungeeCord loggers without prefix -->
-+                    <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
-+                </LoggerNamePatternSelector>
-+            </PatternLayout>
-+            <Policies>
-+                <TimeBasedTriggeringPolicy />
-+                <OnStartupTriggeringPolicy />
-+            </Policies>
-+        </RollingRandomAccessFile>
-+    </Appenders>
-+
-+    <Loggers>
-+        <Root level="info">
-+            <AppenderRef ref="TerminalConsole" />
-+            <AppenderRef ref="File" />
-+        </Root>
-+    </Loggers>
-+</Configuration>
-diff --git a/log4j/target/maven-archiver/pom.properties b/log4j/target/maven-archiver/pom.properties
-new file mode 100644
-index 00000000..23184eeb
---- /dev/null
-+++ b/log4j/target/maven-archiver/pom.properties
-@@ -0,0 +1,5 @@
-+#Generated by Maven
-+#Thu Dec 23 18:28:21 CET 2021
-+groupId=io.github.waterfallmc
-+artifactId=waterfall-log4j
-+version=1.18-R0.1-SNAPSHOT
-diff --git a/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst b/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-new file mode 100644
-index 00000000..f6589c02
---- /dev/null
-+++ b/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-@@ -0,0 +1,2 @@
 +io/github/waterfallmc/waterfall/log4j/WaterfallLogger.class
 +io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.class
-diff --git a/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst b/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+diff --git a/log4j/target/waterfall-log4j-1.19-R0.1-SNAPSHOT.jar b/log4j/target/waterfall-log4j-1.19-R0.1-SNAPSHOT.jar
 new file mode 100644
-index 00000000..ba7fac50
---- /dev/null
-+++ b/log4j/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-@@ -0,0 +1,2 @@
-+/Users/noah/Documents/Waterfall/Waterfall-Proxy/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
-+/Users/noah/Documents/Waterfall/Waterfall-Proxy/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
-diff --git a/log4j/target/waterfall-log4j-1.18-R0.1-SNAPSHOT.jar b/log4j/target/waterfall-log4j-1.18-R0.1-SNAPSHOT.jar
-new file mode 100644
-index 0000000000000000000000000000000000000000..65fc1bda22d864cd07d11000d1d3a95979aea8ef
+index 0000000000000000000000000000000000000000..766ef1f04a262f140d935f70c9b7879cce847640
 GIT binary patch
-literal 6589
-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
-F{{TZ1VZ#6b
+literal 6609
+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
 
 literal 0
 HcmV?d00001
 
 diff --git a/log4j/waterfall-log4j.iml b/log4j/waterfall-log4j.iml
 new file mode 100644
-index 00000000..712199a4
+index 00000000..b5cd277d
 --- /dev/null
 +++ b/log4j/waterfall-log4j.iml
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,32 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<module type="JAVA_MODULE" version="4">
 +  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-+    <output url="file://$MODULE_DIR$/../target/classes" />
-+    <output-test url="file://$MODULE_DIR$/../target/test-classes" />
++    <output url="file://$MODULE_DIR$/target/classes" />
++    <output-test url="file://$MODULE_DIR$/target/test-classes" />
 +    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
 +      <excludeFolder url="file://$MODULE_DIR$/target" />
 +    </content>
 +    <orderEntry type="inheritedJdk" />
 +    <orderEntry type="sourceFolder" forTests="false" />
++    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.17.2" level="project" />
++    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.17.2" level="project" />
++    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-iostreams:2.17.2" level="project" />
++    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-jul:2.17.2" level="project" />
++    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.17.2" level="project" />
++    <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
++    <orderEntry type="library" scope="RUNTIME" name="Maven: com.lmax:disruptor:3.4.4" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13.2" level="project" />
++    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
++    <orderEntry type="library" name="Maven: com.google.guava:guava:31.0.1-jre" level="project" />
++    <orderEntry type="library" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
++    <orderEntry type="library" name="Maven: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
++    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
++    <orderEntry type="library" name="Maven: org.checkerframework:checker-qual:3.12.0" level="project" />
++    <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.7.1" level="project" />
++    <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.3" level="project" />
++    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.findbugs:findbugs-annotations:3.0.1" level="project" />
++    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.22" level="project" />
 +  </component>
 +</module>
 \ No newline at end of file
 diff --git a/pom.xml b/pom.xml
-index 2e3d92ce..85a8a945 100644
+index fad424b6..2b544c23 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
