@@ -1,4 +1,4 @@
-From 8bcafa4ef75dec34e916726104eae43f65bd6df3 Mon Sep 17 00:00:00 2001
+From 9ef43c2b8ed992ad9637f1fae53685c0d728a6e1 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -67,7 +67,7 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index ab9519f9..40281aa4 100644
+index 9d7d4b9a..18e548df 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -19,6 +19,9 @@ import se.llbit.nbt.Tag;
@@ -133,7 +133,7 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 8b7e0708..37d28c01 100644
+index b68b33a9..f5e414c1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -78,7 +78,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -146,10 +146,10 @@ index 8b7e0708..37d28c01 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b634d256..2d7101ff 100644
+index edd44135..08af9d08 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -14,6 +14,8 @@ import java.util.Set;
+@@ -15,6 +15,8 @@ import java.util.Set;
  import java.util.UUID;
  import java.util.logging.Level;
  import javax.crypto.SecretKey;
@@ -158,8 +158,8 @@ index b634d256..2d7101ff 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -419,6 +421,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+@@ -445,6 +447,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
 +        // Waterfall start
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.33.0
+2.35.3
 

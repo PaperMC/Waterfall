@@ -1,4 +1,4 @@
-From cffebb622018407da2281f266d82acce6b752cac Mon Sep 17 00:00:00 2001
+From 887e10d7d4ecb72a8204708591dc90deb0f5dd61 Mon Sep 17 00:00:00 2001
 From: FivePB <admin@fivepb.me>
 Date: Tue, 16 Nov 2021 21:15:32 +0100
 Subject: [PATCH] Configurable plugin messaging limits
@@ -83,10 +83,10 @@ index 527f310e..e31fb00a 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c3e60fa5..4afab05d 100644
+index 86d28d1c..51d5bde4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -682,9 +682,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -708,9 +708,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
              for ( String id : content.split( "\0" ) )
              {
@@ -101,5 +101,5 @@ index c3e60fa5..4afab05d 100644
              }
          } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
 -- 
-2.33.1
+2.35.3
 
