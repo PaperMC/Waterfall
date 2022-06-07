@@ -1,14 +1,14 @@
-From 8bcabbb68cb6fbd827fecd2b96afd05107f6cd4a Mon Sep 17 00:00:00 2001
+From 18f888bac2b5402d2ed2e688e184099b4373730d Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 15a61b7e..ee2317e8 100644
+index 35236382..558d0dbb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -8,6 +8,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
+@@ -10,6 +10,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -17,7 +17,7 @@ index 15a61b7e..ee2317e8 100644
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -193,4 +195,14 @@ public abstract class AbstractPacketHandler
+@@ -213,4 +215,14 @@ public abstract class AbstractPacketHandler
      public void handle(GameState gameState) throws Exception
      {
      }
@@ -33,10 +33,10 @@ index 15a61b7e..ee2317e8 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 220365dd..7f0b71c9 100644
+index c4434b24..4a07e5be 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -18,6 +18,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+@@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
@@ -45,9 +45,9 @@ index 220365dd..7f0b71c9 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -120,6 +122,20 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x0C ),
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x0D )
+@@ -133,6 +135,20 @@ public enum Protocol
+                     PlayerChat::new,
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x30 )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -66,7 +66,7 @@ index 220365dd..7f0b71c9 100644
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
-@@ -571,10 +587,11 @@ public enum Protocol
+@@ -618,10 +634,11 @@ public enum Protocol
                          mappingIndex++;
                      }
                  }
@@ -173,7 +173,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 61e1a9d7..2cbf002e 100644
+index ccb9efdc..c96117c6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -186,7 +186,7 @@ index 61e1a9d7..2cbf002e 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -124,6 +126,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -281,5 +281,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.35.1
+2.35.3
 

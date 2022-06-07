@@ -1,4 +1,4 @@
-From 229256284f51ef81fc9771c0fc7bccb4d65e4c5e Mon Sep 17 00:00:00 2001
+From 5d176c6b2a2098239679debe4aa65787a553366c Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index b3a70840..00ce099c 100644
+index cf7ef042..688f1b99 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index b3a70840..00ce099c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..08316eea
+index 00000000..44bf7f91
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..08316eea
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.18-R0.1-SNAPSHOT</version>
++        <version>1.19-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.18-R0.1-SNAPSHOT</version>
++    <version>1.19-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log</name>
@@ -206,10 +206,10 @@ index 00000000..e43f5dac
 +log4j.skipJansi=true
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 new file mode 100644
-index 00000000..cfd039cd
+index 00000000..e32dd7b5
 --- /dev/null
 +++ b/log4j/src/main/resources/log4j2.xml
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<Configuration status="warn" shutdownHook="disable">
 +    <Appenders>
@@ -232,8 +232,10 @@ index 00000000..cfd039cd
 +        </Root>
 +    </Loggers>
 +</Configuration>
++io/github/waterfallmc/waterfall/log4j/WaterfallLogger.class
++io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.class
 diff --git a/pom.xml b/pom.xml
-index f371e3dd..505d1d14 100644
+index fad424b6..2b544c23 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -251,7 +253,7 @@ index f371e3dd..505d1d14 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index c3ef3c8e..23bfa61d 100644
+index 8506b681..205162db 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -279,7 +281,7 @@ index c3ef3c8e..23bfa61d 100644
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
 @@ -130,6 +131,25 @@
-             <version>1.7.2</version>
+             <version>1.8.0</version>
              <scope>runtime</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->
@@ -303,7 +305,7 @@ index c3ef3c8e..23bfa61d 100644
 +        <!-- Waterfall end -->
      </dependencies>
  
-     <build>
+     <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 new file mode 100644
 index 00000000..765d24bc
@@ -548,7 +550,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index 293597b6..00000000
+index b995ba85..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -560,13 +562,13 @@ index 293597b6..00000000
 -    <parent>
 -        <groupId>net.md-5</groupId>
 -        <artifactId>bungeecord-parent</artifactId>
--        <version>1.18-R0.1-SNAPSHOT</version>
+-        <version>1.19-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <groupId>net.md-5</groupId>
 -    <artifactId>bungeecord-slf4j</artifactId>
--    <version>1.18-R0.1-SNAPSHOT</version>
+-    <version>1.19-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>BungeeCord-SLF4J</name>
@@ -1616,5 +1618,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.36.0
+2.35.3
 

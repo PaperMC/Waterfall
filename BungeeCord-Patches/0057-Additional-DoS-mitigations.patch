@@ -1,4 +1,4 @@
-From a97fd919809d2284cdc6a5d68168c99bfe795d9c Mon Sep 17 00:00:00 2001
+From 75a3cc5b687afea868a4e07e79b17a98c0a15d45 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,7 +8,7 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 40281aa4..a310844d 100644
+index 18e548df..55c6ee72 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -44,6 +44,7 @@ public abstract class DefinedPacket
@@ -27,7 +27,7 @@ index 40281aa4..a310844d 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
-@@ -284,4 +286,21 @@ public abstract class DefinedPacket
+@@ -345,4 +347,21 @@ public abstract class DefinedPacket
  
      @Override
      public abstract String toString();
@@ -145,12 +145,12 @@ index f5e414c1..ac83e325 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-index 388f6cdb..53575ce0 100644
+index 8a60be9f..3a38d05a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-@@ -38,4 +38,16 @@ public class EncryptionResponse extends DefinedPacket
-     {
-         handler.handle( this );
+@@ -63,4 +63,16 @@ public class EncryptionResponse extends DefinedPacket
+         private final long salt;
+         private final byte[] signature;
      }
 +
 +    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
@@ -166,18 +166,10 @@ index 388f6cdb..53575ce0 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 08ee376e..cfd8e64e 100644
+index 8b148625..944ef000 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
- import lombok.NoArgsConstructor;
- import net.md_5.bungee.protocol.AbstractPacketHandler;
- import net.md_5.bungee.protocol.DefinedPacket;
-+import net.md_5.bungee.protocol.ProtocolConstants;
- 
- @Data
- @NoArgsConstructor
-@@ -34,4 +35,12 @@ public class LoginRequest extends DefinedPacket
+@@ -45,4 +45,12 @@ public class LoginRequest extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -241,5 +233,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.34.1
+2.35.3
 
