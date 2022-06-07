@@ -1,4 +1,4 @@
-From 75a3cc5b687afea868a4e07e79b17a98c0a15d45 Mon Sep 17 00:00:00 2001
+From 8e2cfd0d45e5be308cda5f55ca6093fb90c7bbfe Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -145,10 +145,10 @@ index f5e414c1..ac83e325 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-index 8a60be9f..3a38d05a 100644
+index 8a60be9f..50bb52b1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionResponse.java
-@@ -63,4 +63,16 @@ public class EncryptionResponse extends DefinedPacket
+@@ -63,4 +63,17 @@ public class EncryptionResponse extends DefinedPacket
          private final long salt;
          private final byte[] signature;
      }
@@ -157,6 +157,7 @@ index 8a60be9f..3a38d05a 100644
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
 +        // It turns out these come out to the same length, whether we're talking >=1.8 or not.
 +        // The length prefix always winds up being 2 bytes.
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
 +        return 260;
 +    }
 +
@@ -166,10 +167,10 @@ index 8a60be9f..3a38d05a 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 8b148625..944ef000 100644
+index 8b148625..836b4722 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -45,4 +45,12 @@ public class LoginRequest extends DefinedPacket
+@@ -45,4 +45,13 @@ public class LoginRequest extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -178,6 +179,7 @@ index 8b148625..944ef000 100644
 +    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
 +        // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
 +        // legal on the protocol level.
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
 +        return 1 + (16 * 4);
 +    }
 +    // Waterfall end
@@ -233,5 +235,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.35.3
+2.36.1
 
