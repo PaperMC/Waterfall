@@ -1,4 +1,4 @@
-From 8e2cfd0d45e5be308cda5f55ca6093fb90c7bbfe Mon Sep 17 00:00:00 2001
+From b901ef5501cdc65df1f175d700576641063fdff4 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,7 +8,7 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 18e548df..55c6ee72 100644
+index c4af6e76..bafef27c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -44,6 +44,7 @@ public abstract class DefinedPacket
@@ -27,7 +27,7 @@ index 18e548df..55c6ee72 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
-@@ -345,4 +347,21 @@ public abstract class DefinedPacket
+@@ -351,4 +353,21 @@ public abstract class DefinedPacket
  
      @Override
      public abstract String toString();
