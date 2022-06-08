@@ -1,4 +1,4 @@
-From b4d62f8bb20ed8b13f50c7993786dfe086c0311c Mon Sep 17 00:00:00 2001
+From a0dc7dba773619cee8639cb1707ca40ece5717bc Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -324,7 +324,7 @@ index cb98a8ea..c0b42ee2 100644
              // Waterfall end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 999c32f6..f2c60db6 100644
+index 7c0c2fff..d37f419a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -44,7 +44,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -353,7 +353,7 @@ index 999c32f6..f2c60db6 100644
          this.displayName = name;
  
          tabListHandler = new ServerUnique( this );
-@@ -788,10 +783,4 @@ public final class UserConnection implements ProxiedPlayer
+@@ -794,10 +789,4 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -433,7 +433,7 @@ index 6082d40c..194ada04 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7dfff614..9256477e 100644
+index 67263bca..bd6fe2d5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -24,7 +24,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -3233,5 +3233,5 @@ index caed4384..af428090 100644
      }
  
 -- 
-2.34.1
+2.36.1.windows.1
 

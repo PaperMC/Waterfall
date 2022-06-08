@@ -1,4 +1,4 @@
-From cb76c6ea58a87229b54a1459474f8d622f970262 Mon Sep 17 00:00:00 2001
+From 5307c5cb4ab7cc87761c9e2d4a7abcf27388b28e Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 13:40:39 -0300
 Subject: [PATCH] FlameCord message configuration
@@ -34,10 +34,10 @@ index ac37eaa3..c78ab3a7 100644
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 new file mode 100644
-index 00000000..57462992
+index 00000000..4f306660
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,114 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -82,8 +82,6 @@ index 00000000..57462992
 +					"&cCould not connect to a default or fallback server, please try again later: {0}", configuration);
 +			setIfUnexistant("fallback_lobby",
 +					"&cCould not connect to target server, you have been moved to a fallback server.", configuration);
-+			setIfUnexistant("timeout",
-+					"Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?", configuration);
 +			setIfUnexistant("lost_connection", "[Proxy] Lost connection to server.", configuration);
 +			setIfUnexistant("mojang_fail", "Error occurred while contacting login servers, are they down?",
 +					configuration);
@@ -103,6 +101,9 @@ index 00000000..57462992
 +			setIfUnexistant("name_invalid", "Username contains invalid characters.", configuration);
 +			setIfUnexistant("ping_cannot_connect", "&c[Bungee] Can't connect to server.", configuration);
 +			setIfUnexistant("offline_mode_player", "Not authenticated with Minecraft.net", configuration);
++			setIfUnexistant("secure_profile_required", "A secure profile is required to join this server.", configuration);
++			setIfUnexistant("secure_profile_expired", "Secure profile expired.", configuration);
++			setIfUnexistant("secure_profile_invalid", "Secure profile invalid.", configuration);
 +			setIfUnexistant("message_needed", "&cYou must supply a message.", configuration);
 +			setIfUnexistant("error_occurred_player",
 +					"&cAn error occurred while parsing your message. (Hover for details)", configuration);
@@ -200,7 +201,7 @@ index 91d60bfb..cc76325b 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b6ecffc3..62cd066d 100644
+index 745d8efb..e564458f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -594,14 +594,8 @@ public class BungeeCord extends ProxyServer
@@ -221,5 +222,5 @@ index b6ecffc3..62cd066d 100644
  
      @Override
 -- 
-2.32.0
+2.36.1.windows.1
 
