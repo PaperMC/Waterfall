@@ -1,0 +1,38 @@
+From d8378f9b9ca04929d9a4fb98959cca3506f0a6b4 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sun, 12 Jun 2022 06:45:54 +0100
+Subject: [PATCH] Add protocol version to packet not found message
+
+Also avoids a double get, but, this is probably trivial
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 1b5189c1..084f7add 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -2,6 +2,8 @@ package net.md_5.bungee.protocol;
+ 
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.Iterables;
++
++import gnu.trove.impl.Constants;
+ import gnu.trove.map.TIntObjectMap;
+ import gnu.trove.map.TObjectIntMap;
+ import gnu.trove.map.hash.TIntObjectHashMap;
+@@ -650,9 +652,12 @@ public enum Protocol
+             {
+                 throw new BadPacketException( "Unsupported protocol version" );
+             }
+-            Preconditions.checkArgument( protocolData.packetMap.containsKey( packet ), "Cannot get ID for packet %s in phase %s with direction %s", packet, protocolPhase, direction );
++            // Waterfall start
++            final int packetId = protocolData.packetMap.get(packet);
++            Preconditions.checkArgument( packetId != gnu.trove.impl.Constants.DEFAULT_INT_NO_ENTRY_VALUE, "Cannot get ID for packet %s in phase %s with direction %s for protocol version %d", packet, protocolPhase, direction, version ); // Waterfall - add version
+ 
+-            return protocolData.packetMap.get( packet );
++            return packetId;
++            // Waterfall end
+         }
+     }
+ }
+-- 
+2.36.1
+

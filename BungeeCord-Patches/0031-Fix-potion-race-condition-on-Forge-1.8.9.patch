@@ -1,4 +1,4 @@
-From 406c4652df1c052e7b0219f8a4e400a34aee01ef Mon Sep 17 00:00:00 2001
+From f905ea8b649f836d74d32de87355c73670d0f419 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index 35236382..558d0dbb 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index ad0c66a5..014383b3 100644
+index ad0c66a5..1b5189c1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -54,30 +54,18 @@ index ad0c66a5..014383b3 100644
 +                    EntityEffect.class,
 +                    EntityEffect::new,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
-+                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
++                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 +            );
 +            TO_CLIENT.registerPacket(
 +                    EntityRemoveEffect.class,
 +                    EntityRemoveEffect::new,
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
-+                    map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
++                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 +            );
 +            // Waterfall end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
-@@ -620,9 +636,11 @@ public enum Protocol
-                     break;
-                 }
- 
-+            if (mapping.packetID != Integer.MIN_VALUE) { // Waterfall
-                 ProtocolData data = protocols.get( protocol );
-                 data.packetMap.put( packetClass, mapping.packetID );
-                 data.packetConstructors[mapping.packetID] = constructor;
-+            } // Waterfall
-             }
-         }
- 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 new file mode 100644
 index 00000000..d11a9ea9
@@ -172,7 +160,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ccb9efdc..c96117c6 100644
+index 846f8338..7fe08ecd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -280,5 +268,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.36.1.windows.1
+2.36.1
 
