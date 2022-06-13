@@ -1,4 +1,4 @@
-From 887e10d7d4ecb72a8204708591dc90deb0f5dd61 Mon Sep 17 00:00:00 2001
+From 2e8fb2517d4ac85d3899e73004d2b8c9909d1eca Mon Sep 17 00:00:00 2001
 From: FivePB <admin@fivepb.me>
 Date: Tue, 16 Nov 2021 21:15:32 +0100
 Subject: [PATCH] Configurable plugin messaging limits
@@ -31,12 +31,12 @@ index d69463f0..469fe0e1 100644
 +    int getPluginChannelNameLimit();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 527f310e..e31fb00a 100644
+index b88e3c8a..da0efa36 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -45,6 +45,23 @@ public class WaterfallConfiguration extends Configuration {
      private boolean disableEntityMetadataRewrite = false;
-     private boolean disableTabListRewrite = false;
+     private boolean disableTabListRewrite = true;
  
 +    /*
 +     * Plugin Message limiting options
@@ -83,7 +83,7 @@ index 527f310e..e31fb00a 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 86d28d1c..51d5bde4 100644
+index 8da4708b..d55f2072 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -708,9 +708,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -101,5 +101,5 @@ index 86d28d1c..51d5bde4 100644
              }
          } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
 -- 
-2.35.3
+2.36.1
 

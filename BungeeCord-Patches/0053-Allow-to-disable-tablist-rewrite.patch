@@ -1,4 +1,4 @@
-From 4c98b2b4f1fdbc9d0cee68d4a10235d256886e46 Mon Sep 17 00:00:00 2001
+From 3e42daf051cb9b48d7b0ec77f9f627b76abf1059 Mon Sep 17 00:00:00 2001
 From: xDark <aleshkailyashevich@gmail.com>
 Date: Fri, 31 May 2019 08:11:31 +0300
 Subject: [PATCH] Allow to disable tablist rewrite
@@ -20,14 +20,14 @@ index 4a198ee9..d69463f0 100644
 +    boolean isDisableTabListRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e860214f..527f310e 100644
+index e860214f..b88e3c8a 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -43,6 +43,7 @@ public class WaterfallConfiguration extends Configuration {
      private boolean disableModernTabLimiter = true;
  
      private boolean disableEntityMetadataRewrite = false;
-+    private boolean disableTabListRewrite = false;
++    private boolean disableTabListRewrite = true;
  
      @Override
      public void load() {
@@ -71,5 +71,5 @@ index e2adf3f2..74575854 100644
  
      @Override
 -- 
-2.35.1
+2.36.1
 
