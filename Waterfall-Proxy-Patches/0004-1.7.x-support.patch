@@ -1,4 +1,4 @@
-From 9301ed33769f86530bef028fbd6943e3d925b24a Mon Sep 17 00:00:00 2001
+From a8d52e032cf7360eccb8b5b1cf3530a5563551bd Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -46,10 +46,10 @@ index bafef27c..8efe1ef0 100644
 +    // FlameCord end - 1.7.x support
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 014383b3..f8d4721e 100644
+index f5a675a9..0d1cbbdb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -62,7 +62,7 @@ public enum Protocol
+@@ -64,7 +64,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      Handshake.class,
                      Handshake::new,
@@ -58,7 +58,7 @@ index 014383b3..f8d4721e 100644
              );
          }
      },
-@@ -74,7 +74,7 @@ public enum Protocol
+@@ -76,7 +76,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      KeepAlive.class,
                      KeepAlive::new,
@@ -67,7 +67,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x1F ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x21 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x20 ),
-@@ -87,7 +87,7 @@ public enum Protocol
+@@ -89,7 +89,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Login.class,
                      Login::new,
@@ -76,7 +76,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x23 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x25 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x26 ),
-@@ -98,7 +98,7 @@ public enum Protocol
+@@ -100,7 +100,7 @@ public enum Protocol
              );
              TO_CLIENT.registerPacket( Chat.class,
                      Chat::new,
@@ -85,7 +85,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0F ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0F ),
-@@ -109,7 +109,7 @@ public enum Protocol
+@@ -111,7 +111,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Respawn.class,
                      Respawn::new,
@@ -94,20 +94,20 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x33 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x34 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x35 ),
-@@ -139,20 +139,20 @@ public enum Protocol
+@@ -141,20 +141,20 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
                      EntityEffect::new,
 -                    map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
 +                    map( ProtocolConstants.MINECRAFT_1_7_2, 0x1D ), // FlameCord - 1.7.x support
-                     map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
+                     map(ProtocolConstants.MINECRAFT_1_9, -1)
              );
              TO_CLIENT.registerPacket(
                      EntityRemoveEffect.class,
                      EntityRemoveEffect::new,
 -                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
 +                    map( ProtocolConstants.MINECRAFT_1_7_2, 0x1E ), // FlameCord - 1.7.x support
-                     map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
+                     map(ProtocolConstants.MINECRAFT_1_9, -1)
              );
              // Waterfall end
              TO_CLIENT.registerPacket(
@@ -118,7 +118,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x2D ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x2E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x30 ),
-@@ -166,7 +166,7 @@ public enum Protocol
+@@ -168,7 +168,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      TabCompleteResponse.class,
                      TabCompleteResponse::new,
@@ -127,7 +127,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x10 ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
-@@ -178,7 +178,7 @@ public enum Protocol
+@@ -180,7 +180,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new,
@@ -136,7 +136,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x3F ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x42 ),
-@@ -190,7 +190,7 @@ public enum Protocol
+@@ -192,7 +192,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      ScoreboardScore.class,
                      ScoreboardScore::new,
@@ -145,7 +145,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x42 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x44 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x45 ),
-@@ -202,7 +202,7 @@ public enum Protocol
+@@ -204,7 +204,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      ScoreboardDisplay.class,
                      ScoreboardDisplay::new,
@@ -154,7 +154,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x38 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x3A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x3B ),
-@@ -214,7 +214,7 @@ public enum Protocol
+@@ -216,7 +216,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Team.class,
                      Team::new,
@@ -163,7 +163,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x43 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x44 ),
-@@ -226,7 +226,7 @@ public enum Protocol
+@@ -228,7 +228,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
                      PluginMessage::new,
@@ -172,7 +172,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x19 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x18 ),
-@@ -239,7 +239,7 @@ public enum Protocol
+@@ -241,7 +241,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Kick.class,
                      Kick::new,
@@ -181,7 +181,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x1A ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1A ),
-@@ -252,7 +252,7 @@ public enum Protocol
+@@ -254,7 +254,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Title.class,
                      Title::new,
@@ -190,7 +190,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_12, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x48 ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x4B ),
-@@ -288,7 +288,7 @@ public enum Protocol
+@@ -290,7 +290,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      PlayerListHeaderFooter.class,
                      PlayerListHeaderFooter::new,
@@ -199,7 +199,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x48 ),
                      map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x49 ),
-@@ -304,7 +304,7 @@ public enum Protocol
+@@ -306,7 +306,7 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      EntityStatus.class,
                      EntityStatus::new,
@@ -208,7 +208,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x1B ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x1B ),
-@@ -346,7 +346,7 @@ public enum Protocol
+@@ -348,7 +348,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      KeepAlive.class,
                      KeepAlive::new,
@@ -217,7 +217,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x0B ),
-@@ -358,7 +358,7 @@ public enum Protocol
+@@ -360,7 +360,7 @@ public enum Protocol
              );
              TO_SERVER.registerPacket( Chat.class,
                      Chat::new,
@@ -226,7 +226,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x03 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x02 ),
-@@ -378,7 +378,7 @@ public enum Protocol
+@@ -380,7 +380,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      TabCompleteRequest.class,
                      TabCompleteRequest::new,
@@ -235,7 +235,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x01 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x02 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x01 ),
-@@ -389,7 +389,7 @@ public enum Protocol
+@@ -391,7 +391,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      ClientSettings.class,
                      ClientSettings::new,
@@ -244,7 +244,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x04 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x04 ),
-@@ -399,7 +399,7 @@ public enum Protocol
+@@ -401,7 +401,7 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      PluginMessage.class,
                      PluginMessage::new,
@@ -253,7 +253,7 @@ index 014383b3..f8d4721e 100644
                      map( ProtocolConstants.MINECRAFT_1_9, 0x09 ),
                      map( ProtocolConstants.MINECRAFT_1_12, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_12_1, 0x09 ),
-@@ -418,23 +418,23 @@ public enum Protocol
+@@ -420,23 +420,23 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      StatusResponse.class,
                      StatusResponse::new,
@@ -281,7 +281,7 @@ index 014383b3..f8d4721e 100644
              );
          }
      },
-@@ -446,22 +446,22 @@ public enum Protocol
+@@ -448,22 +448,22 @@ public enum Protocol
              TO_CLIENT.registerPacket(
                      Kick.class,
                      Kick::new,
@@ -308,7 +308,7 @@ index 014383b3..f8d4721e 100644
              );
              TO_CLIENT.registerPacket(
                      LoginPayloadRequest.class,
-@@ -472,12 +472,12 @@ public enum Protocol
+@@ -474,12 +474,12 @@ public enum Protocol
              TO_SERVER.registerPacket(
                      LoginRequest.class,
                      LoginRequest::new,
@@ -915,7 +915,7 @@ index a5555f6a..09dc67f9 100644
          buf.writeByte( mode );
          if ( mode == 0 || mode == 2 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0a3c7d89..b18fbef4 100644
+index fc1a2b94..c0a02d4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -170,6 +170,14 @@ public class BungeeCord extends ProxyServer
