@@ -1,4 +1,4 @@
-From 36c2b4b28806f491a6fa680be25afe6ba03179f1 Mon Sep 17 00:00:00 2001
+From 7dd527ef1aac693470f03f18b8a276147e909099 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -205,7 +205,7 @@ index 00000000..91d60bfb
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cd34f29f..824dfca8 100644
+index 14a4197c..eb53d9aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;
@@ -285,7 +285,7 @@ index 9067b806..cb98a8ea 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 5293552d..89b4122c 100644
+index 94702434..e48f7713 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -319,7 +319,7 @@ index 5293552d..89b4122c 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 72328eed..0957c1f1 100644
+index 80d8ab24..3bf47365 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -20,6 +20,8 @@ import java.util.logging.Level;
@@ -331,7 +331,7 @@ index 72328eed..0957c1f1 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -159,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -158,7 +160,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -353,7 +353,7 @@ index a409d440..3503c089 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 675fa8f1..c8748ce5 100644
+index 4820267b..694ecdb0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,8 @@
@@ -379,5 +379,5 @@ index a95193ba..a4c3bd71 100644
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
 -- 
-2.34.1
+2.37.0.windows.1
 

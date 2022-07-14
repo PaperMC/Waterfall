@@ -1,4 +1,4 @@
-From a8d52e032cf7360eccb8b5b1cf3530a5563551bd Mon Sep 17 00:00:00 2001
+From 2cd7efb81fd991e0da79090038a0abc6192d4dbb Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -915,7 +915,7 @@ index a5555f6a..09dc67f9 100644
          buf.writeByte( mode );
          if ( mode == 0 || mode == 2 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fc1a2b94..c0a02d4d 100644
+index 3ee1464b..14a4197c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -170,6 +170,14 @@ public class BungeeCord extends ProxyServer
@@ -1168,7 +1168,7 @@ index 97c4b210..6082d40c 100644
              con.unsafe().sendPacket( pluginMessage );
              throw CancelSendSignal.INSTANCE;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ed1fe41a..7ddda6c3 100644
+index 24893418..d1bcfadb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -3,6 +3,9 @@ package net.md_5.bungee.connection;
@@ -1181,7 +1181,7 @@ index ed1fe41a..7ddda6c3 100644
  import java.math.BigInteger;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
-@@ -259,8 +262,23 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -279,8 +282,23 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -1621,5 +1621,5 @@ index daf12f74..7d053485 100644
  
      @Override
 -- 
-2.36.1.windows.1
+2.37.0.windows.1
 
