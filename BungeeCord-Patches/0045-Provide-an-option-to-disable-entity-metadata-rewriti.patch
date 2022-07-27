@@ -1,4 +1,4 @@
-From 5bd34a504bbe88b28d46ac24265c18f41a7c3627 Mon Sep 17 00:00:00 2001
+From 55af4745e71a2fff9fd35ebabc656b562a81788a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e29fdf9a..ba7fc59c 100644
+index 9bd063f5..8181d76b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -240,7 +240,7 @@ public class ServerConnector extends PacketHandler
@@ -160,7 +160,7 @@ index b5f8c473..01b29247 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 45c2bea6..59d63cc2 100644
+index fcf6788a..1b639a23 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -175,7 +175,7 @@ index 45c2bea6..59d63cc2 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -292,7 +297,13 @@ public abstract class EntityMap
+@@ -294,7 +299,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -228,5 +228,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.36.1
+2.37.1
 

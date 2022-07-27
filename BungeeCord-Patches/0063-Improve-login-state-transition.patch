@@ -1,14 +1,14 @@
-From 2e698622a4878492e35ab62f13a6cfc0ce6672bf Mon Sep 17 00:00:00 2001
+From 3f69c973c1887a0c1ee3763dd62460ded540dd54 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 8 May 2022 12:04:30 +0100
 Subject: [PATCH] Improve login state transition
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 045367d0..24893418 100644
+index 4a8cb3df..6011078f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -467,6 +467,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -472,6 +472,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
@@ -16,7 +16,7 @@ index 045367d0..24893418 100644
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
-@@ -521,7 +522,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -526,7 +527,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
              }
          };
@@ -26,5 +26,5 @@ index 045367d0..24893418 100644
      }
  
 -- 
-2.32.1 (Apple Git-133)
+2.37.1
 

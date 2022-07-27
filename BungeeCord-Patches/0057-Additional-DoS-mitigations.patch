@@ -1,4 +1,4 @@
-From b901ef5501cdc65df1f175d700576641063fdff4 Mon Sep 17 00:00:00 2001
+From 98f8f9fe6e5931287e3711324cf2055f8d13cfd2 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -167,10 +167,10 @@ index 8a60be9f..50bb52b1 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 8b148625..836b4722 100644
+index d9839973..682c8784 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -45,4 +45,13 @@ public class LoginRequest extends DefinedPacket
+@@ -65,4 +65,13 @@ public class LoginRequest extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -235,5 +235,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.36.1
+2.37.1
 

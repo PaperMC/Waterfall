@@ -1,11 +1,11 @@
-From f905ea8b649f836d74d32de87355c73670d0f419 Mon Sep 17 00:00:00 2001
+From 0db9e0d2e1a466e10fab4ba883ecb3991b36fdc4 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 35236382..558d0dbb 100644
+index 2658e144..bbfa05e9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -10,6 +10,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -17,7 +17,7 @@ index 35236382..558d0dbb 100644
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -213,4 +215,14 @@ public abstract class AbstractPacketHandler
+@@ -208,4 +210,14 @@ public abstract class AbstractPacketHandler
      public void handle(GameState gameState) throws Exception
      {
      }
@@ -33,7 +33,7 @@ index 35236382..558d0dbb 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index ad0c66a5..1b5189c1 100644
+index 03b6d132..71adb32c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -45,9 +45,9 @@ index ad0c66a5..1b5189c1 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -133,6 +135,20 @@ public enum Protocol
-                     PlayerChat::new,
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x30 )
+@@ -130,6 +132,20 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -268,5 +268,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.36.1
+2.37.1
 
