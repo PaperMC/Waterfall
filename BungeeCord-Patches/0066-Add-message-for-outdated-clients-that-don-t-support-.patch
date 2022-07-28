@@ -1,0 +1,36 @@
+From 171ad9fc9951742a355c9b7374ad4805c81e8a16 Mon Sep 17 00:00:00 2001
+From: Aurora <aurora@relanet.eu>
+Date: Mon, 18 Jul 2022 15:56:05 +0200
+Subject: [PATCH] Add message for outdated clients that don't support secure
+ profiles
+
+Clients before 1.19 don't support secure profiles, but since secure profiles is one of the first
+things checked those outdated clients didn't get a useful message telling them to update.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 24893418..d230c796 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -394,6 +394,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() )
+         {
++            if ( handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19 ) {disconnect(bungee.getTranslation("secure_profile_unsupported"));} // Waterfall - Tell old clients to update if secure profiles are required
+             PlayerPublicKey publicKey = loginRequest.getPublicKey();
+             if ( publicKey == null )
+             {
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 58380d4a..50c16a95 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -25,6 +25,7 @@ offline_mode_player=Not authenticated with Minecraft.net
+ secure_profile_required=A secure profile is required to join this server.
+ secure_profile_expired=Secure profile expired.
+ secure_profile_invalid=Secure profile invalid.
++secure_profile_unsupported=Outdated client, secure profile not supported. Please use 1.19 or newer.
+ message_needed=\u00a7cYou must supply a message.
+ error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
+ error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
+-- 
+2.37.1.windows.1
+
