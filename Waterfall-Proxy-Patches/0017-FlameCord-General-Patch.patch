@@ -1,4 +1,4 @@
-From 7dd527ef1aac693470f03f18b8a276147e909099 Mon Sep 17 00:00:00 2001
+From b957e422d579add68cf389e7250903135a2ebf55 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -205,7 +205,7 @@ index 00000000..91d60bfb
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 14a4197c..eb53d9aa 100644
+index 43381641..eb0f9a39 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;
@@ -263,7 +263,7 @@ index 14a4197c..eb53d9aa 100644
          {
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9067b806..cb98a8ea 100644
+index da688839..055a1d88 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee;
@@ -319,10 +319,10 @@ index 94702434..e48f7713 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 80d8ab24..3bf47365 100644
+index 74199d2e..3eec7b6b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -20,6 +20,8 @@ import java.util.logging.Level;
+@@ -21,6 +21,8 @@ import java.util.logging.Level;
  import javax.crypto.SecretKey;
  import javax.crypto.spec.SecretKeySpec;
  
@@ -331,7 +331,7 @@ index 80d8ab24..3bf47365 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -158,7 +160,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -159,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {

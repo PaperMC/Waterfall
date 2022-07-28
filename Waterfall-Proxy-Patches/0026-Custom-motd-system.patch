@@ -1,4 +1,4 @@
-From 2e496d47435bb97de442fe1a12020c695169f634 Mon Sep 17 00:00:00 2001
+From 547085355fe3fa7a13e2b35f5ab6a53848a2ea11 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -125,10 +125,10 @@ index c327841a..de2cc947 100644
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
              this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index af128f0b..9b2d8842 100644
+index 41c99bb4..5e82d29a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -22,6 +22,8 @@ import javax.crypto.spec.SecretKeySpec;
+@@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
  
  import dev._2lstudios.flamecord.FlameCord;
  
@@ -137,7 +137,7 @@ index af128f0b..9b2d8842 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -272,7 +274,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -273,7 +275,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
@@ -145,7 +145,7 @@ index af128f0b..9b2d8842 100644
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
-@@ -335,7 +336,52 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -336,7 +337,52 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
          } else
          {

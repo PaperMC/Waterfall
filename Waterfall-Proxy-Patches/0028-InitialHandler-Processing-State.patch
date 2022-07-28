@@ -1,14 +1,14 @@
-From e235d2ea3d258d995b5e06cf0f6fd474863510fb Mon Sep 17 00:00:00 2001
+From 227dc719b4a69f3773249b8e2cd601bdabbf6334 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 12:28:31 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9b2d8842..14461824 100644
+index 5e82d29a..70d1ba25 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -131,12 +131,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -132,12 +132,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      private enum State
      {
  
@@ -23,7 +23,7 @@ index 9b2d8842..14461824 100644
      }
  
      @Override
-@@ -272,6 +272,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -273,6 +273,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(StatusRequest statusRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
@@ -31,7 +31,7 @@ index 9b2d8842..14461824 100644
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
-@@ -394,6 +395,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -395,6 +396,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          // FlameCord - Never accept invalid packets
          Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
@@ -39,7 +39,7 @@ index 9b2d8842..14461824 100644
  
          unsafe.sendPacket( ping );
  
-@@ -405,6 +407,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -406,6 +408,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
@@ -47,7 +47,7 @@ index 9b2d8842..14461824 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
  
-@@ -477,6 +480,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -478,6 +481,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
@@ -55,7 +55,7 @@ index 9b2d8842..14461824 100644
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -787,14 +791,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -813,14 +817,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {

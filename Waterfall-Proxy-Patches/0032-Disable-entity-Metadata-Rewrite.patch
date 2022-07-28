@@ -1,4 +1,4 @@
-From 62b34dc8e92b165c3200ddfe2f3fb72f1770e818 Mon Sep 17 00:00:00 2001
+From a5798620c99905437a107fd4520b1479fcfd6d6b Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -21,7 +21,7 @@ index 469fe0e1..97bd384b 100644
       * Whether tablist rewriting should be disabled or not
       * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 558d0dbb..35236382 100644
+index bbfa05e9..2658e144 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -10,8 +10,6 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -33,7 +33,7 @@ index 558d0dbb..35236382 100644
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
-@@ -215,14 +213,4 @@ public abstract class AbstractPacketHandler
+@@ -210,14 +208,4 @@ public abstract class AbstractPacketHandler
      public void handle(GameState gameState) throws Exception
      {
      }
@@ -49,7 +49,7 @@ index 558d0dbb..35236382 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 0d1cbbdb..d19b67ae 100644
+index 3787b21c..84e614b5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -61,9 +61,9 @@ index 0d1cbbdb..d19b67ae 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -137,20 +135,6 @@ public enum Protocol
-                     PlayerChat::new,
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x30 )
+@@ -134,20 +132,6 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A )
              );
 -            // Waterfall start
 -            TO_CLIENT.registerPacket(
@@ -239,7 +239,7 @@ index 966d2442..be337a68 100644
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index cb98a8ea..c0b42ee2 100644
+index 055a1d88..a63e67f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -243,11 +243,6 @@ public class ServerConnector extends PacketHandler
@@ -458,10 +458,10 @@ index 67263bca..bd6fe2d5 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 deleted file mode 100644
-index 9ec16808..00000000
+index d4b57e5a..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ /dev/null
-@@ -1,369 +0,0 @@
+@@ -1,371 +0,0 @@
 -package net.md_5.bungee.entitymap;
 -
 -import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -551,6 +551,8 @@ index 9ec16808..00000000
 -                return EntityMap_1_16_2.INSTANCE_1_18;
 -            case ProtocolConstants.MINECRAFT_1_19:
 -                return EntityMap_1_16_2.INSTANCE_1_19;
+-            case ProtocolConstants.MINECRAFT_1_19_1:
+-                return EntityMap_1_16_2.INSTANCE_1_19_1;
 -        }
 -        throw new RuntimeException( "Version " + version + " has no entity map" );
 -    }
@@ -2356,7 +2358,7 @@ index c8b06707..00000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 deleted file mode 100644
-index b9d0b651..00000000
+index 7241dc56..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 +++ /dev/null
 @@ -1,76 +0,0 @@
@@ -2380,7 +2382,7 @@ index b9d0b651..00000000
 -    static final EntityMap_1_16_2 INSTANCE_1_17 = new EntityMap_1_16_2( 0x04, 0x2D );
 -    static final EntityMap_1_16_2 INSTANCE_1_18 = new EntityMap_1_16_2( 0x04, 0x2D );
 -    static final EntityMap_1_16_2 INSTANCE_1_19 = new EntityMap_1_16_2( 0x02, 0x2F );
--
+-    static final EntityMap_1_16_2 INSTANCE_1_19_1 = new EntityMap_1_16_2( 0x02, 0x30 );
 -    //
 -    private final int spawnPlayerId;
 -    private final int spectateId;
@@ -3233,5 +3235,5 @@ index caed4384..af428090 100644
      }
  
 -- 
-2.36.1.windows.1
+2.37.0.windows.1
 
