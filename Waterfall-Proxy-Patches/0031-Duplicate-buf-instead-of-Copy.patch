@@ -14,7 +14,7 @@ index 3992f521..074d2437 100644
  
 -        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
 +        // FlameCord - Duplicate buf instead of Copy
-+        ByteBuf slice = in.duplicate(); // Can't slice this one due to EntityMap :(
++        ByteBuf slice = in.retainedDuplicate(); // Can't slice this one due to EntityMap :(
  
          Object packetTypeInfo = null;
          try
