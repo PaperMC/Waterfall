@@ -1,4 +1,4 @@
-From f7b0de343be482debb742d1a647ad83f82e32f03 Mon Sep 17 00:00:00 2001
+From b3057a714b38ebe1b996866c97b3f45df47a5081 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index 773e954c..57bd22b7 100644
              {
                  packet.read( in, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 04dc178d..03b6d132 100644
+index aa22f134..7a1fdac5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -582,14 +582,23 @@ public enum Protocol
+@@ -589,14 +589,23 @@ public enum Protocol
              return protocol;
          }
  

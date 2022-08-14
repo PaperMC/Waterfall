@@ -1,4 +1,4 @@
-From 4b776b6e9f93f2e3eb2d778afbacd11748a2c9b6 Mon Sep 17 00:00:00 2001
+From 0027c75f59e7413a26d0f95060b084961893a514 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -62,7 +62,7 @@ index 0e1ef5c4..ee63732d 100644
      @Deprecated
      public String getKickReason()
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 175150c7..5595278b 100644
+index 981b0200..9bd063f5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -377,7 +377,7 @@ public class ServerConnector extends PacketHandler
@@ -75,10 +75,10 @@ index 175150c7..5595278b 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f8691bc4..98bebb94 100644
+index a0301a95..de932814 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -87,16 +87,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -88,16 +88,19 @@ public class DownstreamBridge extends PacketHandler
              return;
          }
  
@@ -103,7 +103,7 @@ index f8691bc4..98bebb94 100644
      }
  
      @Override
-@@ -111,7 +114,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -112,7 +115,19 @@ public class DownstreamBridge extends PacketHandler
  
          if ( !server.isObsolete() )
          {
@@ -124,7 +124,7 @@ index f8691bc4..98bebb94 100644
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -565,7 +580,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -566,7 +581,11 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -138,5 +138,5 @@ index f8691bc4..98bebb94 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.35.1
+2.37.1
 
