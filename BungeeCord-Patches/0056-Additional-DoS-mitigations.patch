@@ -1,4 +1,4 @@
-From 98f8f9fe6e5931287e3711324cf2055f8d13cfd2 Mon Sep 17 00:00:00 2001
+From 6a4bb0c0def82d865517d5d08810a3f68a60acf1 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,26 +8,26 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index c4af6e76..bafef27c 100644
+index 122e3b52..561a9522 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -44,6 +44,7 @@ public abstract class DefinedPacket
+@@ -54,6 +54,7 @@ public abstract class DefinedPacket
          int len = readVarInt( buf );
-         if ( len > maxLen * 4 )
+         if ( len > maxLen * 3 )
          {
 +            if(!MinecraftDecoder.DEBUG) throw STRING_TOO_MANY_BYTES_EXCEPTION; // Waterfall start: Additional DoS mitigations
-             throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 4 + " (got " + len + " bytes)" );
+             throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)" );
          }
  
-@@ -53,6 +54,7 @@ public abstract class DefinedPacket
-         String s = new String( b, Charsets.UTF_8 );
+@@ -62,6 +63,7 @@ public abstract class DefinedPacket
+ 
          if ( s.length() > maxLen )
          {
 +            if(!MinecraftDecoder.DEBUG) throw STRING_TOO_LONG_EXCEPTION; // Waterfall start: Additional DoS mitigations
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
-@@ -351,4 +353,21 @@ public abstract class DefinedPacket
+@@ -346,4 +348,21 @@ public abstract class DefinedPacket
  
      @Override
      public abstract String toString();
@@ -235,5 +235,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.37.1
+2.37.2
 

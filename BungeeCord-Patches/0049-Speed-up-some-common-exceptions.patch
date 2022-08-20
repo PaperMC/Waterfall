@@ -1,4 +1,4 @@
-From b792a930ccd6e6d53c325b46076212ff24515b81 Mon Sep 17 00:00:00 2001
+From 6a64004d21456f947e63aaa1d1a039fca8a3bb92 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -67,7 +67,7 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 5a330607..c4af6e76 100644
+index 5fe55dcc..122e3b52 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -19,6 +19,9 @@ import se.llbit.nbt.Tag;
@@ -79,8 +79,8 @@ index 5a330607..c4af6e76 100644
 +    private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
      public static void writeString(String s, ByteBuf buf)
      {
-         if ( s.length() > Short.MAX_VALUE )
-@@ -150,13 +153,18 @@ public abstract class DefinedPacket
+         writeString( s, buf, Short.MAX_VALUE );
+@@ -145,13 +148,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.37.1
+2.37.2
 
