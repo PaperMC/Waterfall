@@ -1,4 +1,4 @@
-From e129a2d1042dfe9b973df216ea418b41331b80dd Mon Sep 17 00:00:00 2001
+From 09b962aac86b1d0b0cb9f0e231f63d481587a0f2 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -12,7 +12,7 @@ may also create various issues with mods which do not support this,
 hence why the configuration option is provided
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index e0baca9c..f3bced0a 100644
+index a2387cc7..ed940f50 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -252,4 +252,9 @@ public interface ProxyConfig
@@ -26,7 +26,7 @@ index e0baca9c..f3bced0a 100644
 +    boolean isDisableEntityMetadataRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 4ff8da6d..e860214f 100644
+index f78360fd..d2662133 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -42,6 +42,8 @@ public class WaterfallConfiguration extends Configuration {
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9bd063f5..8181d76b 100644
+index 60d20a47..cd3cc716 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -240,7 +240,7 @@ public class ServerConnector extends PacketHandler
@@ -81,7 +81,7 @@ index 9bd063f5..8181d76b 100644
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
-+            } // Waterfall
++            } // Bauantibotsentryproxy
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
@@ -90,20 +90,20 @@ index 9bd063f5..8181d76b 100644
  
              user.setDimensionChange( true );
 -            if ( login.getDimension() == user.getDimension() )
-+            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
++            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Bauantibotsentryproxy - defer
              {
                  user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
              }
  
              user.setServerEntityId( login.getEntityId() );
 +
-+            // Waterfall start
++            // Bauantibotsentryproxy start
 +            if ( user.isDisableEntityMetadataRewrite() ) {
 +                // Ensure that we maintain consistency
 +                user.setClientEntityId( login.getEntityId() );
 +
 +                // Only send if we are not in the same dimension
-+                if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
++                if ( login.getDimension() != user.getDimension() ) // Bauantibotsentryproxy - defer
 +                {
 +                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 +                }
@@ -113,19 +113,19 @@ index 9bd063f5..8181d76b 100644
 +                user.unsafe().sendPacket(modLogin);
 +
 +                // Only send if we're in the same dimension
-+                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
++                if ( login.getDimension() == user.getDimension() ) // Bauantibotsentryproxy - defer
 +                {
 +                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 +                }
 +            }
-+            // Waterfall end
++            // Bauantibotsentryproxy end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 +
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
              {
                  user.unsafe().sendPacket( new ViewDistance( login.getViewDistance() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7fe08ecd..5961392a 100644
+index 01bc0330..13192f96 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -775,4 +775,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -133,21 +133,21 @@ index 7fe08ecd..5961392a 100644
          return serverSentScoreboard;
      }
 +
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    public boolean isDisableEntityMetadataRewrite() {
 +        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index e3171326..3b56018a 100644
+index aa328b47..8fe46301 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -672,6 +672,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
-+        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
++        if (con.isDisableEntityMetadataRewrite()) return; // Bauantibotsentryproxy
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
@@ -155,23 +155,23 @@ index e3171326..3b56018a 100644
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
-+        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
++        if (con.isDisableEntityMetadataRewrite()) return; // Bauantibotsentryproxy
          con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index fcf6788a..1b639a23 100644
+index fcf6788a..7a6066b1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
      // Returns the correct entity map for the protocol version
      public static EntityMap getEntityMap(int version)
      {
-+        // Waterfall start
++        // Bauantibotsentryproxy start
 +        if (net.md_5.bungee.api.ProxyServer.getInstance().getConfig().isDisableEntityMetadataRewrite()) {
 +            return EntityMap_Dummy.INSTANCE;
 +        }
-+        // Waterfall end
++        // Bauantibotsentryproxy end
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
@@ -180,19 +180,19 @@ index fcf6788a..1b639a23 100644
                      break;
                  default:
 -                    throw new IllegalArgumentException( "Unknown meta type " + type );
-+                    // Waterfall start - Don't lie
++                    // Bauantibotsentryproxy start - Don't lie
 +                    if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
 +                    {
 +                        type++;
 +                    }
 +                    throw new IllegalArgumentException( "Unknown meta type " + type  + ": Using mods? refer to disable_entity_metadata_rewrite in waterfall.yml" );
-+                    // Waterfall end
++                    // Bauantibotsentryproxy end
              }
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 new file mode 100644
-index 00000000..cb81d1dd
+index 00000000..4b101d91
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 @@ -0,0 +1,30 @@
@@ -200,7 +200,7 @@ index 00000000..cb81d1dd
 +package net.md_5.bungee.entitymap;
 +
 +import io.netty.buffer.ByteBuf;
-+// Waterfall start
++// Bauantibotsentryproxy start
 +
 +public class EntityMap_Dummy extends EntityMap {
 +
@@ -225,8 +225,8 @@ index 00000000..cb81d1dd
 +    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
 +    }
 +}
-+// Waterfall end
++// Bauantibotsentryproxy end
 \ No newline at end of file
 -- 
-2.37.1
+2.36.1.windows.1
 

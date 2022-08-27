@@ -1,4 +1,4 @@
-From c0d98ec188ecc7b38d6b29d67621234eb00a0c24 Mon Sep 17 00:00:00 2001
+From 016633b1b7fe8b49a321c65e4d31a895e78b2802 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -13,14 +13,14 @@ index 8df2f8e7..e483a77c 160000
 -Subproject commit 8df2f8e7b9c7bb9390ac74bb7bace27edca81a2b
 +Subproject commit e483a77c85e1f9c1dd2eb1c5a8f552d2617fe400
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 70b292f0..91f71c09 100644
+index 70b292f0..c8cfd4f6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
  import com.google.common.base.Function;
  import com.google.common.base.Preconditions;
  import io.netty.buffer.ByteBuf;
-+import io.netty.buffer.ByteBufUtil; // Waterfall
++import io.netty.buffer.ByteBufUtil; // Bauantibotsentryproxy
  import java.io.ByteArrayInputStream;
  import java.io.DataInput;
  import java.io.DataInputStream;
@@ -89,5 +89,5 @@ index 56563346..61165e43 100644
      {
          @Override
 -- 
-2.37.1
+2.36.1.windows.1
 

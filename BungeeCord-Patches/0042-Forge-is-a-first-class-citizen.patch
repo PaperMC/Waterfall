@@ -1,11 +1,11 @@
-From 27713874f8c4678f4aaa03278614388d897a207c Mon Sep 17 00:00:00 2001
+From d7abe87287e3ca12389ff839b5b0e18f21920194 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 66d38b40..06784d1e 100644
+index 9871ffbe..631b5d43 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -281,8 +281,6 @@ public class BungeeCord extends ProxyServer
@@ -18,7 +18,7 @@ index 66d38b40..06784d1e 100644
  
          isRunning = true;
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 7094fe0b..8911bee8 100644
+index b22d985b..69d6a6c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -73,7 +73,7 @@ public abstract class Configuration implements ProxyConfig
@@ -26,10 +26,10 @@ index 7094fe0b..8911bee8 100644
      private int compressionThreshold = 256;
      private boolean preventProxyConnections;
 -    private boolean forgeSupport;
-+    private boolean forgeSupport = true; // Waterfall: default to enabled
++    private boolean forgeSupport = true; // Bauantibotsentryproxy: default to enabled
  
-     @Synchronized("serversLock") // Waterfall
+     @Synchronized("serversLock") // Bauantibotsentryproxy
      public void load()
 -- 
-2.35.3
+2.36.1.windows.1
 

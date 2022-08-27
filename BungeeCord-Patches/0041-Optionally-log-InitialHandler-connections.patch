@@ -1,11 +1,11 @@
-From 08c670b50ba91f6d82cfdc8e35fca0e23bb88e8e Mon Sep 17 00:00:00 2001
+From 3ac2f831df41f8898ee344a6241463d87313ce34 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 6141128b..e0baca9c 100644
+index fbe396f0..a2387cc7 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -214,6 +214,13 @@ public interface ProxyConfig
@@ -23,7 +23,7 @@ index 6141128b..e0baca9c 100644
       * The supported versions
       *
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index ef44d334..4ff8da6d 100644
+index dbc718ca..f78360fd 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -9,6 +9,13 @@ import java.io.File;
@@ -42,7 +42,7 @@ index ef44d334..4ff8da6d 100644
       * <p>Default is a comma separated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
 @@ -40,6 +47,7 @@ public class WaterfallConfiguration extends Configuration {
          super.load();
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         YamlConfig config = new YamlConfig(new File("bauantibotsentry.yml"));
          config.load(false); // Load, but no permissions
 +        logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
@@ -61,7 +61,7 @@ index ef44d334..4ff8da6d 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2df797fa..1dc2ad3c 100644
+index bb1ff7be..8713582a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -354,7 +354,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -69,13 +69,13 @@ index 2df797fa..1dc2ad3c 100644
              case 2:
                  // Login
 -                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
-+                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
++                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Bauantibotsentryproxy
 +                {
-+                    bungee.getLogger().log( Level.INFO, "{0} has connected", this );
++                    bungee.getLogger().log( Level.INFO, "{0} se ha conectado", this );
 +                }
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
 -- 
-2.37.1
+2.36.1.windows.1
 

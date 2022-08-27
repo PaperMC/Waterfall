@@ -1,11 +1,11 @@
-From 893c4dbda0b4fa64d720f3ec510965b5aeb9df3f Mon Sep 17 00:00:00 2001
+From 59d24091825aa390f454c3d49efe7a4d0b4f4861 Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
 
 
 diff --git a/native/compile-native.sh b/native/compile-native.sh
-index f37c9fdd..a50b52bf 100755
+index f37c9fdd..35acd5d5 100755
 --- a/native/compile-native.sh
 +++ b/native/compile-native.sh
 @@ -8,7 +8,16 @@ echo "Compiling mbedtls"
@@ -13,7 +13,7 @@ index f37c9fdd..a50b52bf 100755
  (cd zlib && CFLAGS=-fPIC ./configure --static && make)
  
 -CXX="g++ -shared -fPIC -Wl,--wrap=memcpy -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
-+# Waterfall - rewrite below to extend platform support
++# Bauantibotsentryproxy - rewrite below to extend platform support
  
 -$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/native-cipher.so mbedtls/library/libmbedcrypto.a
 -$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/native-compress.so zlib/libz.a
@@ -29,36 +29,36 @@ index f37c9fdd..a50b52bf 100755
 +$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX:-}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
 +$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX:-}native-compress.so zlib/libz.a $CXX_ARGS
 diff --git a/native/src/main/c/NativeCipherImpl.cpp b/native/src/main/c/NativeCipherImpl.cpp
-index 9de328ea..42fdb540 100644
+index 9de328ea..0afd39ae 100644
 --- a/native/src/main/c/NativeCipherImpl.cpp
 +++ b/native/src/main/c/NativeCipherImpl.cpp
 @@ -5,10 +5,12 @@
  #include "net_md_5_bungee_jni_cipher_NativeCipherImpl.h"
  
  // Support for CentOS 6
-+#if __linux__ // Waterfall
++#if __linux__ // Bauantibotsentryproxy
  __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
  extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
      return memcpy(dest, src, n);
  }
-+#endif // Waterfall
++#endif // Bauantibotsentryproxy
  
  typedef unsigned char byte;
  
 diff --git a/native/src/main/c/NativeCompressImpl.cpp b/native/src/main/c/NativeCompressImpl.cpp
-index b490ede5..8fa0bd61 100644
+index b490ede5..dbe3ad70 100644
 --- a/native/src/main/c/NativeCompressImpl.cpp
 +++ b/native/src/main/c/NativeCompressImpl.cpp
 @@ -5,10 +5,12 @@
  #include "net_md_5_bungee_jni_zlib_NativeCompressImpl.h"
  
  // Support for CentOS 6
-+#if __linux__ // Waterfall
++#if __linux__ // Bauantibotsentryproxy
  __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
  extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
      return memcpy(dest, src, n);
  }
-+#endif // Waterfall
++#endif // Bauantibotsentryproxy
  
  typedef unsigned char byte;
  
@@ -1215,5 +1215,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.37.2
+2.36.1.windows.1
 

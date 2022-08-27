@@ -1,4 +1,4 @@
-From 7824ec691a9fb695159ed9a74c7b623f86668cd6 Mon Sep 17 00:00:00 2001
+From 42e550a5bfefe7f0b442beb76f6a0994afe7ae71 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -20,7 +20,7 @@ index 2e41b4c4..6495e7f2 100644
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 new file mode 100644
-index 00000000..741ebfde
+index 00000000..1853e16d
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -0,0 +1,17 @@
@@ -42,7 +42,7 @@ index 00000000..741ebfde
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 998316c3..f8f3fb44 100644
+index 9de855f9..a28e1414 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -63,7 +63,7 @@ index 998316c3..f8f3fb44 100644
       * Localization bundle.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index e1a6b2b3..56a0f29c 100644
+index 54c3223c..54a6cb38 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -24,7 +24,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -76,7 +76,7 @@ index e1a6b2b3..56a0f29c 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index e65558ad..65121ba2 100644
+index 1ba32f43..91a73e47 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -47,10 +47,15 @@ public class YamlConfig implements ConfigurationAdapter
@@ -113,10 +113,10 @@ index e65558ad..65121ba2 100644
              throw new RuntimeException( "Could not load configuration!", ex );
          }
  
-+        if(!doPermissions) return; // Waterfall
++        if(!doPermissions) return; // Bauantibotsentryproxy
          Map<String, Object> permissions = get( "permissions", null );
          if ( permissions == null )
          {
 -- 
-2.31.1
+2.36.1.windows.1
 

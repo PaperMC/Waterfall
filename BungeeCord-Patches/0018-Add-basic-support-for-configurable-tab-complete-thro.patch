@@ -1,4 +1,4 @@
-From 57168eee47c7b9ad899fdb85640c9022dbbead09 Mon Sep 17 00:00:00 2001
+From 6662ead523f70a65f49fe0e496f59ddcf8754c84 Mon Sep 17 00:00:00 2001
 From: Johannes Donath <johannesd@torchmind.com>
 Date: Sat, 4 Jul 2015 06:31:33 +0200
 Subject: [PATCH] Add basic support for configurable tab-complete throttling
@@ -31,7 +31,7 @@ index 6495e7f2..b6845bc4 100644
 +    boolean isDisableModernTabLimiter();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 741ebfde..91743f01 100644
+index 1853e16d..6e498879 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -7,11 +7,37 @@ import java.io.File;
@@ -55,7 +55,7 @@ index 741ebfde..91743f01 100644
      @Override
      public void load() {
          super.load();
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         YamlConfig config = new YamlConfig(new File("bauantibotsentry.yml"));
          config.load(false); // Load, but no permissions
 +        // Throttling options
 +        tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
@@ -73,7 +73,7 @@ index 741ebfde..91743f01 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index bb3faf5d..e6d5da03 100644
+index 5f4a2d45..1baea729 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -42,6 +42,8 @@ public class UpstreamBridge extends PacketHandler
@@ -89,7 +89,7 @@ index bb3faf5d..e6d5da03 100644
      @Override
      public void handle(TabCompleteRequest tabComplete) throws Exception
      {
-+        // Waterfall start - tab limiter
++        // Bauantibotsentryproxy start - tab limiter
 +        if ( bungee.getConfig().getTabThrottle() > 0 &&
 +                ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13
 +                && !bungee.getConfig().isDisableModernTabLimiter()))
@@ -102,10 +102,10 @@ index bb3faf5d..e6d5da03 100644
 +            lastTabCompletion = now;
 +        }
 +
-+        // Waterfall end - tab limiter
++        // Bauantibotsentryproxy end - tab limiter
          List<String> suggestions = new ArrayList<>();
          boolean isRegisteredCommand = false;
  
 -- 
-2.35.3
+2.36.1.windows.1
 

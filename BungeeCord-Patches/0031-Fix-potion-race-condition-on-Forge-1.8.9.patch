@@ -1,19 +1,19 @@
-From 6ce9629fc1456ddcb536bb6406b2a7d4d2aace73 Mon Sep 17 00:00:00 2001
+From 00f6a19ac4eec48c80919187b20aca1c4e86b37e Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 608769eb..1defe650 100644
+index 608769eb..6e24b46e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -10,6 +10,8 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
-+import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
-+import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
++import net.md_5.bungee.protocol.packet.EntityEffect; // Bauantibotsentryproxy
++import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Bauantibotsentryproxy
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.Handshake;
@@ -22,7 +22,7 @@ index 608769eb..1defe650 100644
      {
      }
 +
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    public void handle(EntityEffect entityEffect) throws Exception
 +    {
 +    }
@@ -30,10 +30,10 @@ index 608769eb..1defe650 100644
 +    public void handle(EntityRemoveEffect removeEffect) throws Exception
 +    {
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 7a1fdac5..9701705d 100644
+index 7a1fdac5..57e853f4 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -49,7 +49,7 @@ index 7a1fdac5..9701705d 100644
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_19, 0x0A )
              );
-+            // Waterfall start
++            // Bauantibotsentryproxy start
 +            TO_CLIENT.registerPacket(
 +                    EntityEffect.class,
 +                    EntityEffect::new,
@@ -62,7 +62,7 @@ index 7a1fdac5..9701705d 100644
 +                    map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
 +                    map(ProtocolConstants.MINECRAFT_1_9, -1)
 +            );
-+            // Waterfall end
++            // Bauantibotsentryproxy end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
@@ -160,7 +160,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 846f8338..7fe08ecd 100644
+index 25b414d7..01bc0330 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -185,7 +185,7 @@ index 846f8338..7fe08ecd 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index de932814..e3171326 100644
+index 5d6d5ab5..aa328b47 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -51,6 +51,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
@@ -201,7 +201,7 @@ index de932814..e3171326 100644
          }
      }
  
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    @Override
 +    public void handle(EntityEffect entityEffect) throws Exception
 +    {
@@ -225,7 +225,7 @@ index de932814..e3171326 100644
 +        }
 +        return entityId;
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      @Override
      public void handle(Respawn respawn)
@@ -268,5 +268,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.37.1
+2.36.1.windows.1
 

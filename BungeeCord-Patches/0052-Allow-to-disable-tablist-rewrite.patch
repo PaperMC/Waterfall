@@ -1,11 +1,11 @@
-From 8539f47471127e98aae462b3e99162913ee41663 Mon Sep 17 00:00:00 2001
+From 885eac2d7c1c7ad326b4f13c33f02add9317322a Mon Sep 17 00:00:00 2001
 From: xDark <aleshkailyashevich@gmail.com>
 Date: Fri, 31 May 2019 08:11:31 +0300
 Subject: [PATCH] Allow to disable tablist rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4a198ee9..d69463f0 100644
+index 9642cfa5..eab80383 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -255,4 +255,10 @@ public interface ProxyConfig
@@ -20,7 +20,7 @@ index 4a198ee9..d69463f0 100644
 +    boolean isDisableTabListRewrite();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e860214f..b88e3c8a 100644
+index d2662133..b6a7df5f 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -43,6 +43,7 @@ public class WaterfallConfiguration extends Configuration {
@@ -50,7 +50,7 @@ index e860214f..b88e3c8a 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a4f242b2..9dfb11e9 100644
+index f9ee9281..672b8fdb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -168,8 +168,14 @@ public class DownstreamBridge extends PacketHandler
@@ -59,17 +59,17 @@ index a4f242b2..9dfb11e9 100644
      {
 -        con.getTabListHandler().onUpdate( TabList.rewrite( playerList ) );
 -        throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
-+        //Waterfall start
++        //Bauantibotsentryproxy start
 +        boolean skipRewrites = bungee.getConfig().isDisableTabListRewrite();
 +        con.getTabListHandler().onUpdate( skipRewrites ? playerList : TabList.rewrite( playerList ) );
 +        if ( !skipRewrites )
 +        {
 +            throw CancelSendSignal.INSTANCE; // Only throw if profile rewriting is enabled
 +        }
-+        // Waterfall end
++        // Bauantibotsentryproxy end
      }
  
      @Override
 -- 
-2.37.2
+2.36.1.windows.1
 

@@ -1,4 +1,4 @@
-From 081317fa31119499ac8661bbdbb2c8207d99322d Mon Sep 17 00:00:00 2001
+From b8cc7cf7981582e445333b36b928d965513eb016 Mon Sep 17 00:00:00 2001
 From: FivePB <admin@fivepb.me>
 Date: Tue, 16 Nov 2021 21:15:32 +0100
 Subject: [PATCH] Configurable plugin messaging limits
@@ -8,7 +8,7 @@ as their name length limit configurable. This is required for some modded
 servers and clients to work
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d69463f0..469fe0e1 100644
+index eab80383..f3b5181e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -261,4 +261,18 @@ public interface ProxyConfig
@@ -31,7 +31,7 @@ index d69463f0..469fe0e1 100644
 +    int getPluginChannelNameLimit();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index b88e3c8a..da0efa36 100644
+index b6a7df5f..94254cec 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -45,6 +45,23 @@ public class WaterfallConfiguration extends Configuration {
@@ -83,7 +83,7 @@ index b88e3c8a..da0efa36 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5ee47b6a..4a8cb3df 100644
+index 86c8588b..4a31c7f0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -754,9 +754,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -93,13 +93,13 @@ index 5ee47b6a..4a8cb3df 100644
 -                Preconditions.checkState( registeredChannels.size() < 128, "Too many registered channels" );
 -                Preconditions.checkArgument( id.length() < 128, "Channel name too long" );
 -
-+                // Waterfall start: Add configurable limits for plugin messaging
-+                Preconditions.checkState( !(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml" );
-+                Preconditions.checkArgument( !(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml" );
-+                // Waterfall end
++                // Bauantibotsentryproxy start: Add configurable limits for plugin messaging
++                Preconditions.checkState( !(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Muchos canales registrados. Esto se puede configurar en bauantibotsentry.yml" );
++                Preconditions.checkArgument( !(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Nombre del canal muy largo. Esto se puede configurar en bauantibotsentry.yml" );
++                // Bauantibotsentryproxy end
                  registeredChannels.add( id );
              }
          } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
 -- 
-2.37.2
+2.36.1.windows.1
 

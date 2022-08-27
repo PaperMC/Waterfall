@@ -1,4 +1,4 @@
-From 56e1c45d29bbb4edf52f4663628ba7743400f2e2 Mon Sep 17 00:00:00 2001
+From de0f8d7ab676481af8441c8c86217616c6c36846 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 9 Jul 2021 13:20:36 +0100
 Subject: [PATCH] Don't bother locking to fetch a v4 UUID from the offline
@@ -6,21 +6,21 @@ Subject: [PATCH] Don't bother locking to fetch a v4 UUID from the offline
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d4df4c17..9ef2b77a 100644
+index 2966bb39..f7e4d5bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -610,6 +610,11 @@ public class BungeeCord extends ProxyServer
  
      public UserConnection getPlayerByOfflineUUID(UUID name)
      {
-+        // Waterfall start - Skip lock if we get a v4 UUID, we're not gonna be in here
++        // Bauantibotsentryproxy start - Skip lock if we get a v4 UUID, we're not gonna be in here
 +        if (name != null && name.version() == 4) {
 +            return null;
 +        }
-+        // Waterfall end
++        // Bauantibotsentryproxy end
          connectionLock.readLock().lock();
          try
          {
 -- 
-2.37.2
+2.36.1.windows.1
 

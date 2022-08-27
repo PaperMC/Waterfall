@@ -1,11 +1,11 @@
-From ef16549d09c6a26772a904c40709b6a5edfd020c Mon Sep 17 00:00:00 2001
+From 863aff55dc24921566b6e1cc68612799b889dcba Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 25 Oct 2016 12:34:41 -0400
 Subject: [PATCH] Validate that chat messages are non-blank
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 58736e6f..b9a4b03c 100644
+index 05257b75..86fb7238 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -173,6 +173,7 @@ public class UpstreamBridge extends PacketHandler
@@ -24,10 +24,10 @@ index 58736e6f..b9a4b03c 100644
 +                empty = false;
              }
          }
-+        Preconditions.checkArgument(!empty, "Chat message is empty");
++        Preconditions.checkArgument(!empty, "El mensaje del chat está en blanco");
  
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), message );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
 -- 
-2.35.3
+2.36.1.windows.1
 

@@ -1,11 +1,11 @@
-From d8edfd4f25297caf0e989e55fe987bb86bc47c36 Mon Sep 17 00:00:00 2001
+From 401298f8ccce7cf182ad021e1bf95a708e924681 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 13:56:57 -0500
 Subject: [PATCH] Configurable server version in ping response
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index edbae4ea..749059ab 100644
+index 22583c1a..e8fcc4c2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -214,6 +214,13 @@ public interface ProxyConfig
@@ -23,7 +23,7 @@ index edbae4ea..749059ab 100644
  
      /**
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 91743f01..111404fb 100644
+index 6e498879..fc51dd5f 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -1,12 +1,20 @@
@@ -49,7 +49,7 @@ index 91743f01..111404fb 100644
       * Helps prevent players from overloading the servers behind us
 @@ -26,11 +34,17 @@ public class WaterfallConfiguration extends Configuration {
          super.load();
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         YamlConfig config = new YamlConfig(new File("bauantibotsentry.yml"));
          config.load(false); // Load, but no permissions
 +        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
          // Throttling options
@@ -66,7 +66,7 @@ index 91743f01..111404fb 100644
      public int getTabThrottle() {
          return tabThrottle;
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7d08b164..1db22fc6 100644
+index 711aff53..1f3ee8d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -689,7 +689,7 @@ public class BungeeCord extends ProxyServer
@@ -79,5 +79,5 @@ index 7d08b164..1db22fc6 100644
  
      @Override
 -- 
-2.30.1 (Apple Git-130)
+2.36.1.windows.1
 

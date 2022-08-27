@@ -1,4 +1,4 @@
-From 43359298fc34770dcd63045ccff96b55630dfa4b Mon Sep 17 00:00:00 2001
+From e66b2b3097a86ed8c18978d1acda95e10c02f0fb Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Tue, 26 Sep 2017 18:59:37 +0200
 Subject: [PATCH] Add console command completion
@@ -7,14 +7,14 @@ Register command completer for JLine to complete command names and
 command arguments (if supported).
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index c122cad9..4180c995 100644
+index c122cad9..cfac262a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -220,6 +220,41 @@ public final class PluginManager
          return true;
      }
  
-+    // Waterfall start - Add method to tab-complete command names
++    // Bauantibotsentryproxy start - Add method to tab-complete command names
 +    /**
 +     * Searches for tab-complete suggestions for the given command line.
 +     *
@@ -47,7 +47,7 @@ index c122cad9..4180c995 100644
 +
 +        return suggestions;
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      /**
       * Returns the {@link Plugin} objects corresponding to all loaded plugins.
@@ -90,7 +90,7 @@ index 00000000..bfcb6e9f
 +
 +}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
-index 765d24bc..6cec0b5a 100644
+index d6dec0b3..1fb66d16 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 @@ -15,6 +15,7 @@ public final class WaterfallConsole extends SimpleTerminalConsole {
@@ -102,5 +102,5 @@ index 765d24bc..6cec0b5a 100644
      }
  
 -- 
-2.30.1 (Apple Git-130)
+2.36.1.windows.1
 

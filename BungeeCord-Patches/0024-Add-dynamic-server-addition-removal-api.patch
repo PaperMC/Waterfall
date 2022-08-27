@@ -1,4 +1,4 @@
-From 63b26176f10efef2416eb1b75dc355eebb6bf611 Mon Sep 17 00:00:00 2001
+From 882123a64789df34bb764aaa7cbaa5a15b890cbe Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -8,7 +8,7 @@ The provided methods will not move a player if a server is removed or the server
 Thanks to Overcast for the idea
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index b6845bc4..edbae4ea 100644
+index b6845bc4..22583c1a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -37,11 +37,95 @@ public interface ProxyConfig
@@ -20,10 +20,10 @@ index b6845bc4..edbae4ea 100644
 +     * @deprecated The returned map may be modified concurrently by the proxy.
 +     *             The safe alternative is {@link #getServersCopy()}.
       */
-+    @Deprecated // Waterfall
++    @Deprecated // Bauantibotsentryproxy
      Map<String, ServerInfo> getServers();
  
-+    // Waterfall start - Dynamic server addition/removal api
++    // Bauantibotsentryproxy start - Dynamic server addition/removal api
 +    /**
 +     * Return all servers registered to this proxy, keyed by name. The returned map
 +     * is an immutable snapshot of the actual server collection. It cannot be modified,
@@ -103,13 +103,13 @@ index b6845bc4..edbae4ea 100644
 +     * @return true if any servers were removed.
 +     */
 +    boolean removeServers(Collection<ServerInfo> servers);
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      /**
       * Does the server authenticate with Mojang.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1f330bd2..a4011335 100644
+index 1f330bd2..914e95e9 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -96,9 +96,25 @@ public abstract class ProxyServer
@@ -124,7 +124,7 @@ index 1f330bd2..a4011335 100644
 +    @Deprecated // Waterfall
      public abstract Map<String, ServerInfo> getServers();
  
-+    // Waterfall begin - Cloned servers map
++    // Bauantibotsentryproxy begin - Cloned servers map
 +    /**
 +     * Return all servers registered to this proxy, keyed by name. The returned map
 +     * is an immutable snapshot of the actual server collection. It cannot be modified,
@@ -133,31 +133,31 @@ index 1f330bd2..a4011335 100644
 +     * @return all registered remote server destinations
 +     */
 +    public abstract Map<String, ServerInfo> getServersCopy();
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      /**
       * Gets the server info of a server.
       *
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
-index 262b29c8..d7ed3e11 100644
+index 262b29c8..80bc7c1e 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java
 +++ b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 @@ -44,6 +44,13 @@ public final class Configuration
          }
      }
  
-+    // Waterfall start - Allow configuration objects to be cloned
++    // Bauantibotsentryproxy start - Allow configuration objects to be cloned
 +    public Configuration(Configuration values, Configuration defaults)
 +    {
 +        this( values.self, defaults );
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      private Configuration getSectionFor(String path)
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 59c104d3..698b420f 100644
+index 59c104d3..e3b6d0ea 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 @@ -83,7 +83,7 @@ public class CommandServer extends Command implements TabExecutor
@@ -165,43 +165,43 @@ index 59c104d3..698b420f 100644
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
 -        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServers().values(), new Predicate<ServerInfo>()
-+        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
++        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Bauantibotsentryproxy: use #getServersCopy()
          {
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index edb173d1..7d08b164 100644
+index 6df59312..711aff53 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -635,10 +635,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    @Override
 +    public Map<String, ServerInfo> getServersCopy()
 +    {
 +        return config.getServersCopy();
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      @Override
      public ServerInfo getServerInfo(String name)
      {
 -        return getServers().get( name );
-+        return config.getServerInfo( name ); // Waterfall
++        return config.getServerInfo( name ); // Bauantibotsentryproxy
      }
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index ecd3b619..7094fe0b 100644
+index f2118d4f..b22d985b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
  package net.md_5.bungee.conf;
  
  import com.google.common.base.Preconditions;
-+import com.google.common.collect.ImmutableMap; // Waterfall
++import com.google.common.collect.ImmutableMap; // Bauantibotsentryproxy
  import gnu.trove.map.TMap;
  import java.io.File;
  import java.io.IOException;
@@ -209,7 +209,7 @@ index ecd3b619..7094fe0b 100644
  import java.util.logging.Level;
  import javax.imageio.ImageIO;
  import lombok.Getter;
-+import lombok.Synchronized; // Waterfall
++import lombok.Synchronized; // Bauantibotsentryproxy
  
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.Favicon;
@@ -217,7 +217,7 @@ index ecd3b619..7094fe0b 100644
       * Set of all listeners.
       */
      private Collection<ListenerInfo> listeners;
-+    private final Object serversLock = new Object(); // Waterfall
++    private final Object serversLock = new Object(); // Bauantibotsentryproxy
      /**
       * Set of all servers.
       */
@@ -225,7 +225,7 @@ index ecd3b619..7094fe0b 100644
      private boolean preventProxyConnections;
      private boolean forgeSupport;
  
-+    @Synchronized("serversLock") // Waterfall
++    @Synchronized("serversLock") // Bauantibotsentryproxy
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
@@ -243,7 +243,7 @@ index ecd3b619..7094fe0b 100644
          return favicon;
      }
 +
-+    // Waterfall start
++    // Bauantibotsentryproxy begin
 +    @Override
 +    @Synchronized("serversLock")
 +    public Map<String, ServerInfo> getServersCopy() {
@@ -308,8 +308,8 @@ index ecd3b619..7094fe0b 100644
 +        }
 +        return changed;
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
  }
 -- 
-2.35.3
+2.36.1.windows.1
 

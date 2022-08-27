@@ -1,4 +1,4 @@
-From 1e0eebdd511f09952c96780603ec4ba3c50bf051 Mon Sep 17 00:00:00 2001
+From 8d0d228ee2061e9d80d69b926cd4f853b600d5da Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Wed, 22 Apr 2020 14:00:44 +1000
 Subject: [PATCH] Add exception reporting event
@@ -446,18 +446,18 @@ index 00000000..5bf57ec1
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4180c995..90031156 100644
+index cfac262a..806949f5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -26,6 +26,11 @@ import java.util.Stack;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
  import java.util.logging.Level;
-+import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Waterfall
-+import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Waterfall
-+import io.github.waterfallmc.waterfall.exception.ProxyEventException; // Waterfall
-+import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException; // Waterfall
-+import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException; // Waterfall
++import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Bauantibotsentryproxy
++import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Bauantibotsentryproxy
++import io.github.waterfallmc.waterfall.exception.ProxyEventException; // Bauantibotsentryproxy
++import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException; // Bauantibotsentryproxy
++import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException; // Bauantibotsentryproxy
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
@@ -465,7 +465,7 @@ index 4180c995..90031156 100644
  import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.event.EventBus;
  import net.md_5.bungee.event.EventHandler;
-+import net.md_5.bungee.event.EventHandlerMethod; //Waterfall - Exception event
++import net.md_5.bungee.event.EventHandlerMethod; //Bauantibotsentryproxy - Exception event
  import org.yaml.snakeyaml.Yaml;
  import org.yaml.snakeyaml.constructor.Constructor;
  import org.yaml.snakeyaml.introspector.PropertyUtils;
@@ -477,7 +477,7 @@ index 4180c995..90031156 100644
 -        {
              if ( tabResults == null )
              {
-+        try { // Waterfall - split command & tab complete exception handlers for exception event
++        try { // Bauantibotsentryproxy - split command & tab complete exception handlers for exception event
                  if ( proxy.getConfig().isLogCommands() )
                  {
                      proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
@@ -485,16 +485,16 @@ index 4180c995..90031156 100644
                      } );
                  }
                  command.execute( sender, args );
-+        // Waterfall start - split command & tab complete exception handlers for exception event
++        // Bauantibotsentryproxy start - split command & tab complete exception handlers for exception event
 +        } catch ( Exception ex ) {
-+            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
++            sender.sendMessage( ChatColor.RED + "Ocurrió un error interno al intentar ejecutar este comando, revisa la consola." );
 +            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
-+            this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
++            this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Bauantibotsentryproxy - throw error event
 +        }
-+        // Waterfall end
++        // Bauantibotsentryproxy end
              } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
              {
-+        try { // Waterfall - split command & tab complete exception handlers for exception event
++        try { // Bauantibotsentryproxy - split command & tab complete exception handlers for exception event
                  for ( String s : ( (TabExecutor) command ).onTabComplete( sender, args ) )
                  {
                      tabResults.add( s );
@@ -502,13 +502,13 @@ index 4180c995..90031156 100644
 -            }
 -        } catch ( Exception ex )
 -        {
-+        // Waterfall start - split command & tab complete exception handlers for exception event
++        // Bauantibotsentryproxy start - split command & tab complete exception handlers for exception event
 +        } catch ( Exception ex ) {
              sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
              ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
-+            this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
++            this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Bauantibotsentryproxy - throw error event
          }
-+        // Waterfall end
++        // Bauantibotsentryproxy end
 +            }
          return true;
      }
@@ -518,11 +518,11 @@ index 4180c995..90031156 100644
              } catch ( Throwable t )
              {
 -                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Exception encountered when loading plugin: " + plugin.getDescription().getName(), t );
-+                // Waterfall start - throw exception event
++                // Bauantibotsentryproxy start - throw exception event
 +                String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
 +                ProxyServer.getInstance().getLogger().log( Level.WARNING, msg, t );
 +                this.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
-+                // Waterfall end
++                // Bauantibotsentryproxy end
              }
          }
      }
@@ -531,7 +531,7 @@ index 4180c995..90031156 100644
  
          long start = System.nanoTime();
 -        eventBus.post( event );
-+        eventBus.post( event, this::handleEventException ); //Waterfall - pass exception handler below
++        eventBus.post( event, this::handleEventException ); //Bauantibotsentryproxy - pass exception handler below
          event.postCall();
  
          long elapsed = System.nanoTime() - start;
@@ -539,19 +539,19 @@ index 4180c995..90031156 100644
          return event;
      }
  
-+    //Waterfall start - Exception handler passed to event bus to fire the exception event
++    //Bauantibotsentryproxy start - Exception handler passed to event bus to fire the exception event
 +    private <T extends Event> void handleEventException(String msg, T event, EventHandlerMethod method, Throwable ex) {
 +        if( !(event instanceof ProxyExceptionEvent) ) {
 +            this.callEvent( new ProxyExceptionEvent( new ProxyEventException( msg, ex, (Listener) method.getListener(), event) ) );
 +        }
 +    }
-+    //Waterfall end
++    //Bauantibotsentryproxy end
 +
      /**
       * Register a {@link Listener} for receiving called events. Methods in this
       * Object which wish to receive events must be annotated with the
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index fb301a44..1187acd0 100644
+index fb301a44..277983e0 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
 @@ -34,7 +34,8 @@ public class EventBus
@@ -559,7 +559,7 @@ index fb301a44..1187acd0 100644
      }
  
 -    public void post(Object event)
-+    // Waterfall - Add generic to signature so we don't have to cast in exception handler
++    // Bauantibotsentryproxy - Add generic to signature so we don't have to cast in exception handler
 +    public <T> void post(T event, EventExceptionHandler<T> exceptionHandler)
      {
          EventHandlerMethod[] handlers = byEventBaked.get( event.getClass() );
@@ -569,9 +569,9 @@ index fb301a44..1187acd0 100644
                  } catch ( InvocationTargetException ex )
                  {
 -                    logger.log( Level.WARNING, MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() ), ex.getCause() );
-+                    String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
++                    String msg = MessageFormat.format( "Error enviando el evento {0} al recibidor {1}", event, method.getListener() );
 +                    logger.log( Level.WARNING, msg, ex.getCause() );
-+                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
++                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Bauantibotsentryproxy - call passed exception handler
                  }
  
                  long elapsed = System.nanoTime() - start;
@@ -589,7 +589,7 @@ index 00000000..088fe9b7
 +
 +}
 diff --git a/event/src/test/java/net/md_5/bungee/event/EventBusTest.java b/event/src/test/java/net/md_5/bungee/event/EventBusTest.java
-index 2c737675..72f14937 100644
+index 2c737675..94cb9f6f 100644
 --- a/event/src/test/java/net/md_5/bungee/event/EventBusTest.java
 +++ b/event/src/test/java/net/md_5/bungee/event/EventBusTest.java
 @@ -14,14 +14,14 @@ public class EventBusTest
@@ -597,7 +597,7 @@ index 2c737675..72f14937 100644
      {
          bus.register( this );
 -        bus.post( new FirstEvent() );
-+        bus.post( new FirstEvent(), null ); // Waterfall - We dont need an exception handler here
++        bus.post( new FirstEvent(), null ); // Bauantibotsentryproxy - We dont need an exception handler here
          Assert.assertEquals( 0, latch.getCount() );
      }
  
@@ -605,7 +605,7 @@ index 2c737675..72f14937 100644
      public void firstListener(FirstEvent event)
      {
 -        bus.post( new SecondEvent() );
-+        bus.post( new SecondEvent(), null ); // Waterfall - We dont need an exception handler here
++        bus.post( new SecondEvent(), null ); // Bauantibotsentryproxy - We dont need an exception handler here
          Assert.assertEquals( 1, latch.getCount() );
          latch.countDown();
      }
@@ -616,7 +616,7 @@ index 2c737675..72f14937 100644
 +
  }
 diff --git a/event/src/test/java/net/md_5/bungee/event/EventPriorityTest.java b/event/src/test/java/net/md_5/bungee/event/EventPriorityTest.java
-index 351d3724..88f1346f 100644
+index 351d3724..9f1beb09 100644
 --- a/event/src/test/java/net/md_5/bungee/event/EventPriorityTest.java
 +++ b/event/src/test/java/net/md_5/bungee/event/EventPriorityTest.java
 @@ -15,7 +15,7 @@ public class EventPriorityTest
@@ -624,12 +624,12 @@ index 351d3724..88f1346f 100644
          bus.register( this );
          bus.register( new EventPriorityListenerPartner() );
 -        bus.post( new PriorityTestEvent() );
-+        bus.post( new PriorityTestEvent(), null ); // Waterfall - We dont need an exception handler here
++        bus.post( new PriorityTestEvent(), null ); // Bauantibotsentryproxy - We dont need an exception handler here
          Assert.assertEquals( 0, latch.getCount() );
      }
  
 diff --git a/event/src/test/java/net/md_5/bungee/event/UnregisteringListenerTest.java b/event/src/test/java/net/md_5/bungee/event/UnregisteringListenerTest.java
-index fbfbd546..ae85a1d4 100644
+index fbfbd546..5e9de854 100644
 --- a/event/src/test/java/net/md_5/bungee/event/UnregisteringListenerTest.java
 +++ b/event/src/test/java/net/md_5/bungee/event/UnregisteringListenerTest.java
 @@ -13,7 +13,7 @@ public class UnregisteringListenerTest
@@ -637,12 +637,12 @@ index fbfbd546..ae85a1d4 100644
          bus.register( this );
          bus.unregister( this );
 -        bus.post( new TestEvent() );
-+        bus.post( new TestEvent(), null ); // Waterfall - We dont need an exception handler here
++        bus.post( new TestEvent(), null ); // Bauantibotsentryproxy - We dont need an exception handler here
      }
  
      @EventHandler
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 06784d1e..d4df4c17 100644
+index 631b5d43..2966bb39 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;
@@ -659,16 +659,16 @@ index 06784d1e..d4df4c17 100644
              } catch ( Throwable t )
              {
 -                getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), t );
-+                // Waterfall start - throw exception event
++                // Bauantibotsentryproxy start - throw exception event
 +                String msg = "Exception disabling plugin " + plugin.getDescription().getName();
 +                getLogger().log( Level.SEVERE, msg, t );
 +                pluginManager.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
-+                // Waterfall end
++                // Bauantibotsentryproxy end
              }
              getScheduler().cancel( plugin );
              plugin.getExecutorService().shutdownNow();
 diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
-index 38b75b51..02ec98fc 100644
+index 38b75b51..6a0a4102 100644
 --- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
 +++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
 @@ -3,6 +3,9 @@ package net.md_5.bungee.scheduler;
@@ -686,14 +686,14 @@ index 38b75b51..02ec98fc 100644
              } catch ( Throwable t )
              {
 -                ProxyServer.getInstance().getLogger().log( Level.SEVERE, "Task " + this + " encountered an exception", t );
-+                //Waterfall start - throw exception event
++                //Bauantibotsentryproxy start - throw exception event
 +                String msg = String.format( "Task %s encountered an exception", this );
 +                ProxyServer.getInstance().getLogger().log( Level.SEVERE, msg, t );
 +                ProxyServer.getInstance().getPluginManager().callEvent( new ProxyExceptionEvent( new ProxySchedulerException( msg, t, this ) ) );
-+                //Waterfall end
++                //Bauantibotsentryproxy end
              }
  
              // If we have a period of 0 or less, only run once
 -- 
-2.37.2
+2.36.1.windows.1
 

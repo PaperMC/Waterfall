@@ -1,11 +1,11 @@
-From f2b26a8fb95ca8e8cd68638c0c26883f5af6af48 Mon Sep 17 00:00:00 2001
+From 8ae06ab4ea2f1440a9e451102453bacca8ea7930 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 4c87a36e..379b6023 100644
+index 601c195d..405b1c2c 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -76,5 +76,11 @@
@@ -21,25 +21,25 @@ index 4c87a36e..379b6023 100644
      </dependencies>
  </project>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 9660234d..3d1e9a3a 100644
+index 4a80c04c..125b8000 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -44,6 +44,13 @@ public class Plugin
          // init( proxy, description );
      }
  
-+    // Waterfall start - Allow plugins to use SLF4J for logging
++    // Bauantibotsentryproxy start - Allow plugins to use SLF4J for logging
 +    public org.slf4j.Logger getSLF4JLogger() {
 +        return org.slf4j.LoggerFactory.getLogger(logger.getName());
 +    }
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
 +
      /**
       * Called when the plugin has just been loaded. Most of the proxy will not
       * be initialized, so only use it for registering
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index f2623ebe..39e2fa42 100644
+index 44bf7f91..fb091698 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -38,6 +38,12 @@
@@ -56,5 +56,5 @@ index f2623ebe..39e2fa42 100644
              <groupId>com.lmax</groupId>
              <artifactId>disruptor</artifactId>
 -- 
-2.33.0
+2.36.1.windows.1
 

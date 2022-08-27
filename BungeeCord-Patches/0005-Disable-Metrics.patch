@@ -1,4 +1,4 @@
-From 89153d0b39356124f0a3fd4dec5a4fbf525caf93 Mon Sep 17 00:00:00 2001
+From f3e76cbe976c197ac70037be48882d46cf174bf5 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Thu, 19 May 2016 10:55:20 -0700
 Subject: [PATCH] Disable Metrics
@@ -6,7 +6,7 @@ Subject: [PATCH] Disable Metrics
 MCStats has not been stable for a long while now, and in our opinion it is not worth migrating to an alternative service. Waterfall has been maintained for the past two years without any or much consideration to statistics, we have users and that's enough for us ;)
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 582be876..dddc14d8 100644
+index a28e1414..d2b9027d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -123,7 +123,7 @@ public class BungeeCord extends ProxyServer
@@ -14,7 +14,7 @@ index 582be876..dddc14d8 100644
       */
      private final Timer saveThread = new Timer( "Reconnect Saver" );
 -    private final Timer metricsThread = new Timer( "Metrics Thread" );
-+    // private final Timer metricsThread = new Timer( "Metrics Thread" ); // Waterfall: Disable Metrics
++    // private final Timer metricsThread = new Timer( "Metrics Thread" ); // Bauantibotsentryproxy: Disable Metrics
      /**
       * Server socket listener.
       */
@@ -23,7 +23,7 @@ index 582be876..dddc14d8 100644
              }
          }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
 -        metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
-+        //metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) ); // Waterfall: Disable Metrics
++        //metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) ); // Bauantibotsentryproxy: Disable Metrics
  
          Runtime.getRuntime().addShutdownHook( new Thread()
          {
@@ -32,7 +32,7 @@ index 582be876..dddc14d8 100644
          }
          saveThread.cancel();
 -        metricsThread.cancel();
-+        //metricsThread.cancel(); // Waterfall: Disable Metrics
++        //metricsThread.cancel(); // Bauantibotsentryproxy: Disable Metrics
  
          getLogger().info( "Disabling plugins" );
          for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
@@ -177,5 +177,5 @@ index eabf7573..00000000
 -    }
 -}
 -- 
-2.30.1 (Apple Git-130)
+2.36.1.windows.1
 

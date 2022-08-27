@@ -1,4 +1,4 @@
-From 69adecb315d4a27121887e2c9dc29850d989e77d Mon Sep 17 00:00:00 2001
+From 8096c704f0d5374ccf5f7357c523d9782f84f564 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,17 +54,17 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 3b56018a..a4f242b2 100644
+index 8fe46301..f9ee9281 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -19,8 +19,10 @@ import io.netty.channel.unix.DomainSocketAddress;
  import java.io.DataInput;
  import java.net.InetSocketAddress;
  import java.util.ArrayList;
-+import java.util.HashMap; // Waterfall
++import java.util.HashMap; // Bauantibotsentryproxy
  import java.util.List;
  import java.util.Map;
-+import java.util.Objects; // Waterfall
++import java.util.Objects; // Bauantibotsentryproxy
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
@@ -73,7 +73,7 @@ index 3b56018a..a4f242b2 100644
          boolean modified = false;
  
 -        for ( Map.Entry<String, Command> command : bungee.getPluginManager().getCommands() )
-+        // Waterfall start
++        // Bauantibotsentryproxy start
 +        Map<String, Command> commandMap = new HashMap<>();
 +        for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
 +            if ( !bungee.getDisabledCommands().contains( commandEntry.getKey() )
@@ -92,10 +92,10 @@ index 3b56018a..a4f242b2 100644
 -            if ( !bungee.getDisabledCommands().contains( command.getKey() ) && commands.getRoot().getChild( command.getKey() ) == null && command.getValue().hasPermission( con ) )
 +            //noinspection ConstantConditions
 +            if ( true ) // Moved up
-+            // Waterfall end
++            // Bauantibotsentryproxy end
              {
                  CommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() ).executes( DUMMY_COMMAND )
                          .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
 -- 
-2.37.1
+2.36.1.windows.1
 

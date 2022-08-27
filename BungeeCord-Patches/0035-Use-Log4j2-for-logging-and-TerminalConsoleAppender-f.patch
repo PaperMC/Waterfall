@@ -1,4 +1,4 @@
-From c1690b6f6906281fb06aa0bb3f2184aa73f1b9d6 Mon Sep 17 00:00:00 2001
+From d0ea7db3e1e1c6bc346bf009d0d315312bf16a1b Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -306,7 +306,7 @@ index c726cb18..1036a2e7 100644
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 new file mode 100644
-index 00000000..765d24bc
+index 00000000..d6dec0b3
 --- /dev/null
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
 @@ -0,0 +1,39 @@
@@ -339,7 +339,7 @@ index 00000000..765d24bc
 +    protected void runCommand(String command) {
 +        ProxyServer proxy = ProxyServer.getInstance();
 +        if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
-+            proxy.getConsole().sendMessage(new ComponentBuilder("Command not found").color(ChatColor.RED).create());
++            proxy.getConsole().sendMessage(new ComponentBuilder("No se encuentra el comando").color(ChatColor.RED).create());
 +        }
 +    }
 +
@@ -350,7 +350,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1db22fc6..66d38b40 100644
+index 1f3ee8d3..9871ffbe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -46,7 +46,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -389,12 +389,12 @@ index 1db22fc6..66d38b40 100644
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
-+    // Waterfall start - Remove ConsoleReader for JLine 3 update
++    // Bauantibotsentryproxy start - Remove ConsoleReader for JLine 3 update
 +    /*
      @Getter
      private final ConsoleReader consoleReader;
 +    */
-+    // Waterfall end
++    // Bauantibotsentryproxy end
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
@@ -402,7 +402,7 @@ index 1db22fc6..66d38b40 100644
          // BungeeCord. This version is only used when extracting the libraries to their temp folder.
          System.setProperty( "library.jansi.version", "BungeeCord" );
  
-+        // Waterfall start - Use TerminalConsoleAppender and Log4J
++        // Bauantibotsentryproxy start - Use TerminalConsoleAppender and Log4J
 +        /*
          AnsiConsole.systemInstall();
          consoleReader = new ConsoleReader();
@@ -413,7 +413,7 @@ index 1db22fc6..66d38b40 100644
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
 +        */
 +        logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
-+        // Waterfall end
++        // Bauantibotsentryproxy end
  
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
@@ -425,19 +425,19 @@ index 1db22fc6..66d38b40 100644
 -        {
 -            handler.close();
 -        }
-+        org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
++        org.apache.logging.log4j.LogManager.shutdown(); // Bauantibotsentryproxy
  
          // Unlock the thread before optionally calling system exit, which might invoke this function again.
          // If that happens, the system will obtain the lock, and then see that isRunning == false and return without doing anything.
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c2512dd5..0db3d76a 100644
+index 6eb3dd9f..3a453f37 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -68,6 +68,9 @@ public class BungeeCordLauncher
  
          if ( !options.has( "noconsole" ) )
          {
-+            // Waterfall start - Use TerminalConsoleAppender
++            // Bauantibotsentryproxy start - Use TerminalConsoleAppender
 +            new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
 +            /*
              String line;
@@ -448,7 +448,7 @@ index c2512dd5..0db3d76a 100644
                  }
              }
 +            */
-+            // Waterfall end
++            // Bauantibotsentryproxy end
          }
      }
  }
@@ -497,7 +497,7 @@ index 3e5ca394..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-index 9ec4920e..d3abee44 100644
+index 9ec4920e..a864a888 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
 @@ -44,7 +44,7 @@ public class ModuleManager
@@ -505,7 +505,7 @@ index 9ec4920e..d3abee44 100644
          if ( bungeeVersion == null )
          {
 -            System.out.println( "Couldn't detect bungee version. Custom build?" );
-+            proxy.getLogger().warning( "Couldn't detect bungee version. Custom build?" ); // Waterfall - Use logger
++            proxy.getLogger().warning( "No se puede detectar la versión del bungee. ¿Versión custom?" ); // Bauantibotsentryproxy - Use logger
              return;
          }
  
@@ -1616,5 +1616,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.37.1
+2.36.1.windows.1
 

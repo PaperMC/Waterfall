@@ -1,4 +1,4 @@
-From 57112a8044943dd7303081a47fc826d3c339154e Mon Sep 17 00:00:00 2001
+From 2b6e799dcb14839962628c1b82904efcf7ee89ec Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -6,14 +6,14 @@ Subject: [PATCH] Add timeout variant to connect methods
 Also added more connect methods to ProxiedPlayer, in addition to the new method
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index e7ab62e5..684eb883 100644
+index e7ab62e5..30ad6537 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -126,6 +126,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void connect(ServerInfo target, Callback<Boolean> callback);
  
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    /**
 +     * Connects / transfers this user to the specified connection, gracefully
 +     * closing the current one. Depending on the implementation, this method
@@ -43,7 +43,7 @@ index e7ab62e5..684eb883 100644
 +     *                target server
 +     */
 +    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, int timeout);
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      /**
       * Connects / transfers this user to the specified connection, gracefully
@@ -52,7 +52,7 @@ index e7ab62e5..684eb883 100644
       */
      void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
  
-+    // Waterfall start
++    // Bauantibotsentryproxy start
 +    /**
 +     * Connects / transfers this user to the specified connection, gracefully
 +     * closing the current one. Depending on the implementation, this method
@@ -69,20 +69,20 @@ index e7ab62e5..684eb883 100644
 +     *                target server
 +     */
 +    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, ServerConnectEvent.Reason reason, int timeout);
-+    // Waterfall end
++    // Bauantibotsentryproxy end
 +
      /**
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8268e30b..ccb9efdc 100644
+index bac51311..25b414d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -255,9 +255,20 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
-+        // Waterfall start
++        // Bauantibotsentryproxy start
 +        connect(info, callback, retry, reason, bungee.getConfig().getServerConnectTimeout());
 +    }
 +    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
@@ -91,11 +91,11 @@ index 8268e30b..ccb9efdc 100644
 +
 +    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout)
 +    {
-+        // Waterfall end
++        // Bauantibotsentryproxy end
          Preconditions.checkNotNull( info, "info" );
  
          ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info );
-+        builder.connectTimeout(timeout); // Waterfall
++        builder.connectTimeout(timeout); // Bauantibotsentryproxy
          if ( callback != null )
          {
              // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
@@ -104,10 +104,10 @@ index 8268e30b..ccb9efdc 100644
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
 -                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK );
-+                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
++                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Bauantibotsentryproxy
                      } else if ( dimensionChange )
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 -- 
-2.35.3
+2.36.1.windows.1
 

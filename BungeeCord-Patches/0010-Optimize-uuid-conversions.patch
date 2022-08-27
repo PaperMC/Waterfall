@@ -1,4 +1,4 @@
-From 3abcc263d07ca4f3297170abbb7fe4fc3e373195 Mon Sep 17 00:00:00 2001
+From 0fa46493fb14ee208e6c16b3f8b8cccd638d27b5 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -237,7 +237,7 @@ index 1457d4c8..70bf87f7 100644
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index 88d36ad2..fc92a7b5 100644
+index 88d36ad2..b7475cb1 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -74,7 +74,7 @@ public class ServerPing
@@ -245,12 +245,12 @@ index 88d36ad2..fc92a7b5 100644
          public String getId()
          {
 -            return uniqueId.toString().replace( "-", "" );
-+            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
++            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Bauantibotsentryproxy
          }
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 74362ef9..94db72b0 100644
+index 74362ef9..5e7f6213 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -712,7 +712,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -258,10 +258,10 @@ index 74362ef9..94db72b0 100644
      public String getUUID()
      {
 -        return uniqueId.toString().replace( "-", "" );
-+        return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Waterfall
++        return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash( uniqueId.toString() ); // Bauantibotsentryproxy
      }
  
      @Override
 -- 
-2.37.1
+2.36.1.windows.1
 
