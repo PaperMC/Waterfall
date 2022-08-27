@@ -1,7 +1,7 @@
 Bauantibotsentryproxy
 =========
 
-Bauantibotsentry es un fork de [Waterfall](https://github.com/PaperMC/Waterfall).
+Bauantibotsentryproxy es un fork de [Waterfall](https://github.com/PaperMC/Waterfall).
 
 ## Como descargar:
 
@@ -15,4 +15,6 @@ Para compilar Bauantibotsentryproxy, necesitas JDK8, git, bash, maven y una cone
 
 Clona este repositorio, usa el comando `./waterfall b` de *bash*, consigue el  jar desde Bauantibotsentryproxy-Proxy/bootstrap/target/
 
+## Importante:
 
+El archivo message.propierties (archivo de los mensajes de bungeecord) está en la carpeta Mensajes
