@@ -66,7 +66,7 @@ index 111404fb..ef44d334 100644
       * Throttling options
       * Helps prevent players from overloading the servers behind us
 @@ -35,6 +41,7 @@ public class WaterfallConfiguration extends Configuration {
-         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
+         YamlConfig config = new YamlConfig(new File("bauantibotsentry.yml"));
          config.load(false); // Load, but no permissions
          gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
 +        useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
