@@ -13,8 +13,8 @@ Bauantibotsentryproxy necesita Java8 o superior.
 
 Para compilar Bauantibotsentryproxy, necesitas JDK8, git, bash, maven y una conexión a internet.
 
-Clona este repositorio, usa el comando `./waterfall b` de *bash*, consigue el  jar desde Bauantibotsentryproxy-Proxy/bootstrap/target/
+Clona este repositorio, usa el comando `./bauantibotsentryproxy b` de *bash*, consigue el  jar desde Bauantibotsentryproxy-Proxy/bootstrap/target/
 
 ## Importante:
 
-El archivo message.propierties (archivo de los mensajes de bungeecord) está en la carpeta Mensajes
+El archivo messages.propierties (archivo de los mensajes de bungeecord) está en la carpeta Mensajes
