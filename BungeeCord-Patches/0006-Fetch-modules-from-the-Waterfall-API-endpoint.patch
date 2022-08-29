@@ -1,4 +1,4 @@
-From 464a071b85e1669aa6dbdc1e1c2283807bbb5f0e Mon Sep 17 00:00:00 2001
+From 1345e92a500c226958f02eb98417b117e6605371 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
 Subject: [PATCH] Fetch modules from the Waterfall API endpoint
@@ -6,7 +6,7 @@ Subject: [PATCH] Fetch modules from the Waterfall API endpoint
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2536435c..338c30d3 100644
+index 2536435c..5bb86152 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 @@ -1,10 +1,10 @@
@@ -28,7 +28,7 @@ index 2536435c..338c30d3 100644
          {
 -            URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
 +            final String url = String.format(
-+                "https://papermc.io/api/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
++                "https://api.papermc.io/v2/projects/%1$s/versions/%2$s/builds/%3$s/downloads/%4$s-%2$s-%3$s.jar",
 +                "waterfall",
 +                net.md_5.bungee.api.ProxyServer.getInstance().getVersion().split(":")[2].split("-")[0],
 +                version.getBuild(),
@@ -47,5 +47,4 @@ index 2536435c..338c30d3 100644
          } catch ( IOException ex )
          {
 -- 
-2.29.2
-
+2.37.2.windows.2
