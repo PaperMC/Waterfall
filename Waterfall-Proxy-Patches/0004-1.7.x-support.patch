@@ -1,14 +1,14 @@
-From fd7c37150d6ff9c9fd0ad2d337e501113217786c Mon Sep 17 00:00:00 2001
+From 5f0853d26677fe45f76e60f61d5dcd8e82dd3371 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index bafef27c..8efe1ef0 100644
+index 561a9522..9a26c845 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -370,4 +370,36 @@ public abstract class DefinedPacket
+@@ -365,4 +365,36 @@ public abstract class DefinedPacket
          return 0;
      }
      // Waterfall end
@@ -358,7 +358,7 @@ index aa5daf47..a6b13aa1 100644
                  ProtocolConstants.MINECRAFT_1_9,
                  ProtocolConstants.MINECRAFT_1_9_1,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
-index 6034fc18..6100687c 100644
+index dc986609..230018ae 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Chat.java
 @@ -41,6 +41,7 @@ public class Chat extends DefinedPacket
@@ -369,10 +369,10 @@ index 6034fc18..6100687c 100644
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
              position = buf.readByte();
-@@ -60,6 +61,7 @@ public class Chat extends DefinedPacket
-         } else
-         // Waterfall end
-         writeString( message, buf );
+@@ -55,6 +56,7 @@ public class Chat extends DefinedPacket
+     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
+     {
+         writeString( message, buf, ( direction == ProtocolConstants.Direction.TO_CLIENT ) ? 262144 : ( protocolVersion >= ProtocolConstants.MINECRAFT_1_11 ? 256 : 100 ) );
 +        if ( ProtocolConstants.isAfterOrEq( protocolVersion, ProtocolConstants.MINECRAFT_1_8 ) ) // FlameCord - 1.7.x support
          if ( direction == ProtocolConstants.Direction.TO_CLIENT )
          {
@@ -915,7 +915,7 @@ index a5555f6a..09dc67f9 100644
          buf.writeByte( mode );
          if ( mode == 0 || mode == 2 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 848d5de5..b7e56763 100644
+index d2548e07..04501b59 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -170,6 +170,14 @@ public class BungeeCord extends ProxyServer
@@ -1374,7 +1374,7 @@ index 00000000..cdc07dc4
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 new file mode 100644
-index 00000000..5ce42f62
+index 00000000..cb9174b3
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 @@ -0,0 +1,62 @@
@@ -1424,7 +1424,7 @@ index 00000000..5ce42f62
 +                        DefinedPacket.writeString( player.getUniqueId().toString(), packet );
 +                        DefinedPacket.writeString( username, packet );
 +                        DefinedPacket.writeVarInt( profile.getProperties().length, packet );
-+                        for ( LoginResult.Property property : profile.getProperties() )
++                        for ( net.md_5.bungee.protocol.Property property : profile.getProperties() )
 +                        {
 +                            DefinedPacket.writeString( property.getName(), packet );
 +                            DefinedPacket.writeString( property.getValue(), packet );
@@ -1621,5 +1621,5 @@ index daf12f74..7d053485 100644
  
      @Override
 -- 
-2.37.0.windows.1
+2.37.2.windows.2
 

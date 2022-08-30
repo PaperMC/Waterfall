@@ -1,4 +1,4 @@
-From 5b6019b5dc4ab852f504d2a77563b954cf92c7c9 Mon Sep 17 00:00:00 2001
+From 374bddd71d06eaa3d8d6118bfb83dfe42cf8850e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -2549,7 +2549,7 @@ index cdc07dc4..00000000
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 deleted file mode 100644
-index 5ce42f62..00000000
+index cb9174b3..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 +++ /dev/null
 @@ -1,62 +0,0 @@
@@ -2599,7 +2599,7 @@ index 5ce42f62..00000000
 -                        DefinedPacket.writeString( player.getUniqueId().toString(), packet );
 -                        DefinedPacket.writeString( username, packet );
 -                        DefinedPacket.writeVarInt( profile.getProperties().length, packet );
--                        for ( LoginResult.Property property : profile.getProperties() )
+-                        for ( net.md_5.bungee.protocol.Property property : profile.getProperties() )
 -                        {
 -                            DefinedPacket.writeString( property.getName(), packet );
 -                            DefinedPacket.writeString( property.getValue(), packet );
@@ -3235,5 +3235,5 @@ index caed4384..af428090 100644
      }
  
 -- 
-2.37.0.windows.1
+2.37.2.windows.2
 
