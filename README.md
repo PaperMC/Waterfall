@@ -15,6 +15,4 @@ Para compilar Bauantibotsentryproxy, necesitas JDK8, git, bash, maven y una cone
 
 Clona este repositorio, usa el comando `./bauantibotsentryproxy b` de *bash*, consigue el jar desde Waterfall-Proxy/bootstrap/target/
 
-## Importante:
-
-El archivo messages.propierties (archivo de los mensajes de bungeecord) está en la carpeta Mensajes
+## https://proxy.bautista.tk/
