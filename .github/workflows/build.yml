@@ -19,6 +19,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+      - name: CHMOD
+        run: chmod 777 bauantibotsentryproxy
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
