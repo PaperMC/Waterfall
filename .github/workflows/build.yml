@@ -24,7 +24,7 @@ jobs:
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        run: ./bauantibotsentryproxy b
+        run: ./bauantibotsentryproxy p
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
