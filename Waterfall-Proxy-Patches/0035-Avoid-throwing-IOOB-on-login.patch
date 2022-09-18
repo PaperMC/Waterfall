@@ -1,11 +1,11 @@
-From 69197173b7058afc69c176c8fe6c732700831bec Mon Sep 17 00:00:00 2001
+From 960a54fbe3fc62cc1aa2607d9efe4eb4b33b03b0 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 13 Sep 2022 20:41:48 -0300
 Subject: [PATCH] Avoid throwing IOOB on login
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index bb74cbc4..e85f026b 100644
+index 22a5b993..78a2d569 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -32,7 +32,8 @@ public class LoginRequest extends DefinedPacket
@@ -14,7 +14,7 @@ index bb74cbc4..e85f026b 100644
          {
 -            if ( buf.readBoolean() )
 +            // FlameCord - Avoid throwing IOOB on login
-+            if ( buf.readableBytes() >= 1 && buf.readBoolean() )
++            if ( buf.isReadable() && buf.readBoolean() )
              {
                  uuid = readUUID( buf );
              }

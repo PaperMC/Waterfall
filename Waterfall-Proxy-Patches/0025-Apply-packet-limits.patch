@@ -1,4 +1,4 @@
-From 3b10c67b44bca36048c12ccd92c6dc78efd50650 Mon Sep 17 00:00:00 2001
+From b9e025ba81bbb80fdaf9d5dc4a52b358bfe382a9 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Jun 2021 11:30:19 -0300
 Subject: [PATCH] Apply packet limits
@@ -51,7 +51,7 @@ index 7dbbfd3c..b7842055 100644
 +    }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 682c8784..bb74cbc4 100644
+index 682c8784..22a5b993 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -70,7 +70,8 @@ public class LoginRequest extends DefinedPacket
@@ -60,7 +60,7 @@ index 682c8784..bb74cbc4 100644
          // legal on the protocol level.
 -        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
 +        // FlameCord - Apply packet limits
-+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 1 + (16 * 4) + 64;
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 1 + (16 * 4) + 1024;
          return 1 + (16 * 4);
      }
      // Waterfall end
