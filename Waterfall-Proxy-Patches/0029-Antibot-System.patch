@@ -1,4 +1,4 @@
-From 4fc4176aa233588dddc277eb1ead2e66ed4c806f Mon Sep 17 00:00:00 2001
+From 7d1814de2ee7d37251cbe0111aa8e830f0b7ae16 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -297,7 +297,7 @@ index 00000000..137ed980
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 new file mode 100644
-index 00000000..8507e1a7
+index 00000000..f912d101
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
 @@ -0,0 +1,140 @@
@@ -345,7 +345,7 @@ index 00000000..8507e1a7
 +
 +            this.maxMindReader = new Reader(file, new CHMCache());
 +        } catch (final Exception exception) {
-+            // Ignored
++            System.out.println("MaxMindDB was not able to download!");
 +        }
 +    }
 +
@@ -407,7 +407,7 @@ index 00000000..8507e1a7
 +
 +                return isoCode;
 +            }
-+        } catch (final IOException exception) {
++        } catch (final Exception exception) {
 +            // Ignored
 +        }
 +
@@ -1198,5 +1198,5 @@ index ffea1599..6bf109f5 100644
              {
                  ch.close();
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 
