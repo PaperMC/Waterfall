@@ -1,4 +1,4 @@
-From 7d1814de2ee7d37251cbe0111aa8e830f0b7ae16 Mon Sep 17 00:00:00 2001
+From bff5bba80571e7d6308ff17af33f25b0be465427 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -933,7 +933,7 @@ index 4f306660..33c40733 100644
  			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
  			setIfUnexistant("flamecord_help",
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 7035729b..ee08bbe5 100644
+index 7035729b..7c2128dc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -21,6 +21,8 @@ import java.util.logging.Level;
@@ -1028,7 +1028,7 @@ index 7035729b..ee08bbe5 100644
 +        {
 +            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotNicknameLog() )
 +            {
-+                bungee.getLogger().log( Level.INFO, "[FlameCord] [{0}] has a blacklisted nickname", ch.getRemoteAddress() );
++                bungee.getLogger().log( Level.INFO, "[FlameCord] [{0}] has a blacklisted nickname (" + nickname + ")", ch.getRemoteAddress() );
 +            }
 +
 +            disconnect( bungee.getTranslation( "antibot_nickname", loginRequest.getData() ) );
