@@ -1,11 +1,11 @@
-From fe09001a7013321ec3172eee6cbe895063fbc294 Mon Sep 17 00:00:00 2001
+From fcbd2374afc15c2fe67dd158b6fd2ae68487ed6a Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Mon, 31 Oct 2022 17:00:58 +0100
 Subject: [PATCH] Safe bytebuf release
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 9a7bf9b5..a006f502 100644
+index 9a7bf9b5..b43ebc8d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -31,33 +31,34 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -66,15 +66,6 @@ index 9a7bf9b5..a006f502 100644
              // Waterfall start
              if (in.readableBytes() == 0 && !server) {
                  return;
-@@ -117,6 +118,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-             {
-                 slice.release();
-             }
-+
-+            in.release();
-         }
-     }
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index a63e67f1..4293e2b4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
