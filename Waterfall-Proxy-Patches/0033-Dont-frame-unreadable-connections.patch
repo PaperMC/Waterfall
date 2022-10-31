@@ -15,7 +15,6 @@ index 074d2437..9a7bf9b5 100644
 -        if ( !ctx.channel().isActive() )
 +        if ( !ctx.channel().isActive() || !in.isReadable() ) // FlameCord - Check if connection is readable
          {
-             in.release();
              return;
          }
 -- 
