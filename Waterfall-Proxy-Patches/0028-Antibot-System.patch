@@ -1,4 +1,4 @@
-From a9f7091c77c4290c3254b9962caf0b851ccd59b3 Mon Sep 17 00:00:00 2001
+From b14935a7b331d68ef0a882c0c193e03ff04a9ec5 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -224,10 +224,10 @@ index 00000000..b37f114a
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
 new file mode 100644
-index 00000000..af586e55
+index 00000000..6c7b300c
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,31 @@
 +package dev._2lstudios.antibot;
 +
 +import java.net.InetSocketAddress;
@@ -238,7 +238,9 @@ index 00000000..af586e55
 +public class AddressDataManager {
 +    private final Map<String, AddressData> addressData = new HashMap<>();
 +
-+    public AddressData getAddressData(final String addressString) {
++    public AddressData getAddressData(String addressString) {
++        addressString = addressString.replace("/", "").split(":")[0];
++
 +        if (addressData.containsKey(addressString)) {
 +            return addressData.get(addressString);
 +        } else {
