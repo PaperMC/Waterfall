@@ -4,7 +4,7 @@ FlameCord is a Waterfall fork or modification that adds antibot features, exploi
 
 ## Links
 
-<a href="https://builtbybit.com/resources/13492/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=20% height=20%><img/><a/><a href="https://discord.gg/gF36AT3"><img src="https://i.imgur.com/NyGBnuJ.png" width=20% height=20%><img/><a/>
+<a href="https://builtbybit.com/resources/13492/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=25% height=25%><img/><a/> <a href="https://discord.gg/gF36AT3"><img src="https://i.imgur.com/NyGBnuJ.png" width=25% height=25%><img/><a/>
 
 ## Features
 
