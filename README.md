@@ -1,20 +1,20 @@
-FlameCord
-=======
+# FlameCord
 
-FlameCord is a Waterfall modification to fix exploits, improve performance and protect against bot attacks. Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
+FlameCord is a Waterfall fork or modification that adds antibot features, exploit prevention systems, performance improvements, removal of unused features, library updates and application layer ddos mitigation.
 
-FlameCord is compiled like Waterfall does; Please follow the [CONTRIBUTING.md](https://github.com/2lstudios-mc/FlameCord/blob/master/CONTRIBUTING.md) file. If you need help you can always contact us on Discord.
+## Links
 
-<a href="https://builtbybit.com/resources/13492/"><img src="https://e7.pngegg.com/pngimages/180/929/png-clipart-brand-logo-product-design-label-button-label-text.png" width=10% height=10%><img/><a/>
-
-<a href="https://discord.gg/gF36AT3"><img src="https://i.imgur.com/NyGBnuJ.png" width=10% height=10%><img/><a/> <a href="https://www.mc-market.org/resources/13492/"><img src="https://i.imgur.com/KLOpbAF.png" width=10% height=10%><img/><a/> <a href="https://ci.2lstudios.dev/job/FlameCord"><img src="https://i.imgur.com/lOUkJji.png" width=10% height=10%><img/><a/>
+<a href="https://builtbybit.com/resources/13492/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=20% height=20%><img/><a/><a href="https://discord.gg/gF36AT3"><img src="https://i.imgur.com/NyGBnuJ.png" width=20% height=20%><img/><a/>
 
 ## Features
 
 FlameCord being a fork of Waterfall, has all its features, and some of its own, such as:
 
 * **Exploit Fixes**: FlameCord specializes in providing better server security by fixing major exploits, performance flaws and bugs that Bungeecord already has, and that have not yet been fixed in WaterfallMC.
-* **Bot Protection**: FlameCord brings swift bot protection for your Minecraft server to avoid extra CPU usage and crashes in your machines.
+  
+* **Antibot Features**: FlameCord brings swift bot protection for your Minecraft server to avoid extra CPU usage and crashes in your machines.
+
+* **Performance Improvements**: FlameCord tries to improve performance by removing unused features and disabling exception logs.
 
 ## Why fork Waterfall?
 
@@ -34,7 +34,8 @@ To compile FlameCord, you need JDK8 or above, git, bash, maven, and an internet 
 
 Clone this repo, run `./flamecord b` from *bash*, get jar from `FlameCord-Proxy/bootstrap/target`
 
-## Join us
+FlameCord is compiled like Waterfall does; Please follow the [CONTRIBUTING.md](https://github.com/2lstudios-mc/FlameCord/blob/master/CONTRIBUTING.md) file. If you need help you can always contact us on Discord.
+
+## Contribute
 
 * Feel free to open a PR! We accept contributions.
-* Join to our [Discord Server](https://discord.gg/gF36AT3).
