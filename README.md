@@ -24,9 +24,9 @@ FlameCord will track upstream Waterfall and merge changes as needed.
 
 ## How to (Server Admins)
 
-You can support the development of FlameCord by purchasing it at [MC-Market](https://www.mc-market.org/resources/13492/).
+Just drag an drop FlameCord.jar into your server folder and run it.
 
-FlameCord requires **Java 8** or above.
+You can customize many FlameCord features in the flamecord.yml file.
 
 ## How To (Compiling from source)
 
