@@ -5,6 +5,8 @@ FlameCord is a Waterfall modification to fix exploits, improve performance and p
 
 FlameCord is compiled like Waterfall does; Please follow the [CONTRIBUTING.md](https://github.com/2lstudios-mc/FlameCord/blob/master/CONTRIBUTING.md) file. If you need help you can always contact us on Discord.
 
+<a href="https://builtbybit.com/resources/13492/"><img src="https://e7.pngegg.com/pngimages/180/929/png-clipart-brand-logo-product-design-label-button-label-text.png" width=10% height=10%><img/><a/>
+
 <a href="https://discord.gg/gF36AT3"><img src="https://i.imgur.com/NyGBnuJ.png" width=10% height=10%><img/><a/> <a href="https://www.mc-market.org/resources/13492/"><img src="https://i.imgur.com/KLOpbAF.png" width=10% height=10%><img/><a/> <a href="https://ci.2lstudios.dev/job/FlameCord"><img src="https://i.imgur.com/lOUkJji.png" width=10% height=10%><img/><a/>
 
 ## Features
