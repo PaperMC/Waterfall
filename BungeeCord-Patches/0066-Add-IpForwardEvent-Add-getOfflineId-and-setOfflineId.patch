@@ -1,0 +1,152 @@
+From 8f1b0a365d2596d9a8017cb68a1dd4b236623bfb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jakub=20Dobr=C3=BD?= <jakub.dobry8@gmail.com>
+Date: Sat, 12 Nov 2022 11:21:57 +0100
+Subject: [PATCH] Add IpForwardEvent, Add getOfflineId and setOfflineId to
+ PendingConnection
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java b/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
+index f497395e..a15a8dca 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
+@@ -61,6 +61,20 @@ public interface PendingConnection extends Connection
+      */
+     void setUniqueId(UUID uuid);
+ 
++    /**
++     * Get this connection's offline UUID, if set.
++     *
++     * @return the UUID
++     */
++    UUID getOfflineId();
++
++    /**
++     * Set the connection's uuid
++     *
++     * @param uuid connection UUID
++     */
++    void setOfflineId(UUID uuid);
++
+     /**
+      * Get this connection's online mode.
+      * <br>
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/IpForwardEvent.java b/api/src/main/java/net/md_5/bungee/api/event/IpForwardEvent.java
+new file mode 100644
+index 00000000..09faff89
+--- /dev/null
++++ b/api/src/main/java/net/md_5/bungee/api/event/IpForwardEvent.java
+@@ -0,0 +1,47 @@
++package net.md_5.bungee.api.event;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.plugin.Event;
++import net.md_5.bungee.protocol.packet.Handshake;
++
++/**
++ * Event called to represent a player first making their presence and username
++ * known.
++ */
++@Data
++@ToString(callSuper = false)
++@EqualsAndHashCode(callSuper = false)
++public class IpForwardEvent extends Event
++{
++
++    /**
++     * Uuid of player
++     */
++    private String uuid;
++
++    /**
++     * Name of player
++     */
++    private final String name;
++
++    /**
++     * The handshake.
++     */
++    private final Handshake handshake;
++
++    /**
++     * Target server.
++     */
++    private final ServerInfo target;
++
++    public IpForwardEvent(Handshake handshake, String uuid, String name, ServerInfo target)
++    {
++        this.uuid = uuid;
++        this.handshake = handshake;
++        this.name = name;
++        this.target = target;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 8181d76b..ab972c1f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -16,10 +16,7 @@ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.config.ServerInfo;
+-import net.md_5.bungee.api.event.ServerConnectEvent;
+-import net.md_5.bungee.api.event.ServerConnectedEvent;
+-import net.md_5.bungee.api.event.ServerKickEvent;
+-import net.md_5.bungee.api.event.ServerSwitchEvent;
++import net.md_5.bungee.api.event.*;
+ import net.md_5.bungee.api.score.Objective;
+ import net.md_5.bungee.api.score.Score;
+ import net.md_5.bungee.api.score.Scoreboard;
+@@ -108,7 +105,10 @@ public class ServerConnector extends PacketHandler
+ 
+         if ( BungeeCord.getInstance().config.isIpForward() && user.getSocketAddress() instanceof InetSocketAddress )
+         {
+-            String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
++            IpForwardEvent event = new IpForwardEvent( copiedHandshake, user.getUUID(), user.getName(), target );
++            bungee.getPluginManager().callEvent( event );
++
++            String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + event.getUuid();
+ 
+             LoginResult profile = user.getPendingConnection().getLoginProfile();
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 975b6996..d87c26f4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -534,7 +534,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+     private void finish()
+     {
+-        offlineId = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + getName() ).getBytes( Charsets.UTF_8 ) );
++        if ( offlineId == null )
++        {
++            offlineId = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + getName() ).getBytes( Charsets.UTF_8 ) );
++        }
+         if ( uniqueId == null )
+         {
+             uniqueId = offlineId;
+@@ -730,6 +733,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         this.uniqueId = uuid;
+     }
+ 
++    @Override
++    public UUID getOfflineId()
++    {
++        return offlineId;
++    }
++
++    @Override
++    public void setOfflineId(UUID uuid)
++    {
++        Preconditions.checkState( thisState == State.USERNAME, "Can only set uuid while state is username" );
++        this.offlineId = uuid;
++    }
++
+     @Override
+     public String getUUID()
+     {
+-- 
+2.38.1
+
