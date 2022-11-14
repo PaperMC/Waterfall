@@ -1,11 +1,11 @@
-From 9267227d04296ef844096cfe3a1a063ffee94643 Mon Sep 17 00:00:00 2001
+From 68b8627a3c0bb57244b19aa20ea48cec05978b03 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index c8148e90..c327841a 100644
+index c8148e90..aac41c8b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,17 @@ import net.md_5.bungee.config.Configuration;
@@ -21,7 +21,7 @@ index c8148e90..c327841a 100644
 +    @Getter
 +    private boolean loggerHaProxy = false;
 +    @Getter
-+    private boolean loggerDetailedConnection = false;
++    private boolean loggerDetailedConnection = true;
 +
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
          try {
@@ -64,7 +64,7 @@ index e48f7713..7c0c2fff 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3eec7b6b..41c99bb4 100644
+index 5d8aad84..198086e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -393,7 +393,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -139,5 +139,5 @@ index 694ecdb0..14e3004f 100644
              {
                  if ( cause instanceof ReadTimeoutException )
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 
