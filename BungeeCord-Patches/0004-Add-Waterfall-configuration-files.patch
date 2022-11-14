@@ -1,4 +1,4 @@
-From 7824ec691a9fb695159ed9a74c7b623f86668cd6 Mon Sep 17 00:00:00 2001
+From ece5cfccb9506cc13bb552613cc9424afff3ae51 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 25 Oct 2016 11:58:37 -0400
 Subject: [PATCH] Add Waterfall configuration files
@@ -42,7 +42,7 @@ index 00000000..741ebfde
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 998316c3..f8f3fb44 100644
+index e3065f12..f1ddb4d0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -10,6 +10,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -53,17 +53,17 @@ index 998316c3..f8f3fb44 100644
  import io.netty.bootstrap.ServerBootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -111,7 +112,7 @@ public class BungeeCord extends ProxyServer
+@@ -114,7 +115,7 @@ public class BungeeCord extends ProxyServer
       * Configuration.
       */
      @Getter
 -    public final Configuration config = new Configuration();
 +    public final Configuration config = new WaterfallConfiguration();
      /**
-      * Localization bundle.
+      * Localization formats.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index e1a6b2b3..56a0f29c 100644
+index 54c3223c..54a6cb38 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -24,7 +24,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -76,7 +76,7 @@ index e1a6b2b3..56a0f29c 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index e65558ad..65121ba2 100644
+index 8ae799c1..0dd69778 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -47,10 +47,15 @@ public class YamlConfig implements ConfigurationAdapter
@@ -118,5 +118,5 @@ index e65558ad..65121ba2 100644
          if ( permissions == null )
          {
 -- 
-2.31.1
+2.38.1
 

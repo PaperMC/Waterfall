@@ -1,4 +1,4 @@
-From 1106fef0e1590a513bb90264917f15ec77626251 Mon Sep 17 00:00:00 2001
+From 0e1d3e227cfd6fead7f0c0377fb2807efb98b515 Mon Sep 17 00:00:00 2001
 From: Aurora <aurora@relanet.eu>
 Date: Mon, 18 Jul 2022 15:56:05 +0200
 Subject: [PATCH] Add message for outdated clients that don't support secure
@@ -8,10 +8,10 @@ Clients before 1.19 don't support secure profiles, but since secure profiles is 
 things checked those outdated clients didn't get a useful message telling them to update.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 6011078f..975b6996 100644
+index e8ceddf7..c1fbf84c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -395,6 +395,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -396,6 +396,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( BungeeCord.getInstance().config.isEnforceSecureProfile() )
          {
@@ -32,5 +32,5 @@ index e42b798b..76ad621f 100644
  error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
  error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
 -- 
-2.37.2
+2.38.1
 

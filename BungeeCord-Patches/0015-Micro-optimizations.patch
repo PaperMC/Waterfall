@@ -1,4 +1,4 @@
-From 57a159ccea803646202595a832cee7da8d2d489b Mon Sep 17 00:00:00 2001
+From 4a506692e5bb55cbf8e871f4612fb9a53dad822e Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -7,21 +7,6 @@ Subject: [PATCH] Micro-optimizations
 - Don't attempt to format arguments when there are none provided
 - Don't create a data input stream for every plugin message we get from servers
 
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index dddc14d8..7227f268 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -559,7 +559,9 @@ public class BungeeCord extends ProxyServer
-         String translation = "<translation '" + name + "' missing>";
-         try
-         {
--            translation = MessageFormat.format( customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name ), args );
-+            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
-+
-+            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
-         } catch ( MissingResourceException ex )
-         {
-         }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index e41bfcfd..9c724115 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
@@ -43,5 +28,5 @@ index e41bfcfd..9c724115 100644
              String subChannel = in.readUTF();
  
 -- 
-2.37.1
+2.38.1
 

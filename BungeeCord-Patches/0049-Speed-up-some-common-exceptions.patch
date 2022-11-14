@@ -1,4 +1,4 @@
-From 6a64004d21456f947e63aaa1d1a039fca8a3bb92 Mon Sep 17 00:00:00 2001
+From 874380a169f4fc28c668f7015af39e996ce77e1e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -146,7 +146,7 @@ index b68b33a9..f5e414c1 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1dc2ad3c..5331518b 100644
+index ddc04fda..4346696f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -16,6 +16,8 @@ import java.util.Set;
@@ -158,7 +158,7 @@ index 1dc2ad3c..5331518b 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -470,6 +472,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -471,6 +473,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
@@ -195,5 +195,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.37.2
+2.38.1
 
