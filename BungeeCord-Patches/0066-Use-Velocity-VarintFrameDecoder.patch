@@ -1,0 +1,213 @@
+From dcbe861c2c63b09edc88ca7f3e42d9f9687f63af Mon Sep 17 00:00:00 2001
+From: xIsm4 <minelatinsoporte@gmail.com>
+Date: Thu, 17 Nov 2022 10:52:42 +0100
+Subject: [PATCH] Use Velocity VarintFrameDecoder
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index c0d37142..bdeab0dc 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -1,65 +1,78 @@
++/*
++ * Copyright (C) 2018 Velocity Contributors
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
++ */
++
+ package net.md_5.bungee.protocol;
+ 
++import net.md_5.bungee.protocol.VarintByteDecoder.DecodeResult;
+ import io.netty.buffer.ByteBuf;
+-import io.netty.buffer.Unpooled;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.ByteToMessageDecoder;
+-import io.netty.handler.codec.CorruptedFrameException;
++
+ import java.util.List;
+ 
+-public class Varint21FrameDecoder extends ByteToMessageDecoder
+-{
++public class Varint21FrameDecoder extends ByteToMessageDecoder {
+ 
+-    private static boolean DIRECT_WARNING;
++    private static final FastDecoderException BAD_LENGTH_CACHED =
++            new FastDecoderException("Bad packet length");
++    private static final FastDecoderException VARINT_BIG_CACHED =
++            new FastDecoderException("VarInt too big");
+ 
+     @Override
+-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+-    {
+-        // If we decode an invalid packet and an exception is thrown (thus triggering a close of the connection),
+-        // the Netty ByteToMessageDecoder will continue to frame more packets and potentially call fireChannelRead()
+-        // on them, likely with more invalid packets. Therefore, check if the connection is no longer active and if so
+-        // sliently discard the packet.
+-        if ( !ctx.channel().isActive() )
+-        {
+-            in.skipBytes( in.readableBytes() );
++    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
++        if (!ctx.channel().isActive()) {
++            in.clear();
+             return;
+         }
+ 
+-        in.markReaderIndex();
++        final VarintByteDecoder reader = new VarintByteDecoder();
+ 
+-        for ( int i = 0; i < 3; i++ ) // Waterfall
+-        {
+-            if ( !in.isReadable() )
+-            {
+-                in.resetReaderIndex();
+-                return;
++        int varintEnd = in.forEachByte(reader);
++        if (varintEnd == -1) {
++            // We tried to go beyond the end of the buffer. This is probably a good sign that the
++            // buffer was too short to hold a proper varint.
++            if (reader.getResult() == DecodeResult.RUN_OF_ZEROES) {
++                // Special case where the entire packet is just a run of zeroes. We ignore them all.
++                in.clear();
+             }
++            return;
++        }
+ 
+-            // Waterfall start
+-            byte read = in.readByte();
+-            if ( read >= 0 )
+-            {
+-                in.resetReaderIndex();
+-                int length = DefinedPacket.readVarInt( in );
+-                // Waterfall end
+-                if ( false && length == 0) // Waterfall - ignore
+-                {
+-                    throw new CorruptedFrameException( "Empty Packet!" );
+-                }
+-
+-                if ( in.readableBytes() < length )
+-                {
+-                    in.resetReaderIndex();
+-                    return;
+-                    // Waterfall start
+-                } else {
+-                    out.add(in.readRetainedSlice(length));
+-                    return;
+-                    // Waterfall end
++        if (reader.getResult() == DecodeResult.RUN_OF_ZEROES) {
++            // this will return to the point where the next varint starts
++            in.readerIndex(varintEnd);
++        } else if (reader.getResult() == DecodeResult.SUCCESS) {
++            int readVarint = reader.getReadVarint();
++            int bytesRead = reader.getBytesRead();
++            if (readVarint < 0) {
++                in.clear();
++                throw BAD_LENGTH_CACHED;
++            } else if (readVarint == 0) {
++                // skip over the empty packet(s) and ignore it
++                in.readerIndex(varintEnd + 1);
++            } else {
++                int minimumRead = bytesRead + readVarint;
++                if (in.isReadable(minimumRead)) {
++                    out.add(in.retainedSlice(varintEnd + 1, readVarint));
++                    in.skipBytes(minimumRead);
+                 }
+             }
++        } else if (reader.getResult() == DecodeResult.TOO_BIG) {
++            in.clear();
++            throw VARINT_BIG_CACHED;
+         }
+-
+-        throw new CorruptedFrameException( "length wider than 21-bit" );
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/VarintByteDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/VarintByteDecoder.java
+new file mode 100644
+index 00000000..2e4ccf05
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/VarintByteDecoder.java
+@@ -0,0 +1,68 @@
++/*
++ * Copyright (C) 2018 Velocity Contributors
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
++ */
++
++package net.md_5.bungee.protocol;
++
++import io.netty.util.ByteProcessor;
++
++class VarintByteDecoder implements ByteProcessor {
++
++    private int readVarint;
++    private int bytesRead;
++    private DecodeResult result = DecodeResult.TOO_SHORT;
++
++    @Override
++    public boolean process(byte k) {
++        if (k == 0 && bytesRead == 0) {
++            // tentatively say it's invalid, but there's a possibility of redemption
++            result = DecodeResult.RUN_OF_ZEROES;
++            return true;
++        }
++        if (result == DecodeResult.RUN_OF_ZEROES) {
++            return false;
++        }
++        readVarint |= (k & 0x7F) << bytesRead++ * 7;
++        if (bytesRead > 3) {
++            result = DecodeResult.TOO_BIG;
++            return false;
++        }
++        if ((k & 0x80) != 128) {
++            result = DecodeResult.SUCCESS;
++            return false;
++        }
++        return true;
++    }
++
++    public int getReadVarint() {
++        return readVarint;
++    }
++
++    public int getBytesRead() {
++        return bytesRead;
++    }
++
++    public DecodeResult getResult() {
++        return result;
++    }
++
++    public enum DecodeResult {
++        SUCCESS,
++        TOO_SHORT,
++        TOO_BIG,
++        RUN_OF_ZEROES,
++    }
++}
+\ No newline at end of file
+-- 
+2.38.1.windows.1
+
