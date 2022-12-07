@@ -1,4 +1,4 @@
-From 0e1d3e227cfd6fead7f0c0377fb2807efb98b515 Mon Sep 17 00:00:00 2001
+From 577049261537afb57f99737f5e2770dc83052713 Mon Sep 17 00:00:00 2001
 From: Aurora <aurora@relanet.eu>
 Date: Mon, 18 Jul 2022 15:56:05 +0200
 Subject: [PATCH] Add message for outdated clients that don't support secure
@@ -8,12 +8,12 @@ Clients before 1.19 don't support secure profiles, but since secure profiles is 
 things checked those outdated clients didn't get a useful message telling them to update.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e8ceddf7..c1fbf84c 100644
+index 789214de..a19bbdd0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -396,6 +396,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
-         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() )
+         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
          {
 +            if ( handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19 ) {disconnect(bungee.getTranslation("secure_profile_unsupported"));} // Waterfall - Tell old clients to update if secure profiles are required
              PlayerPublicKey publicKey = loginRequest.getPublicKey();

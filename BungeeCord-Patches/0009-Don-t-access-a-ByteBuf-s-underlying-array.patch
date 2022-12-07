@@ -1,4 +1,4 @@
-From c0d98ec188ecc7b38d6b29d67621234eb00a0c24 Mon Sep 17 00:00:00 2001
+From 9eec1e3623ac972c5502b27534f7d648b78bad75 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -63,10 +63,10 @@ index 3be014b2..e00c5659 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6f5ef07b..e41bfcfd 100644
+index 25fdc742..1059c67f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -277,7 +277,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -293,7 +293,7 @@ public class DownstreamBridge extends PacketHandler
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
@@ -89,5 +89,5 @@ index 56563346..61165e43 100644
      {
          @Override
 -- 
-2.37.1
+2.38.1
 
