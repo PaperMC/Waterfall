@@ -1,14 +1,14 @@
-From 11703076bee62715d944730066a85ed265510a55 Mon Sep 17 00:00:00 2001
+From 2edaf016d49ec4c769eebaf7383f3a7e6dccc19c Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:00:49 +0800
 Subject: [PATCH] Disable update checker & Use bungee name
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 25da0a65..d4b612b3 100644
+index 463bc3d53..00243fdb9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -45,25 +45,12 @@ public class BungeeCordLauncher
+@@ -45,25 +45,10 @@ public class BungeeCordLauncher
              return;
          }
  
@@ -23,22 +23,21 @@ index 25da0a65..d4b612b3 100644
 -                System.err.println( "*** Hey! This build is potentially outdated :( ***" );
 -                System.err.println( "*** Please check for a new build from https://papermc.io/downloads ***" );
 -                System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
--                System.err.println( "*** Server will start in 10 seconds ***" );
--                Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
+-                //System.err.println( "*** Server will start in 10 seconds ***" );
+-                //Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 -            }
 -        }
-+        // FlameCord - Disable update checker
- 
+-
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
 -        bungee.getLogger().info( "Enabled FlameCord version " + bungee.getVersion() );
-+        // FlameCord - Use bungee name
++        // FlameCord - Use BungeeCord name
 +        bungee.getLogger().info( "Enabled " + bungee.getName() + " version " + bungee.getVersion() );
          bungee.start();
  
          if ( !options.has( "noconsole" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 9c11ac57..ae4c7ac2 100644
+index 9abae0b61..e8232c0bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -22,6 +22,7 @@ import java.util.Locale;
@@ -70,5 +69,5 @@ index 9c11ac57..ae4c7ac2 100644
  
              int maxPlayers = get( "max_players", 1, val );
 -- 
-2.32.0
+2.37.3.windows.1
 

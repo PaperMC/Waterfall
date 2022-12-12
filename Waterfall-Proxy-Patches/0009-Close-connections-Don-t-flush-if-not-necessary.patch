@@ -1,11 +1,11 @@
-From b283b715c48392013e3f6066c6016e9876368222 Mon Sep 17 00:00:00 2001
+From b70bd30b4f028db1e399d9650cc049859d1f56bb Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 787e23f8..09a54c1c 100644
+index c3543a18d..b7be53b4c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -208,6 +208,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -58,7 +58,7 @@ index 787e23f8..09a54c1c 100644
      }
  
      @Override
-@@ -691,7 +711,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -692,7 +712,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -69,7 +69,7 @@ index 787e23f8..09a54c1c 100644
          {
              ch.close();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f..5c05f2b9 100644
+index 6dc5633f5..5c05f2b94 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -80,40 +80,27 @@ public class ChannelWrapper
@@ -121,7 +121,7 @@ index 6dc5633f..5c05f2b9 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2a21243b..a95193ba 100644
+index 2a21243b9..a95193ba7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -162,7 +162,7 @@ index 2a21243b..a95193ba 100644
      }
  }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index b2b19996..b1ecb7ef 100644
+index b2b199969..b1ecb7ef5 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
@@ -175,5 +175,5 @@ index b2b19996..b1ecb7ef 100644
          }
  
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 

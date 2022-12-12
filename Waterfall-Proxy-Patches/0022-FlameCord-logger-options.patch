@@ -1,11 +1,11 @@
-From 9e92ced872601751df9e5e978065eda834d777be Mon Sep 17 00:00:00 2001
+From 234c19a225886b0a27283fde38097e074537ba8f Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index c8148e90..aac41c8b 100644
+index c8148e902..aac41c8b2 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,17 @@ import net.md_5.bungee.config.Configuration;
@@ -40,7 +40,7 @@ index c8148e90..aac41c8b 100644
          } catch (final IOException e) {
              e.printStackTrace();
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e48f7713..90922797 100644
+index e48f77131..909227970 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -64,10 +64,10 @@ index e48f7713..90922797 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5d8aad84..198086e0 100644
+index 164357c34..8fb36e37d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -393,7 +393,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -394,7 +394,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -77,7 +77,7 @@ index 5d8aad84..198086e0 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -402,7 +403,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -403,7 +404,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -88,7 +88,7 @@ index 5d8aad84..198086e0 100644
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 694ecdb0..14e3004f 100644
+index 694ecdb01..14e3004fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -46,7 +46,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter

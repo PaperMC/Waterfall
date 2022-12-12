@@ -1,11 +1,11 @@
-From a78ba453d6621c5287b5a3efcff0dbe012671c22 Mon Sep 17 00:00:00 2001
+From 1e5fa27a03247139aee723add5280ba00dfc901d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 12:28:31 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d99cb5d0..7035729b 100644
+index b340c7a55..c00ab4b6a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -132,12 +132,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -46,8 +46,8 @@ index d99cb5d0..7035729b 100644
 +        thisState = State.PROCESSING;
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
- 
-@@ -478,6 +481,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
+@@ -479,6 +482,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
@@ -55,7 +55,7 @@ index d99cb5d0..7035729b 100644
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -814,14 +818,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -815,14 +819,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {

@@ -1,11 +1,11 @@
-From 27bc5adef578e2afe6d9d13d9bf6c9869d5af691 Mon Sep 17 00:00:00 2001
+From 87acee89e371ebceb65cf6fa7d1557dff12b26b5 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 8e69160d..ac37eaa3 100644
+index 8e69160d0..ac37eaa3e 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -33,7 +33,7 @@ index 8e69160d..ac37eaa3 100644
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
-index 00000000..6c5bb961
+index 000000000..6c5bb9617
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 @@ -0,0 +1,49 @@
@@ -87,7 +87,7 @@ index 00000000..6c5bb961
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 774439c5..b6ecffc3 100644
+index 0c04ec55d..d753563af 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;
@@ -99,7 +99,7 @@ index 774439c5..b6ecffc3 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
-@@ -88,6 +90,13 @@ import net.md_5.bungee.conf.Configuration;
+@@ -90,6 +92,13 @@ import net.md_5.bungee.conf.Configuration;
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.module.ModuleManager;
@@ -113,7 +113,7 @@ index 774439c5..b6ecffc3 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -279,9 +288,10 @@ public class BungeeCord extends ProxyServer
+@@ -288,9 +297,10 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  
@@ -126,7 +126,7 @@ index 774439c5..b6ecffc3 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -314,6 +324,7 @@ public class BungeeCord extends ProxyServer
+@@ -323,6 +333,7 @@ public class BungeeCord extends ProxyServer
              connectionThrottle = new ConnectionThrottle( config.getThrottle(), config.getThrottleLimit() );
          }
          startListeners();
@@ -134,7 +134,7 @@ index 774439c5..b6ecffc3 100644
  
          saveThread.scheduleAtFixedRate( new TimerTask()
          {
-@@ -828,4 +839,53 @@ public class BungeeCord extends ProxyServer
+@@ -854,4 +865,53 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -189,5 +189,5 @@ index 774439c5..b6ecffc3 100644
 +    }
  }
 -- 
-2.32.0
+2.37.3.windows.1
 

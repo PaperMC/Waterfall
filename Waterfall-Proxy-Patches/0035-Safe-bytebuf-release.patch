@@ -1,11 +1,11 @@
-From fcbd2374afc15c2fe67dd158b6fd2ae68487ed6a Mon Sep 17 00:00:00 2001
+From 07f1032863acec085e88e6411ba2d4e1906f959e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Mon, 31 Oct 2022 17:00:58 +0100
 Subject: [PATCH] Safe bytebuf release
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 9a7bf9b5..b43ebc8d 100644
+index 9a7bf9b59..b43ebc8d6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -31,33 +31,34 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -67,7 +67,7 @@ index 9a7bf9b5..b43ebc8d 100644
              if (in.readableBytes() == 0 && !server) {
                  return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index a63e67f1..4293e2b4 100644
+index a63e67f15..4293e2b49 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -286,10 +286,15 @@ public class ServerConnector extends PacketHandler
@@ -91,10 +91,10 @@ index a63e67f1..4293e2b4 100644
                   // FlameCord end - 1.7.x support
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d662c976..fbbaa1b2 100644
+index 6e425764b..e7fe0d02b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -291,13 +291,24 @@ public class DownstreamBridge extends PacketHandler
+@@ -307,13 +307,24 @@ public class DownstreamBridge extends PacketHandler
              {
                  try
                  {
@@ -127,7 +127,7 @@ index d662c976..fbbaa1b2 100644
                  {
                      return;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index abca28bd..2fd37c2d 100644
+index abca28bd7..2fd37c2dd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -84,46 +84,44 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter

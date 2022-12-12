@@ -1,11 +1,11 @@
-From bcd1ccc0bed71e4a478d5c2a4988c6b6583df66c Mon Sep 17 00:00:00 2001
+From 2a6878cb7a8c16bb76b79012db51d81f112636c9 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 17:57:23 +0800
 Subject: [PATCH] Make PlayerHandshakeEvent cancellable
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java b/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
-index 2f7b38d9..e29b0ed3 100644
+index 2f7b38d9e..e29b0ed35 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/PlayerHandshakeEvent.java
 @@ -2,8 +2,11 @@ package net.md_5.bungee.api.event;
@@ -35,10 +35,10 @@ index 2f7b38d9..e29b0ed3 100644
      /**
       * Connection attempting to login.
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c6a3f1b8..b307b5ca 100644
+index de417ecae..c3543a18d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -361,7 +361,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -362,7 +362,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
  
@@ -52,5 +52,5 @@ index c6a3f1b8..b307b5ca 100644
          switch ( handshake.getRequestedProtocol() )
          {
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 

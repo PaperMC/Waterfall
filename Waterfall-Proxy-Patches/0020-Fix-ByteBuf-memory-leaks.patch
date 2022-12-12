@@ -1,14 +1,14 @@
-From 67ca84034f74938b704e81cd9dbe4fa15ef10f49 Mon Sep 17 00:00:00 2001
+From 8f77c4e0ca063a83214f236a87d727716197692c Mon Sep 17 00:00:00 2001
 From: linsaftw <linsaftw@users.noreply.github.com>
 Date: Sat, 20 Mar 2021 12:36:25 -0300
 Subject: [PATCH] Fix ByteBuf memory leaks
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index b285fead..d4b57e5a 100644
+index 68916db79..688ff72d2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -154,11 +154,15 @@ public abstract class EntityMap
+@@ -155,11 +155,15 @@ public abstract class EntityMap
          if ( readId == oldId || readId == newId )
          {
              ByteBuf data = packet.copy();
@@ -30,7 +30,7 @@ index b285fead..d4b57e5a 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-index cefa0206..8d4439ab 100644
+index cefa0206e..8d4439ab8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 @@ -38,16 +38,22 @@ public class ForgeUtils
@@ -64,5 +64,5 @@ index cefa0206..8d4439ab 100644
      }
  
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 

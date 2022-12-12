@@ -1,4 +1,4 @@
-From b957e422d579add68cf389e7250903135a2ebf55 Mon Sep 17 00:00:00 2001
+From 7f109bd269421da64f19fc2f393a829b7fbe6057 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -6,7 +6,7 @@ Subject: [PATCH] FlameCord General Patch
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 new file mode 100644
-index 00000000..8e69160d
+index 000000000..8e69160d0
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -0,0 +1,35 @@
@@ -48,7 +48,7 @@ index 00000000..8e69160d
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
 new file mode 100644
-index 00000000..cfbd55c3
+index 000000000..cfbd55c39
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
 @@ -0,0 +1,38 @@
@@ -92,7 +92,7 @@ index 00000000..cfbd55c3
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 new file mode 100644
-index 00000000..c8148e90
+index 000000000..c8148e902
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -0,0 +1,33 @@
@@ -130,7 +130,7 @@ index 00000000..c8148e90
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 4b9b80b9..aa35f870 100644
+index 4b9b80b9d..aa35f870b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,5 +1,6 @@
@@ -142,7 +142,7 @@ index 4b9b80b9..aa35f870 100644
  import io.netty.channel.ChannelHandlerContext;
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 new file mode 100644
-index 00000000..91d60bfb
+index 000000000..91d60bfb3
 --- /dev/null
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -0,0 +1,58 @@
@@ -205,7 +205,7 @@ index 00000000..91d60bfb
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 43381641..eb0f9a39 100644
+index 9f41970ea..0c04ec55d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;
@@ -217,7 +217,7 @@ index 43381641..eb0f9a39 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
-@@ -233,11 +235,12 @@ public class BungeeCord extends ProxyServer
+@@ -242,11 +244,12 @@ public class BungeeCord extends ProxyServer
          // Waterfall end
  
          pluginManager = new PluginManager( this );
@@ -235,7 +235,7 @@ index 43381641..eb0f9a39 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
-@@ -286,6 +289,15 @@ public class BungeeCord extends ProxyServer
+@@ -295,6 +298,15 @@ public class BungeeCord extends ProxyServer
          pluginManager.loadPlugins();
          config.load();
  
@@ -245,25 +245,14 @@ index 43381641..eb0f9a39 100644
 +        for (final ServerInfo serverInfo : getServers().values()) {
 +            whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
 +        }
-+        
++
 +        FlameCord.reload(logger, whitelistedAddresses);
 +
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -574,9 +586,7 @@ public class BungeeCord extends ProxyServer
-         String translation = "<translation '" + name + "' missing>";
-         try
-         {
--            final String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
--
--            translation = ( args.length == 0 ) ? string : MessageFormat.format( string, args );
-+            translation = MessageFormat.format( customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name ), args );
-         } catch ( MissingResourceException ex )
-         {
-         }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index da688839..055a1d88 100644
+index da688839c..055a1d883 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee;
@@ -285,7 +274,7 @@ index da688839..055a1d88 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 94702434..e48f7713 100644
+index 94702434d..e48f77131 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.api.SkinConfiguration;
@@ -319,7 +308,7 @@ index 94702434..e48f7713 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 74199d2e..3eec7b6b 100644
+index 1c10b5a93..164357c34 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -21,6 +21,8 @@ import java.util.logging.Level;
@@ -341,7 +330,7 @@ index 74199d2e..3eec7b6b 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index a409d440..3503c089 100644
+index a409d440b..3503c089d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -1,6 +1,7 @@
@@ -353,7 +342,7 @@ index a409d440..3503c089 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 4820267b..694ecdb0 100644
+index 4820267b3..694ecdb01 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -1,6 +1,8 @@
@@ -366,7 +355,7 @@ index 4820267b..694ecdb0 100644
  import io.netty.channel.ChannelInboundHandlerAdapter;
  import io.netty.handler.codec.CorruptedFrameException;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a95193ba..a4c3bd71 100644
+index a95193ba7..a4c3bd710 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,6 +1,8 @@
@@ -379,5 +368,5 @@ index a95193ba..a4c3bd71 100644
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
 -- 
-2.37.0.windows.1
+2.37.3.windows.1
 
