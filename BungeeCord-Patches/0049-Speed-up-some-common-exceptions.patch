@@ -1,4 +1,4 @@
-From 874380a169f4fc28c668f7015af39e996ce77e1e Mon Sep 17 00:00:00 2001
+From a01c62131014500d4a4bb25aa7afaaf738a3342b Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -67,10 +67,10 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 5fe55dcc..122e3b52 100644
+index 111802f7..d3559188 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -19,6 +19,9 @@ import se.llbit.nbt.Tag;
+@@ -22,6 +22,9 @@ import se.llbit.nbt.Tag;
  public abstract class DefinedPacket
  {
  
@@ -80,7 +80,7 @@ index 5fe55dcc..122e3b52 100644
      public static void writeString(String s, ByteBuf buf)
      {
          writeString( s, buf, Short.MAX_VALUE );
-@@ -145,13 +148,18 @@ public abstract class DefinedPacket
+@@ -148,13 +151,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {
@@ -146,7 +146,7 @@ index b68b33a9..f5e414c1 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ddc04fda..4346696f 100644
+index 707232a5..600037f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -16,6 +16,8 @@ import java.util.Set;
