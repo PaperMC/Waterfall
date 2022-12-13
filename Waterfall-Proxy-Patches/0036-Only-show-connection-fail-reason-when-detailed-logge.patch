@@ -1,4 +1,4 @@
-From fffeb2e2ea577250949626c62d364261badf5560 Mon Sep 17 00:00:00 2001
+From 48878ec51074a1a90d1c4aa761a40fbec74bd8ac Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 15 Nov 2022 18:07:27 +0100
 Subject: [PATCH] Only show connection fail reason when detailed logger is
@@ -6,17 +6,21 @@ Subject: [PATCH] Only show connection fail reason when detailed logger is
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f3d60253..c03a62ac 100644
+index f3d60253..021fe839 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -405,6 +405,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -405,8 +405,10 @@ public final class UserConnection implements ProxiedPlayer
          // FlameCord - Allow for toggle the logging of connection failures
          if(FlameCord.getInstance().getFlameCordConfiguration().isLoggerDetailedConnection()) {
              bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception(cause, false)); // Waterfall
 +            // FlameCord - Show connection fail reason
 +            return groups.contains( "admin" ) ? cause.getMessage() : cause.getClass().getName();
          }
-         return ""; // Waterfall
+-        return ""; // Waterfall
++        return cause.getClass().getName(); // FlameCord
      }
+ 
+     @Override
 -- 
 2.29.2.windows.2
+
