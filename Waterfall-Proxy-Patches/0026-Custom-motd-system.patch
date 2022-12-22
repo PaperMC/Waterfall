@@ -1,14 +1,14 @@
-From b406218a681d715b932c80458b4164e4d4cd6db5 Mon Sep 17 00:00:00 2001
+From 617ad8e4f511a78c2151d9f92e06c34bd3f3b680 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
-index cfbd55c3..360305b9 100644
+index 5589ce1b7..1e928197c 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
-@@ -11,6 +11,10 @@ public class FlameConfig {
+@@ -15,6 +15,10 @@ public class FlameConfig {
          return (int) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
  
@@ -20,7 +20,7 @@ index cfbd55c3..360305b9 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index c327841a..de2cc947 100644
+index aac41c8b2..7937af051 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -3,15 +3,80 @@ package dev._2lstudios.flamecord.configuration;
@@ -125,7 +125,7 @@ index c327841a..de2cc947 100644
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
              this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 198086e0..d99cb5d0 100644
+index 8fb36e37d..b340c7a55 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;

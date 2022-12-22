@@ -1,14 +1,14 @@
-From b4ba3f3f68b4bfd4e8af4249fa30cc59ccfdde83 Mon Sep 17 00:00:00 2001
+From b8c85934f332d737bf4c5d0fd3d19f9ecdfffe6b Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
 
 
 diff --git a/flamecord/pom.xml b/flamecord/pom.xml
-index 20edd9001..5978bec60 100644
+index 20edd9001..f48f1e60b 100644
 --- a/flamecord/pom.xml
 +++ b/flamecord/pom.xml
-@@ -30,6 +30,11 @@
+@@ -30,6 +30,17 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -17,16 +17,73 @@ index 20edd9001..5978bec60 100644
 +            <artifactId>maxmind-db</artifactId>
 +            <version>2.0.0</version>
 +        </dependency>
++        <dependency>
++            <groupId>io.netty</groupId>
++            <artifactId>netty-handler</artifactId>
++            <version>${netty.version}</version>
++            <scope>compile</scope>
++        </dependency>
      </dependencies>
  
      <build>
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+index c78ab3a7c..ec880c07d 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+@@ -3,6 +3,8 @@ package dev._2lstudios.flamecord;
+ import java.util.Collection;
+ import java.util.logging.Logger;
+ 
++import dev._2lstudios.flamecord.antibot.AddressDataManager;
++import dev._2lstudios.flamecord.antibot.CheckManager;
+ import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
+ import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
+ import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+@@ -18,26 +20,31 @@ public class FlameCord {
+         if (FlameCord.instance != null) {
+             instance.reload(logger);
+         } else {
+-            FlameCord.instance = new FlameCord(logger, whitelistedAddresses);
++            FlameCord.instance = new FlameCord();
++            instance.reload(logger);
+         }
+     }
+ 
+     @Getter
+     private FlameCordConfiguration flameCordConfiguration;
+     @Getter
++    private AddressDataManager addressDataManager;
++    @Getter
++    private CheckManager checkManager;
++    @Getter
+     private ModulesConfiguration modulesConfiguration;
+     @Getter
+     private MessagesConfiguration messagesConfiguration;
+ 
+     private void reload(final Logger logger) {
+         final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++        
++        if (checkManager != null) checkManager.unload();
+ 
+         this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
+         this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
+         this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
+-    }
+-
+-    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
+-        reload(logger);
++        this.addressDataManager = new AddressDataManager();
++        this.checkManager = new CheckManager(addressDataManager, flameCordConfiguration);
+     }
+ }
+\ No newline at end of file
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
 new file mode 100644
-index 000000000..da52c8924
+index 000000000..5e7fa6bfb
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AccountsCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
 @@ -0,0 +1,36 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +import java.util.Collection;
@@ -62,13 +119,13 @@ index 000000000..da52c8924
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 new file mode 100644
-index 000000000..b37f114a0
+index 000000000..b8448bdf2
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressData.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 @@ -0,0 +1,154 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.util.Collection;
 +import java.util.HashSet;
@@ -222,13 +279,13 @@ index 000000000..b37f114a0
 +        return nicknames.contains(nickname);
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 new file mode 100644
-index 000000000..6c7b300c2
+index 000000000..46798dee0
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/AddressDataManager.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 @@ -0,0 +1,31 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.InetSocketAddress;
 +import java.net.SocketAddress;
@@ -259,13 +316,13 @@ index 000000000..6c7b300c2
 +        return getAddressData(addressString);
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
 new file mode 100644
-index 000000000..0676f897f
+index 000000000..1503ac954
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CheckManager.java
-@@ -0,0 +1,37 @@
-+package dev._2lstudios.antibot;
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
+@@ -0,0 +1,40 @@
++package dev._2lstudios.flamecord.antibot;
 +
 +import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
 +import lombok.Getter;
@@ -285,6 +342,8 @@ index 000000000..0676f897f
 +    private final RatelimitCheck ratelimitCheck;
 +    @Getter
 +    private final ReconnectCheck reconnectCheck;
++    @Getter
++    private final PacketsCheck packetsCheck;
 +
 +    public CheckManager(final AddressDataManager addressDataManager, final FlameCordConfiguration flameCordConfiguration) {
 +        this.accountsCheck = new AccountsCheck(addressDataManager);
@@ -294,6 +353,7 @@ index 000000000..0676f897f
 +        this.passwordCheck = new PasswordCheck(addressDataManager);
 +        this.ratelimitCheck = new RatelimitCheck(addressDataManager);
 +        this.reconnectCheck = new ReconnectCheck(addressDataManager);
++        this.packetsCheck = new PacketsCheck();
 +
 +        this.countryCheck.load();
 +    }
@@ -302,13 +362,13 @@ index 000000000..0676f897f
 +        this.countryCheck.unload();
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java
 new file mode 100644
-index 000000000..e2410468d
+index 000000000..018aacd2c
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/CountryCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java
 @@ -0,0 +1,140 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.File;
 +import java.io.IOException;
@@ -448,13 +508,13 @@ index 000000000..e2410468d
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/FastChatCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/FastChatCheck.java
 new file mode 100644
-index 000000000..197636935
+index 000000000..682e1c314
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/FastChatCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/FastChatCheck.java
 @@ -0,0 +1,32 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +
@@ -486,13 +546,13 @@ index 000000000..197636935
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/NicknameCheck.java
 new file mode 100644
-index 000000000..222aba31f
+index 000000000..165963629
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/NicknameCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/NicknameCheck.java
 @@ -0,0 +1,45 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +
@@ -537,13 +597,194 @@ index 000000000..222aba31f
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
 new file mode 100644
-index 000000000..bdc024f58
+index 000000000..0de670b3f
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/PasswordCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
+@@ -0,0 +1,67 @@
++package dev._2lstudios.flamecord.antibot;
++
++import java.net.SocketAddress;
++import java.util.HashMap;
++import java.util.Map;
++
++import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
++import dev._2lstudios.flamecord.enums.PacketsCheckResult;
++import dev._2lstudios.flamecord.enums.PacketsViolationReason;
++import dev._2lstudios.flamecord.utils.ProtocolUtil;
++import io.netty.buffer.ByteBuf;
++
++public class PacketsCheck {
++    private Map<String, PacketsData> packetsData = new HashMap<>();
++    private long lastCalculation = System.currentTimeMillis();
++
++    public PacketsData getData(SocketAddress address) {
++        String ip = address.toString();
++
++        if (System.currentTimeMillis() - lastCalculation >= 60000) {
++            packetsData.clear();
++            this.lastCalculation = System.currentTimeMillis();
++        }
++
++        PacketsData data;
++
++        if (packetsData.containsKey(ip)) {
++           data = packetsData.get(ip);
++        } else {
++            data = new PacketsData(address);
++            packetsData.put(ip, data);
++        }
++
++        return data;
++    }
++
++    public PacketsCheckResult check(SocketAddress socketAddress, ByteBuf byteBuf) {
++        PacketsData addressData = getData(socketAddress);
++        FlameCordConfiguration config = FlameCord.getInstance().getFlameCordConfiguration();
++        int length = byteBuf.readableBytes();
++        int index = byteBuf.readerIndex();
++        int packetId = ProtocolUtil.readVarInt(byteBuf);
++        byteBuf.readerIndex(index);
++
++        addressData.addVls(length * config.getAntibotPacketsVlsPerByte(), PacketsViolationReason.SIZE, packetId);
++        addressData.addVls(config.getAntibotPacketsVlsPerPacket(), PacketsViolationReason.RATE, packetId);
++
++        double vls = addressData.getPacketsVls();
++
++        if (vls >= config.getAntibotPacketsVlsToKick()) {
++            return PacketsCheckResult.KICK;
++        } else if (vls >= config.getAntibotPacketsVlsToCancel()) {
++            if (addressData.isCancelled()) {
++                return PacketsCheckResult.CANCEL;
++            } else {
++                addressData.setCancelled(true);
++                return PacketsCheckResult.FIRST_CANCEL;
++            }
++        } else {
++            return PacketsCheckResult.NONE;
++        }
++    }
++
++    public void printPackets(SocketAddress remoteAddress) {
++    }
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java
+new file mode 100644
+index 000000000..db1997d63
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java
+@@ -0,0 +1,102 @@
++package dev._2lstudios.flamecord.antibot;
++
++import java.net.SocketAddress;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Map.Entry;
++
++import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.enums.PacketsViolationReason;
++
++public class PacketsData {
++    // The address related to this data
++    private SocketAddress address;
++
++    // The vls of the current address
++    private double packetsVls = 0;
++
++    // The vls of the current address because of size
++    private double packetsVlsSize = 0;
++
++    // The vls of the current address because of rate
++    private double packetsVlsRate = 0;
++
++    // If this was cancelled in the last second
++    private boolean cancelled = false;
++
++    // The last time vls was calculated
++    private long lastVlsCalculated = System.currentTimeMillis();
++
++    private Map<Integer, Double> vlsByPacketId = new HashMap<>();
++
++    public PacketsData(SocketAddress address) {
++        this.address = address;
++    }
++
++    public double simplify(double number) {
++        return (double) (int) (number * 1000) / 1000;
++    }
++
++    public void printPackets() {
++        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotPacketsDebug() && this.packetsVls > 0) {
++            System.out
++                    .println("[FlameCord] [" + address
++                            + "] debug is enabled, showing stats (Total: " + simplify(packetsVls) + "vls Size: "
++                            + simplify(packetsVlsSize) + "vls Rate: " + simplify(packetsVlsRate) + "vls)");
++                            for (Entry<Integer, Double> entry : this.vlsByPacketId.entrySet()) {
++                                System.out.print(entry.getKey() + "-" + simplify(entry.getValue()) + "vls, ");
++                            }
++                            System.out.println("");
++        }
++    }
++
++    public double getPacketsVls() {
++        if (System.currentTimeMillis() - lastVlsCalculated >= 1000) {
++            printPackets();
++
++            this.packetsVls = 0;
++            this.packetsVlsSize = 0;
++            this.packetsVlsRate = 0;
++            this.vlsByPacketId.clear();
++            this.cancelled = false;
++            this.lastVlsCalculated = System.currentTimeMillis();
++        }
++
++        return packetsVls;
++    }
++
++    public void addVls(double packetsVls, PacketsViolationReason reason, int packetId) {
++        this.packetsVls += packetsVls;
++        this.vlsByPacketId.put(packetId, this.vlsByPacketId.getOrDefault(packetId, 0.0) + packetsVls);
++
++        switch (reason) {
++            case SIZE: {
++                this.packetsVlsSize += packetsVls;
++                break;
++            }
++            case RATE: {
++                this.packetsVlsRate += packetsVls;
++                break;
++            }
++            default: {
++                break;
++            }
++        }
++    }
++
++    public boolean isCancelled() {
++        return cancelled;
++    }
++
++    public void setCancelled(boolean cancelled) {
++        this.cancelled = cancelled;
++    }
++
++    public double getPacketsVlsSize() {
++        return packetsVlsSize;
++    }
++
++    public double getPacketsVlsRate() {
++        return packetsVlsRate;
++    }
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PasswordCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PasswordCheck.java
+new file mode 100644
+index 000000000..82401d240
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PasswordCheck.java
 @@ -0,0 +1,62 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +
@@ -605,13 +846,13 @@ index 000000000..bdc024f58
 +        return repeatCount;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java
 new file mode 100644
-index 000000000..b55b4bb17
+index 000000000..0165d1bf8
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/RatelimitCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java
 @@ -0,0 +1,33 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +
@@ -644,13 +885,13 @@ index 000000000..b55b4bb17
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ReconnectCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ReconnectCheck.java
 new file mode 100644
-index 000000000..efd8d2cac
+index 000000000..68cc4c217
 --- /dev/null
-+++ b/flamecord/src/main/java/dev/_2lstudios/antibot/ReconnectCheck.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ReconnectCheck.java
 @@ -0,0 +1,46 @@
-+package dev._2lstudios.antibot;
++package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
 +
@@ -696,62 +937,11 @@ index 000000000..efd8d2cac
 +        return false;
 +    }
 +}
-diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index c78ab3a7c..8591a7918 100644
---- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-+++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-@@ -3,6 +3,8 @@ package dev._2lstudios.flamecord;
- import java.util.Collection;
- import java.util.logging.Logger;
- 
-+import dev._2lstudios.antibot.AddressDataManager;
-+import dev._2lstudios.antibot.CheckManager;
- import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
- import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
- import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
-@@ -18,26 +20,31 @@ public class FlameCord {
-         if (FlameCord.instance != null) {
-             instance.reload(logger);
-         } else {
--            FlameCord.instance = new FlameCord(logger, whitelistedAddresses);
-+            FlameCord.instance = new FlameCord();
-+            instance.reload(logger);
-         }
-     }
- 
-     @Getter
-     private FlameCordConfiguration flameCordConfiguration;
-     @Getter
-+    private AddressDataManager addressDataManager;
-+    @Getter
-+    private CheckManager checkManager;
-+    @Getter
-     private ModulesConfiguration modulesConfiguration;
-     @Getter
-     private MessagesConfiguration messagesConfiguration;
- 
-     private void reload(final Logger logger) {
-         final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
-+        
-+        if (checkManager != null) checkManager.unload();
- 
-         this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
-         this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
-         this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
--    }
--
--    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
--        reload(logger);
-+        this.addressDataManager = new AddressDataManager();
-+        this.checkManager = new CheckManager(addressDataManager, flameCordConfiguration);
-     }
- }
-\ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index a1d23f74d..76c35626d 100644
+index a1d23f74d..1bd6b2164 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,120 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,157 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -829,36 +1019,65 @@ index a1d23f74d..76c35626d 100644
 +    @Getter
 +    private boolean antibotReconnectLog = true;
 +
++    // Antibot packets
++    @Getter
++    private boolean antibotPacketsEnabled = true;
++    @Getter
++    private boolean antibotPacketsLog = true;
++    @Getter
++    private double antibotPacketsVlsPerByte = 0.00001;
++    @Getter
++    private double antibotPacketsVlsPerPacket = 0.01;
++    @Getter
++    private double antibotPacketsVlsToKick = 100;
++    @Getter
++    private double antibotPacketsVlsToCancel = 25;
++
 +    public void loadAntibot(final Configuration config) {
++        // Antibot accounts
 +        this.antibotAccountsEnabled = setIfUnexistant("antibot.accounts.enabled", this.antibotAccountsEnabled, config);
 +        this.antibotAccountsFirewall = setIfUnexistant("antibot.accounts.firewall", this.antibotAccountsFirewall, config);
 +        this.antibotAccountsLimit = setIfUnexistant("antibot.accounts.limit", this.antibotAccountsLimit, config);
 +        this.antibotAccountsLog = setIfUnexistant("antibot.accounts.log", this.antibotAccountsLog, config);
++
++        // Antibot country
 +        this.antibotCountryEnabled = setIfUnexistant("antibot.country.enabled", this.antibotCountryEnabled, config);
 +        this.antibotCountryFirewall = setIfUnexistant("antibot.country.firewall", this.antibotCountryFirewall, config);
 +        this.antibotCountryBlacklist = setIfUnexistant("antibot.country.blacklist", this.antibotCountryBlacklist, config);
 +        this.antibotCountryLog = setIfUnexistant("antibot.country.log", this.antibotCountryLog, config);
++
++        // Antibot fastchat
 +        this.antibotFastChatEnabled = setIfUnexistant("antibot.fastchat.enabled", this.antibotFastChatEnabled, config);
 +        this.antibotFastChatFirewall = setIfUnexistant("antibot.fastchat.firewall", this.antibotFastChatFirewall, config);
 +        this.antibotFastChatTime = setIfUnexistant("antibot.fastchat.time", this.antibotFastChatTime, config);
 +        this.antibotFastChatLog = setIfUnexistant("antibot.fastchat.log", this.antibotFastChatLog, config);
++
++        // Antibot firewall
 +        this.antibotFirewallEnabled = setIfUnexistant("antibot.firewall.enabled", this.antibotFirewallEnabled, config);
 +        this.antibotFirewalledExceptions = setIfUnexistant("antibot.firewall.exceptions", this.antibotFirewalledExceptions, config);
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
 +        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
++
++        // Antibot nickname
 +        this.antibotNicknameEnabled = setIfUnexistant("antibot.nickname.enabled", this.antibotNicknameEnabled, config);
 +        this.antibotNicknameFirewall = setIfUnexistant("antibot.nickname.firewall", this.antibotNicknameFirewall, config);
 +        this.antibotNicknameBlacklist = setIfUnexistant("antibot.nickname.blacklist", this.antibotNicknameBlacklist, config);
 +        this.antibotNicknameLog = setIfUnexistant("antibot.nickname.log", this.antibotNicknameLog, config);
++
++        // Antibot password
 +        this.antibotPasswordEnabled = setIfUnexistant("antibot.password.enabled", this.antibotPasswordEnabled, config);
 +        this.antibotPasswordFirewall = setIfUnexistant("antibot.password.firewall", this.antibotPasswordFirewall, config);
 +        this.antibotPasswordLimit = setIfUnexistant("antibot.password.limit", this.antibotPasswordLimit, config);
 +        this.antibotPasswordLog = setIfUnexistant("antibot.password.log", this.antibotPasswordLog, config);
++
++        // Antibot ratelimit
 +        this.antibotRatelimitEnabled = setIfUnexistant("antibot.ratelimit.enabled", this.antibotRatelimitEnabled, config);
 +        this.antibotRatelimitFirewall = setIfUnexistant("antibot.ratelimit.firewall", this.antibotRatelimitFirewall, config);
 +        this.antibotRatelimitConnectionsPerSecond = setIfUnexistant("antibot.ratelimit.connections-per-second", this.antibotRatelimitConnectionsPerSecond, config);
 +        this.antibotRatelimitPingsPerSecond = setIfUnexistant("antibot.ratelimit.pings-per-second", this.antibotRatelimitPingsPerSecond, config);
 +        this.antibotRatelimitLog = setIfUnexistant("antibot.ratelimit.log", this.antibotRatelimitLog, config);
++
++        // Antibot reconnect
 +        this.antibotReconnectEnabled = setIfUnexistant("antibot.reconnect.enabled", this.antibotReconnectEnabled, config);
 +        this.antibotReconnectAttempts = setIfUnexistant("antibot.reconnect.attempts", this.antibotReconnectAttempts, config);
 +        this.antibotReconnectPings = setIfUnexistant("antibot.reconnect.pings", this.antibotReconnectPings, config);
@@ -866,13 +1085,21 @@ index a1d23f74d..76c35626d 100644
 +        this.antibotReconnectConnectionThreshold = setIfUnexistant("antibot.reconnect.connection-threshold", this.antibotReconnectConnectionThreshold, config);
 +        this.antibotReconnectConnectionThresholdLimit = setIfUnexistant("antibot.reconnect.connection-threshold-limit", this.antibotReconnectConnectionThresholdLimit, config);
 +        this.antibotReconnectLog = setIfUnexistant("antibot.reconnect.log", this.antibotReconnectLog, config);
++
++        // Antibot packets
++        this.antibotPacketsEnabled = setIfUnexistant("antibot.packets.enabled", this.antibotPacketsEnabled, config);
++        this.antibotPacketsLog = setIfUnexistant("antibot.packets.log", this.antibotPacketsLog, config);
++        this.antibotPacketsVlsPerByte = setIfUnexistant("antibot.packets.vls-per-byte", this.antibotPacketsVlsPerByte, config);
++        this.antibotPacketsVlsPerPacket = setIfUnexistant("antibot.packets.vls-per-packet", this.antibotPacketsVlsPerPacket, config);
++        this.antibotPacketsVlsToKick = setIfUnexistant("antibot.packets.vls-to-kick", this.antibotPacketsVlsToKick, config);
++        this.antibotPacketsVlsToCancel = setIfUnexistant("antibot.packets.vls-to-cancel", this.antibotPacketsVlsToCancel, config);
 +    }
 +    // FlameCord end - Antibot System
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -117,6 +231,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -117,6 +268,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
@@ -913,18 +1140,155 @@ index 4f306660e..5faab6166 100644
  
  			configurationProvider.save(configuration, configurationFile);
  
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsCheckResult.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsCheckResult.java
+new file mode 100644
+index 000000000..53f1648ab
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsCheckResult.java
+@@ -0,0 +1,5 @@
++package dev._2lstudios.flamecord.enums;
++
++public enum PacketsCheckResult {
++    KICK, FIRST_CANCEL, CANCEL, NONE
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsViolationReason.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsViolationReason.java
+new file mode 100644
+index 000000000..c19c4965d
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/enums/PacketsViolationReason.java
+@@ -0,0 +1,5 @@
++package dev._2lstudios.flamecord.enums;
++
++public enum PacketsViolationReason {
++    SIZE, RATE
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ProtocolUtil.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ProtocolUtil.java
+new file mode 100644
+index 000000000..7f26e7a0d
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ProtocolUtil.java
+@@ -0,0 +1,27 @@
++package dev._2lstudios.flamecord.utils;
++
++import io.netty.buffer.ByteBuf;
++
++public class ProtocolUtil {
++    private static int SEGMENT_BITS = 0x7F;
++    private static int CONTINUE_BIT = 0x80;
++
++    public static int readVarInt(ByteBuf byteBuf) {
++        int value = 0;
++        int position = 0;
++        byte currentByte;
++    
++        while (byteBuf.isReadable()) {
++            currentByte = byteBuf.readByte();
++            value |= (currentByte & SEGMENT_BITS) << position;
++    
++            if ((currentByte & CONTINUE_BIT) == 0) break;
++    
++            position += 7;
++    
++            if (position >= 32) throw new RuntimeException("VarInt is too big");
++        }
++    
++        return value;
++    }
++}
+\ No newline at end of file
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 6316143f7..209e4f143 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -51,12 +51,46 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 throw new FastDecoderException("Error decoding packet with too big capacity: " + capacity);
+             }
+         }
++        
++        // FlameCord start - Antibot Packet Check
++        if (prot == protocol.TO_SERVER) {
++            dev._2lstudios.flamecord.enums.PacketsCheckResult result = FlameCord.getInstance().getCheckManager().getPacketsCheck()
++                .check(ctx.channel().remoteAddress(), in);
++
++            switch (result) {
++                case KICK:
++                    if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotPacketsLog()) {
++                        System.out
++                                .println("[FlameCord] [" + ctx.channel().remoteAddress()
++                                        + "] was kicked because of too many packets");
++                    }
++
++                    in.skipBytes(in.readableBytes());
++                    ctx.close();
++                    return;
++                case CANCEL:
++                    if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotPacketsLog()) {
++                        System.out
++                                .println("[FlameCord] [" + ctx.channel().remoteAddress()
++                                        + "] was cancelled because of too many packets");
++                    }
++
++                    in.skipBytes(in.readableBytes());
++                    return;
++                default:
++                    break;
++            }
++        }
++        // FlameCord end - Antibot Packet Check
+ 
+         ByteBuf slice = in.duplicate(); // FlameCord - Duplicate buf instead of Copy
+ 
+         Object packetTypeInfo = null;
+         try
+         {
++            // FlameCord - Duplicate buf instead of Copy
++            slice = in.duplicate(); // Can't slice this one due to EntityMap :(
++
+             // Waterfall start
+             if (in.readableBytes() == 0 && !server) {
+                 return;
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index c9e45b915..022f94b2d 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -723,4 +723,8 @@ public enum Protocol
+             // Waterfall end
+         }
+     }
++
++    public DirectionData getToServer() {
++        return TO_SERVER;
++    }
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index c0d371426..403ccba98 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -5,11 +5,11 @@ import io.netty.buffer.Unpooled;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.ByteToMessageDecoder;
+ import io.netty.handler.codec.CorruptedFrameException;
++
+ import java.util.List;
+ 
+ public class Varint21FrameDecoder extends ByteToMessageDecoder
+ {
+-
+     private static boolean DIRECT_WARNING;
+ 
+     @Override
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index cc76325b2..ae5d4c73f 100644
+index cc76325b2..a5b9331f6 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-@@ -3,6 +3,7 @@ package dev._2lstudios.flamecord.commands;
- import java.util.Collection;
+@@ -4,6 +4,7 @@ import java.util.Collection;
  import java.util.HashSet;
  
-+import dev._2lstudios.antibot.AddressDataManager;
  import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.antibot.AddressDataManager;
  import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
  import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.CommandSender;
 @@ -27,9 +28,7 @@ private final BungeeCord bungeeCord;
  
          if (sender.hasPermission("flamecord.usage")) {
@@ -974,19 +1338,20 @@ index cc76325b2..ae5d4c73f 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c00ab4b6a..089cac669 100644
+index c00ab4b6a..bbf9c3dba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -21,6 +21,8 @@ import java.util.logging.Level;
- import javax.crypto.SecretKey;
+@@ -22,7 +22,8 @@ import javax.crypto.SecretKey;
  import javax.crypto.spec.SecretKeySpec;
  
-+import dev._2lstudios.antibot.AddressData;
-+import dev._2lstudios.antibot.CheckManager;
  import dev._2lstudios.flamecord.FlameCord;
- 
+-
++import dev._2lstudios.flamecord.antibot.AddressData;
++import dev._2lstudios.flamecord.antibot.CheckManager;
  import dev._2lstudios.flamecord.configuration.FlameConfig;
-@@ -439,6 +441,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
+ import lombok.Getter;
+@@ -439,6 +440,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -998,7 +1363,7 @@ index c00ab4b6a..089cac669 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -450,6 +457,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -450,6 +456,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1021,7 +1386,7 @@ index c00ab4b6a..089cac669 100644
                  break;
              case 2:
                  // Login
-@@ -461,6 +484,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -461,6 +483,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1043,7 +1408,7 @@ index c00ab4b6a..089cac669 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -525,6 +563,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -525,6 +562,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1103,7 +1468,7 @@ index c00ab4b6a..089cac669 100644
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 66332af4e..7b852ff69 100644
+index 66332af4e..289cce0c3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,11 +4,16 @@ import com.google.common.base.Preconditions;
@@ -1111,8 +1476,8 @@ index 66332af4e..7b852ff69 100644
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
 +
-+import dev._2lstudios.antibot.CheckManager;
 +import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.antibot.CheckManager;
  import io.netty.channel.Channel;
  import java.util.ArrayList;
  import java.util.LinkedList;

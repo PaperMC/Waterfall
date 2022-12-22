@@ -1,11 +1,11 @@
-From 5bddd07166fdd36bf8f174ded2841903aca46153 Mon Sep 17 00:00:00 2001
+From 2caae71d8c0bdc5a325610ef1c77775f9ba4ee69 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Jun 2021 11:30:19 -0300
 Subject: [PATCH] Apply packet limits
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
-index 86182cdd..b28f4081 100644
+index e78519964..222285cc1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EncryptionRequest.java
 @@ -61,4 +61,14 @@ public class EncryptionRequest extends DefinedPacket
@@ -24,7 +24,7 @@ index 86182cdd..b28f4081 100644
 +    }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
-index 7dbbfd3c..b7842055 100644
+index 7dbbfd3cd..b78420556 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
 @@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
@@ -51,7 +51,7 @@ index 7dbbfd3c..b7842055 100644
 +    }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 682c8784..22a5b993 100644
+index 3224b0d2b..763d34c2f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -70,7 +70,8 @@ public class LoginRequest extends DefinedPacket

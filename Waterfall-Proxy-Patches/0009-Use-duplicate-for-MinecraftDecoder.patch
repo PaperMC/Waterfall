@@ -1,24 +1,23 @@
-From 8c2a775eba07694db8fb29e65ddd210638ad5335 Mon Sep 17 00:00:00 2001
+From 510085f25ef21678828f5b3026662f51a94c1137 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
-Date: Wed, 9 Mar 2022 14:36:43 -0300
-Subject: [PATCH] Duplicate buf instead of Copy
+Date: Wed, 21 Dec 2022 21:43:05 -0300
+Subject: [PATCH] Use duplicate() for MinecraftDecoder
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 3992f521..074d2437 100644
+index ac83e3253..c31ec1ce7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -52,7 +52,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-             }
+@@ -38,7 +38,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
          }
  
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
 -        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
-+        // FlameCord - Duplicate buf instead of Copy
-+        ByteBuf slice = in.duplicate(); // Can't slice this one due to EntityMap :(
++        ByteBuf slice = in.duplicate(); // FlameCord - Duplicate buf instead of Copy
  
          Object packetTypeInfo = null;
          try
-@@ -92,7 +93,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -73,7 +73,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
                  in.skipBytes( in.readableBytes() );
              }
  

@@ -1,11 +1,11 @@
-From 03547260d8d2d4445a56e83fd7e63fe0a836904b Mon Sep 17 00:00:00 2001
+From 7001800c9141f42b15bd9adee24319f1837a8183 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index de2cc947..5d92c20c 100644
+index 7937af051..a1d23f74d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
@@ -28,7 +28,7 @@ index de2cc947..5d92c20c 100644
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
              this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a4c3bd71..ffea1599 100644
+index a4c3bd710..ffea15992 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -194,6 +194,8 @@ public class PipelineUtils
