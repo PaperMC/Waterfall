@@ -1,11 +1,11 @@
-From 152a7b67bbe619c2933d6ee4c486a7a5314fd3da Mon Sep 17 00:00:00 2001
+From 6872a064715964bac98a97bf498b00b98244b8b8 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 1bd6b2164..d8bc8980f 100644
+index 367c25d19..544ad091b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index 1bd6b2164..d8bc8980f 100644
      // FlameCord start - Antibot System
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -268,6 +272,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -271,6 +275,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);

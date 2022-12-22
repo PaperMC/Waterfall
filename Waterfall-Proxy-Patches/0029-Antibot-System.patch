@@ -1,4 +1,4 @@
-From b8c85934f332d737bf4c5d0fd3d19f9ecdfffe6b Mon Sep 17 00:00:00 2001
+From c0f61de5f384a414161976dc5b05be6a1869d090 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -938,10 +938,10 @@ index 000000000..68cc4c217
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index a1d23f74d..1bd6b2164 100644
+index a1d23f74d..367c25d19 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,157 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,160 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1025,6 +1025,8 @@ index a1d23f74d..1bd6b2164 100644
 +    @Getter
 +    private boolean antibotPacketsLog = true;
 +    @Getter
++    private boolean antibotPacketsDebug = false;
++    @Getter
 +    private double antibotPacketsVlsPerByte = 0.00001;
 +    @Getter
 +    private double antibotPacketsVlsPerPacket = 0.01;
@@ -1089,6 +1091,7 @@ index a1d23f74d..1bd6b2164 100644
 +        // Antibot packets
 +        this.antibotPacketsEnabled = setIfUnexistant("antibot.packets.enabled", this.antibotPacketsEnabled, config);
 +        this.antibotPacketsLog = setIfUnexistant("antibot.packets.log", this.antibotPacketsLog, config);
++        this.antibotPacketsDebug = setIfUnexistant("antibot.packets.debug", this.antibotPacketsDebug, config);
 +        this.antibotPacketsVlsPerByte = setIfUnexistant("antibot.packets.vls-per-byte", this.antibotPacketsVlsPerByte, config);
 +        this.antibotPacketsVlsPerPacket = setIfUnexistant("antibot.packets.vls-per-packet", this.antibotPacketsVlsPerPacket, config);
 +        this.antibotPacketsVlsToKick = setIfUnexistant("antibot.packets.vls-to-kick", this.antibotPacketsVlsToKick, config);
@@ -1099,7 +1102,7 @@ index a1d23f74d..1bd6b2164 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -117,6 +268,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -117,6 +271,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
