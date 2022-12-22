@@ -1,4 +1,4 @@
-From a75405f17616b89acf9874fabd29e11c94c50977 Mon Sep 17 00:00:00 2001
+From c6b956bee70e03b5983a6c83a083ba9426258667 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 30 Sep 2021 19:54:33 -0300
 Subject: [PATCH] 1.7.x support
@@ -915,7 +915,7 @@ index a5555f6af..1eb458b61 100644
          buf.writeByte( mode );
          if ( mode == 0 || mode == 2 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 19cc33b97..9f41970ea 100644
+index ca1dad0e5..e11e30402 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -171,6 +171,14 @@ public class BungeeCord extends ProxyServer
@@ -1524,7 +1524,7 @@ index 5e02f8c8a..85bc21b9f 100644
  
                  return WAITINGSERVERDATA;
 diff --git a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
-index f70d357a3..118c78f49 100644
+index f70d357a3..df6a4b12c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
 +++ b/proxy/src/main/java/net/md_5/bungee/tab/ServerUnique.java
 @@ -13,6 +13,7 @@ public class ServerUnique extends TabList
@@ -1564,7 +1564,7 @@ index f70d357a3..118c78f49 100644
              }
          }
          player.unsafe().sendPacket( playerListItem );
-@@ -79,17 +96,47 @@ public class ServerUnique extends TabList
+@@ -79,17 +96,48 @@ public class ServerUnique extends TabList
          {
              PlayerListItem packet = new PlayerListItem();
              packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
@@ -1578,6 +1578,7 @@ index f70d357a3..118c78f49 100644
 +                PlayerListItem.Item item = items[i++] = new PlayerListItem.Item();
 +                item.setUsername( username );
 +                item.setDisplayName( username );
++                item.setPing( 0 );
 +            }
 +            // FlameCord end - 1.7.x support
 +
