@@ -1,4 +1,4 @@
-From d9165053dc58f369fa9920b7112b71fc17912cf9 Mon Sep 17 00:00:00 2001
+From c1528683897e609feeb96d84b3114705dea214c4 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -667,10 +667,10 @@ index 000000000..199da2920
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java
 new file mode 100644
-index 000000000..c4a63e21e
+index 000000000..7189a7f37
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,115 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
@@ -715,7 +715,8 @@ index 000000000..c4a63e21e
 +        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotPacketsLog()) {
 +            System.out
 +                    .println("[FlameCord] [" + address
-+                            + "] was kicked because of too many packets");
++                            + "] was kicked because of too many packets (Total: " + simplify(packetsVls) + "vls Size: "
++                            + simplify(packetsVlsSize) + "vls Rate: " + simplify(packetsVlsRate) + "vls)");
 +        }
 +    }
 +
@@ -723,7 +724,8 @@ index 000000000..c4a63e21e
 +        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotPacketsLog() && !cancelPrinted) {
 +            System.out
 +                    .println("[FlameCord] [" + address
-+                            + "] was cancelled because of too many packets");
++                            + "] was cancelled because of too many packets (Total: " + simplify(packetsVls) + "vls Size: "
++                            + simplify(packetsVlsSize) + "vls Rate: " + simplify(packetsVlsRate) + "vls)");
 +                            this.cancelPrinted = true;
 +        }
 +    }
