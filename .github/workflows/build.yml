@@ -28,3 +28,8 @@ jobs:
           ./waterfall p
       - name: build
         run: mvn clean install javadoc:javadoc -B
+      - name: publish 
+        uses: actions/upload-artifact@v3
+        with:
+          name: Waterfall
+          path: Waterfall-Proxy/bootstrap/target/Waterfall.jar
