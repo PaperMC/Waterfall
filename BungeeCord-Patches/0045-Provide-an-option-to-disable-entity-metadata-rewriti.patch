@@ -1,4 +1,4 @@
-From e129a2d1042dfe9b973df216ea418b41331b80dd Mon Sep 17 00:00:00 2001
+From 8be8d4cde11d6f17fc38ab464cdd01fc247080fa Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -140,10 +140,10 @@ index 7fe08ecd..5961392a 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index e3171326..3b56018a 100644
+index 85628a7a..5105df8b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -672,6 +672,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -688,6 +688,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -151,7 +151,7 @@ index e3171326..3b56018a 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -683,6 +684,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -699,6 +700,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
@@ -160,7 +160,7 @@ index e3171326..3b56018a 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index fcf6788a..1b639a23 100644
+index 61ad307a..ad951df0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -175,7 +175,7 @@ index fcf6788a..1b639a23 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -294,7 +299,13 @@ public abstract class EntityMap
+@@ -295,7 +300,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -228,5 +228,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.37.1
+2.38.1
 
