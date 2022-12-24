@@ -1,4 +1,4 @@
-From 8f1b0a365d2596d9a8017cb68a1dd4b236623bfb Mon Sep 17 00:00:00 2001
+From a9dfd2d9c78c7aed4145481f1261047523dd38c7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Jakub=20Dobr=C3=BD?= <jakub.dobry8@gmail.com>
 Date: Sat, 12 Nov 2022 11:21:57 +0100
 Subject: [PATCH] Add IpForwardEvent, Add getOfflineId and setOfflineId to
@@ -112,10 +112,10 @@ index 8181d76b..ab972c1f 100644
              LoginResult profile = user.getPendingConnection().getLoginProfile();
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 975b6996..d87c26f4 100644
+index a19bbdd0..2c071cc2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -534,7 +534,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -535,7 +535,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
      private void finish()
      {
@@ -127,7 +127,7 @@ index 975b6996..d87c26f4 100644
          if ( uniqueId == null )
          {
              uniqueId = offlineId;
-@@ -730,6 +733,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -731,6 +734,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          this.uniqueId = uuid;
      }
  
@@ -148,5 +148,5 @@ index 975b6996..d87c26f4 100644
      public String getUUID()
      {
 -- 
-2.38.1
+2.39.0
 
