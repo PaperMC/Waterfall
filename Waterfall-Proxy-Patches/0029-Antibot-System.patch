@@ -1,4 +1,4 @@
-From c1528683897e609feeb96d84b3114705dea214c4 Mon Sep 17 00:00:00 2001
+From 66f5de5d3b8b5b1881a499f11bfb6433bdb6d2df Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -281,7 +281,7 @@ index 000000000..b8448bdf2
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 new file mode 100644
-index 000000000..46798dee0
+index 000000000..97b26f938
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 @@ -0,0 +1,31 @@
@@ -296,7 +296,7 @@ index 000000000..46798dee0
 +    private final Map<String, AddressData> addressData = new HashMap<>();
 +
 +    public AddressData getAddressData(String addressString) {
-+        addressString = addressString.replace("/", "").split(":")[0];
++        addressString = addressString.split(":")[0];
 +
 +        if (addressData.containsKey(addressString)) {
 +            return addressData.get(addressString);
@@ -1281,7 +1281,7 @@ index c0d371426..403ccba98 100644
  
      @Override
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index cc76325b2..a5b9331f6 100644
+index cc76325b2..1ddae60be 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -1309,7 +1309,7 @@ index cc76325b2..a5b9331f6 100644
                      }
 +                    case "firewall": {
 +                        if (args.length > 2) {
-+                            String ip = args[2];
++                            String ip = "/" + args[2];
 +                            
 +                            switch (args[1]) {
 +                                case "add": {
