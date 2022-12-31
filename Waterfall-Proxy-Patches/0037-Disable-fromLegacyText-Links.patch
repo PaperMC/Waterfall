@@ -1,0 +1,79 @@
+From c109df033824883c45ec038d327ab6de14094434 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Sat, 31 Dec 2022 14:44:10 -0300
+Subject: [PATCH] Disable fromLegacyText Links
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
+index 4371374a9..1df68c300 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
++++ b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
+@@ -47,7 +47,6 @@ public final class TextComponent extends BaseComponent
+         ArrayList<BaseComponent> components = new ArrayList<>();
+         StringBuilder builder = new StringBuilder();
+         TextComponent component = new TextComponent();
+-        Matcher matcher = url.matcher( message );
+ 
+         for ( int i = 0; i < message.length(); i++ )
+         {
+@@ -128,29 +127,6 @@ public final class TextComponent extends BaseComponent
+             {
+                 pos = message.length();
+             }
+-            if ( matcher.region( i, pos ).find() )
+-            { //Web link handling
+-
+-                if ( builder.length() > 0 )
+-                {
+-                    TextComponent old = component;
+-                    component = new TextComponent( old );
+-                    old.setText( builder.toString() );
+-                    builder = new StringBuilder();
+-                    components.add( old );
+-                }
+-
+-                TextComponent old = component;
+-                component = new TextComponent( old );
+-                String urlString = message.substring( i, pos );
+-                component.setText( urlString );
+-                component.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL,
+-                        urlString.startsWith( "http" ) ? urlString : "http://" + urlString ) );
+-                components.add( component );
+-                i += pos - i - 1;
+-                component = old;
+-                continue;
+-            }
+             builder.append( c );
+         }
+ 
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+index d212d76cb..4a2c9a885 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+@@ -354,23 +354,6 @@ public class ComponentsTest
+ 
+         Assert.assertEquals( "Aqua RedBold", BaseComponent.toPlainText( test1 ) );
+         Assert.assertEquals( ChatColor.AQUA + "Aqua " + ChatColor.RED + ChatColor.BOLD + "RedBold", BaseComponent.toLegacyText( test1 ) );
+-
+-        BaseComponent[] test2 = TextComponent.fromLegacyText( "Text http://spigotmc.org " + ChatColor.GREEN + "google.com/test" );
+-
+-        Assert.assertEquals( "Text http://spigotmc.org google.com/test", BaseComponent.toPlainText( test2 ) );
+-        //The extra ChatColor instances are sometimes inserted when not needed but it doesn't change the result
+-        Assert.assertEquals( ChatColor.WHITE + "Text " + ChatColor.WHITE + "http://spigotmc.org" + ChatColor.WHITE
+-                + " " + ChatColor.GREEN + "google.com/test" + ChatColor.GREEN, BaseComponent.toLegacyText( test2 ) );
+-
+-        ClickEvent url1 = test2[1].getClickEvent();
+-        Assert.assertNotNull( url1 );
+-        Assert.assertTrue( url1.getAction() == ClickEvent.Action.OPEN_URL );
+-        Assert.assertEquals( "http://spigotmc.org", url1.getValue() );
+-
+-        ClickEvent url2 = test2[3].getClickEvent();
+-        Assert.assertNotNull( url2 );
+-        Assert.assertTrue( url2.getAction() == ClickEvent.Action.OPEN_URL );
+-        Assert.assertEquals( "http://google.com/test", url2.getValue() );
+     }
+ 
+     @Test
+-- 
+2.37.3.windows.1
+
