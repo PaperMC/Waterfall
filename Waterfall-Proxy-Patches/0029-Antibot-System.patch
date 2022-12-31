@@ -1,4 +1,4 @@
-From 5c22787833121046061ec3b21c14c22b21e7c90f Mon Sep 17 00:00:00 2001
+From 2e5c61bc9884a58f740118c369aba5f00d4d739f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1001,15 +1001,19 @@ index 000000000..68cc4c217
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java
 new file mode 100644
-index 000000000..2d60ec2b4
+index 000000000..28bfc2c37
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,73 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +public class StatsData {
 +    // Time of the last second
 +    private long lastSecond = System.currentTimeMillis();
++
++    // Total pings and connections
++    private int totalPings = 0;
++    private int totalConnections = 0;
 +
 +    // Current second connections and pings
 +    private int currentPings = 0;
@@ -1038,10 +1042,12 @@ index 000000000..2d60ec2b4
 +
 +    public void addPing() {
 +        currentPings++;
++        totalPings++;
 +    }
 +
 +    public void addConnection() {
 +        currentConnections++;
++        totalConnections++;
 +    }
 +
 +    public int getCurrentPings() {
@@ -1062,6 +1068,14 @@ index 000000000..2d60ec2b4
 +    public int getLastConnections() {
 +        resetData();
 +        return lastConnections;
++    }
++
++    public int getTotalPings() {
++        return totalPings;
++    }
++
++    public int getTotalConnections() {
++        return totalConnections;
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
@@ -1239,7 +1253,7 @@ index a1d23f74d..d42e3d75f 100644
  
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 4f306660e..fdcd1544d 100644
+index 4f306660e..d0d8fc391 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -82,12 +82,27 @@ public class MessagesConfiguration extends FlameConfig {
@@ -1255,7 +1269,7 @@ index 4f306660e..fdcd1544d 100644
 +			setIfUnexistant("antibot_ratelimit", "&c&lFlameCord\n\n&cYou are connecting too fast! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +			setIfUnexistant("antibot_reconnect", "&c&lFlameCord\n\n&cReconnect {0} more times to enter!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +			setIfUnexistant("antibot_country", "&c&lFlameCord\n\n&cYour country {0} is blacklisted!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
-+			setIfUnexistant("antibot_stats", "&aFlameCord Antibot Stats\n &ePings: {0}\n &eConnections: {1}", configuration);
++			setIfUnexistant("antibot_stats", "&c&lFlameCord Antibot Stats\n &7■ Total Pings: &a{0}\n &7■ Total Connections: &b{1}\n\n &7■ Current Pings: &a{2}\n &7■ Current Connections: &b{3}", configuration);
 +			// FlameCord end - Antibot System
 +
  			// FlameCord
@@ -1401,7 +1415,7 @@ index c0d371426..403ccba98 100644
  
      @Override
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index cc76325b2..c64e7f2e4 100644
+index cc76325b2..d513d35bd 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -4,6 +4,8 @@ import java.util.Collection;
@@ -1424,17 +1438,19 @@ index cc76325b2..c64e7f2e4 100644
                      case "reload": {
                          // FlameCord - Collect ips from servers
                          final Collection<String> whitelistedAddresses = new HashSet<>();
-@@ -43,9 +43,43 @@ private final BungeeCord bungeeCord;
+@@ -43,9 +43,45 @@ private final BungeeCord bungeeCord;
                                  .fromLegacyText(messagesConfiguration.getTranslation("flamecord_reload")));
                          break;
                      }
 +                    case "stats": {
 +                        StatsData statsData = FlameCord.getInstance().getStatsData();
-+                        int pings = statsData.getLastPings();
-+                        int connections = statsData.getLastConnections();
++                        int totalPings = statsData.getTotalPings();
++                        int totalConnections = statsData.getTotalConnections();
++                        int currentPings = statsData.getLastPings();
++                        int currentConnections = statsData.getLastConnections();
 +                        int addressCount = FlameCord.getInstance().getAddressDataManager().getAddresCount();
 +
-+                        sender.sendMessage(TextComponent.fromLegacyText(messagesConfiguration.getTranslation("antibot_stats", pings, connections, addressCount)));
++                        sender.sendMessage(TextComponent.fromLegacyText(messagesConfiguration.getTranslation("antibot_stats", totalPings, totalConnections, currentPings, currentConnections, addressCount)));
 +                        break;
 +                    }
 +                    case "firewall": {
