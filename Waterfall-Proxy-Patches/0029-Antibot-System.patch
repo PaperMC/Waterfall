@@ -1,4 +1,4 @@
-From 63125008207fddc4f0dd92c69f872d013595ce86 Mon Sep 17 00:00:00 2001
+From c8088b0ac08cde56846bb6aa11a841c2f6c99a91 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -129,7 +129,7 @@ index 000000000..5e7fa6bfb
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 new file mode 100644
-index 000000000..c3ccae2b6
+index 000000000..a4e754f7e
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 @@ -0,0 +1,162 @@
@@ -146,7 +146,7 @@ index 000000000..c3ccae2b6
 +    private StatsData statsData;
 +    private Collection<String> nicknames = null;
 +    private final String hostString;
-+    private String lastNickname = null;
++    private String lastNickname = "";
 +    private String country = null;
 +    private String firewallReason = null;
 +    private long lastPing = 0;
@@ -177,7 +177,7 @@ index 000000000..c3ccae2b6
 +    public void addNickname(final String nickname) {
 +        if (nicknames == null) nicknames = new HashSet<>();
 +
-+        if (lastNickname == null || !lastNickname.equals(nickname)) {
++        if (!lastNickname.equals(nickname)) {
 +            this.lastNickname = nickname;
 +            this.totalConnections = 1;
 +        }
@@ -297,10 +297,10 @@ index 000000000..c3ccae2b6
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 new file mode 100644
-index 000000000..98d6a457e
+index 000000000..bd14f56a1
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,48 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.InetSocketAddress;
@@ -309,18 +309,31 @@ index 000000000..98d6a457e
 +import java.util.Map;
 +
 +public class AddressDataManager {
-+    private final Map<String, AddressData> addressData = new HashMap<>();
++    private Map<String, AddressData> addressData = new HashMap<>();
++
++    public String sanitizeAddress(String text) {
++        // Remove the port
++        text = text.split(":")[0];
++
++        // Check if first character is a slash
++        if (text.startsWith("/")) {
++            // Remove the first character
++            text = text.substring(1);
++        }
++
++        return text;
++    }
 +
 +    public AddressData getAddressData(String addressString) {
-+        addressString = addressString.split(":")[0];
++        addressString = sanitizeAddress(addressString);
 +
 +        if (addressData.containsKey(addressString)) {
 +            return addressData.get(addressString);
 +        } else {
 +            AddressData data = new AddressData(addressString);
-+            
++
 +            addressData.put(addressString, data);
-+    
++
 +            return data;
 +        }
 +    }
@@ -328,7 +341,7 @@ index 000000000..98d6a457e
 +    public AddressData getAddressData(final SocketAddress address) {
 +        final InetSocketAddress iNetSocketAddress = (InetSocketAddress) address;
 +        final String addressString = iNetSocketAddress.getHostString();
-+        
++
 +        return getAddressData(addressString);
 +    }
 +
