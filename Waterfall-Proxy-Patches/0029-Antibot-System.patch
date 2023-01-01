@@ -1,4 +1,4 @@
-From 2e5c61bc9884a58f740118c369aba5f00d4d739f Mon Sep 17 00:00:00 2001
+From 5565c5cccbc4421eed0422dff9e497a8fbf37be1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -568,7 +568,7 @@ index 000000000..682e1c314
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java
 new file mode 100644
-index 000000000..bbd84ce5c
+index 000000000..df26a3634
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java
 @@ -0,0 +1,28 @@
@@ -591,7 +591,7 @@ index 000000000..bbd84ce5c
 +        long currentTime = System.currentTimeMillis();
 +
 +        // Throttle logs by 100ms
-+        if (lastLog - currentTime > 100) {
++        if (currentTime - lastLog > 100) {
 +            // Set the last log
 +            lastLog = currentTime;
 +
@@ -1001,10 +1001,10 @@ index 000000000..68cc4c217
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java
 new file mode 100644
-index 000000000..28bfc2c37
+index 000000000..44d773abe
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/StatsData.java
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,75 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +public class StatsData {
@@ -1028,7 +1028,7 @@ index 000000000..28bfc2c37
 +        long currentTime = System.currentTimeMillis();
 +
 +        // Check if one second passed
-+        if (lastSecond - currentTime > 1000) {
++        if (currentTime - lastSecond > 1000) {
 +            // Set the last second to this one
 +            lastSecond = currentTime;
 +
@@ -1041,11 +1041,13 @@ index 000000000..28bfc2c37
 +    }
 +
 +    public void addPing() {
++        resetData();
 +        currentPings++;
 +        totalPings++;
 +    }
 +
 +    public void addConnection() {
++        resetData();
 +        currentConnections++;
 +        totalConnections++;
 +    }
@@ -1415,7 +1417,7 @@ index c0d371426..403ccba98 100644
  
      @Override
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index cc76325b2..d513d35bd 100644
+index cc76325b2..d739fc5c5 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -4,6 +4,8 @@ import java.util.Collection;
@@ -1446,11 +1448,11 @@ index cc76325b2..d513d35bd 100644
 +                        StatsData statsData = FlameCord.getInstance().getStatsData();
 +                        int totalPings = statsData.getTotalPings();
 +                        int totalConnections = statsData.getTotalConnections();
-+                        int currentPings = statsData.getLastPings();
-+                        int currentConnections = statsData.getLastConnections();
++                        int lastPings = statsData.getLastPings();
++                        int lastConnections = statsData.getLastConnections();
 +                        int addressCount = FlameCord.getInstance().getAddressDataManager().getAddresCount();
 +
-+                        sender.sendMessage(TextComponent.fromLegacyText(messagesConfiguration.getTranslation("antibot_stats", totalPings, totalConnections, currentPings, currentConnections, addressCount)));
++                        sender.sendMessage(TextComponent.fromLegacyText(messagesConfiguration.getTranslation("antibot_stats", totalPings, totalConnections, lastPings, lastConnections)));
 +                        break;
 +                    }
 +                    case "firewall": {
