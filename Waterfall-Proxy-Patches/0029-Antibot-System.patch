@@ -1,4 +1,4 @@
-From 7ba98a5d071a376c8ce5d5afeaa64acf7002c914 Mon Sep 17 00:00:00 2001
+From 63125008207fddc4f0dd92c69f872d013595ce86 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -653,10 +653,10 @@ index 000000000..165963629
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
 new file mode 100644
-index 000000000..199da2920
+index 000000000..a7bd9f153
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,69 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
@@ -672,20 +672,22 @@ index 000000000..199da2920
 +
 +public class PacketsCheck {
 +    private Map<String, PacketsData> packetsData = new HashMap<>();
-+    private long lastCalculation = System.currentTimeMillis();
++
++    // Time since the last clear passed
++    private long lastClear = System.currentTimeMillis();
 +
 +    public PacketsData getData(SocketAddress address) {
 +        String ip = address.toString();
 +
-+        if (System.currentTimeMillis() - lastCalculation >= 60000) {
++        if (System.currentTimeMillis() - lastClear >= 60000) {
 +            packetsData.clear();
-+            this.lastCalculation = System.currentTimeMillis();
++            this.lastClear = System.currentTimeMillis();
 +        }
 +
 +        PacketsData data;
 +
 +        if (packetsData.containsKey(ip)) {
-+           data = packetsData.get(ip);
++            data = packetsData.get(ip);
 +        } else {
 +            data = new PacketsData(address);
 +            packetsData.put(ip, data);
@@ -695,17 +697,22 @@ index 000000000..199da2920
 +    }
 +
 +    public PacketsCheckResult check(SocketAddress socketAddress, ByteBuf byteBuf) {
-+        PacketsData addressData = getData(socketAddress);
 +        FlameCordConfiguration config = FlameCord.getInstance().getFlameCordConfiguration();
++
++        if (!config.isAntibotPacketsEnabled()) {
++            return PacketsCheckResult.NONE;
++        }
++
++        PacketsData packetsData = getData(socketAddress);
 +        int length = byteBuf.readableBytes();
 +        int index = byteBuf.readerIndex();
 +        int packetId = ProtocolUtil.readVarInt(byteBuf);
 +        byteBuf.readerIndex(index);
 +
-+        addressData.addVls(length * config.getAntibotPacketsVlsPerByte(), PacketsViolationReason.SIZE, packetId);
-+        addressData.addVls(config.getAntibotPacketsVlsPerPacket(), PacketsViolationReason.RATE, packetId);
++        packetsData.addVls(length * config.getAntibotPacketsVlsPerByte(), PacketsViolationReason.SIZE, packetId);
++        packetsData.addVls(config.getAntibotPacketsVlsPerPacket(), PacketsViolationReason.RATE, packetId);
 +
-+        double vls = addressData.getPacketsVls();
++        double vls = packetsData.getPacketsVls();
 +
 +        if (vls >= config.getAntibotPacketsVlsToKick()) {
 +            return PacketsCheckResult.KICK;
