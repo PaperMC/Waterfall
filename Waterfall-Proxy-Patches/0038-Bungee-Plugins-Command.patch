@@ -1,0 +1,97 @@
+From ab055556001fcc9e5278a383ff187e05499937ba Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Wed, 11 Jan 2023 10:14:12 -0300
+Subject: [PATCH] Bungee Plugins Command
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index 2ecbf29d5..3d4fede4f 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -95,6 +95,11 @@ public class MessagesConfiguration extends FlameConfig {
+ 			setIfUnexistant("antibot_stats", "&c&lFlameCord Antibot Stats\n &7■ Total Pings: &a{0}\n &7■ Total Connections: &b{1}\n\n &7■ Current Pings: &a{2}\n &7■ Current Connections: &b{3}", configuration);
+ 			// FlameCord end - Antibot System
+ 
++			// FlameCord - Bungee Plugins Command
++			setIfUnexistant("flamecord_bplugins_nopermission", "&cYou don't have permission to do this!", configuration);
++			setIfUnexistant("flamecord_bplugins_separator", ", ", configuration);
++			setIfUnexistant("flamecord_bplugins_header", "&aPlugins ({0}): ", configuration);
++
+ 			// FlameCord
+ 			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
+ 			setIfUnexistant("flamecord_help",
+diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java
+new file mode 100644
+index 000000000..2e20e9dca
+--- /dev/null
++++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java
+@@ -0,0 +1,45 @@
++package dev._2lstudios.flamecord.commands;
++
++import java.util.Collection;
++
++import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++
++public class BungeePluginsCommand extends Command {
++    public BungeePluginsCommand() {
++        super("bplugins");
++    }
++
++    @Override
++    public void execute(final CommandSender sender, final String[] args) {
++        final FlameCord flameCord = FlameCord.getInstance();
++        final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
++
++        if (sender.hasPermission("flamecord.usage")) {
++            Collection<Plugin> plugins = BungeeCord.getInstance().getPluginManager().getPlugins();
++            int amount = plugins.size();
++            String header = FlameCord.getInstance().getMessagesConfiguration().getTranslation("flamecord_bplugins_header", amount);
++            String separator = FlameCord.getInstance().getMessagesConfiguration().getTranslation("flamecord_bplugins_separator");
++            StringBuilder stringBuilder = new StringBuilder(header);
++            boolean first = true;
++
++            for (Plugin plugin : plugins) {
++                stringBuilder.append((first ? "" : separator) + plugin.getDescription().getName());
++
++                if (first) {
++                    first = false;
++                }
++            }
++
++            sender.sendMessage(TextComponent.fromLegacyText(stringBuilder.toString()));
++        } else {
++            sender.sendMessage(TextComponent
++                    .fromLegacyText(messagesConfiguration.getTranslation("flamecord_bplugins_nopermission")));
++        }
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 8edaa3026..e09e32c94 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,6 +11,7 @@ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ 
+ import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.commands.BungeePluginsCommand;
+ import dev._2lstudios.flamecord.commands.FlameCordCommand;
+ import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+@@ -913,5 +914,8 @@ public class BungeeCord extends ProxyServer
+ 
+         // Flamecord - Commands (Had to make it like this because of maven limitations)
+         pluginManager.registerCommand(null, new FlameCordCommand(this));
++        
++        // FlameCord - Bungee Plugins Command
++        pluginManager.registerCommand(null, new BungeePluginsCommand());
+     }
+ }
+-- 
+2.37.3.windows.1
+
