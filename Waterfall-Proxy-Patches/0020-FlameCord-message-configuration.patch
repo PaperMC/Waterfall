@@ -1,4 +1,4 @@
-From dae4aa8593ae097fcc2961539dd2fc7787e8d63e Mon Sep 17 00:00:00 2001
+From 6eae2c1a46011d8e4aabaf919279a9d941c403f1 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 13:40:39 -0300
 Subject: [PATCH] FlameCord message configuration
@@ -34,10 +34,10 @@ index ac37eaa3e..c78ab3a7c 100644
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 new file mode 100644
-index 000000000..4f306660e
+index 000000000..70d5d61fe
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,115 @@
 +package dev._2lstudios.flamecord.configuration;
 +
 +import java.io.File;
@@ -109,6 +109,7 @@ index 000000000..4f306660e
 +					"&cAn error occurred while parsing your message. (Hover for details)", configuration);
 +			setIfUnexistant("error_occurred_console", "&cAn error occurred while parsing your message: {0}",
 +					configuration);
++			setIfUnexistant("server_command_hover_players", "{0} players", configuration);
 +			setIfUnexistant("click_to_connect", "Click to connect to the server", configuration);
 +			setIfUnexistant("username_needed", "&cPlease follow this command by a user name.", configuration);
 +			setIfUnexistant("user_not_online", "&cThat user is not online.", configuration);
@@ -153,6 +154,21 @@ index 000000000..4f306660e
 +	}
 +}
 \ No newline at end of file
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+index 698b420f4..e4ad7e389 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+@@ -50,7 +50,9 @@ public class CommandServer extends Command implements TabExecutor
+                     int count = server.getPlayers().size();
+                     serverTextComponent.setHoverEvent( new HoverEvent(
+                             HoverEvent.Action.SHOW_TEXT,
+-                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).appendLegacy( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
++                            // FlameCord - FlameCord messages configuration
++                            // Make player count customizable
++                            new ComponentBuilder( ProxyServer.getInstance().getTranslation( "server_command_hover_players", count ) + "\n" ).appendLegacy( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
+                     );
+                     serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                     serverList.append( serverTextComponent );
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 index 91d60bfb3..cc76325b2 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
@@ -201,7 +217,7 @@ index 91d60bfb3..cc76325b2 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 88ac66bab..501aacfa0 100644
+index 7cbac8937..8edaa3026 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -626,8 +626,8 @@ public class BungeeCord extends ProxyServer
