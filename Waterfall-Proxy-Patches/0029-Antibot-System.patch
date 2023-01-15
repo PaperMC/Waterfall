@@ -1,4 +1,4 @@
-From 4638e35491b0721cf1ab99b44f45a993a0271af0 Mon Sep 17 00:00:00 2001
+From 015e6e1229bf68c3d1ba0be143c97b0f55047ce7 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1299,12 +1299,12 @@ index 9912fc25c..9834c8efa 100644
          } catch (final IOException e) {
              e.printStackTrace();
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 207cd1b1d..a39b4be62 100644
+index 21381bb45..37bccaebd 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -90,6 +90,22 @@ public class MessagesConfiguration extends FlameConfig {
- 					configuration);
- 			setIfUnexistant("flamecord_nopermission", "&cYou don't have permission to do this!", configuration);
+ 			setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
+ 			setIfUnexistant("illegal_chat_characters", "&cIllegal characters in chat ({0})", configuration);
  
 +			// FlameCord start - Antibot System
 +			setIfUnexistant("antibot_accounts", "&c&lFlameCord\n\n&cYou have too many accounts! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
