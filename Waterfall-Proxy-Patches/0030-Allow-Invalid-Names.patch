@@ -1,11 +1,11 @@
-From beef7acd3f06cbd730035f5807a94545970b88e1 Mon Sep 17 00:00:00 2001
+From fa07b114703cd16e45b39ab3ea9772858249086c Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 9b0c542aa..b017baf25 100644
+index 9834c8efa..d9d3d6047 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
@@ -16,18 +16,19 @@ index 9b0c542aa..b017baf25 100644
 +    @Getter
 +    private boolean allowInvalidNames = false;
 +
-     // FlameCord start - Antibot System
+     // Antibot accounts
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -287,6 +291,8 @@ public class FlameCordConfiguration extends FlameConfig {
-             this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
-             this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
-             this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
+@@ -305,6 +309,9 @@ public class FlameCordConfiguration extends FlameConfig {
+             this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
+             this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
+ 
++            // FlameCord - Allow Invalid Names
 +            this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
 +
+             // FlameCord - Antibot System
              loadAntibot(configuration);
  
-             this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index c530c8b2c..9978b9db1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
