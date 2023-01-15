@@ -1,4 +1,4 @@
-From c8088b0ac08cde56846bb6aa11a841c2f6c99a91 Mon Sep 17 00:00:00 2001
+From 9467398af7f325e2d0188efa4981b2240c70a507 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -129,7 +129,7 @@ index 000000000..5e7fa6bfb
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 new file mode 100644
-index 000000000..a4e754f7e
+index 000000000..e8c80ad08
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 @@ -0,0 +1,162 @@
@@ -260,7 +260,7 @@ index 000000000..a4e754f7e
 +    }
 +
 +    public void firewall(String reason) {
-+        if (!hostString.equals("127.0.0.1")) {
++        if (!FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewallWhitelist().contains(hostString)) {
 +            this.lastFirewall = System.currentTimeMillis();
 +            this.firewallReason = reason;
 +        }
@@ -1101,10 +1101,10 @@ index 000000000..44d773abe
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index a1d23f74d..d42e3d75f 100644
+index a1d23f74d..8b8b4915a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,160 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,166 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1135,12 +1135,17 @@ index a1d23f74d..d42e3d75f 100644
 +    private int antibotFastChatTime = 1000;
 +    @Getter
 +    private boolean antibotFastChatLog = true;
++
++    // Antibot firewall
 +    @Getter
 +    private boolean antibotFirewallEnabled = true;
 +    @Getter
 +    private int antibotFirewallExpire = 60;
 +    @Getter
 +    private boolean antibotFirewallLog = true;
++    @Getter
++    private Collection<String> antibotFirewallWhitelist = Arrays.asList("127.0.0.1");
++
 +    @Getter
 +    private boolean antibotNicknameEnabled = true;
 +    @Getter
@@ -1222,6 +1227,7 @@ index a1d23f74d..d42e3d75f 100644
 +        this.antibotFirewalledExceptions = setIfUnexistant("antibot.firewall.exceptions", this.antibotFirewalledExceptions, config);
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
 +        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
++        this.antibotFirewallWhitelist = setIfUnexistant("antibot.firewall.whitelist", this.antibotFirewallWhitelist, config);
 +
 +        // Antibot nickname
 +        this.antibotNicknameEnabled = setIfUnexistant("antibot.nickname.enabled", this.antibotNicknameEnabled, config);
@@ -1265,7 +1271,7 @@ index a1d23f74d..d42e3d75f 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -117,6 +271,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -117,6 +277,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
