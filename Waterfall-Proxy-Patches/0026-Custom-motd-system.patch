@@ -1,4 +1,4 @@
-From 2deed84f7aa7722cb648f94f46df605ce33ee912 Mon Sep 17 00:00:00 2001
+From c41b5bb4984efeb62f1ef8669e0913a2177dacf1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -20,10 +20,10 @@ index 5589ce1b7..1e928197c 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index aac41c8b2..a80a9eae3 100644
+index aac41c8b2..22a8ac39d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -3,15 +3,76 @@ package dev._2lstudios.flamecord.configuration;
+@@ -3,15 +3,88 @@ package dev._2lstudios.flamecord.configuration;
  import java.io.File;
  import java.io.IOException;
  import java.util.ArrayList;
@@ -41,19 +41,31 @@ index aac41c8b2..a80a9eae3 100644
  
  public class FlameCordConfiguration extends FlameConfig {
 +    public String getMOTD(int maxPlayers, int onlinePlayers, int protocol) {
-+        String motd = motds.get(new Random().nextInt(motds.size()));
++        String motd;
++
++        if (protocol >= 735) {
++            motd = hexMotds.get(new Random().nextInt(hexMotds.size()));
++        } else {
++            motd = motds.get(new Random().nextInt(motds.size()));
++        }
 +
 +        motd = motd.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
 +
-+        return ColorUtil.hex(motd, protocol);
++        return motd;
 +    }
 +
 +    public String[] getSample(int maxPlayers, int onlinePlayers, int protocol) {
-+        String sample = samples.get(new Random().nextInt(samples.size()));
++        String sample;
++
++        if (protocol >= 735) {
++            sample = hexSamples.get(new Random().nextInt(hexMotds.size()));
++        } else {
++            sample = samples.get(new Random().nextInt(motds.size()));
++        }
 +
 +        sample = sample.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
 +
-+        return ColorUtil.hex(sample, protocol).split("\n");
++        return sample.split("\n");
 +    }
 +
 +    public int getFakePlayersAmount(final int players) {
@@ -71,13 +83,13 @@ index aac41c8b2..a80a9eae3 100644
 +
 +    @Getter
 +    private boolean motdEnabled = false;
-+    @Getter
 +    private List<String> motds = Collections.singletonList("&eDefault &cFlameCord&e server &7(%onlineplayers%/%maxplayers%)\n&eEdit on &cflamecord.yml&7 (IridiumColorAPI HEX)");
++    private List<String> hexMotds;
 +
 +    @Getter
 +    private boolean sampleEnabled = false;
-+    @Getter
 +    private List<String> samples = Collections.singletonList("&eDefault &cFlameCord&e server &7(%onlineplayers%/%maxplayers%)\n&eEdit on &cflamecord.yml&7 (IridiumColorAPI HEX)");
++    private List<String> hexSamples;
 +
 +    @Getter
 +    private boolean protocolEnabled = false;
@@ -100,14 +112,16 @@ index aac41c8b2..a80a9eae3 100644
      @Getter
      private boolean loggerInitialhandler = false;
      @Getter
-@@ -36,6 +97,19 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -36,6 +109,21 @@ public class FlameCordConfiguration extends FlameConfig {
                  configuration = configurationProvider.load(configurationFile);
              }
  
 +            this.motdEnabled = setIfUnexistant("custom-motd.motd.enabled", this.motdEnabled, configuration);
-+            this.motds = ColorUtil.color(new ArrayList<>(setIfUnexistant("custom-motd.motd.motds", this.motds, configuration)));
++            this.hexMotds = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.motd.motds", this.motds, configuration)), 735);
++            this.motds = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.motd.motds", this.motds, configuration)), 734);
 +            this.sampleEnabled = setIfUnexistant("custom-motd.sample.enabled", this.sampleEnabled, configuration);
-+            this.samples = ColorUtil.color(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)));
++            this.hexSamples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 735);
++            this.samples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 734);
 +            this.protocolEnabled = setIfUnexistant("custom-motd.protocol.enabled", this.protocolEnabled, configuration);
 +            this.protocolName = setIfUnexistant("custom-motd.protocol.name", this.protocolName, configuration);
 +            this.maxPlayersEnabled = setIfUnexistant("custom-motd.maxplayers.enabled", this.maxPlayersEnabled, configuration);
