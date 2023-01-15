@@ -1,4 +1,4 @@
-From 0c10165a6a2d73b6deae77f79eab6b029ff183c8 Mon Sep 17 00:00:00 2001
+From de84936f395fac9bb4a6f478ce4a4e71b5c0db38 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -27,7 +27,7 @@ index 20edd9001..f48f1e60b 100644
  
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 4585406a7..10708f4db 100644
+index 676ba95b9..13e90af77 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -3,6 +3,10 @@ package dev._2lstudios.flamecord;
@@ -55,10 +55,10 @@ index 4585406a7..10708f4db 100644
 +    @Getter
 +    private LoggerWrapper loggerWrapper;
 +
-     private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
-         reload(logger, whitelistedAddresses);
-     }
-@@ -43,5 +57,12 @@ public class FlameCord {
+     public void reload(final Logger logger, final Collection<String> whitelistedAddresses) {
+         final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+         
+@@ -39,5 +53,12 @@ public class FlameCord {
          // FlameCord - Module System
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
