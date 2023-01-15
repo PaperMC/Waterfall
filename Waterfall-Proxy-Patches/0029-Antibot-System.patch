@@ -1,4 +1,4 @@
-From de84936f395fac9bb4a6f478ce4a4e71b5c0db38 Mon Sep 17 00:00:00 2001
+From 090bae19f543a83278921718a15bd51d2f91581e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1088,7 +1088,7 @@ index 000000000..44d773abe
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 10a07821a..4271fc078 100644
+index 10a07821a..92772d84a 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,178 @@ import net.md_5.bungee.config.Configuration;
@@ -1225,7 +1225,7 @@ index 10a07821a..4271fc078 100644
 +        this.antibotFirewalledExceptions = setIfUnexistant("antibot.firewall.exceptions", this.antibotFirewalledExceptions, config);
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
 +        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
-+        this.antibotFirewallWhitelist = setIfUnexistant("antibot.firewall.whitelist", this.antibotFirewallWhitelist, config);
++        this.antibotFirewallWhitelist = new HashSet<>( setIfUnexistant("antibot.firewall.whitelist", this.antibotFirewallWhitelist, config ));
 +
 +        // Add local server ips to whitelist
 +        this.antibotFirewallWhitelist.addAll(whitelistedAddresses);
