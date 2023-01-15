@@ -1,11 +1,11 @@
-From c3f0d477f364a0671d26222ad2b1d76c38db31da Mon Sep 17 00:00:00 2001
+From 52db599859d1d0386b83e99022f3852dd6ebef78 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Wed, 11 Jan 2023 10:14:12 -0300
 Subject: [PATCH] Bungee Plugins Command
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index a39b4be62..190c00ea8 100644
+index 37bccaebd..af3d90788 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -100,11 +100,17 @@ public class MessagesConfiguration extends FlameConfig {
@@ -79,7 +79,7 @@ index 000000000..2e20e9dca
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1fb7bb2a7..5e9c7a98b 100644
+index 857b0b622..71cc494d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,7 @@ import com.google.gson.Gson;
@@ -90,9 +90,9 @@ index 1fb7bb2a7..5e9c7a98b 100644
  import dev._2lstudios.flamecord.commands.FlameCordCommand;
  import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-@@ -913,5 +914,8 @@ public class BungeeCord extends ProxyServer
+@@ -907,5 +908,8 @@ public class BungeeCord extends ProxyServer
  
-         // Flamecord - Commands (Had to make it like this because of maven limitations)
+         // Flamecord Command
          pluginManager.registerCommand(null, new FlameCordCommand(this));
 +        
 +        // FlameCord - Bungee Plugins Command

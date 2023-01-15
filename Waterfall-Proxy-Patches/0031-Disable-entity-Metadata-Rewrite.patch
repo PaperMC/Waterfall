@@ -1,4 +1,4 @@
-From f8422f8eaf4f3c88d6beb5752f18cc2544e2d1df Mon Sep 17 00:00:00 2001
+From f293b6e489e70340e1f7fd46146bfa75e468a2d1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -49,7 +49,7 @@ index 0c334afcf..88865b851 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index c9e45b915..36d507847 100644
+index 022f94b2d..970011e8f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -239,10 +239,10 @@ index 966d2442b..be337a680 100644
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 055a1d883..a63e67f15 100644
+index 3a07c7c8a..f51c668d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -243,11 +243,6 @@ public class ServerConnector extends PacketHandler
+@@ -245,11 +245,6 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -254,7 +254,7 @@ index 055a1d883..a63e67f15 100644
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
              user.getForgeClientHandler().setHandshakeComplete();
-@@ -306,20 +301,6 @@ public class ServerConnector extends PacketHandler
+@@ -308,20 +303,6 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -275,7 +275,7 @@ index 055a1d883..a63e67f15 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -338,33 +319,27 @@ public class ServerConnector extends PacketHandler
+@@ -340,33 +321,27 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -433,7 +433,7 @@ index 0ac22ad38..6e425764b 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7b852ff69..aef8b9a8d 100644
+index 667364aea..10e46779f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -25,7 +25,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;

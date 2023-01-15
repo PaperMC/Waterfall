@@ -1,4 +1,4 @@
-From e56721a653fcc36270c483df6052d7aab8c91804 Mon Sep 17 00:00:00 2001
+From e111096039ff281b653c35f76b1295330eb5ee79 Mon Sep 17 00:00:00 2001
 From: Juan Cruz Linsalata <LinsaFTW@users.noreply.github.com>
 Date: Mon, 12 Oct 2020 15:40:53 -0300
 Subject: [PATCH] FlameCord General Patch
@@ -6,7 +6,7 @@ Subject: [PATCH] FlameCord General Patch
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 new file mode 100644
-index 000000000..8e69160d0
+index 000000000..7b1f07c7e
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -0,0 +1,35 @@
@@ -24,9 +24,9 @@ index 000000000..8e69160d0
 +    @Getter
 +    private static FlameCord instance;
 +
-+    public static void reload(final Logger logger, final Collection<String> whitelistedAddresses) {
++    public static void initialize(final Logger logger, final Collection<String> whitelistedAddresses) {
 +        if (FlameCord.instance != null) {
-+            instance.reload(logger);
++            instance.reload(logger, whitelistedAddresses);
 +        } else {
 +            FlameCord.instance = new FlameCord(logger, whitelistedAddresses);
 +        }
@@ -35,14 +35,14 @@ index 000000000..8e69160d0
 +    @Getter
 +    private FlameCordConfiguration flameCordConfiguration;
 +
-+    private void reload(final Logger logger) {
-+        final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
-+
-+        this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider);
++    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
++        reload(logger, whitelistedAddresses);
 +    }
 +
-+    private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
-+        reload(logger);
++    public void reload(final Logger logger, final Collection<String> whitelistedAddresses) {
++        final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
++        
++        this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider, whitelistedAddresses);
 +    }
 +}
 \ No newline at end of file
@@ -96,7 +96,7 @@ index 000000000..5589ce1b7
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 new file mode 100644
-index 000000000..c8148e902
+index 000000000..114bbf877
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -0,0 +1,33 @@
@@ -114,7 +114,7 @@ index 000000000..c8148e902
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
 +public class FlameCordConfiguration extends FlameConfig {
-+    public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
++    public FlameCordConfiguration(final ConfigurationProvider configurationProvider, final Collection<String> whitelistedAddresses) {
 +        try {
 +            final String fileName = "./flamecord.yml";
 +            final File configurationFile = new File(fileName);
@@ -146,7 +146,7 @@ index 640f0ea26..70a1192e7 100644
  import io.netty.channel.ChannelHandlerContext;
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 new file mode 100644
-index 000000000..91d60bfb3
+index 000000000..021b38d43
 --- /dev/null
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -0,0 +1,58 @@
@@ -188,7 +188,7 @@ index 000000000..91d60bfb3
 +                            whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
 +                        }
 +
-+                        FlameCord.reload(bungeeCord.getLogger(), whitelistedAddresses);
++                        FlameCord.initialize(bungeeCord.getLogger(), whitelistedAddresses);
 +                        sender.sendMessage(TextComponent
 +                                .fromLegacyText("flamecord_reload"));
 +                        break;
@@ -209,7 +209,7 @@ index 000000000..91d60bfb3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 031b21084..1dd53660a 100644
+index 031b21084..39986d522 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -9,6 +9,8 @@ import com.google.common.collect.Sets;
@@ -221,25 +221,7 @@ index 031b21084..1dd53660a 100644
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
-@@ -242,11 +244,12 @@ public class BungeeCord extends ProxyServer
-         // Waterfall end
- 
-         pluginManager = new PluginManager( this );
--        getPluginManager().registerCommand( null, new CommandReload() );
--        getPluginManager().registerCommand( null, new CommandEnd() );
--        getPluginManager().registerCommand( null, new CommandIP() );
--        getPluginManager().registerCommand( null, new CommandBungee() );
--        getPluginManager().registerCommand( null, new CommandPerms() );
-+        // FlameCord - We register commands in our new method
-+        //getPluginManager().registerCommand( null, new CommandReload() );
-+        //getPluginManager().registerCommand( null, new CommandEnd() );
-+        //getPluginManager().registerCommand( null, new CommandIP() );
-+        //getPluginManager().registerCommand( null, new CommandBungee() );
-+        //getPluginManager().registerCommand( null, new CommandPerms() );
- 
-         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-         {
-@@ -295,6 +298,15 @@ public class BungeeCord extends ProxyServer
+@@ -295,6 +297,15 @@ public class BungeeCord extends ProxyServer
          pluginManager.loadPlugins();
          config.load();
  
@@ -250,13 +232,13 @@ index 031b21084..1dd53660a 100644
 +            whitelistedAddresses.add(serverInfo.getSocketAddress().toString());
 +        }
 +
-+        FlameCord.reload(logger, whitelistedAddresses);
++        FlameCord.initialize(logger, whitelistedAddresses);
 +
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index da688839c..055a1d883 100644
+index da688839c..3a07c7c8a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee;
@@ -268,11 +250,13 @@ index da688839c..055a1d883 100644
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -165,7 +167,7 @@ public class ServerConnector extends PacketHandler
+@@ -165,7 +167,9 @@ public class ServerConnector extends PacketHandler
      {
          if ( packet.packet == null )
          {
 -            throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump( packet.buf, 16 ) );
++            // FlameCord - FlameCord General Patch
++            // More specific invalid packet exceptions
 +            throw new QuietException( "Unexpected packet received during server connector process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
@@ -312,7 +296,7 @@ index 94702434d..e48f77131 100644
          b.connect().addListener( listener );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 1c10b5a93..164357c34 100644
+index 1c10b5a93..3e5a337e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -21,6 +21,8 @@ import java.util.logging.Level;
@@ -324,12 +308,14 @@ index 1c10b5a93..164357c34 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -159,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -159,7 +161,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
 -            throw new QuietException( "Unexpected packet received during login process! " + BufUtil.dump( packet.buf, 16 ) );
-+            throw new QuietException( "Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16) );
++            // FlameCord - FlameCord General Patch
++            // More specific invalid packet exceptions
++            throw new QuietException( "Unexpected packet received during initial handler process!\n" + BufUtil.dump(packet.buf, 16) );
          }
      }
  

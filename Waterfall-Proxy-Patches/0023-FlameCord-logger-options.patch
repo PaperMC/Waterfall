@@ -1,11 +1,11 @@
-From 8edec45c116023de25620c7697ce1f887ea267ce Mon Sep 17 00:00:00 2001
+From 368bddfcbf0018aeca7eaa72769d9b31c1dfc229 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index c8148e902..aac41c8b2 100644
+index 114bbf877..edecc1e55 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -12,6 +12,17 @@ import net.md_5.bungee.config.Configuration;
@@ -23,7 +23,7 @@ index c8148e902..aac41c8b2 100644
 +    @Getter
 +    private boolean loggerDetailedConnection = true;
 +
-     public FlameCordConfiguration(final ConfigurationProvider configurationProvider) {
+     public FlameCordConfiguration(final ConfigurationProvider configurationProvider, final Collection<String> whitelistedAddresses) {
          try {
              final String fileName = "./flamecord.yml";
 @@ -25,6 +36,12 @@ public class FlameCordConfiguration extends FlameConfig {
@@ -64,10 +64,10 @@ index e48f77131..909227970 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 164357c34..8fb36e37d 100644
+index 3e5a337e0..abed08d4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -394,7 +394,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -396,7 +396,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              case 1:
                  // Ping
@@ -77,7 +77,7 @@ index 164357c34..8fb36e37d 100644
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has pinged", this );
                  }
-@@ -403,7 +404,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -405,7 +406,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login

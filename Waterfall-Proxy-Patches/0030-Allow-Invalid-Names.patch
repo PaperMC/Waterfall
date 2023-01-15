@@ -1,11 +1,11 @@
-From fa07b114703cd16e45b39ab3ea9772858249086c Mon Sep 17 00:00:00 2001
+From 310d53ea2c39ebbd29e640f171b009fd6d6d38b1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 9834c8efa..d9d3d6047 100644
+index 4271fc078..0d2013508 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index 9834c8efa..d9d3d6047 100644
      // Antibot accounts
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -305,6 +309,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -308,6 +312,9 @@ public class FlameCordConfiguration extends FlameConfig {
              this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
              this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
  
@@ -27,13 +27,13 @@ index 9834c8efa..d9d3d6047 100644
 +            this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
 +
              // FlameCord - Antibot System
-             loadAntibot(configuration);
+             loadAntibot(configuration, whitelistedAddresses);
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c530c8b2c..9978b9db1 100644
+index 4a560c080..143ec97c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -521,7 +521,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -523,7 +523,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME;
  

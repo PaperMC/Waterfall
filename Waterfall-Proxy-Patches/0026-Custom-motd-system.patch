@@ -1,4 +1,4 @@
-From c41b5bb4984efeb62f1ef8669e0913a2177dacf1 Mon Sep 17 00:00:00 2001
+From acfaf3a65cf5cefe3b043c9f33c75e8238f6ad41 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -20,7 +20,7 @@ index 5589ce1b7..1e928197c 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index aac41c8b2..22a8ac39d 100644
+index edecc1e55..0ceddd4eb 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -3,15 +3,88 @@ package dev._2lstudios.flamecord.configuration;
@@ -601,7 +601,7 @@ index 000000000..0b039c797
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 8fb36e37d..bfefdf822 100644
+index abed08d4f..031c007db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
@@ -613,7 +613,7 @@ index 8fb36e37d..bfefdf822 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -273,7 +275,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -275,7 +277,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
@@ -621,7 +621,7 @@ index 8fb36e37d..bfefdf822 100644
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
-@@ -336,7 +337,52 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -338,7 +339,52 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
          } else
          {
