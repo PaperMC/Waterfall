@@ -1,11 +1,11 @@
-From acfaf3a65cf5cefe3b043c9f33c75e8238f6ad41 Mon Sep 17 00:00:00 2001
+From 5d1c639bff7f441f38b883b3003de1a1db6892b3 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
-index 5589ce1b7..1e928197c 100644
+index 5589ce1b..1e928197 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameConfig.java
 @@ -15,6 +15,10 @@ public class FlameConfig {
@@ -20,7 +20,7 @@ index 5589ce1b7..1e928197c 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index edecc1e55..0ceddd4eb 100644
+index edecc1e5..0ceddd4e 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -3,15 +3,88 @@ package dev._2lstudios.flamecord.configuration;
@@ -136,7 +136,7 @@ index edecc1e55..0ceddd4eb 100644
              this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java
 new file mode 100644
-index 000000000..9587bccda
+index 00000000..9587bccd
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java
 @@ -0,0 +1,48 @@
@@ -190,7 +190,7 @@ index 000000000..9587bccda
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java
 new file mode 100644
-index 000000000..6c386e16f
+index 00000000..6c386e16
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java
 @@ -0,0 +1,275 @@
@@ -471,7 +471,7 @@ index 000000000..6c386e16f
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java
 new file mode 100644
-index 000000000..c1f05cd0a
+index 00000000..c1f05cd0
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java
 @@ -0,0 +1,33 @@
@@ -510,7 +510,7 @@ index 000000000..c1f05cd0a
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java
 new file mode 100644
-index 000000000..5457ead64
+index 00000000..5457ead6
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java
 @@ -0,0 +1,17 @@
@@ -533,7 +533,7 @@ index 000000000..5457ead64
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java
 new file mode 100644
-index 000000000..792e9f987
+index 00000000..792e9f98
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java
 @@ -0,0 +1,28 @@
@@ -567,7 +567,7 @@ index 000000000..792e9f987
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java
 new file mode 100644
-index 000000000..0b039c797
+index 00000000..0b039c79
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java
 @@ -0,0 +1,29 @@
@@ -601,7 +601,7 @@ index 000000000..0b039c797
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index abed08d4f..031c007db 100644
+index abed08d4..ea5ffb11 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
@@ -613,20 +613,26 @@ index abed08d4f..031c007db 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -275,7 +277,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -275,8 +277,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
 -        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
-         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+-        final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
++
++        // FlameCord - Custom motd system
++        // Make the protocol not final
++        int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
-@@ -338,7 +339,52 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+@@ -338,7 +342,56 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
          } else
          {
 -            pingBack.done( getPingInfo( motd, protocol ), null );
-+            // FlameCord - Custom MOTD
++            // FlameCord - Custom motd system
++            // Get the configuration
 +            final FlameCordConfiguration config = FlameCord.getInstance().getFlameCordConfiguration();
 +
 +            String motd;
@@ -653,6 +659,9 @@ index abed08d4f..031c007db 100644
 +
 +            if (config.isProtocolEnabled()) {
 +                protocolName = config.getProtocolName();
++
++                // Set the protocol to -1 to show up protocol name
++                protocol = -1;
 +            } else {
 +                protocolName = bungee.getName() + " " + bungee.getGameVersion();
 +            }

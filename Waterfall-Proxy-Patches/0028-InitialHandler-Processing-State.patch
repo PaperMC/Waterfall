@@ -1,11 +1,11 @@
-From c1d3520f305de336c57904f742e2cd035cfd009f Mon Sep 17 00:00:00 2001
+From 7d0b3d549c1ce54e990b92deffd9e902f371b932 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 12:28:31 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 031c007db..afc790048 100644
+index ea5ffb11..7d654e7f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -132,12 +132,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -30,8 +30,8 @@ index 031c007db..afc790048 100644
 +        thisState = State.PROCESSING;
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
-         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
-@@ -397,6 +398,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+@@ -404,6 +405,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          // FlameCord - Never accept invalid packets
          Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
@@ -39,7 +39,7 @@ index 031c007db..afc790048 100644
  
          unsafe.sendPacket( ping );
  
-@@ -408,6 +410,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -415,6 +417,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
@@ -47,7 +47,7 @@ index 031c007db..afc790048 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -481,6 +484,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -488,6 +491,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
@@ -55,7 +55,7 @@ index 031c007db..afc790048 100644
  
          if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -817,14 +821,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -824,14 +828,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void setOnlineMode(boolean onlineMode)
      {
