@@ -1,4 +1,4 @@
-From 6a0de8838bbeae629fa93f378c5de9a96a77e567 Mon Sep 17 00:00:00 2001
+From 12e8cf7f28a7ceb0533ffc1c51a42e203f374a4f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -20,7 +20,7 @@ index 5589ce1b..1e928197 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index edecc1e5..0ceddd4e 100644
+index edecc1e5..c81dc002 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -3,15 +3,88 @@ package dev._2lstudios.flamecord.configuration;
@@ -94,7 +94,7 @@ index edecc1e5..0ceddd4e 100644
 +    @Getter
 +    private boolean protocolEnabled = false;
 +    @Getter
-+    private String protocolName = "FlameCord 1.7-1.19";
++    private String protocolName = "&c&lMaintenance";
 +
 +    @Getter
 +    private boolean maxPlayersEnabled = false;
@@ -123,7 +123,7 @@ index edecc1e5..0ceddd4e 100644
 +            this.hexSamples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 735);
 +            this.samples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 734);
 +            this.protocolEnabled = setIfUnexistant("custom-motd.protocol.enabled", this.protocolEnabled, configuration);
-+            this.protocolName = setIfUnexistant("custom-motd.protocol.name", this.protocolName, configuration);
++            this.protocolName = ColorUtil.hexColor(setIfUnexistant("custom-motd.protocol.name", this.protocolName, configuration), 735);
 +            this.maxPlayersEnabled = setIfUnexistant("custom-motd.maxplayers.enabled", this.maxPlayersEnabled, configuration);
 +            this.maxPlayersAmount = setIfUnexistant("custom-motd.maxplayers.amount", this.maxPlayersAmount, configuration);
 +            this.maxPlayersOneMore = setIfUnexistant("custom-motd.maxplayers.justonemore", this.maxPlayersOneMore, configuration);
