@@ -1,4 +1,4 @@
-From ba4fc7fab09928f0c8dacc872e12c4c580ffcf3f Mon Sep 17 00:00:00 2001
+From 225edfb76492efe4a8da98c8c409833e55dd29a2 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
@@ -30,10 +30,10 @@ index 92772d84..45cedb88 100644
              loadAntibot(configuration, whitelistedAddresses);
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e493babc..91608a62 100644
+index fb059af6..e7d9615b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -530,7 +530,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -524,7 +524,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
          thisState = State.PROCESSING_USERNAME;
  

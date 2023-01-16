@@ -1,4 +1,4 @@
-From 7ef9d2d1d78b4097f5659b7c39339cd2f54fc5cc Mon Sep 17 00:00:00 2001
+From 90614978e2607cb8f7002ca92f86eef141f07513 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1515,7 +1515,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 7d654e7f..e493babc 100644
+index 76186242..fb059af6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,7 +22,8 @@ import javax.crypto.SecretKey;
@@ -1528,7 +1528,7 @@ index 7d654e7f..e493babc 100644
  import dev._2lstudios.flamecord.configuration.FlameConfig;
  import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
  import lombok.Getter;
-@@ -448,6 +449,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -442,6 +443,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1540,7 +1540,7 @@ index 7d654e7f..e493babc 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -459,6 +465,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +459,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1563,7 +1563,7 @@ index 7d654e7f..e493babc 100644
                  break;
              case 2:
                  // Login
-@@ -470,6 +492,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -464,6 +486,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1585,7 +1585,7 @@ index 7d654e7f..e493babc 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -534,6 +571,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -528,6 +565,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  

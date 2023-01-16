@@ -1,4 +1,4 @@
-From 5d1c639bff7f441f38b883b3003de1a1db6892b3 Mon Sep 17 00:00:00 2001
+From 6a0de8838bbeae629fa93f378c5de9a96a77e567 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -601,7 +601,7 @@ index 00000000..0b039c79
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index abed08d4..ea5ffb11 100644
+index abed08d4..17a6d422 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
@@ -613,20 +613,15 @@ index abed08d4..ea5ffb11 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -275,8 +277,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -275,7 +277,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
 -        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
--        final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
-+
-+        // FlameCord - Custom motd system
-+        // Make the protocol not final
-+        int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
  
          Callback<ServerPing> pingBack = new Callback<ServerPing>()
-         {
-@@ -338,7 +342,56 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -338,7 +339,53 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
          } else
          {
@@ -659,9 +654,6 @@ index abed08d4..ea5ffb11 100644
 +
 +            if (config.isProtocolEnabled()) {
 +                protocolName = config.getProtocolName();
-+
-+                // Set the protocol to -1 to show up protocol name
-+                protocol = -1;
 +            } else {
 +                protocolName = bungee.getName() + " " + bungee.getGameVersion();
 +            }
@@ -678,7 +670,7 @@ index abed08d4..ea5ffb11 100644
 +            }
 +
 +            pingBack.done( new ServerPing(
-+                    new ServerPing.Protocol( protocolName, protocol ),
++                    new ServerPing.Protocol( protocolName, config.isProtocolEnabled() ? -1 : protocol ),
 +                    new ServerPing.Players( maxPlayers, onlinePlayers, sample ),
 +                    motd, BungeeCord.getInstance().config.getFaviconObject() ), null );
          }
