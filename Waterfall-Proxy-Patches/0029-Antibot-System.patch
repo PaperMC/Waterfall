@@ -1,4 +1,4 @@
-From 90614978e2607cb8f7002ca92f86eef141f07513 Mon Sep 17 00:00:00 2001
+From c635b80415955f5991853168099b9db34b4a6bd6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1088,7 +1088,7 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 10a07821..92772d84 100644
+index 3789d6b5..24ae600b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,178 @@ import net.md_5.bungee.config.Configuration;
@@ -1372,7 +1372,7 @@ index 00000000..7f26e7a0
 +}
 \ No newline at end of file
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 6316143f..a1af4e09 100644
+index 6316143f..aa538f74 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -51,12 +51,38 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -1382,18 +1382,18 @@ index 6316143f..a1af4e09 100644
 +        
 +        // FlameCord start - Antibot Packet Check
 +        if (prot == protocol.TO_SERVER) {
-+            dev._2lstudios.flamecord.enums.PacketsCheckResult result = FlameCord.getInstance().getCheckManager().getPacketsCheck()
-+                .check(ctx.channel().remoteAddress(), in);
++            dev._2lstudios.flamecord.antibot.PacketsCheck packetsCheck = FlameCord.getInstance().getCheckManager().getPacketsCheck();
++            dev._2lstudios.flamecord.enums.PacketsCheckResult result = packetsCheck.check(ctx.channel().remoteAddress(), in);
 +
 +            switch (result) {
 +                case KICK:
-+                    FlameCord.getInstance().getCheckManager().getPacketsCheck().getData(ctx.channel().remoteAddress()).printKick();
++                    packetsCheck.getData(ctx.channel().remoteAddress()).printKick();
 +
 +                    in.skipBytes(in.readableBytes());
 +                    ctx.close();
 +                    return;
 +                case CANCEL:
-+                    FlameCord.getInstance().getCheckManager().getPacketsCheck().getData(ctx.channel().remoteAddress()).printCancel();
++                    packetsCheck.getData(ctx.channel().remoteAddress()).printCancel();
 +
 +                    in.skipBytes(in.readableBytes());
 +                    return;
@@ -1515,7 +1515,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 76186242..fb059af6 100644
+index 97928f32..e0546840 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,7 +22,8 @@ import javax.crypto.SecretKey;
