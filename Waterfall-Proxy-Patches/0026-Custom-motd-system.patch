@@ -1,4 +1,4 @@
-From 12e8cf7f28a7ceb0533ffc1c51a42e203f374a4f Mon Sep 17 00:00:00 2001
+From 44e41f7854f933e40371fc85cefdf2991e2fb255 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 7 Oct 2021 21:37:24 -0300
 Subject: [PATCH] Custom motd system
@@ -20,7 +20,7 @@ index 5589ce1b..1e928197 100644
          return (boolean) setIfUnexistant(arg1, (Object) arg2, configuration);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index edecc1e5..c81dc002 100644
+index edecc1e5..b148a717 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -3,15 +3,88 @@ package dev._2lstudios.flamecord.configuration;
@@ -58,9 +58,9 @@ index edecc1e5..c81dc002 100644
 +        String sample;
 +
 +        if (protocol >= 735) {
-+            sample = hexSamples.get(new Random().nextInt(hexMotds.size()));
++            sample = hexSamples.get(new Random().nextInt(hexSamples.size()));
 +        } else {
-+            sample = samples.get(new Random().nextInt(motds.size()));
++            sample = samples.get(new Random().nextInt(samples.size()));
 +        }
 +
 +        sample = sample.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
