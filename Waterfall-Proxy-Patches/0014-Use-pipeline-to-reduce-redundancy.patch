@@ -1,11 +1,11 @@
-From 64097a804bbce407306eca64329053a0105a7c8f Mon Sep 17 00:00:00 2001
+From 87453f17739226749f746f68240c40b2e7925390 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:30:07 +0800
 Subject: [PATCH] Use pipeline to reduce redundancy
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 5c05f2b94..606866a52 100644
+index 4e59a9c9..92617f88 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -5,6 +5,8 @@ import io.netty.channel.Channel;
@@ -40,7 +40,7 @@ index 5c05f2b94..606866a52 100644
      }
  
      public void write(Object packet)
-@@ -111,25 +117,27 @@ public class ChannelWrapper
+@@ -126,25 +132,27 @@ public class ChannelWrapper
  
      public void setCompressionThreshold(int compressionThreshold)
      {

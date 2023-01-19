@@ -1,11 +1,11 @@
-From 2350677d6e3b948d9c20e34a1c047f5b355b3bb4 Mon Sep 17 00:00:00 2001
+From 716258911e93c1acca2ec1d9dc12aad0a8b736c5 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c3543a18d..b7be53b4c 100644
+index c3543a18..8ed26e5c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -208,6 +208,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -58,21 +58,11 @@ index c3543a18d..b7be53b4c 100644
      }
  
      @Override
-@@ -692,7 +712,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     {
-         if ( canSendKickMessage() )
-         {
--            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
-+            // FlameCord - Changed delayedClose to close
-+            ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
-         } else
-         {
-             ch.close();
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f5..5c05f2b94 100644
+index 6dc5633f..4e59a9c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -80,40 +80,27 @@ public class ChannelWrapper
+@@ -80,15 +80,17 @@ public class ChannelWrapper
  
              if ( packet != null && ch.isActive() )
              {
@@ -88,30 +78,11 @@ index 6dc5633f5..5c05f2b94 100644
          }
      }
  
-+    // FlameCord - Deprecate and "disable" delayedClose because it doesn't have a reason to exist
 +    @Deprecated
      public void delayedClose(final Kick kick)
      {
--        if ( !closing )
--        {
--            closing = true;
--
--            // Minecraft client can take some time to switch protocols.
--            // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
--            // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
--            ch.eventLoop().schedule( new Runnable()
--            {
--
--                @Override
--                public void run()
--                {
--                    close( kick );
--                }
--            }, 250, TimeUnit.MILLISECONDS );
--        }
-+        close(kick);
-     }
- 
+         if ( !closing )
+@@ -113,7 +115,7 @@ public class ChannelWrapper
      public void addBefore(String baseName, String name, ChannelHandler handler)
      {
          Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
@@ -121,7 +92,7 @@ index 6dc5633f5..5c05f2b94 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2a21243b9..a95193ba7 100644
+index 2a21243b..a95193ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -162,7 +133,7 @@ index 2a21243b9..a95193ba7 100644
      }
  }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index b2b199969..ba130a5df 100644
+index b2b19996..ba130a5d 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
