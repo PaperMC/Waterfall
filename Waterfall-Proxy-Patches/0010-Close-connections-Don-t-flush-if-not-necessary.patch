@@ -1,4 +1,4 @@
-From 716258911e93c1acca2ec1d9dc12aad0a8b736c5 Mon Sep 17 00:00:00 2001
+From ca4c3aa2c642d3aebd6c87780902eb2ea272167d Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
@@ -132,19 +132,6 @@ index 2a21243b..a95193ba 100644
 +        }
      }
  }
-diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index b2b19996..ba130a5d 100644
---- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-+++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-@@ -71,6 +71,8 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
-         if ( in.readUnsignedByte() != 0xFE || in.readUnsignedByte() != 0xFD )
-         {
-             bungee.getLogger().log( Level.WARNING, "Query - Incorrect magic!: {0}", msg.sender() );
-+            // FlameCord - Close on incorrect magic
-+            ctx.channel().close();
-             return;
-         }
- 
 -- 
 2.37.3.windows.1
 
