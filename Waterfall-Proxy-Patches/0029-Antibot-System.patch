@@ -1,4 +1,4 @@
-From c635b80415955f5991853168099b9db34b4a6bd6 Mon Sep 17 00:00:00 2001
+From 52f2f75fe7a9da5fef08f526301f33acfdd996ab Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -27,11 +27,17 @@ index 20edd900..f48f1e60 100644
  
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 676ba95b..13e90af7 100644
+index 676ba95b..1d2fbbde 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-@@ -3,6 +3,10 @@ package dev._2lstudios.flamecord;
+@@ -1,8 +1,16 @@
+ package dev._2lstudios.flamecord;
+ 
++import java.io.IOException;
  import java.util.Collection;
++import java.util.Iterator;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.logging.Level;
  import java.util.logging.Logger;
  
 +import dev._2lstudios.flamecord.antibot.AddressDataManager;
@@ -41,7 +47,21 @@ index 676ba95b..13e90af7 100644
  import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
  import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
  import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
-@@ -31,6 +35,16 @@ public class FlameCord {
+@@ -13,8 +21,13 @@ import net.md_5.bungee.config.YamlConfiguration;
+ public class FlameCord {
+     @Getter
+     private static FlameCord instance;
++    private static Runtime runtime;
+ 
+     public static void initialize(final Logger logger, final Collection<String> whitelistedAddresses) {
++        if (FlameCord.runtime == null) {
++            FlameCord.runtime = Runtime.getRuntime();
++        }
++
+         if (FlameCord.instance == null) {
+             FlameCord.instance = new FlameCord();
+         }
+@@ -31,6 +44,16 @@ public class FlameCord {
      @Getter
      private MessagesConfiguration messagesConfiguration;
  
@@ -58,7 +78,7 @@ index 676ba95b..13e90af7 100644
      public void reload(final Logger logger, final Collection<String> whitelistedAddresses) {
          final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
          
-@@ -39,5 +53,12 @@ public class FlameCord {
+@@ -39,5 +62,106 @@ public class FlameCord {
          // FlameCord - Module System
          this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
          this.messagesConfiguration = new MessagesConfiguration(logger, configurationProvider);
@@ -69,6 +89,100 @@ index 676ba95b..13e90af7 100644
 +        this.checkManager = new CheckManager(addressDataManager, flameCordConfiguration);
 +        this.statsData = new StatsData();
 +        this.loggerWrapper = new LoggerWrapper(Logger.getLogger("BungeeCord"));
++
++        // Initialize antibot firewall ipset
++        if (flameCordConfiguration.isAntibotFirewallIpset()) {
++            runLinuxCommand("apt install iptables -y"); // Install iptables
++            runLinuxCommand("apt install ipset -y"); // Install ipset
++            runLinuxCommand("ipset destroy flamecord-firewall"); // Delete old FlameCord set
++            runLinuxCommand("ipset create flamecord-firewall hash:ip timeout 60"); // Create new FlameCord set
++            runLinuxCommand("iptables -I INPUT -m set --match-set flamecord-firewall src -j DROP"); // Create iptables rule to DROP
++
++            // Thread to run queued firewall linux commands
++            new Thread(() -> {
++                FlameCord flameCord = FlameCord.getInstance();
++        
++                while (!flameCord.isShuttingDown()) {
++                    flameCord.runQueuedLinuxCommands();
++        
++                    try {
++                        Thread.sleep(1000);
++                    } catch (InterruptedException e) {
++                        // Ignore
++                    }
++                }
++            }).start();
++        }
++    }
++
++    private boolean shutdown = false;
++
++    public boolean isShuttingDown() {
++        return shutdown;
++    }
++
++    public void shutdown() {
++        this.shutdown = true;
++    }
++
++    /**
++     * Utility to run a Linux commands for iptables.
++     * @param command
++     */
++    public void runLinuxCommand(String command) {
++        try {
++            runtime.exec("/bin/sh -c " + command);
++        } catch (IOException e) {
++            /*
++             * Windows throws exception.
++             */
++        }
++    }
++
++    // Commands to execute in the queue
++    private Collection<String> commandQueue = ConcurrentHashMap.newKeySet();
++
++    // Boolean for when the commands are processing
++    private boolean processing = false;
++
++    /**
++     * Add command to the linux command queue
++     * @param command
++     */
++    public void queueLinuxCommand(String command) {
++        commandQueue.add(command);
++    }
++
++    /**
++     * Run the queued linux commands
++     */
++    public void runQueuedLinuxCommands() {
++        if (!commandQueue.isEmpty() && !processing) {
++            processing = true;
++
++            try {
++                Iterator<String> iterator = commandQueue.iterator();
++                StringBuilder commands = new StringBuilder();
++                int ranCommands = 0;
++
++                while (iterator.hasNext()) {
++                    String command = iterator.next();
++
++                    if (ranCommands++ > 0) {
++                        commands.append(" && ");
++                    }
++
++                    commands.append(command);
++                    iterator.remove();
++                }
++
++                runLinuxCommand(commands.toString());
++
++                getLoggerWrapper().log(Level.INFO, "Blacklisted " + ranCommands + " ips from the kernel with IPSet");
++            } finally {
++                processing = false;
++            }
++        }
      }
  }
 \ No newline at end of file
@@ -116,10 +230,10 @@ index 00000000..5e7fa6bf
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 new file mode 100644
-index 00000000..e8c80ad0
+index 00000000..7c789983
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
-@@ -0,0 +1,162 @@
+@@ -0,0 +1,165 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.util.Collection;
@@ -250,6 +364,9 @@ index 00000000..e8c80ad0
 +        if (!FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewallWhitelist().contains(hostString)) {
 +            this.lastFirewall = System.currentTimeMillis();
 +            this.firewallReason = reason;
++
++            // Queue the firewall as a ipset linux command
++            FlameCord.getInstance().queueLinuxCommand("ipset add flamecord-firewall " + hostString);
 +        }
 +    }
 +
@@ -1088,10 +1205,10 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 3789d6b5..24ae600b 100644
+index 3789d6b5..53cd4386 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,178 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,181 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1134,6 +1251,8 @@ index 3789d6b5..24ae600b 100644
 +    private int antibotFirewallExpire = 60;
 +    @Getter
 +    private boolean antibotFirewallLog = true;
++    @Getter
++    private boolean antibotFirewallIpset = true;
 +    @Getter
 +    private Collection<String> antibotFirewallWhitelist = Arrays.asList("127.0.0.1");
 +
@@ -1226,6 +1345,7 @@ index 3789d6b5..24ae600b 100644
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
 +        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
 +        this.antibotFirewallWhitelist = new HashSet<>( setIfUnexistant("antibot.firewall.whitelist", this.antibotFirewallWhitelist, config ));
++        this.antibotFirewallIpset = setIfUnexistant("antibot.firewall.ipset", this.antibotFirewallIpset, config);
 +
 +        // Add local server ips to whitelist
 +        this.antibotFirewallWhitelist.addAll(whitelistedAddresses);
@@ -1270,7 +1390,7 @@ index 3789d6b5..24ae600b 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -127,6 +299,7 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -127,6 +302,7 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
@@ -1278,7 +1398,7 @@ index 3789d6b5..24ae600b 100644
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
  
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-@@ -135,6 +308,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -135,6 +311,9 @@ public class FlameCordConfiguration extends FlameConfig {
              this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
              this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
  
@@ -1514,6 +1634,22 @@ index fb81adee..173b47f3 100644
                          break;
                      }
                  }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index c9f1acac..44e28adc 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
+                     } catch (InterruptedException ignored) {}
+         }
+ 
++        // FlameCord start - Antibot System
++        FlameCord.getInstance().shutdown();
++        getLogger().info( "Shutting down FlameCord linux command thread" );
++        // FlameCord end - Antibot System
++
+         getLogger().info( "Thank you and goodbye" );
+         // Need to close loggers after last message!
+         org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index 97928f32..e0546840 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
