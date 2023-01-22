@@ -1,4 +1,4 @@
-From 52f2f75fe7a9da5fef08f526301f33acfdd996ab Mon Sep 17 00:00:00 2001
+From ebaf26bfedd5d3b94dd0a5d68a6b49653fd6265d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1651,7 +1651,7 @@ index c9f1acac..44e28adc 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 97928f32..e0546840 100644
+index 11496f05..58afe04f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,7 +22,8 @@ import javax.crypto.SecretKey;
@@ -1664,7 +1664,30 @@ index 97928f32..e0546840 100644
  import dev._2lstudios.flamecord.configuration.FlameConfig;
  import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
  import lombok.Getter;
-@@ -442,6 +443,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -409,6 +410,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     public void handle(Handshake handshake) throws Exception
+     {
+         Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
++        
++        // FlameCord start - Antibot System
++        // Close and firewall on invalid protocol
++        int protocol = handshake.getRequestedProtocol();
++
++        if (protocol != 1 && protocol != 2) {
++            if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotRatelimitFirewall() )
++            {
++                FlameCord.getInstance().getAddressDataManager().getAddressData(ch.getChannel().remoteAddress()).firewall("Invalid handshake protocol");
++            }
++
++            ch.close();
++            return;
++        }
++        // FlameCord end - Antibot System
++
+         this.handshake = handshake;
+         ch.setVersion( handshake.getProtocolVersion() );
+         ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
+@@ -439,6 +456,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1676,7 +1699,7 @@ index 97928f32..e0546840 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -453,6 +459,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -450,6 +472,27 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1691,6 +1714,11 @@ index 97928f32..e0546840 100644
 +                        FlameCord.getInstance().getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] is pinging too fast", ch.getRemoteAddress() );
 +                    }
 +
++                    if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotRatelimitFirewall() )
++                    {
++                        FlameCord.getInstance().getAddressDataManager().getAddressData(ch.getChannel().remoteAddress()).firewall("Too many pings");
++                    }
++
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getPingsSecond() ) );
 +                    return;
 +                }
@@ -1699,7 +1727,7 @@ index 97928f32..e0546840 100644
                  break;
              case 2:
                  // Login
-@@ -464,6 +486,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -461,6 +504,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1713,6 +1741,11 @@ index 97928f32..e0546840 100644
 +                        FlameCord.getInstance().getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] is connecting too fast", ch.getRemoteAddress() );
 +                    }
 +
++                    if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotRatelimitFirewall() )
++                    {
++                        FlameCord.getInstance().getAddressDataManager().getAddressData(ch.getChannel().remoteAddress()).firewall("Too many connections");
++                    }
++
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getConnectionsSecond() ) );
 +                    return;
 +                }
@@ -1721,7 +1754,7 @@ index 97928f32..e0546840 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -528,6 +565,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -524,6 +587,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1866,6 +1899,22 @@ index e2911d5e..1e3608fa 100644
          try
          {
              callback.done( null, cause );
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index b3fa4835..6f1d8336 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -154,4 +154,11 @@ public class ChannelWrapper
+             pipeline.remove( "decompress" );
+         }
+     }
++
++    // FlameCord start - Antibot System
++    // Make the channel accessible
++    public Channel getChannel() {
++        return ch;
++    }
++    // FlameCord end - Antibot System
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 index 14e3004f..3fce5ff1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java

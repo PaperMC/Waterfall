@@ -1,4 +1,4 @@
-From 54cee231a4b229c684159e1d3ad28e00ae8a0468 Mon Sep 17 00:00:00 2001
+From 2e875b7b56563eca73b62d90ac4b008d5ef894d4 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
@@ -30,12 +30,12 @@ index 53cd4386..378372ec 100644
              loadAntibot(configuration, whitelistedAddresses);
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e0546840..c4d962f3 100644
+index 58afe04f..86bbe3f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -524,7 +524,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -546,7 +546,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
-         thisState = State.PROCESSING_USERNAME;
  
 -        if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
 +        if ( !FlameCord.getInstance().getFlameCordConfiguration().isAllowInvalidNames() && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )

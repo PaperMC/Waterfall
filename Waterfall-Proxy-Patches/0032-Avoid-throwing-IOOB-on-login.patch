@@ -1,11 +1,11 @@
-From b529f3bea516105b004b0f408a542309bdf6d157 Mon Sep 17 00:00:00 2001
+From 8a2c6364c6c2e36eaa918195ca370382a37debee Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 13 Sep 2022 20:41:48 -0300
 Subject: [PATCH] Avoid throwing IOOB on login
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 763d34c2f..57e50a8b6 100644
+index 763d34c2..57e50a8b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -32,7 +32,8 @@ public class LoginRequest extends DefinedPacket

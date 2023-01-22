@@ -1,11 +1,11 @@
-From f293b6e489e70340e1f7fd46146bfa75e468a2d1 Mon Sep 17 00:00:00 2001
+From ac8c95238cb74349f3a464b0c5545122d1537878 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 469fe0e12..97bd384b2 100644
+index 469fe0e1..97bd384b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -251,11 +251,6 @@ public interface ProxyConfig
@@ -21,7 +21,7 @@ index 469fe0e12..97bd384b2 100644
       * Whether tablist rewriting should be disabled or not
       * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 0c334afcf..88865b851 100644
+index 0c334afc..88865b85 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -10,8 +10,6 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -49,7 +49,7 @@ index 0c334afcf..88865b851 100644
 -    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 022f94b2d..970011e8f 100644
+index 022f94b2..970011e8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -22,8 +22,6 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -84,7 +84,7 @@ index 022f94b2d..970011e8f 100644
                      PlayerListItem::new,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 deleted file mode 100644
-index 0ed78a8c4..000000000
+index 0ed78a8c..00000000
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 +++ /dev/null
 @@ -1,67 +0,0 @@
@@ -157,7 +157,7 @@ index 0ed78a8c4..000000000
 -}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 deleted file mode 100644
-index 435b85789..000000000
+index 435b8578..00000000
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
 +++ /dev/null
 @@ -1,45 +0,0 @@
@@ -207,7 +207,7 @@ index 435b85789..000000000
 -    }
 -}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 966d2442b..be337a680 100644
+index 966d2442..be337a68 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -42,7 +42,6 @@ public class WaterfallConfiguration extends Configuration {
@@ -239,7 +239,7 @@ index 966d2442b..be337a680 100644
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 3a07c7c8a..f51c668d7 100644
+index 3a07c7c8..f51c668d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -245,11 +245,6 @@ public class ServerConnector extends PacketHandler
@@ -324,7 +324,7 @@ index 3a07c7c8a..f51c668d7 100644
              // Waterfall end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 909227970..f3d60253f 100644
+index 90922797..f3d60253 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -44,7 +44,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -365,7 +365,7 @@ index 909227970..f3d60253f 100644
 -    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 0ac22ad38..6e425764b 100644
+index 0ac22ad3..6e425764 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -46,7 +46,6 @@ import net.md_5.bungee.api.score.Score;
@@ -433,7 +433,7 @@ index 0ac22ad38..6e425764b 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 667364aea..10e46779f 100644
+index 667364ae..10e46779 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -25,7 +25,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -458,7 +458,7 @@ index 667364aea..10e46779f 100644
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 deleted file mode 100644
-index 688ff72d2..000000000
+index 688ff72d..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ /dev/null
 @@ -1,372 +0,0 @@
@@ -836,7 +836,7 @@ index 688ff72d2..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java
 deleted file mode 100644
-index 6db530c3a..000000000
+index 6db530c3..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_10.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -1024,7 +1024,7 @@ index 6db530c3a..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java
 deleted file mode 100644
-index 368221275..000000000
+index 36822127..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_11.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1213,7 +1213,7 @@ index 368221275..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java
 deleted file mode 100644
-index 38e12ce40..000000000
+index 38e12ce4..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1402,7 +1402,7 @@ index 38e12ce40..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java
 deleted file mode 100644
-index 5f2968394..000000000
+index 5f296839..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_12_1.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1591,7 +1591,7 @@ index 5f2968394..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java
 deleted file mode 100644
-index f3372f088..000000000
+index f3372f08..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_13.java
 +++ /dev/null
 @@ -1,183 +0,0 @@
@@ -1780,7 +1780,7 @@ index f3372f088..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java
 deleted file mode 100644
-index 8210b0a7e..000000000
+index 8210b0a7..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_14.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -1973,7 +1973,7 @@ index 8210b0a7e..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java
 deleted file mode 100644
-index c2cf810f3..000000000
+index c2cf810f..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_15.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -2166,7 +2166,7 @@ index c2cf810f3..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 deleted file mode 100644
-index c8b067071..000000000
+index c8b06707..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16.java
 +++ /dev/null
 @@ -1,187 +0,0 @@
@@ -2359,7 +2359,7 @@ index c8b067071..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 deleted file mode 100644
-index 7241dc56b..000000000
+index 7241dc56..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_16_2.java
 +++ /dev/null
 @@ -1,76 +0,0 @@
@@ -2441,7 +2441,7 @@ index 7241dc56b..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 deleted file mode 100644
-index cdc07dc45..000000000
+index cdc07dc4..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_2.java
 +++ /dev/null
 @@ -1,102 +0,0 @@
@@ -2550,7 +2550,7 @@ index cdc07dc45..000000000
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 deleted file mode 100644
-index cb9174b35..000000000
+index cb9174b3..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_7_6.java
 +++ /dev/null
 @@ -1,62 +0,0 @@
@@ -2619,7 +2619,7 @@ index cb9174b35..000000000
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java
 deleted file mode 100644
-index 8e2dbe699..000000000
+index 8e2dbe69..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_8.java
 +++ /dev/null
 @@ -1,176 +0,0 @@
@@ -2801,7 +2801,7 @@ index 8e2dbe699..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java
 deleted file mode 100644
-index d61dc0cba..000000000
+index d61dc0cb..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -2989,7 +2989,7 @@ index d61dc0cba..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java
 deleted file mode 100644
-index bfbc84327..000000000
+index bfbc8432..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_1_9_4.java
 +++ /dev/null
 @@ -1,182 +0,0 @@
@@ -3177,7 +3177,7 @@ index bfbc84327..000000000
 -}
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 deleted file mode 100644
-index cb81d1dd8..000000000
+index cb81d1dd..00000000
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 +++ /dev/null
 @@ -1,30 +0,0 @@
@@ -3213,7 +3213,7 @@ index cb81d1dd8..000000000
 -// Waterfall end
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index caed43849..af4280904 100644
+index caed4384..af428090 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 @@ -11,7 +11,6 @@ import lombok.Setter;
