@@ -1,4 +1,4 @@
-From ac8c95238cb74349f3a464b0c5545122d1537878 Mon Sep 17 00:00:00 2001
+From 1a4b10d4833f4c2c0f827ed75897f5187e6ec8ed Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
@@ -433,10 +433,10 @@ index 0ac22ad3..6e425764 100644
      public void handle(Respawn respawn)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 667364ae..10e46779 100644
+index c16e28c8..5a7f3880 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -25,7 +25,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+@@ -24,7 +24,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
  import net.md_5.bungee.api.event.PluginMessageEvent;
  import net.md_5.bungee.api.event.SettingsChangedEvent;
  import net.md_5.bungee.api.event.TabCompleteEvent;
@@ -444,7 +444,7 @@ index 667364ae..10e46779 100644
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
-@@ -145,11 +144,6 @@ public class UpstreamBridge extends PacketHandler
+@@ -144,11 +143,6 @@ public class UpstreamBridge extends PacketHandler
      {
          if ( con.getServer() != null )
          {
