@@ -1,4 +1,4 @@
-From ec86380c37a0c8ed6e2fbe626939287c33908e4c Mon Sep 17 00:00:00 2001
+From e6541dfb457e9cbb487d7cab094e9274bfea5651 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -27,7 +27,7 @@ index 20edd900..f48f1e60 100644
  
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 676ba95b..1d2fbbde 100644
+index 676ba95b..3824cc53 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -1,8 +1,16 @@
@@ -85,10 +85,10 @@ index 676ba95b..1d2fbbde 100644
 +
 +        // FlameCord - Antibot System
 +        if (checkManager != null) checkManager.unload();
++        this.loggerWrapper = new LoggerWrapper(Logger.getLogger("BungeeCord"));
 +        this.addressDataManager = new AddressDataManager();
 +        this.checkManager = new CheckManager(addressDataManager, flameCordConfiguration);
 +        this.statsData = new StatsData();
-+        this.loggerWrapper = new LoggerWrapper(Logger.getLogger("BungeeCord"));
 +
 +        // Initialize antibot firewall ipset
 +        if (flameCordConfiguration.isAntibotFirewallIpset()) {
@@ -1699,7 +1699,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c9f1acac..44e28adc 100644
+index 8d56997e..d892c23c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
