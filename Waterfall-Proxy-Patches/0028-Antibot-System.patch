@@ -1,4 +1,4 @@
-From 495e5daadc5dd7bb0a10540acea0a721e233aa0d Mon Sep 17 00:00:00 2001
+From 59fcde54dc18fe434a0782545337603cf6c9305d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1267,7 +1267,7 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 38e40429..49f831cc 100644
+index 9a3c78e2..8acfb6eb 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,184 @@ import net.md_5.bungee.config.Configuration;
@@ -1455,7 +1455,7 @@ index 38e40429..49f831cc 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -131,6 +309,7 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -134,6 +312,7 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
@@ -1463,7 +1463,7 @@ index 38e40429..49f831cc 100644
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
  
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-@@ -139,6 +318,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -142,6 +321,9 @@ public class FlameCordConfiguration extends FlameConfig {
              this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
              this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
  
@@ -1716,7 +1716,7 @@ index 8d56997e..d892c23c 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 23b488d1..e41e94e4 100644
+index 58be68b0..b88e6452 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1730,7 +1730,7 @@ index 23b488d1..e41e94e4 100644
  import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
-@@ -409,6 +409,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -412,6 +412,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
@@ -1753,7 +1753,7 @@ index 23b488d1..e41e94e4 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -439,6 +455,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -442,6 +458,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1765,7 +1765,7 @@ index 23b488d1..e41e94e4 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -450,6 +471,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +474,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1783,7 +1783,7 @@ index 23b488d1..e41e94e4 100644
                  break;
              case 2:
                  // Login
-@@ -461,6 +493,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -464,6 +496,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1800,7 +1800,7 @@ index 23b488d1..e41e94e4 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -524,6 +566,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -527,6 +569,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
