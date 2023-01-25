@@ -1,11 +1,11 @@
-From a33ddde478bbde2b3a44887d67ca9a810d19f61d Mon Sep 17 00:00:00 2001
+From ef413893bd49dbd42542cd7aeeaa5426d99cbf86 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 14:09:35 -0300
 Subject: [PATCH] Allow Invalid Names
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 1fbcde9d..266c2ad9 100644
+index 49f831cc..b76adb32 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
@@ -19,7 +19,7 @@ index 1fbcde9d..266c2ad9 100644
      // Antibot accounts
      @Getter
      private boolean antibotAccountsEnabled = true;
-@@ -314,6 +318,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -318,6 +322,9 @@ public class FlameCordConfiguration extends FlameConfig {
              this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
              this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
  
@@ -30,7 +30,7 @@ index 1fbcde9d..266c2ad9 100644
              loadAntibot(configuration, whitelistedAddresses);
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 19857535..d485dff0 100644
+index e41e94e4..e478ab9e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -525,7 +525,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
