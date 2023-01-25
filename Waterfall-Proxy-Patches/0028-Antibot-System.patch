@@ -1,4 +1,4 @@
-From e6541dfb457e9cbb487d7cab094e9274bfea5651 Mon Sep 17 00:00:00 2001
+From a4ab09bf04f96ed3bf0d8c1aa0142a08ab20f0c9 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -188,7 +188,7 @@ index 676ba95b..3824cc53 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..11ee4574
+index 00000000..2fbc230f
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
 @@ -0,0 +1,47 @@
@@ -212,13 +212,13 @@ index 00000000..11ee4574
 +    }
 +
 +    public boolean check(final SocketAddress remoteAddress, final String nickname) {
++        if (config.getAntibotAccountsWhitelist().contains(nickname)) {
++            return false;
++        }
++
 +        if (config.isAntibotAccountsEnabled()) {
 +            final AddressData addressData = addressDataManager.getAddressData(remoteAddress);
 +            final Collection<String> nicknames = addressData.getNicknames();
-+
-+            if (config.getAntibotAccountsWhitelist().contains(addressData.getHostString())) {
-+                return false;
-+            }
 +
 +            if (nicknames.size() > config.getAntibotAccountsLimit()) {
 +                nicknames.remove(nickname);
@@ -1267,10 +1267,10 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 3789d6b5..4d84e005 100644
+index 3789d6b5..1fbcde9d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,183 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,184 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1284,7 +1284,7 @@ index 3789d6b5..4d84e005 100644
 +    @Getter
 +    private boolean antibotAccountsLog = true;
 +    @Getter
-+    private Collection<String> antibotAccountsWhitelist = Arrays.asList("127.0.0.1");
++    private Collection<String> antibotAccountsWhitelist = Arrays.asList("Nickname");
 +
 +    // Antibot country
 +    @Getter
@@ -1390,6 +1390,7 @@ index 3789d6b5..4d84e005 100644
 +        this.antibotAccountsFirewall = setIfUnexistant("antibot.accounts.firewall", this.antibotAccountsFirewall, config);
 +        this.antibotAccountsLimit = setIfUnexistant("antibot.accounts.limit", this.antibotAccountsLimit, config);
 +        this.antibotAccountsLog = setIfUnexistant("antibot.accounts.log", this.antibotAccountsLog, config);
++        this.antibotAccountsWhitelist = setIfUnexistant("antibot.accounts.whitelist", this.antibotAccountsWhitelist, config);
 +
 +        // Antibot country
 +        this.antibotCountryEnabled = setIfUnexistant("antibot.country.enabled", this.antibotCountryEnabled, config);
@@ -1454,7 +1455,7 @@ index 3789d6b5..4d84e005 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -127,6 +304,7 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -127,6 +305,7 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
@@ -1462,7 +1463,7 @@ index 3789d6b5..4d84e005 100644
              this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
  
              this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-@@ -135,6 +313,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -135,6 +314,9 @@ public class FlameCordConfiguration extends FlameConfig {
              this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
              this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
  
