@@ -1,4 +1,4 @@
-From 59fcde54dc18fe434a0782545337603cf6c9305d Mon Sep 17 00:00:00 2001
+From 808f0c6dff3f8b0944f699680daa9b22b01ac087 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -188,10 +188,10 @@ index 676ba95b..3824cc53 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
 new file mode 100644
-index 00000000..2fbc230f
+index 00000000..0295ea89
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AccountsCheck.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,48 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
@@ -208,6 +208,7 @@ index 00000000..2fbc230f
 +
 +    public AccountsCheck(final AddressDataManager addressDataManager) {
 +        this.config = FlameCord.getInstance().getFlameCordConfiguration();
++        this.logger = FlameCord.getInstance().getLoggerWrapper();
 +        this.addressDataManager = addressDataManager;
 +    }
 +
@@ -1700,7 +1701,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8d56997e..d892c23c 100644
+index 0c559fb0..5889d419 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
