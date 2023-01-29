@@ -1,4 +1,4 @@
-From c637708bcd56e66aa8da77b6bf67bed16348ae6c Mon Sep 17 00:00:00 2001
+From aa08f9e4f6efc5834310e4070287147461f25a0b Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
@@ -2270,7 +2270,7 @@ index 10fe411d..f6daaea4 100644
              <groupId>io.github.waterfallmc</groupId>
              <artifactId>waterfall-module-cmd-alert</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 4c6d9eb9..d91c2819 100644
+index 4c6d9eb9..b1d2a71f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -17,6 +17,7 @@ import dev._2lstudios.flamecord.commands.FlameCordCommand;
@@ -2302,7 +2302,7 @@ index 4c6d9eb9..d91c2819 100644
 -                logger.info( "Using standard Java compressor." );
 -            }
 -        }
-+        logger.log(Level.INFO, "FlameCord is using " + Natives.compress.getLoadedVariant() + " compression and " + Natives.cipher.getLoadedVariant() + " ciphers");
++        logger.log(Level.INFO, "FlameCord is using " + Natives.getCompressorFactory().getName() + " compression");
      }
  
      /**
@@ -2558,7 +2558,7 @@ index 8d4439ab..79b4eec5 100644
                      modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index b98ee6a7..39149f21 100644
+index b98ee6a7..27dc4a73 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -1,6 +1,10 @@
@@ -2572,49 +2572,44 @@ index b98ee6a7..39149f21 100644
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFutureListener;
  import io.netty.channel.ChannelHandler;
-@@ -145,32 +149,30 @@ public class ChannelWrapper
+@@ -145,32 +149,32 @@ public class ChannelWrapper
          return ch;
      }
  
 -    public void setCompressionThreshold(int compressionThreshold)
 -    {
--        // FlameCord - Use pipeline to reduce redundancy
--        final ChannelPipeline pipeline = ch.pipeline();
--        if ( pipeline.get( PacketCompressor.class ) == null && compressionThreshold != -1 )
--        {
--            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
 +    public void setCompressionThreshold(int compressionThreshold) {
-+        Compressor compressor = Natives.getCompressorFactory().create(FlameCord.getInstance().getFlameCordConfiguration().getCompressionLevel());
++        Compressor compressor = Natives.getCompressorFactory().create( FlameCord.getInstance().getFlameCordConfiguration().getCompressionLevel() );
 +
-+        if (ch.pipeline().get(PacketCompressor.class) == null && compressionThreshold != -1) {
-+            addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor(compressor));
-+            ch.pipeline().remove(PipelineUtils.FRAME_PREPENDER); //NullCordX
+         // FlameCord - Use pipeline to reduce redundancy
+         final ChannelPipeline pipeline = ch.pipeline();
+         if ( pipeline.get( PacketCompressor.class ) == null && compressionThreshold != -1 )
+         {
+-            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
++            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor( compressor ) );
++            pipeline.remove( PipelineUtils.FRAME_PREPENDER ); // FlameCord - Implement Libdeflate
          }
 -        if ( compressionThreshold != -1 )
 -        {
--            pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold );
++        if  ( compressionThreshold != -1 ) {
+             pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold );
 -        } else
 -        {
--            pipeline.remove( "compress" );
-+        if (compressionThreshold != -1) {
-+            ch.pipeline().get(PacketCompressor.class).setThreshold(compressionThreshold);
 +        } else {
-+            ch.pipeline().remove("compress");
-+            addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, PipelineUtils.framePrepender); //NullCordX
+             pipeline.remove( "compress" );
++            addBefore( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, PipelineUtils.framePrepender ); // FlameCord - Implement Libdeflate
          }
  
 -        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
 -        {
 -            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-+        if (ch.pipeline().get(PacketDecompressor.class) == null && compressionThreshold != -1) {
-+            PacketDecompressor packetDecompressor = new PacketDecompressor(compressor, compressionThreshold); //BotFilter
-+            addBefore(PipelineUtils.PACKET_DECODER, "decompress", packetDecompressor);
++        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 ) {
++            addBefore( PipelineUtils.PACKET_DECODER, "decompress",  new PacketDecompressor( compressor, compressionThreshold ) ); // FlameCord - Implement Libdeflate
          }
 -        if ( compressionThreshold == -1 )
 -        {
--            pipeline.remove( "decompress" );
-+        if (compressionThreshold == -1) {
-+            ch.pipeline().remove("decompress");
++        if ( compressionThreshold == -1 ) {
+             pipeline.remove( "decompress" );
          }
      }
  
@@ -2622,6 +2617,20 @@ index b98ee6a7..39149f21 100644
      // FlameCord start - Antibot System
      // Make the channel accessible
      public Channel getChannel() {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index f04fdd9c..9aebc9e1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -126,7 +126,8 @@ public class PipelineUtils
+     };
+     public static final Base BASE = new Base();
+     private static final KickStringWriter legacyKicker = new KickStringWriter();
+-    private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
++    // FlameCord - Implement Libdeflate
++    public static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
+     public static final String TIMEOUT_HANDLER = "timeout";
+     public static final String PACKET_DECODER = "packet-decoder";
+     public static final String PACKET_ENCODER = "packet-encoder";
 -- 
-2.38.1.windows.1
+2.37.3.windows.1
 
