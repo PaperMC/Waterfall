@@ -1,0 +1,48 @@
+From ac36572ecaec29b5916d7c1a24e9e648cb2e4ef9 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Sun, 5 Feb 2023 21:47:39 -0300
+Subject: [PATCH] Simplify Prepender
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+index d4c3df44a..c6ea401d5 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+@@ -12,32 +12,8 @@ public class Varint21LengthFieldPrepender extends MessageToByteEncoder<ByteBuf>
+     @Override
+     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception
+     {
+-        int bodyLen = msg.readableBytes();
+-        int headerLen = varintSize( bodyLen );
+-        out.ensureWritable( headerLen + bodyLen );
+-
+-        DefinedPacket.writeVarInt( bodyLen, out );
++        // FlameCord - Simplify Prepender
++        DefinedPacket.writeVarInt( msg.readableBytes(), out );
+         out.writeBytes( msg );
+     }
+-
+-    private static int varintSize(int paramInt)
+-    {
+-        if ( ( paramInt & 0xFFFFFF80 ) == 0 )
+-        {
+-            return 1;
+-        }
+-        if ( ( paramInt & 0xFFFFC000 ) == 0 )
+-        {
+-            return 2;
+-        }
+-        if ( ( paramInt & 0xFFE00000 ) == 0 )
+-        {
+-            return 3;
+-        }
+-        if ( ( paramInt & 0xF0000000 ) == 0 )
+-        {
+-            return 4;
+-        }
+-        return 5;
+-    }
+ }
+-- 
+2.37.3.windows.1
+
