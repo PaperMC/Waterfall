@@ -1,4 +1,4 @@
-From 8e937bd458b9571e4b0ea0f21f336194a7ac013c Mon Sep 17 00:00:00 2001
+From 155bccab3c402436976b06c0a4472b1a0c42a348 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index cf7ef042..688f1b99 100644
+index bcf23a93..232b90b2 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -31,7 +31,7 @@ index cf7ef042..688f1b99 100644
 +                    <dependency>
 +                        <groupId>com.github.edwgiz</groupId>
 +                        <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
-+                        <version>2.13.2</version>
++                        <version>2.15</version>
 +                    </dependency>
 +                </dependencies>
              </plugin>
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 2ffe12f2..26f32b37 100644
+index 5afd8b9c..130670bb 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -1617,5 +1617,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.38.1
+2.39.1
 
