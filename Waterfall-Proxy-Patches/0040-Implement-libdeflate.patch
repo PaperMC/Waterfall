@@ -1,4 +1,4 @@
-From 399efc5e03c0f56de56a570ab879b3acbb724c3c Mon Sep 17 00:00:00 2001
+From eff4044e14b781c1350fdd1a14727a4e7f191cf2 Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
@@ -2270,7 +2270,7 @@ index 10fe411d8..f6daaea4d 100644
              <groupId>io.github.waterfallmc</groupId>
              <artifactId>waterfall-module-cmd-alert</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 15c48f83e..b2122e801 100644
+index d67519484..f7a3952a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -17,6 +17,7 @@ import dev._2lstudios.flamecord.commands.FlameCordCommand;
@@ -2513,7 +2513,7 @@ index eaedf4bc4..066bdafc8 100644
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-index 8d4439ab8..79b4eec5f 100644
+index 8d4439ab8..95ed34416 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 @@ -44,8 +44,8 @@ public class ForgeUtils
@@ -2522,13 +2522,13 @@ index 8d4439ab8..79b4eec5f 100644
                  ByteBuf buffer = payload.slice();
 -                int modCount = DefinedPacket.readVarInt( buffer, 2 );
 -                for ( int i = 0; i < modCount; i++ )
-+                int modCount = DefinedPacket.readVarInt( buffer); //FlameCord - Remove length check for compression
++                int modCount = DefinedPacket.readVarInt( buffer ); // FlameCord - Remove length check for compression
 +                 for ( int i = 0; i < modCount; i++ )
                  {
                      modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index b98ee6a75..df95173a9 100644
+index b98ee6a75..ffe038168 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -1,6 +1,10 @@
@@ -2542,7 +2542,7 @@ index b98ee6a75..df95173a9 100644
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFutureListener;
  import io.netty.channel.ChannelHandler;
-@@ -145,32 +149,30 @@ public class ChannelWrapper
+@@ -145,15 +149,16 @@ public class ChannelWrapper
          return ch;
      }
  
@@ -2559,25 +2559,20 @@ index b98ee6a75..df95173a9 100644
 +            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor( compressor ) );
          }
 -        if ( compressionThreshold != -1 )
--        {
-+        if  ( compressionThreshold != -1 ) {
++        if  ( compressionThreshold != -1 )
+         {
              pipeline.get( PacketCompressor.class ).setThreshold( compressionThreshold );
--        } else
--        {
-+        } else {
-             pipeline.remove( "compress" );
-         }
+         } else
+@@ -163,7 +168,7 @@ public class ChannelWrapper
  
--        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
--        {
+         if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 )
+         {
 -            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-+        if ( pipeline.get( PacketDecompressor.class ) == null && compressionThreshold != -1 ) {
 +            addBefore( PipelineUtils.PACKET_DECODER, "decompress",  new PacketDecompressor( compressor, compressionThreshold ) ); // FlameCord - Implement Libdeflate
          }
--        if ( compressionThreshold == -1 )
--        {
-+        if ( compressionThreshold == -1 ) {
-             pipeline.remove( "decompress" );
+         if ( compressionThreshold == -1 )
+         {
+@@ -171,6 +176,7 @@ public class ChannelWrapper
          }
      }
  
