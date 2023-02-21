@@ -1,4 +1,4 @@
-From eff4044e14b781c1350fdd1a14727a4e7f191cf2 Mon Sep 17 00:00:00 2001
+From 80d41a1e52de99ccfac9d98bd64c0176caac13e1 Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
@@ -2307,23 +2307,23 @@ index d67519484..f7a3952a2 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
-index d07cf4627..11c454c40 100644
+index d07cf4627..10cb0430c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
-@@ -1,35 +1,36 @@
+@@ -1,45 +1,74 @@
  package net.md_5.bungee.compress;
  
++import java.util.zip.DataFormatException;
++
 +import dev._2lstudios.flamecord.natives.MoreByteBufUtils;
 +import dev._2lstudios.flamecord.natives.compress.Compressor;
  import io.netty.buffer.ByteBuf;
 +import io.netty.buffer.ByteBufAllocator;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.handler.codec.MessageToByteEncoder;
-+
-+import java.util.zip.DataFormatException;
- import java.util.zip.Deflater;
+-import java.util.zip.Deflater;
  import lombok.Setter;
- import net.md_5.bungee.jni.zlib.BungeeZlib;
+-import net.md_5.bungee.jni.zlib.BungeeZlib;
  import net.md_5.bungee.protocol.DefinedPacket;
  
 -public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
@@ -2357,16 +2357,38 @@ index d07cf4627..11c454c40 100644
 -    {
 +    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
          int origSize = msg.readableBytes();
-         if ( origSize < threshold )
-         {
-@@ -39,7 +40,25 @@ public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
-         {
-             DefinedPacket.writeVarInt( origSize, out );
- 
+-        if ( origSize < threshold )
+-        {
+-            DefinedPacket.writeVarInt( 0, out );
+-            out.writeBytes( msg );
+-        } else
+-        {
+-            DefinedPacket.writeVarInt( origSize, out );
+-
 -            zlib.process( msg, out );
-+            compressor.deflate( msg, out );
++        if (origSize < threshold) {
++            // Under the threshold, there is nothing to do.
++            DefinedPacket.writeVarInt(0, out);
++            out.writeBytes(msg);
++            return;
 +        }
-+    }
++
++        int uncompressed = msg.readableBytes();
++
++        DefinedPacket.writeVarInt(uncompressed, out);
++        ByteBuf compatibleIn = MoreByteBufUtils.ensureCompatible(ctx.alloc(), compressor, msg);
++
++        int startCompressed = out.writerIndex();
++        try {
++            compressor.deflate(compatibleIn, out);
++        } finally {
++            compatibleIn.release();
++        }
++        int compressedLength = out.writerIndex() - startCompressed;
++        if (compressedLength >= 1 << 21) {
++            throw new DataFormatException("The server sent a very large (over 2MiB compressed) packet.");
+         }
+     }
 +
 +    @Override
 +    protected ByteBuf allocateBuffer(ChannelHandlerContext ctx, ByteBuf msg, boolean preferDirect) throws Exception {
@@ -2379,12 +2401,12 @@ index d07cf4627..11c454c40 100644
 +            int finalBufferSize = uncompressed + 1;
 +            finalBufferSize += DefinedPacket.varIntBytes(finalBufferSize);
 +            return allocator.directBuffer(finalBufferSize);
-         }
++        }
 +
 +        // (maximum data length after compression) + packet length varint + uncompressed data varint
 +        int initialBufferSize = (uncompressed - 1) + 3 + DefinedPacket.varIntBytes(uncompressed);
 +        return allocator.directBuffer(initialBufferSize);
-     }
++    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 index eaedf4bc4..066bdafc8 100644
