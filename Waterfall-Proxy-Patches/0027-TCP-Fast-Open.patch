@@ -1,14 +1,14 @@
-From 6fbdfc541f535fb0b4d18d09f7fb7bd15f0c91d8 Mon Sep 17 00:00:00 2001
+From 62bf8051431b5035171c900d729a1c175fcda639 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index ab33e071..9a3c78e2 100644
+index b41ee92cc..14665b1f6 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,10 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -19,16 +19,17 @@ index ab33e071..9a3c78e2 100644
      public String getMOTD(int maxPlayers, int onlinePlayers, int protocol) {
          String motd;
  
-@@ -130,6 +134,7 @@ public class FlameCordConfiguration extends FlameConfig {
-             this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
-             this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
-             this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
-+            this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
+@@ -127,6 +131,8 @@ public class FlameCordConfiguration extends FlameConfig {
+         this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
+         this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
  
-             this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
++        this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
++
+         save(configuration, configurationFile);
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a4c3bd71..ffea1599 100644
+index a4c3bd710..ffea15992 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -194,6 +194,8 @@ public class PipelineUtils

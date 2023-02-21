@@ -1,14 +1,14 @@
-From 80d41a1e52de99ccfac9d98bd64c0176caac13e1 Mon Sep 17 00:00:00 2001
+From e1191a593b1aa81cc8519f6c7fa7192713cc98e3 Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 05f7da1d4..1ef7f6a72 100644
+index c84cf3cca..034fb37e4 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -60,6 +60,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -59,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
      @Getter
      private int antibotFirewallExpire = 60;
      @Getter
@@ -17,14 +17,16 @@ index 05f7da1d4..1ef7f6a72 100644
      private boolean antibotFirewallLog = true;
      @Getter
      private boolean antibotFirewallIpset = true;
-@@ -318,6 +320,7 @@ public class FlameCordConfiguration extends FlameConfig {
-             this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
+@@ -321,6 +323,9 @@ public class FlameCordConfiguration extends FlameConfig {
+         // FlameCord - Allow Invalid Names
+         this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
  
-             this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
-+            this.compressionLevel = setIfUnexistant("compression-level", this.compressionLevel, configuration);
- 
-             this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-             this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
++        // FlameCord - Implement libdeflate
++        this.compressionLevel = setIfUnexistant("compression-level", this.compressionLevel, configuration);
++
+         save(configuration, configurationFile);
+     }
+ }
 diff --git a/native/compile-linux.sh b/native/compile-linux.sh
 new file mode 100644
 index 000000000..5442dce9d
@@ -2270,7 +2272,7 @@ index 10fe411d8..f6daaea4d 100644
              <groupId>io.github.waterfallmc</groupId>
              <artifactId>waterfall-module-cmd-alert</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d67519484..f7a3952a2 100644
+index f5059666e..dba21bcc7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -17,6 +17,7 @@ import dev._2lstudios.flamecord.commands.FlameCordCommand;

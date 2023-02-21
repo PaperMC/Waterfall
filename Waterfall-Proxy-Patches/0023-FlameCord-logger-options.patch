@@ -1,14 +1,14 @@
-From 368bddfcbf0018aeca7eaa72769d9b31c1dfc229 Mon Sep 17 00:00:00 2001
+From 1d9ee842e043c343a64b8fe7ef6962ee0fb53041 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 30 Apr 2021 23:51:51 -0300
 Subject: [PATCH] FlameCord logger options
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 114bbf877..edecc1e55 100644
+index 241e8ed9c..b563cbced 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -12,6 +12,17 @@ import net.md_5.bungee.config.Configuration;
+@@ -11,10 +11,27 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -24,21 +24,18 @@ index 114bbf877..edecc1e55 100644
 +    private boolean loggerDetailedConnection = true;
 +
      public FlameCordConfiguration(final ConfigurationProvider configurationProvider, final Collection<String> whitelistedAddresses) {
-         try {
-             final String fileName = "./flamecord.yml";
-@@ -25,6 +36,12 @@ public class FlameCordConfiguration extends FlameConfig {
-                 configuration = configurationProvider.load(configurationFile);
-             }
+         final File configurationFile = new File("./flamecord.yml");
+         final Configuration configuration = load(configurationFile);
  
-+            this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
-+            this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
-+            this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
-+            this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
-+            this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
++        this.loggerInitialhandler = setIfUnexistant("logger.initialhandler", this.loggerInitialhandler, configuration);
++        this.loggerExceptions = setIfUnexistant("logger.exceptions", this.loggerExceptions, configuration);
++        this.loggerDump = setIfUnexistant("logger.dump", this.loggerDump, configuration);
++        this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
++        this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
 +
-             configurationProvider.save(configuration, configurationFile);
-         } catch (final IOException e) {
-             e.printStackTrace();
+         save(configuration, configurationFile);
+     }
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index e48f77131..909227970 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -64,7 +61,7 @@ index e48f77131..909227970 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3e5a337e0..abed08d4f 100644
+index 22688a045..66a347542 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -396,7 +396,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
