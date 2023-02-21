@@ -1,35 +1,28 @@
-From 67d06f64115453c920b0a596c59301a6167a93aa Mon Sep 17 00:00:00 2001
+From f37bca815bffe22461c5b2760596ef18d56a1070 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Wed, 11 Jan 2023 10:14:12 -0300
 Subject: [PATCH] Bungee Plugins Command
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 37bccaeb..af3d9078 100644
+index 6175d8e2d..2ea33a94b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -100,11 +100,17 @@ public class MessagesConfiguration extends FlameConfig {
- 			setIfUnexistant("antibot_reconnect", "&c&lFlameCord\n\n&cReconnect {0} more times to enter!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
- 			setIfUnexistant("antibot_country", "&c&lFlameCord\n\n&cYour country {0} is blacklisted!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
- 			setIfUnexistant("antibot_stats", "&c&lFlameCord Antibot Stats\n &7■ Total Pings: &a{0}\n &7■ Total Connections: &b{1}\n\n &7■ Current Pings: &a{2}\n &7■ Current Connections: &b{3}", configuration);
--			
-+
-+			// Firewall
- 			setIfUnexistant("flamecord_firewall_help", "&c/flamecord firewall <add/remove> <ip>", configuration);
- 			setIfUnexistant("flamecord_firewall_add", "&cThe ip {0} was added to the firewall!", configuration);
- 			setIfUnexistant("flamecord_firewall_remove", "&cThe ip {0} was removed from the firewall!", configuration);
- 			// FlameCord end - Antibot System
-+			
-+			// FlameCord - Bungee Plugins Command
-+			setIfUnexistant("flamecord_bplugins_nopermission", "&cYou don't have permission to do this!", configuration);
-+			setIfUnexistant("flamecord_bplugins_separator", ", ", configuration);
-+			setIfUnexistant("flamecord_bplugins_header", "&aPlugins ({0}): ", configuration);
+@@ -96,6 +96,11 @@ public class MessagesConfiguration extends FlameConfig {
+ 		setIfUnexistant("flamecord_firewall_remove", "&cThe ip {0} was removed from the firewall!", configuration);
+ 		// FlameCord end - Antibot System
  
- 			configurationProvider.save(configuration, configurationFile);
++		// FlameCord - Bungee Plugins Command
++		setIfUnexistant("flamecord_bplugins_nopermission", "&cYou don't have permission to do this!", configuration);
++		setIfUnexistant("flamecord_bplugins_separator", ", ", configuration);
++		setIfUnexistant("flamecord_bplugins_header", "&aPlugins ({0}): ", configuration);
++
+ 		for (final String key : configuration.getKeys()) {
+ 			final Object value = configuration.get(key);
  
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java
 new file mode 100644
-index 00000000..2e20e9dc
+index 000000000..2e20e9dca
 --- /dev/null
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeePluginsCommand.java
 @@ -0,0 +1,45 @@
@@ -79,7 +72,7 @@ index 00000000..2e20e9dc
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 44e28adc..705196d5 100644
+index 62712330e..ec5fd4af2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,7 @@ import com.google.gson.Gson;
