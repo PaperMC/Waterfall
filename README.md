@@ -32,7 +32,7 @@ Waterfall requires **Java 8** or above.
 ```xml
 <repository>
     <id>papermc</id>
-    <url>https://papermc.io/repo/repository/maven-public/</url>
+    <url>https://repo.papermc.io/repository/maven-public/</url>
 </repository>
 ```
  * Artifact information:
@@ -40,7 +40,7 @@ Waterfall requires **Java 8** or above.
 <dependency>
     <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-api</artifactId>
-    <version>1.18-R0.1-SNAPSHOT</version>
+    <version>1.19-R0.1-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
  ```
@@ -51,14 +51,14 @@ Waterfall requires **Java 8** or above.
 ```groovy
 repositories {
     maven {
-        url 'https://papermc.io/repo/repository/maven-public/'
+        url 'https://repo.papermc.io/repository/maven-public/'
     }
 }
 ```
  * Artifact:
 ```groovy
 dependencies {
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT'
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT'
 }
 ```
 
