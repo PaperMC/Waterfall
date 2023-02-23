@@ -1,0 +1,27 @@
+From 7e20c899237e194fbda629aa6be4444fbe293b7d Mon Sep 17 00:00:00 2001
+From: PermisosDev <55111245+PermisosDev@users.noreply.github.com>
+Date: Thu, 15 Apr 2021 08:34:57 -0300
+Subject: [PATCH] Check if packetID is invalid.
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 70a1192e7..6316143f7 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -65,7 +65,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ 
+             int packetId = DefinedPacket.readVarInt( in );
+             packetTypeInfo = packetId;
+-
++            // FlameCord Start - Check if packetId is invalid.
++            if (packetId < 0 || packetId > Protocol.MAX_PACKET_ID)
++            {
++                throw new FastDecoderException( "[" + ctx.channel().remoteAddress() + "] <-> MinecraftDecoder received invalid packet #1, id " + packetId );
++            }
++            // Flamecord End
+             DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+             if ( packet != null )
+             {
+-- 
+2.37.3.windows.1
+

@@ -1,0 +1,86 @@
+From 664f35c5a6155c5e41aa10d1cd15cf590cc011a0 Mon Sep 17 00:00:00 2001
+From: abhiram <abhithegamer2019@gmail.com>
+Date: Thu, 13 May 2021 01:05:03 +0530
+Subject: [PATCH] Added an api method to unload Plugins
+
+Format Code to Bungee's code style
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 90031156f..a190dfae8 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -25,6 +25,7 @@ import java.util.Set;
+ import java.util.Stack;
+ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
++import java.util.logging.Handler;
+ import java.util.logging.Level;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Waterfall
+ import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Waterfall
+@@ -63,6 +64,7 @@ public final class PluginManager
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
++    private final HashMap<String,URLClassLoader> pluginloaders = new HashMap<>();
+ 
+     @SuppressWarnings("unchecked")
+     public PluginManager(ProxyServer proxy)
+@@ -291,6 +293,45 @@ public final class PluginManager
+         return plugins.get( name );
+     }
+ 
++
++    /**
++     * This will Unload the given plugin
++     *
++     * @param plugin to unload
++     */
++    // FlameCord start - Adds a method to unload plugin from proxy
++    public void unloadPlugin(Plugin plugin)
++    {
++        plugin.onDisable();
++        this.unregisterListeners( plugin );
++        this.unregisterCommands( plugin );
++        this.proxy.getScheduler().cancel( plugin );
++
++        for ( Handler handler : plugin.getLogger().getHandlers() )
++        {
++            handler.close();
++        }
++
++        try
++        {
++            pluginloaders.get( plugin.getDescription().getName() ).close();
++        }catch (Exception exception)
++        {
++            exception.printStackTrace();
++        }
++
++        if( this.plugins.containsKey( plugin.getDescription().getName() ) )
++        {
++            this.plugins.remove( plugin.getDescription().getName() );
++        }
++
++        if( this.pluginloaders.containsKey( plugin.getDescription().getName() ) )
++        {
++            this.pluginloaders.remove( plugin.getDescription().getName() );
++        }
++    }
++    // FlameCord end
++
+     public void loadPlugins()
+     {
+         Map<PluginDescription, Boolean> pluginStatuses = new HashMap<>();
+@@ -395,6 +436,9 @@ public final class PluginManager
+                 Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
+ 
+                 plugins.put( plugin.getName(), clazz );
++                // FlameCord start - cache url classloaders to unload plugins
++                pluginloaders.put( plugin.getName(),loader );
++                // FlameCord end
+                 clazz.onLoad();
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
+                 {
+-- 
+2.37.3.windows.1
+

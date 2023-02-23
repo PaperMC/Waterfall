@@ -1,0 +1,23 @@
+From c44b23dcab5a544424e6835060638e1bbf053ae2 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 17:58:18 +0800
+Subject: [PATCH] Make a getter for the callback
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
+index cf85ca06..8a945a99 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/AsyncEvent.java
+@@ -25,7 +25,8 @@ import net.md_5.bungee.api.plugin.Plugin;
+ @EqualsAndHashCode(callSuper = true)
+ public class AsyncEvent<T> extends Event
+ {
+-
++    // FlameCord - Make a getter for the callback
++    @Getter
+     private final Callback<T> done;
+     private final Map<Plugin, AtomicInteger> intents = new ConcurrentHashMap<>();
+     private final AtomicBoolean fired = new AtomicBoolean();
+-- 
+2.32.0
+

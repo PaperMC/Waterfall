@@ -1,0 +1,37 @@
+From daefdd3d718eecc9ac09fbece9e7baff22e1c195 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Sun, 15 Jan 2023 19:03:34 -0300
+Subject: [PATCH] List Command Format
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index e42bb29d5..555319a7f 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -107,6 +107,9 @@ public class MessagesConfiguration extends FlameConfig {
+ 		setIfUnexistant("flamecord_bip_usage", "&c/bip <player>", configuration);
+ 		setIfUnexistant("flamecord_bip", "&aInformation about {0}&a:\n&aUUID: &b{1}\n&aIP: &b{2}\n&aPing: &b{3}ms\n&aLocale: &b{4}\n&aView Distance: &b{5}\n&aCurrent Server: &b{6}", configuration);
+ 
++		// FlameCord - List Command Format
++		setIfUnexistant("command_list_format", "&aServers:&r", configuration);
++
+ 		for (final String key : configuration.getKeys()) {
+ 			final Object value = configuration.get(key);
+ 
+diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+index c22271105..0a5899319 100644
+--- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
++++ b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
+@@ -25,6 +25,9 @@ public class CommandList extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
++        // FlameCord - List Command Format
++        sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_list_format") );
++
+         for ( ServerInfo server : ProxyServer.getInstance().getServers().values() )
+         {
+             if ( !server.canAccess( sender ) )
+-- 
+2.37.3.windows.1
+

@@ -1,0 +1,24 @@
+From 0f07c38f3d16849626c28ae710616788f30b00fc Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 18:40:55 +0800
+Subject: [PATCH] Change IllegalStateException to QuietException and explain
+ that is a plugin
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 2d72e26ea..94702434d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -313,7 +313,8 @@ public final class UserConnection implements ProxiedPlayer
+ 
+             if ( getServer() == null && !ch.isClosing() )
+             {
+-                throw new IllegalStateException( "Cancelled ServerConnectEvent with no server or disconnect." );
++                // FlameCord - Change IllegalStateException to QuietException and explain that is a plugin
++                throw new QuietException("A plugin cancelled ServerConnectEvent with no server or disconnect.");
+             }
+             return;
+         }
+-- 
+2.37.3.windows.1
+

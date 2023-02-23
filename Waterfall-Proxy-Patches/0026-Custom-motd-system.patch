@@ -1,0 +1,676 @@
+From 2072d8d33f059abfdb95c16158792887f3f701d3 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Thu, 7 Oct 2021 21:37:24 -0300
+Subject: [PATCH] Custom motd system
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+index b563cbced..b41ee92cc 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
+@@ -2,15 +2,94 @@ package dev._2lstudios.flamecord.configuration;
+ 
+ import java.io.File;
+ import java.util.ArrayList;
++import java.util.Collections;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.HashSet;
++import java.util.List;
++import java.util.Random;
+ 
++import dev._2lstudios.flamecord.utils.ColorUtil;
+ import lombok.Getter;
+ import net.md_5.bungee.config.Configuration;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ 
+ public class FlameCordConfiguration extends FlameConfig {
++    public String getMOTD(int maxPlayers, int onlinePlayers, int protocol) {
++        String motd;
++
++        if (protocol >= 735) {
++            motd = hexMotds.get(new Random().nextInt(hexMotds.size()));
++        } else {
++            motd = motds.get(new Random().nextInt(motds.size()));
++        }
++
++        motd = motd.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
++
++        return motd;
++    }
++
++    public String[] getSample(int maxPlayers, int onlinePlayers, int protocol) {
++        String sample;
++
++        if (protocol >= 735) {
++            sample = hexSamples.get(new Random().nextInt(hexSamples.size()));
++        } else {
++            sample = samples.get(new Random().nextInt(samples.size()));
++        }
++
++        sample = sample.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
++
++        return sample.split("\n");
++    }
++
++    public String getProtocolName(int maxPlayers, int onlinePlayers) {
++        return protocolName.replace("%maxplayers%", String.valueOf(maxPlayers)).replace("%onlineplayers%", String.valueOf(onlinePlayers));
++    }
++
++    public int getFakePlayersAmount(final int players) {
++        switch (fakePlayersMode) {
++            case "STATIC":
++                return fakePlayersAmount;
++            case "RANDOM":
++                return (int) (Math.floor(Math.random() * fakePlayersAmount) + 1);
++            case "DIVISION":
++                return players / fakePlayersAmount;
++            default:
++                return 0;
++        }
++    }
++
++    @Getter
++    private boolean motdEnabled = false;
++    private List<String> motds = Collections.singletonList("&eDefault &cFlameCord&e server &7(%onlineplayers%/%maxplayers%)\n&eEdit on &cflamecord.yml&7 (IridiumColorAPI HEX)");
++    private List<String> hexMotds;
++
++    @Getter
++    private boolean sampleEnabled = false;
++    private List<String> samples = Collections.singletonList("&eDefault &cFlameCord&e server &7(%onlineplayers%/%maxplayers%)\n&eEdit on &cflamecord.yml&7 (IridiumColorAPI HEX)");
++    private List<String> hexSamples;
++
++    @Getter
++    private boolean protocolEnabled = false;
++    @Getter
++    private String protocolName = "&c&lMaintenance";
++    @Getter
++    private boolean protocolAlwaysShow = false;
++
++    @Getter
++    private boolean maxPlayersEnabled = false;
++    @Getter
++    private int maxPlayersAmount = 1000;
++    @Getter
++    private boolean maxPlayersOneMore = false;
++
++    @Getter
++    private boolean fakePlayersEnabled = false;
++    @Getter
++    private int fakePlayersAmount = 3;
++    private String fakePlayersMode = "DIVISION";
++
+     @Getter
+     private boolean loggerInitialhandler = false;
+     @Getter
+@@ -32,6 +111,22 @@ public class FlameCordConfiguration extends FlameConfig {
+         this.loggerHaProxy = setIfUnexistant("logger.haproxy", this.loggerHaProxy, configuration);
+         this.loggerDetailedConnection = setIfUnexistant("logger.detailed-connect-errors", this.loggerDetailedConnection, configuration);
+ 
++        this.motdEnabled = setIfUnexistant("custom-motd.motd.enabled", this.motdEnabled, configuration);
++        this.hexMotds = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.motd.motds", this.motds, configuration)), 735);
++        this.motds = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.motd.motds", this.motds, configuration)), 734);
++        this.sampleEnabled = setIfUnexistant("custom-motd.sample.enabled", this.sampleEnabled, configuration);
++        this.hexSamples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 735);
++        this.samples = ColorUtil.hexColor(new ArrayList<>(setIfUnexistant("custom-motd.sample.samples", this.samples, configuration)), 734);
++        this.protocolEnabled = setIfUnexistant("custom-motd.protocol.enabled", this.protocolEnabled, configuration);
++        this.protocolName = ColorUtil.hexColor(setIfUnexistant("custom-motd.protocol.name", this.protocolName, configuration), 735);
++        this.protocolAlwaysShow = setIfUnexistant("custom-motd.protocol.always-show", this.protocolAlwaysShow, configuration);
++        this.maxPlayersEnabled = setIfUnexistant("custom-motd.maxplayers.enabled", this.maxPlayersEnabled, configuration);
++        this.maxPlayersAmount = setIfUnexistant("custom-motd.maxplayers.amount", this.maxPlayersAmount, configuration);
++        this.maxPlayersOneMore = setIfUnexistant("custom-motd.maxplayers.justonemore", this.maxPlayersOneMore, configuration);
++        this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
++        this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
++        this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
++
+         save(configuration, configurationFile);
+     }
+ }
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java
+new file mode 100644
+index 000000000..9587bccda
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/ColorUtil.java
+@@ -0,0 +1,48 @@
++package dev._2lstudios.flamecord.utils;
++
++import java.util.List;
++
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.IridiumColorAPI;
++import net.md_5.bungee.api.ChatColor;
++
++public class ColorUtil {
++    public static String color(String text) {
++        return ChatColor.translateAlternateColorCodes('&', text);
++    }
++
++    public static List<String> color(final List<String> texts) {
++        for (int i = 0; i < texts.size(); i++) {
++            texts.set(i, color(texts.get(i)));
++        }
++
++        return texts;
++    }
++
++    public static String hex(String text, int protocol) {
++        if (text == null) {
++            return text;
++        }
++
++        return IridiumColorAPI.process(text, protocol);
++    }
++
++    public static String hexColor(String text, int protocol) {
++        if (text != null) {
++            text = color(text);
++
++            if (text != null) {
++                text = hex(text, protocol);
++            }
++        }
++
++        return text;
++    }
++
++    public static List<String> hexColor(final List<String> texts, int protocol) {
++        for (int i = 0; i < texts.size(); i++) {
++            texts.set(i, hexColor(texts.get(i), protocol));
++        }
++
++        return texts;
++    }
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java
+new file mode 100644
+index 000000000..6c386e16f
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/IridiumColorAPI.java
+@@ -0,0 +1,275 @@
++package dev._2lstudios.flamecord.utils.iridiumcolorapi;
++
++import java.awt.Color;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.List;
++import java.util.Map;
++import java.util.stream.Collectors;
++
++import javax.annotation.Nonnull;
++
++import com.google.common.collect.ImmutableMap;
++
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns.GradientPattern;
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns.Pattern;
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns.RainbowPattern;
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns.SolidPattern;
++import net.md_5.bungee.api.ChatColor;
++
++public class IridiumColorAPI {
++
++    /**
++     * Cached result if the server version is after the v1.16 RGB update.
++     *
++     * @since 1.0.0
++     */
++    private static final boolean SUPPORTS_RGB(int protocol) {
++        return protocol >= 735;
++    }
++
++    private static final List<String> SPECIAL_COLORS = Arrays.asList("&l", "&n", "&o", "&k", "&m", "§l", "§n", "§o", "§k", "§m");
++
++    /**
++     * Cached result of all legacy colors.
++     *
++     * @since 1.0.0
++     */
++    private static final Map<Color, ChatColor> COLORS = ImmutableMap.<Color, ChatColor>builder()
++            .put(new Color(0), ChatColor.getByChar('0'))
++            .put(new Color(170), ChatColor.getByChar('1'))
++            .put(new Color(43520), ChatColor.getByChar('2'))
++            .put(new Color(43690), ChatColor.getByChar('3'))
++            .put(new Color(11141120), ChatColor.getByChar('4'))
++            .put(new Color(11141290), ChatColor.getByChar('5'))
++            .put(new Color(16755200), ChatColor.getByChar('6'))
++            .put(new Color(11184810), ChatColor.getByChar('7'))
++            .put(new Color(5592405), ChatColor.getByChar('8'))
++            .put(new Color(5592575), ChatColor.getByChar('9'))
++            .put(new Color(5635925), ChatColor.getByChar('a'))
++            .put(new Color(5636095), ChatColor.getByChar('b'))
++            .put(new Color(16733525), ChatColor.getByChar('c'))
++            .put(new Color(16733695), ChatColor.getByChar('d'))
++            .put(new Color(16777045), ChatColor.getByChar('e'))
++            .put(new Color(16777215), ChatColor.getByChar('f')).build();
++
++    /**
++     * Cached result of patterns.
++     *
++     * @since 1.0.2
++     */
++    private static final List<Pattern> PATTERNS = Arrays.asList(new GradientPattern(), new SolidPattern(), new RainbowPattern());
++
++    /**
++     * Processes a string to add color to it.
++     * Thanks to Distressing for helping with the regex <3
++     *
++     * @param string The string we want to process
++     * @since 1.0.0
++     */
++    @Nonnull
++    public static String process(@Nonnull String string, int protocol) {
++        for (Pattern pattern : PATTERNS) {
++            string = pattern.process(string, protocol);
++        }
++
++        string = ChatColor.translateAlternateColorCodes('&', string);
++        return string;
++    }
++
++    /**
++     * Processes multiple strings in a collection.
++     *
++     * @param strings The collection of the strings we are processing
++     * @return The list of processed strings
++     * @since 1.0.3
++     */
++    @Nonnull
++    public static List<String> process(@Nonnull Collection<String> strings, int protocol) {
++        return strings.stream()
++                .map(s -> IridiumColorAPI.process(s, protocol))
++                .collect(Collectors.toList());
++    }
++
++    /**
++     * Colors a String.
++     *
++     * @param string The string we want to color
++     * @param color  The color we want to set it to
++     * @since 1.0.0
++     */
++    @Nonnull
++    public static String color(@Nonnull String string, @Nonnull Color color, int protocol) {
++        return (SUPPORTS_RGB(protocol) ? ChatColor.of(color) : getClosestColor(color)) + string;
++    }
++
++    /**
++     * Colors a String with a gradiant.
++     *
++     * @param string The string we want to color
++     * @param start  The starting gradiant
++     * @param end    The ending gradiant
++     * @since 1.0.0
++     */
++    @Nonnull
++    public static String color(@Nonnull String string, @Nonnull Color start, @Nonnull Color end, int protocol) {
++        String originalString = string;
++        
++        ChatColor[] colors = createGradient(start, end, withoutSpecialChar(string).length(), protocol);
++        return apply(originalString, colors);
++    }
++
++    /**
++     * Colors a String with rainbow colors.
++     *
++     * @param string     The string which should have rainbow colors
++     * @param saturation The saturation of the rainbow colors
++     * @since 1.0.3
++     */
++    @Nonnull
++    public static String rainbow(@Nonnull String string, float saturation, int protocol) {
++        String originalString = string;
++
++        ChatColor[] colors = createRainbow(withoutSpecialChar(string).length(), saturation, protocol);
++        return apply(originalString, colors);
++    }
++
++    /**
++     * Gets a color from hex code.
++     *
++     * @param string The hex code of the color
++     * @since 1.0.0
++     */
++    @Nonnull
++    public static ChatColor getColor(@Nonnull String string, int protocol) {
++        return SUPPORTS_RGB(protocol) ? ChatColor.of(new Color(Integer.parseInt(string, 16)))
++                : getClosestColor(new Color(Integer.parseInt(string, 16)));
++    }
++
++    /**
++     * Removes all color codes from the provided String, including IridiumColorAPI
++     * patterns.
++     *
++     * @param string The String which should be stripped
++     * @return The stripped string without color codes
++     * @since 1.0.5
++     */
++    @Nonnull
++    public static String stripColorFormatting(@Nonnull String string) {
++        return string.replaceAll("<#[0-9A-F]{6}>|[&§][a-f0-9lnokm]|<[/]?[A-Z]{5,8}(:[0-9A-F]{6})?[0-9]*>", "");
++    }
++
++    @Nonnull
++    private static String apply(@Nonnull String source, ChatColor[] colors) {
++        StringBuilder specialColors = new StringBuilder();
++        StringBuilder stringBuilder = new StringBuilder();
++        String[] characters = source.split("");
++        int outIndex = 0;
++        for (int i = 0; i < characters.length; i++) {
++            if (characters[i].equals("&") || characters[i].equals("§")) {
++                if (i + 1 < characters.length) {
++                    if (characters[i + 1].equals("r")) {
++                        specialColors.setLength(0);
++                    } else {
++                        specialColors.append(characters[i]);
++                        specialColors.append(characters[i + 1]);
++                    }
++                    i++;
++                } else
++                    stringBuilder.append(colors[outIndex++]).append(specialColors).append(characters[i]);
++            } else
++                stringBuilder.append(colors[outIndex++]).append(specialColors).append(characters[i]);
++        }
++        return stringBuilder.toString();
++    }
++
++    @Nonnull
++    private static String withoutSpecialChar(@Nonnull String source) {
++        String workingString = source;
++        for (String color : SPECIAL_COLORS) {
++            if (workingString.contains(color)) {
++                workingString = workingString.replace(color, "");
++            }
++        }
++        return workingString;
++    }
++
++    /**
++     * Returns a rainbow array of chat colors.
++     *
++     * @param step       How many colors we return
++     * @param saturation The saturation of the rainbow
++     * @return The array of colors
++     * @since 1.0.3
++     */
++    @Nonnull
++    private static ChatColor[] createRainbow(int step, float saturation, int protocol) {
++        ChatColor[] colors = new ChatColor[step];
++        double colorStep = (1.00 / step);
++
++        for (int i = 0; i < step; i++) {
++            Color color = Color.getHSBColor((float) (colorStep * i), saturation, saturation);
++            if (SUPPORTS_RGB(protocol)) {
++                colors[i] = ChatColor.of(color);
++            } else {
++                colors[i] = getClosestColor(color);
++            }
++        }
++
++        return colors;
++    }
++
++    /**
++     * Returns a gradient array of chat colors.
++     *
++     * @param start The starting color.
++     * @param end   The ending color.
++     * @param step  How many colors we return.
++     * @author TheViperShow
++     * @since 1.0.0
++     */
++    @Nonnull
++    private static ChatColor[] createGradient(@Nonnull Color start, @Nonnull Color end, int step, int protocol) {
++        ChatColor[] colors = new ChatColor[step];
++        int stepR = Math.abs(start.getRed() - end.getRed()) / (step - 1);
++        int stepG = Math.abs(start.getGreen() - end.getGreen()) / (step - 1);
++        int stepB = Math.abs(start.getBlue() - end.getBlue()) / (step - 1);
++        int[] direction = new int[] {
++                start.getRed() < end.getRed() ? +1 : -1,
++                start.getGreen() < end.getGreen() ? +1 : -1,
++                start.getBlue() < end.getBlue() ? +1 : -1
++        };
++
++        for (int i = 0; i < step; i++) {
++            Color color = new Color(start.getRed() + ((stepR * i) * direction[0]), start.getGreen() + ((stepG * i) * direction[1]), start.getBlue() + ((stepB * i) * direction[2]));
++            if (SUPPORTS_RGB(protocol)) {
++                colors[i] = ChatColor.of(color);
++            } else {
++                colors[i] = getClosestColor(color);
++            }
++        }
++
++        return colors;
++    }
++
++    /**
++     * Returns the closest legacy color from an rgb color
++     *
++     * @param color The color we want to transform
++     * @since 1.0.0
++     */
++    @Nonnull
++    private static ChatColor getClosestColor(Color color) {
++        Color nearestColor = null;
++        double nearestDistance = Integer.MAX_VALUE;
++
++        for (Color constantColor : COLORS.keySet()) {
++            double distance = Math.pow(color.getRed() - constantColor.getRed(), 2) + Math.pow(color.getGreen() - constantColor.getGreen(), 2) + Math.pow(color.getBlue() - constantColor.getBlue(), 2);
++            if (nearestDistance > distance) {
++                nearestColor = constantColor;
++                nearestDistance = distance;
++            }
++        }
++        return COLORS.get(nearestColor);
++    }
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java
+new file mode 100644
+index 000000000..c1f05cd0a
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/GradientPattern.java
+@@ -0,0 +1,33 @@
++package dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns;
++
++import java.awt.*;
++import java.util.regex.Matcher;
++
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.IridiumColorAPI;
++
++/**
++ * Represents a gradient color pattern which can be applied to a String.
++ */
++public class GradientPattern implements Pattern {
++
++    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<GRADIENT:([0-9A-Fa-f]{6})>(.*?)</GRADIENT:([0-9A-Fa-f]{6})>");
++
++    /**
++     * Applies a gradient pattern to the provided String.
++     * Output might me the same as the input if this pattern is not present.
++     *
++     * @param string The String to which this pattern should be applied to
++     * @return The new String with applied pattern
++     */
++    public String process(String string, int protocol) {
++        Matcher matcher = pattern.matcher(string);
++        while (matcher.find()) {
++            String start = matcher.group(1);
++            String end = matcher.group(3);
++            String content = matcher.group(2);
++            string = string.replace(matcher.group(), IridiumColorAPI.color(content, new Color(Integer.parseInt(start, 16)), new Color(Integer.parseInt(end, 16)), protocol));
++        }
++        return string;
++    }
++
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java
+new file mode 100644
+index 000000000..5457ead64
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/Pattern.java
+@@ -0,0 +1,17 @@
++package dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns;
++
++/**
++ * Represents a color pattern which can be applied to a String.
++ */
++public interface Pattern {
++
++    /**
++     * Applies this pattern to the provided String.
++     * Output might me the same as the input if this pattern is not present.
++     *
++     * @param string The String to which this pattern should be applied to
++     * @return The new String with applied pattern
++     */
++    String process(String string, int protocol);
++
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java
+new file mode 100644
+index 000000000..792e9f987
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/RainbowPattern.java
+@@ -0,0 +1,28 @@
++package dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns;
++
++import java.util.regex.Matcher;
++
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.IridiumColorAPI;
++
++public class RainbowPattern implements Pattern {
++
++    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<RAINBOW([0-9]{1,3})>(.*?)</RAINBOW>");
++
++    /**
++     * Applies a rainbow pattern to the provided String.
++     * Output might me the same as the input if this pattern is not present.
++     *
++     * @param string The String to which this pattern should be applied to
++     * @return The new String with applied pattern
++     */
++    public String process(String string, int protocol) {
++        Matcher matcher = pattern.matcher(string);
++        while (matcher.find()) {
++            String saturation = matcher.group(1);
++            String content = matcher.group(2);
++            string = string.replace(matcher.group(), IridiumColorAPI.rainbow(content, Float.parseFloat(saturation), protocol));
++        }
++        return string;
++    }
++
++}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java
+new file mode 100644
+index 000000000..0b039c797
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/utils/iridiumcolorapi/patterns/SolidPattern.java
+@@ -0,0 +1,29 @@
++package dev._2lstudios.flamecord.utils.iridiumcolorapi.patterns;
++
++import java.util.regex.Matcher;
++
++import dev._2lstudios.flamecord.utils.iridiumcolorapi.IridiumColorAPI;
++
++public class SolidPattern implements Pattern {
++
++    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<SOLID:([0-9A-Fa-f]{6})>|#\\{([0-9A-Fa-f]{6})}");
++
++    /**
++     * Applies a solid RGB color to the provided String.
++     * Output might me the same as the input if this pattern is not present.
++     *
++     * @param string The String to which this pattern should be applied to
++     * @return The new String with applied pattern
++     */
++    public String process(String string, int protocol) {
++        Matcher matcher = pattern.matcher(string);
++        while (matcher.find()) {
++            String color = matcher.group(1);
++            if (color == null) color = matcher.group(2);
++
++            string = string.replace(matcher.group(), IridiumColorAPI.getColor(color, protocol) + "");
++        }
++        return string;
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 66a347542..58be68b02 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -23,6 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
+ 
+ import dev._2lstudios.flamecord.FlameCord;
+ 
++import dev._2lstudios.flamecord.configuration.FlameConfig;
++import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
+ import lombok.Getter;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+@@ -275,7 +277,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
+ 
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+-        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
+         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+ 
+         Callback<ServerPing> pingBack = new Callback<ServerPing>()
+@@ -338,7 +339,56 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
+         } else
+         {
+-            pingBack.done( getPingInfo( motd, protocol ), null );
++            // FlameCord - Custom motd system
++            // Get the configuration
++            final FlameCordConfiguration config = FlameCord.getInstance().getFlameCordConfiguration();
++
++            String motd;
++            String protocolName;
++
++            ServerPing.PlayerInfo[] sample = null;
++
++            int maxPlayers = listener.getMaxPlayers();
++            int onlinePlayers = bungee.getOnlineCount();
++
++            if (config.isFakePlayersEnabled()) {
++                onlinePlayers += config.getFakePlayersAmount(onlinePlayers);
++            }
++
++            if (config.isMaxPlayersEnabled()) {
++                maxPlayers = config.isMaxPlayersOneMore() ? onlinePlayers + 1 : config.getMaxPlayersAmount();
++            }
++
++            if (config.isMotdEnabled()) {
++                motd = config.getMOTD(maxPlayers, onlinePlayers, protocol);
++            } else {
++                motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
++            }
++
++            if (config.isProtocolEnabled()) {
++                protocolName = config.getProtocolName(maxPlayers, onlinePlayers);
++            } else {
++                protocolName = bungee.getName() + " " + bungee.getGameVersion();
++            }
++
++            int customProtocol = config.isProtocolEnabled() && config.isProtocolAlwaysShow() ? -1 : protocol;
++
++            if (config.isSampleEnabled()) {
++                final UUID fakeUuid = new UUID(0, 0);
++                final String[] sampleString = config.getSample(maxPlayers, onlinePlayers, protocol);
++
++                sample = new ServerPing.PlayerInfo[sampleString.length];
++
++                for (int i = 0; i < sampleString.length; i++) {
++                    sample[i] = new ServerPing.PlayerInfo(sampleString[i], fakeUuid);
++                }
++            } 
++
++            pingBack.done( new ServerPing(
++                    new ServerPing.Protocol( protocolName, customProtocol ),
++                    new ServerPing.Players( maxPlayers, onlinePlayers, sample ),
++                    motd, BungeeCord.getInstance().config.getFaviconObject() ), null );
++            // FlameCord end - Custom motd system
+         }
+ 
+         thisState = State.PING;
+-- 
+2.37.3.windows.1
+

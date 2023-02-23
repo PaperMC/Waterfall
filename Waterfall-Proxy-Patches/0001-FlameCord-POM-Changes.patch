@@ -1,0 +1,146 @@
+From 01758bf18170f703930757151d86c9440e8793da Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Wed, 16 Dec 2020 17:59:15 +0800
+Subject: [PATCH] FlameCord POM Changes
+
+
+diff --git a/flamecord/pom.xml b/flamecord/pom.xml
+new file mode 100644
+index 00000000..20edd900
+--- /dev/null
++++ b/flamecord/pom.xml
+@@ -0,0 +1,44 @@
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <parent>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-parent</artifactId>
++        <version>1.19-R0.1-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
++    </parent>
++
++    <groupId>dev._2lstudios</groupId>
++    <artifactId>waterfall-flamecord</artifactId>
++    <version>1.19-R0.1-SNAPSHOT</version>
++    <packaging>jar</packaging>
++
++    <name>Waterfall-FlameCord</name>
++    <description>FlameCord adds security essentials and new configuration options</description>
++
++    <dependencies>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-config</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-chat</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++    </dependencies>
++
++    <build>
++        <finalName>${project.name}</finalName>
++        <resources>
++            <resource>
++                <filtering>true</filtering>
++                <directory>${basedir}/src/main/resources</directory>
++            </resource>
++        </resources>
++    </build>
++</project>
+diff --git a/pom.xml b/pom.xml
+index 2b544c23..d940b21c 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -63,6 +63,7 @@
+         <module>query</module>
+         <!--<module>slf4j</module>-->
+         <module>native</module>
++        <module>flamecord</module> <!-- FlameCord - POM Changes -->
+     </modules>
+ 
+     <scm>
+diff --git a/protocol/pom.xml b/protocol/pom.xml
+index 93ae5952..d6222d16 100644
+--- a/protocol/pom.xml
++++ b/protocol/pom.xml
+@@ -64,5 +64,14 @@
+             <version>1.3.0</version>
+             <scope>compile</scope>
+         </dependency>
++
++        <!-- FlameCord start - Add our dependencies -->
++        <dependency>
++            <groupId>dev._2lstudios</groupId>
++            <artifactId>waterfall-flamecord</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <!-- FlameCord end -->
+     </dependencies>
+ </project>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 1036a2e7..10fe411d 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -157,6 +157,51 @@
+             <scope>runtime</scope>
+         </dependency>
+         <!-- Waterfall end -->
++        
++        <!-- FlameCord start - Add our dependencies -->
++        <dependency>
++            <groupId>dev._2lstudios</groupId>
++            <artifactId>waterfall-flamecord</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-alert</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-find</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-list</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-send</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-server</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>net.md-5</groupId>
++            <artifactId>bungeecord-module-reconnect-yaml</artifactId>
++            <version>${project.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <!-- FlameCord end -->
+     </dependencies>
+ 
+     <!-- Waterfall start - copy license files into jar -->
+-- 
+2.37.0.windows.1
+

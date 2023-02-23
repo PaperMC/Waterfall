@@ -1,0 +1,32 @@
+From 510085f25ef21678828f5b3026662f51a94c1137 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Wed, 21 Dec 2022 21:43:05 -0300
+Subject: [PATCH] Use duplicate() for MinecraftDecoder
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index ac83e3253..c31ec1ce7 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -38,7 +38,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         }
+ 
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
++        ByteBuf slice = in.duplicate(); // FlameCord - Duplicate buf instead of Copy
+ 
+         Object packetTypeInfo = null;
+         try
+@@ -73,7 +73,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 in.skipBytes( in.readableBytes() );
+             }
+ 
+-            out.add( new PacketWrapper( packet, slice ) );
++            // FlameCord - Duplicate buf instead of Copy
++            out.add( new PacketWrapper( packet, slice.retain() ) );
+             slice = null;
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             // Waterfall start: Additional DoS mitigations
+-- 
+2.37.3.windows.1
+

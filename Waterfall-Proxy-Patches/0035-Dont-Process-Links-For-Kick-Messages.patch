@@ -1,0 +1,134 @@
+From ab1e5d100f2d678f1471fa83226dc9a5af2d370b Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Tue, 10 Jan 2023 16:37:13 -0300
+Subject: [PATCH] Dont Process Links For Kick Messages
+
+
+diff --git a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
+index 4371374a..2bb27e67 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
++++ b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
+@@ -160,6 +160,107 @@ public final class TextComponent extends BaseComponent
+         return components.toArray( new BaseComponent[ 0 ] );
+     }
+ 
++    // FlameCord start - Dont Process Links For Kick Messages
++    public static BaseComponent[] fromLegacyTextFast(String message)
++    {
++        return fromLegacyTextFast( message, ChatColor.WHITE );
++    }
++
++    public static BaseComponent[] fromLegacyTextFast(String message, ChatColor defaultColor)
++    {
++        ArrayList<BaseComponent> components = new ArrayList<>();
++        StringBuilder builder = new StringBuilder();
++        TextComponent component = new TextComponent();
++
++        for ( int i = 0; i < message.length(); i++ )
++        {
++            char c = message.charAt( i );
++            if ( c == ChatColor.COLOR_CHAR )
++            {
++                if ( ++i >= message.length() )
++                {
++                    break;
++                }
++                c = message.charAt( i );
++                if ( c >= 'A' && c <= 'Z' )
++                {
++                    c += 32;
++                }
++                ChatColor format;
++                if ( c == 'x' && i + 12 < message.length() )
++                {
++                    StringBuilder hex = new StringBuilder( "#" );
++                    for ( int j = 0; j < 6; j++ )
++                    {
++                        hex.append( message.charAt( i + 2 + ( j * 2 ) ) );
++                    }
++                    try
++                    {
++                        format = ChatColor.of( hex.toString() );
++                    } catch ( IllegalArgumentException ex )
++                    {
++                        format = null;
++                    }
++
++                    i += 12;
++                } else
++                {
++                    format = ChatColor.getByChar( c );
++                }
++                if ( format == null )
++                {
++                    continue;
++                }
++                if ( builder.length() > 0 )
++                {
++                    TextComponent old = component;
++                    component = new TextComponent( old );
++                    old.setText( builder.toString() );
++                    builder = new StringBuilder();
++                    components.add( old );
++                }
++                if ( format == ChatColor.BOLD )
++                {
++                    component.setBold( true );
++                } else if ( format == ChatColor.ITALIC )
++                {
++                    component.setItalic( true );
++                } else if ( format == ChatColor.UNDERLINE )
++                {
++                    component.setUnderlined( true );
++                } else if ( format == ChatColor.STRIKETHROUGH )
++                {
++                    component.setStrikethrough( true );
++                } else if ( format == ChatColor.MAGIC )
++                {
++                    component.setObfuscated( true );
++                } else
++                {
++                    if ( format == ChatColor.RESET )
++                    {
++                        format = defaultColor;
++                    }
++                    component = new TextComponent();
++                    component.setColor( format );
++                    component.setReset( true );
++                }
++                continue;
++            }
++            int pos = message.indexOf( ' ', i );
++            if ( pos == -1 )
++            {
++                pos = message.length();
++            }
++            builder.append( c );
++        }
++
++        component.setText( builder.toString() );
++        components.add( component );
++
++        return components.toArray( new BaseComponent[ 0 ] );
++    }
++    // FlameCord end - Dont Process Links For Kick Messages
++
+     /**
+      * The text of the component that will be displayed to the client
+      */
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index e8c14c55..6d0719a0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -833,7 +833,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( canSendKickMessage() )
+         {
+-            disconnect( TextComponent.fromLegacyText( reason ) );
++            disconnect( TextComponent.fromLegacyTextFast( reason ) ); // FlameCord - Dont Process Links For Kick Messages
+         } else
+         {
+             ch.close();
+-- 
+2.37.3.windows.1
+

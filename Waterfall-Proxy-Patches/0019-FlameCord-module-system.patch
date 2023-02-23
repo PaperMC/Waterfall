@@ -1,0 +1,194 @@
+From 681805834a7f83cccb8de7878b8ffacbdb4b6d0d Mon Sep 17 00:00:00 2001
+From: linsaftw <25271111+linsaftw@users.noreply.github.com>
+Date: Sat, 1 May 2021 14:17:48 -0300
+Subject: [PATCH] FlameCord module system
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+index f3d5c0290..fb3d8ca2e 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
+@@ -4,6 +4,7 @@ import java.util.Collection;
+ import java.util.logging.Logger;
+ 
+ import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
++import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+ import lombok.Getter;
+ import net.md_5.bungee.config.ConfigurationProvider;
+ import net.md_5.bungee.config.YamlConfiguration;
+@@ -23,9 +24,16 @@ public class FlameCord {
+     @Getter
+     private FlameCordConfiguration flameCordConfiguration;
+ 
++    // FlameCord - Module System
++    @Getter
++    private ModulesConfiguration modulesConfiguration;
++
+     public void reload(final Logger logger, final Collection<String> whitelistedAddresses) {
+         final ConfigurationProvider configurationProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+         
+         this.flameCordConfiguration = new FlameCordConfiguration(configurationProvider, whitelistedAddresses);
++        
++        // FlameCord - Module System
++        this.modulesConfiguration = new ModulesConfiguration(configurationProvider);
+     }
+ }
+\ No newline at end of file
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+new file mode 100644
+index 000000000..a6cb2638f
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
+@@ -0,0 +1,35 @@
++package dev._2lstudios.flamecord.configuration;
++
++import java.io.File;
++
++import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
++
++public class ModulesConfiguration extends FlameConfig {
++        public boolean reconnectEnabled = false;
++        public boolean alertEnabled = true;
++        public boolean findEnabled = true;
++        public boolean ipEnabled = true;
++        public boolean listEnabled = true;
++        public boolean permsEnabled = true;
++        public boolean reloadEnabled = true;
++        public boolean sendEnabled = true;
++        public boolean serverEnabled = true;
++
++        public ModulesConfiguration(final ConfigurationProvider configurationProvider) {
++                final File configurationFile = new File("./modules.yml");
++                final Configuration configuration = load(configurationFile);
++
++                this.alertEnabled = setIfUnexistant("alert.enabled", this.alertEnabled, configuration);
++                this.findEnabled = setIfUnexistant("find.enabled", this.findEnabled, configuration);
++                this.ipEnabled = setIfUnexistant("ip.enabled", this.ipEnabled, configuration);
++                this.listEnabled = setIfUnexistant("list.enabled", this.listEnabled, configuration);
++                this.permsEnabled = setIfUnexistant("perms.enabled", this.permsEnabled, configuration);
++                this.reloadEnabled = setIfUnexistant("reload.enabled", this.reloadEnabled, configuration);
++                this.sendEnabled = setIfUnexistant("send.enabled", this.sendEnabled, configuration);
++                this.serverEnabled = setIfUnexistant("server.enabled", this.serverEnabled, configuration);
++                this.reconnectEnabled = setIfUnexistant("reconnect.enabled", this.reconnectEnabled, configuration);
++
++                save(configuration, configurationFile);
++        }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 0d8f02d25..d58227fd9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,6 +11,8 @@ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ 
+ import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.commands.FlameCordCommand;
++import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
+@@ -90,6 +92,13 @@ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.module.ModuleManager;
++import net.md_5.bungee.module.cmd.alert.CommandAlert;
++import net.md_5.bungee.module.cmd.alert.CommandAlertRaw;
++import net.md_5.bungee.module.cmd.find.CommandFind;
++import net.md_5.bungee.module.cmd.list.CommandList;
++import net.md_5.bungee.module.cmd.send.CommandSend;
++import net.md_5.bungee.module.cmd.server.CommandServer;
++import net.md_5.bungee.module.reconnect.yaml.YamlReconnectHandler;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -244,11 +253,6 @@ public class BungeeCord extends ProxyServer
+         // Waterfall end
+ 
+         pluginManager = new PluginManager( this );
+-        getPluginManager().registerCommand( null, new CommandReload() );
+-        getPluginManager().registerCommand( null, new CommandEnd() );
+-        getPluginManager().registerCommand( null, new CommandIP() );
+-        getPluginManager().registerCommand( null, new CommandBungee() );
+-        getPluginManager().registerCommand( null, new CommandPerms() );
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+@@ -287,9 +291,10 @@ public class BungeeCord extends ProxyServer
+         bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
+         workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+ 
+-        File moduleDirectory = new File( "modules" );
++        // FlameCord - Use own module system
++        /* File moduleDirectory = new File( "modules" );
+         moduleManager.load( this, moduleDirectory );
+-        pluginManager.detectPlugins( moduleDirectory );
++        pluginManager.detectPlugins( moduleDirectory ); */
+ 
+         pluginsFolder.mkdir();
+         pluginManager.detectPlugins( pluginsFolder );
+@@ -315,6 +320,7 @@ public class BungeeCord extends ProxyServer
+ 
+         isRunning = true;
+ 
++        loadModules();
+         pluginManager.enablePlugins();
+ 
+         if ( config.getThrottle() > 0 )
+@@ -853,4 +859,53 @@ public class BungeeCord extends ProxyServer
+     {
+         return new BungeeTitle();
+     }
++
++    // FlameCord - FlameCord Module System
++    public void loadModules() {
++        final ModulesConfiguration modulesConfiguration = FlameCord.getInstance().getModulesConfiguration();
++
++        // Bungeecord Commands
++        pluginManager.registerCommand(null, new CommandEnd());
++        pluginManager.registerCommand(null, new CommandBungee());
++
++        if (modulesConfiguration.reloadEnabled) {
++            pluginManager.registerCommand(null, new CommandReload());
++        }
++        if (modulesConfiguration.ipEnabled) {
++            pluginManager.registerCommand(null, new CommandIP());
++        }
++        if (modulesConfiguration.permsEnabled) {
++            pluginManager.registerCommand(null, new CommandPerms());
++        }
++
++        // Modules Commands
++        if (modulesConfiguration.alertEnabled) {
++            pluginManager.registerCommand(null, new CommandAlert());
++            pluginManager.registerCommand(null, new CommandAlertRaw());
++        }
++        if (modulesConfiguration.findEnabled) {
++            pluginManager.registerCommand(null, new CommandFind());
++        }
++        if (modulesConfiguration.listEnabled) {
++            pluginManager.registerCommand(null, new CommandList());
++        }
++        if (modulesConfiguration.sendEnabled) {
++            pluginManager.registerCommand(null, new CommandSend());
++        }
++        if (modulesConfiguration.serverEnabled) {
++            pluginManager.registerCommand(null, new CommandServer());
++        }
++
++        if (modulesConfiguration.reconnectEnabled) {
++            for (ListenerInfo info : getConfig().getListeners()) {
++                if (!info.isForceDefault() && getReconnectHandler() == null) {
++                    setReconnectHandler(new YamlReconnectHandler());
++                    break;
++                }
++            }
++        }
++
++        // Flamecord Command
++        pluginManager.registerCommand(null, new FlameCordCommand(this));
++    }
+ }
+-- 
+2.37.3.windows.1
+

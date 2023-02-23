@@ -1,0 +1,98 @@
+From 79f33268f3f154170f55362decf8fcc8b99a68f8 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Sun, 15 Jan 2023 10:12:45 -0300
+Subject: [PATCH] Bungee IP Command
+
+
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+index 2ea33a94b..e42bb29d5 100644
+--- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
+@@ -101,6 +101,12 @@ public class MessagesConfiguration extends FlameConfig {
+ 		setIfUnexistant("flamecord_bplugins_separator", ", ", configuration);
+ 		setIfUnexistant("flamecord_bplugins_header", "&aPlugins ({0}): ", configuration);
+ 
++		// FlameCord - Bungee IP Command
++		setIfUnexistant("flamecord_bip_nopermission", "&cYou don't have permission to do this!", configuration);
++		setIfUnexistant("flamecord_bip_offline", "&cThe player is not online!", configuration);
++		setIfUnexistant("flamecord_bip_usage", "&c/bip <player>", configuration);
++		setIfUnexistant("flamecord_bip", "&aInformation about {0}&a:\n&aUUID: &b{1}\n&aIP: &b{2}\n&aPing: &b{3}ms\n&aLocale: &b{4}\n&aView Distance: &b{5}\n&aCurrent Server: &b{6}", configuration);
++
+ 		for (final String key : configuration.getKeys()) {
+ 			final Object value = configuration.get(key);
+ 
+diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java
+new file mode 100644
+index 000000000..85313491e
+--- /dev/null
++++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java
+@@ -0,0 +1,45 @@
++package dev._2lstudios.flamecord.commands;
++
++import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.configuration.MessagesConfiguration;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++
++public class BungeeIPCommand extends Command {
++    public BungeeIPCommand() {
++        super("bip");
++    }
++
++    @Override
++    public void execute(final CommandSender sender, final String[] args) {
++        final FlameCord flameCord = FlameCord.getInstance();
++        final MessagesConfiguration messagesConfiguration = flameCord.getMessagesConfiguration();
++
++        if (sender.hasPermission("flamecord.bip")) {
++            if (args.length > 0) {
++                ProxiedPlayer player = BungeeCord.getInstance().getPlayer(args[0]);
++
++                if (player != null) {
++                    String message = messagesConfiguration.getTranslation("flamecord_bip", player.getDisplayName(),
++                            player.getUniqueId(), player.getSocketAddress(), player.getPing(), player.getLocale(),
++                            player.getViewDistance(), player.getServer().getInfo().getName());
++
++                    sender.sendMessage(TextComponent.fromLegacyText(message));
++                } else {
++                    sender.sendMessage(
++                            TextComponent
++                                    .fromLegacyText(messagesConfiguration.getTranslation("flamecord_bip_offline")));
++                }
++            } else {
++                sender.sendMessage(
++                        TextComponent.fromLegacyText(messagesConfiguration.getTranslation("flamecord_bip_usage")));
++            }
++        } else {
++            sender.sendMessage(TextComponent
++                    .fromLegacyText(messagesConfiguration.getTranslation("flamecord_bip_nopermission")));
++        }
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index ec5fd4af2..f5059666e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,6 +11,7 @@ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
+ 
+ import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.commands.BungeeIPCommand;
+ import dev._2lstudios.flamecord.commands.BungeePluginsCommand;
+ import dev._2lstudios.flamecord.commands.FlameCordCommand;
+ import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
+@@ -916,5 +917,8 @@ public class BungeeCord extends ProxyServer
+         
+         // FlameCord - Bungee Plugins Command
+         pluginManager.registerCommand(null, new BungeePluginsCommand());
++        
++        // FlameCord - Bungee IP Command
++        pluginManager.registerCommand(null, new BungeeIPCommand());
+     }
+ }
+-- 
+2.37.3.windows.1
+
