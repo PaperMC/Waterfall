@@ -1,4 +1,4 @@
-From 405f365b733a8d8a322b0426ef103cdc7774cffe Mon Sep 17 00:00:00 2001
+From f18ce5e7dc170f19e8bb57e74cafbd9bb90658ae Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -242,14 +242,15 @@ index 000000000..0295ea89d
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
 new file mode 100644
-index 000000000..7c7899830
+index 000000000..7aa157966
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressData.java
-@@ -0,0 +1,165 @@
+@@ -0,0 +1,170 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.util.Collection;
 +import java.util.HashSet;
++import java.util.logging.Level;
 +
 +import dev._2lstudios.flamecord.FlameCord;
 +import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
@@ -376,6 +377,10 @@ index 000000000..7c7899830
 +        if (!FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewallWhitelist().contains(hostString)) {
 +            this.lastFirewall = System.currentTimeMillis();
 +            this.firewallReason = reason;
++
++            if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallLog()) {
++                FlameCord.getInstance().getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] was firewalled because of " + reason, hostString );
++            }
 +
 +            // Queue the firewall as a ipset linux command
 +            FlameCord.getInstance().queueLinuxCommand("ipset add flamecord-firewall " + hostString);
@@ -1700,7 +1705,7 @@ index fb81adee0..173b47f33 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8994454c7..62712330e 100644
+index 9ecdbd174..b55855196 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
@@ -1883,22 +1888,19 @@ index 66332af4e..c16e28c80 100644
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
-index e2911d5e4..1e3608fa4 100644
+index e2911d5e4..d853b4044 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
-@@ -8,7 +8,11 @@ import io.netty.handler.codec.http.HttpResponse;
+@@ -8,6 +8,8 @@ import io.netty.handler.codec.http.HttpResponse;
  import io.netty.handler.codec.http.HttpResponseStatus;
  import io.netty.handler.codec.http.LastHttpContent;
  import java.nio.charset.Charset;
-+import java.util.logging.Level;
 +
 +import dev._2lstudios.flamecord.FlameCord;
  import lombok.RequiredArgsConstructor;
-+import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.Callback;
  
- @RequiredArgsConstructor
-@@ -21,6 +25,15 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
+@@ -21,6 +23,14 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
      @Override
      public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
      {
@@ -1907,7 +1909,6 @@ index e2911d5e4..1e3608fa4 100644
 +        if (FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewalledExceptions().contains(reason))
 +        {
 +            FlameCord.getInstance().getAddressDataManager().getAddressData(ctx.channel().remoteAddress()).firewall(reason);
-+            BungeeCord.getInstance().getLogger().log( Level.INFO, "[FlameCord] [{0}] was firewalled because of " + reason, ctx.channel().remoteAddress() );
 +        }
 +        // Flamecord end - Antibot System
 +
@@ -1931,19 +1932,18 @@ index b3fa48355..6f1d8336d 100644
 +    // FlameCord end - Antibot System
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 14e3004fc..3fce5ff11 100644
+index 14e3004fc..b61ed5218 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -12,6 +12,8 @@ import io.netty.handler.timeout.ReadTimeoutException;
+@@ -12,6 +12,7 @@ import io.netty.handler.timeout.ReadTimeoutException;
  import java.io.IOException;
  import java.net.InetSocketAddress;
  import java.util.logging.Level;
 +
-+import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.connection.CancelSendSignal;
  import net.md_5.bungee.connection.InitialHandler;
-@@ -146,6 +148,15 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -146,6 +147,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      @Override
      public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
      {
@@ -1952,7 +1952,6 @@ index 14e3004fc..3fce5ff11 100644
 +        if (FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewalledExceptions().contains(reason))
 +        {
 +            FlameCord.getInstance().getAddressDataManager().getAddressData(ctx.channel().remoteAddress()).firewall(reason);
-+            FlameCord.getInstance().getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] was firewalled because of " + reason, ctx.channel().remoteAddress() );
 +        }
 +        // Flamecord end - Antibot System
 +
