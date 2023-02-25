@@ -1,6 +1,14 @@
 # FlameCord
 
-![Download](https://img.shields.io/badge/Download-%244.99-blue?style=flat-square) ![Discord](https://img.shields.io/discord/442079515498381312?style=flat-square&color=%237289da&label=Discord&logo=discord&logoColor=%237289da) ![GitHub](https://img.shields.io/github/license/2lstudios-mc/flamecord?style=flat-square)
+<a href="https://builtbybit.com/resources/flamecord-mitigate-bots-exploits.13492/" alt="Download">
+    <img src="https://img.shields.io/badge/Download-%244.99-blue?style=flat-square" />
+</a>
+<a href="https://discord.com/invite/gF36AT3" alt="Discord">
+    <img src="https://img.shields.io/discord/442079515498381312?style=flat-square&color=%237289da&label=Discord&logo=discord&logoColor=%237289da" />
+</a>
+<a href="https://github.com/sammwyy/FlameCord/blob/master/LICENSE.txt" alt="License">
+    <img src="https://img.shields.io/github/license/2lstudios-mc/flamecord?style=flat-square" />
+</a>
 
 FlameCord is a Waterfall fork or modification that adds antibot features, exploit prevention systems, performance improvements, removal of unused features, library updates and application layer ddos mitigation.
 
@@ -58,4 +66,4 @@ FlameCord is compiled like Waterfall does; Please follow the [CONTRIBUTING.md](h
 ## 📝 License
 
 Copyright © 2018-2023 [2LStudios](https://github.com/2lstudios-mc).  
-This project is [MIT License](LICENSE.txt) licensed.  
+This project is [MIT License](LICENSE.txt) licensed.
