@@ -36,6 +36,8 @@ Just drag an drop FlameCord.jar into your server folder and run it.
 
 You can customize many FlameCord features in the flamecord.yml file.
 
+<a href="https://builtbybit.com/resources/26463/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=25% height=25%><img/><a/>
+
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!
