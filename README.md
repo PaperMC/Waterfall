@@ -36,26 +36,6 @@ Just drag an drop FlameCord.jar into your server folder and run it.
 
 You can customize many FlameCord features in the flamecord.yml file.
 
-### How To (Compiling from source)
-
-To compile FlameCord, you need JDK 8 or above, git, bash, maven, and an internet connection.
-
-```bash
-# Clone this repo.
-git clone https://github.com/2lstudios-mc/FlameCord
-
-# Navigate to the cloned repository.
-cd FlameCord
-
-# Build project.
-./flamecord b
-```
-
-> **Note:**
-> To compile on Windows you must do it from a [git-bash](https://git-scm.com/downloads) terminal or [WSL](https://learn.microsoft.com/windows/wsl/install).
-
-The jar will be generated in the directory `FlameCord-Proxy/bootstrap/target`
-
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!
