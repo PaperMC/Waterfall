@@ -30,13 +30,11 @@ FlameCord will track upstream Waterfall and merge changes as needed.
 
 ## 🌱 Get Started
 
-### How to (Server Admins)
-
 Just drag an drop FlameCord.jar into your server folder and run it.
 
 You can customize many FlameCord features in the flamecord.yml file.
 
-<a href="https://builtbybit.com/resources/26463/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=25% height=25%><img/><a/>
+<a href="https://builtbybit.com/resources/26463/"><img src="https://archive.org/download/download-button-png/download-button-png.png" width=20% height=20%><img/><a/>
 
 ## 🤝 Contributing
 
