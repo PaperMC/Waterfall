@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/github/license/2lstudios-mc/flamecord?style=flat-square" />
 </a>
 
-FlameCord is a Waterfall fork or modification that adds antibot features, exploit prevention systems, performance improvements, removal of unused features, library updates and application layer ddos mitigation.
+FlameCord is a fork of BungeeCord and Waterfall that protects your Minecraft server from bot attacks and exploits with its advanced set of antibot filtering features. FlameCord also fixes bugs, improves performance and adds new functionalities to your server. FlameCord is the ultimate solution for a secure and fast Minecraft network.🔥
 
 ## ⭐ Features
 
