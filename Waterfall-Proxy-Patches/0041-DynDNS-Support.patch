@@ -1,0 +1,108 @@
+From 58df06f4485af12677ab0033e7cb7c382354b782 Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Fri, 10 Mar 2023 23:33:01 -0300
+Subject: [PATCH] DynDNS Support
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 97bd384b2..1e76d1a13 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -13,6 +13,8 @@ import net.md_5.bungee.api.config.ServerInfo;
+ @Deprecated
+ public interface ProxyConfig
+ {
++    // FlameCord - DynDNS Support
++    void updateServerIPs();
+ 
+     /**
+      * Time before users are disconnected due to no network activity.
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 021fe8398..d7824dddd 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -369,17 +369,31 @@ public final class UserConnection implements ProxiedPlayer
+                     future.channel().close();
+                     pendingConnects.remove( target );
+ 
+-                    ServerInfo def = updateAndGetNextServer( target );
+-                    if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
++                    // FlameCord start - DynDNS Support
++                    InetSocketAddress updated = (InetSocketAddress) Util.getAddr( target.getAddress().getHostName() + ":" + target.getAddress().getPort() );
++                    if ( !updated.getAddress().getHostAddress().equals( target.getAddress().getAddress().getHostAddress() ) )
+                     {
+-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
+-                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
+-                    } else if ( dimensionChange )
+-                    {
+-                        disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
++                        ProxyServer.getInstance().getConfig().updateServerIPs();
++                        System.out.println( "Updated server IPs" );
++
++                        connect( ProxyServer.getInstance().getServerInfo( target.getName() ), null, false, ServerConnectEvent.Reason.UNKNOWN );
+                     } else
+                     {
+-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
++                    // FlameCord end - DynDNS Support
++                        ServerInfo def = updateAndGetNextServer( target );
++                        if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
++                        {
++                            sendMessage( bungee.getTranslation( "fallback_lobby" ) );
++                            connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK );
++                        } else if ( dimensionChange )
++                        {
++                            disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
++                        } else
++                        {
++                            sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
++
++                            sendMessage( "§cCause: " + future.cause().getMessage() + " | " + future.cause().toString() );
++                        }
+                     }
+                 }
+             }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index b67195ec8..e9fccb2d0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap; // Waterfall
+ import gnu.trove.map.TMap;
+ import java.io.File;
+ import java.io.IOException;
++import java.net.InetSocketAddress;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Map;
+@@ -15,6 +16,7 @@ import lombok.Getter;
+ import lombok.Synchronized; // Waterfall
+ 
+ import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.Favicon;
+ import net.md_5.bungee.api.ProxyConfig;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -31,6 +33,21 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
+ @Getter
+ public abstract class Configuration implements ProxyConfig
+ {
++    // FlameCord start - DynDNS Support
++    public void updateServerIPs()
++    {
++        TMap<String, ServerInfo> newServers = new CaseInsensitiveMap<>();
++
++        for ( ServerInfo info : servers.values() )
++        {
++            InetSocketAddress updated = (InetSocketAddress) Util.getAddr( info.getAddress().getHostName() + ":" + info.getAddress().getPort() );
++            ServerInfo updatedInfo = ProxyServer.getInstance().constructServerInfo( info.getName(), updated, info.getMotd(), info.isRestricted() );
++            newServers.put( info.getName(), updatedInfo );
++        }
++
++        servers = newServers;
++    }
++    // FlameCord end - DynDNS Support
+ 
+     /**
+      * Time before users are disconnected due to no network activity.
+-- 
+2.37.3.windows.1
+
