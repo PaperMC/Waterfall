@@ -1,4 +1,4 @@
-From 58df06f4485af12677ab0033e7cb7c382354b782 Mon Sep 17 00:00:00 2001
+From 0c34bb827c1070b27a6e6ffcc548d6875c23efc6 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 10 Mar 2023 23:33:01 -0300
 Subject: [PATCH] DynDNS Support
@@ -18,10 +18,10 @@ index 97bd384b2..1e76d1a13 100644
      /**
       * Time before users are disconnected due to no network activity.
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 021fe8398..d7824dddd 100644
+index 021fe8398..4e3982d24 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -369,17 +369,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -369,17 +369,29 @@ public final class UserConnection implements ProxiedPlayer
                      future.channel().close();
                      pendingConnects.remove( target );
  
@@ -37,8 +37,6 @@ index 021fe8398..d7824dddd 100644
 -                    {
 -                        disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 +                        ProxyServer.getInstance().getConfig().updateServerIPs();
-+                        System.out.println( "Updated server IPs" );
-+
 +                        connect( ProxyServer.getInstance().getServerInfo( target.getName() ), null, false, ServerConnectEvent.Reason.UNKNOWN );
                      } else
                      {
