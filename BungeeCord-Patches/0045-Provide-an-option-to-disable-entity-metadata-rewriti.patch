@@ -1,4 +1,4 @@
-From 8be8d4cde11d6f17fc38ab464cdd01fc247080fa Mon Sep 17 00:00:00 2001
+From 201c5254e561f61e44afe7854dc6d2a111963cf1 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -140,7 +140,7 @@ index 7fe08ecd..5961392a 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 85628a7a..5105df8b 100644
+index c7180803..04840037 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -688,6 +688,7 @@ public class DownstreamBridge extends PacketHandler
@@ -160,7 +160,7 @@ index 85628a7a..5105df8b 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 61ad307a..ad951df0 100644
+index 5ecca5a0..28d2127f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -175,7 +175,7 @@ index 61ad307a..ad951df0 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -295,7 +300,13 @@ public abstract class EntityMap
+@@ -297,7 +302,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -228,5 +228,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.38.1
+2.37.3.windows.1
 

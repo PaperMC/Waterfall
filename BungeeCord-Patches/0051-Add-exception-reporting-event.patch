@@ -1,4 +1,4 @@
-From a840443d6e16750852e70f923f07a1576937799e Mon Sep 17 00:00:00 2001
+From d3707353a4b8be0fa47a5fa155bb44520914a383 Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Wed, 22 Apr 2020 14:00:44 +1000
 Subject: [PATCH] Add exception reporting event
@@ -446,7 +446,7 @@ index 00000000..5bf57ec1
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4180c995..90031156 100644
+index c11ce8d3..1ba5b249 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -26,6 +26,11 @@ import java.util.Stack;
@@ -461,15 +461,15 @@ index 4180c995..90031156 100644
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
-@@ -33,6 +38,7 @@ import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -34,6 +39,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.event.EventBus;
  import net.md_5.bungee.event.EventHandler;
+ import org.yaml.snakeyaml.LoaderOptions;
 +import net.md_5.bungee.event.EventHandlerMethod; //Waterfall - Exception event
  import org.yaml.snakeyaml.Yaml;
  import org.yaml.snakeyaml.constructor.Constructor;
  import org.yaml.snakeyaml.introspector.PropertyUtils;
-@@ -193,10 +199,9 @@ public final class PluginManager
+@@ -194,10 +200,9 @@ public final class PluginManager
          }
  
          String[] args = Arrays.copyOfRange( split, 1, split.length );
@@ -481,7 +481,7 @@ index 4180c995..90031156 100644
                  if ( proxy.getConfig().isLogCommands() )
                  {
                      proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
-@@ -205,18 +210,28 @@ public final class PluginManager
+@@ -206,18 +211,28 @@ public final class PluginManager
                      } );
                  }
                  command.execute( sender, args );
@@ -513,7 +513,7 @@ index 4180c995..90031156 100644
          return true;
      }
  
-@@ -304,7 +319,11 @@ public final class PluginManager
+@@ -305,7 +320,11 @@ public final class PluginManager
                  } );
              } catch ( Throwable t )
              {
@@ -526,7 +526,7 @@ index 4180c995..90031156 100644
              }
          }
      }
-@@ -444,7 +463,7 @@ public final class PluginManager
+@@ -445,7 +464,7 @@ public final class PluginManager
          Preconditions.checkNotNull( event, "event" );
  
          long start = System.nanoTime();
@@ -535,7 +535,7 @@ index 4180c995..90031156 100644
          event.postCall();
  
          long elapsed = System.nanoTime() - start;
-@@ -458,6 +477,14 @@ public final class PluginManager
+@@ -459,6 +478,14 @@ public final class PluginManager
          return event;
      }
  
@@ -695,5 +695,5 @@ index 38b75b51..02ec98fc 100644
  
              // If we have a period of 0 or less, only run once
 -- 
-2.38.1
+2.37.3.windows.1
 

@@ -1,4 +1,4 @@
-From a39c0b052c59de504031af65d96d6d0158f6405f Mon Sep 17 00:00:00 2001
+From ffc7cfe376ea12c3232492bcaad76e04c6b138db Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -33,7 +33,7 @@ index 88865b85..0c334afc 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 52bc1ae7..e15926d3 100644
+index dabfa4db..7e0c4f7a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,8 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -45,9 +45,9 @@ index 52bc1ae7..e15926d3 100644
  import net.md_5.bungee.protocol.packet.Handshake;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -136,6 +138,20 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A )
+@@ -140,6 +142,20 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A ),
+                     map( ProtocolConstants.MINECRAFT_1_19_4, 0xB )
              );
 +            // Waterfall start
 +            TO_CLIENT.registerPacket(
@@ -185,7 +185,7 @@ index 846f8338..7fe08ecd 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c5217561..85628a7a 100644
+index e8ef17a1..c7180803 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -51,6 +51,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
@@ -268,5 +268,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.38.1
+2.37.3.windows.1
 
