@@ -1,4 +1,4 @@
-From 2caae71d8c0bdc5a325610ef1c77775f9ba4ee69 Mon Sep 17 00:00:00 2001
+From 1bc16d636d3833dc1f8b8f2d1a88c9e87f40106b Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Jun 2021 11:30:19 -0300
 Subject: [PATCH] Apply packet limits
@@ -51,19 +51,21 @@ index 7dbbfd3cd..b78420556 100644
 +    }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 3224b0d2b..763d34c2f 100644
+index d0e37793d..763d34c2f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -70,7 +70,8 @@ public class LoginRequest extends DefinedPacket
+@@ -70,8 +70,9 @@ public class LoginRequest extends DefinedPacket
      public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
          // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
          // legal on the protocol level.
 -        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
+-        return 1 + (16 * 3);
 +        // FlameCord - Apply packet limits
 +        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 1 + (16 * 4) + 1024;
-         return 1 + (16 * 4);
++        return 1 + (16 * 4);
      }
      // Waterfall end
+ }
 -- 
 2.37.3.windows.1
 

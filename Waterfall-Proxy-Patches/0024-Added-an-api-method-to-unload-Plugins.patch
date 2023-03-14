@@ -1,4 +1,4 @@
-From 664f35c5a6155c5e41aa10d1cd15cf590cc011a0 Mon Sep 17 00:00:00 2001
+From 82189db9bdfb79a0317466418be558ee8a8bdf83 Mon Sep 17 00:00:00 2001
 From: abhiram <abhithegamer2019@gmail.com>
 Date: Thu, 13 May 2021 01:05:03 +0530
 Subject: [PATCH] Added an api method to unload Plugins
@@ -6,7 +6,7 @@ Subject: [PATCH] Added an api method to unload Plugins
 Format Code to Bungee's code style
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 90031156f..a190dfae8 100644
+index 1ba5b2496..5db665c7c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -25,6 +25,7 @@ import java.util.Set;
@@ -17,7 +17,7 @@ index 90031156f..a190dfae8 100644
  import java.util.logging.Level;
  import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Waterfall
  import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Waterfall
-@@ -63,6 +64,7 @@ public final class PluginManager
+@@ -64,6 +65,7 @@ public final class PluginManager
      private Map<String, PluginDescription> toLoad = new HashMap<>();
      private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
@@ -25,7 +25,7 @@ index 90031156f..a190dfae8 100644
  
      @SuppressWarnings("unchecked")
      public PluginManager(ProxyServer proxy)
-@@ -291,6 +293,45 @@ public final class PluginManager
+@@ -292,6 +294,45 @@ public final class PluginManager
          return plugins.get( name );
      }
  
@@ -71,7 +71,7 @@ index 90031156f..a190dfae8 100644
      public void loadPlugins()
      {
          Map<PluginDescription, Boolean> pluginStatuses = new HashMap<>();
-@@ -395,6 +436,9 @@ public final class PluginManager
+@@ -396,6 +437,9 @@ public final class PluginManager
                  Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
  
                  plugins.put( plugin.getName(), clazz );
