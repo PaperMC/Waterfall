@@ -1,4 +1,4 @@
-From 9fe93823a56f1f2b50458d1842b2d9d5b79fecdb Mon Sep 17 00:00:00 2001
+From f7f09f6530726ad6175567e67a5cea123f15dfd7 Mon Sep 17 00:00:00 2001
 From: FivePB <admin@fivepb.me>
 Date: Tue, 16 Nov 2021 21:15:32 +0100
 Subject: [PATCH] Configurable plugin messaging limits
@@ -8,7 +8,7 @@ as their name length limit configurable. This is required for some modded
 servers and clients to work
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d69463f0..469fe0e1 100644
+index d72f160f..e855cfb6 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -261,4 +261,18 @@ public interface ProxyConfig
@@ -31,10 +31,10 @@ index d69463f0..469fe0e1 100644
 +    int getPluginChannelNameLimit();
  }
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index b88e3c8a..da0efa36 100644
+index 693d312e..1b3287e6 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -45,6 +45,23 @@ public class WaterfallConfiguration extends Configuration {
+@@ -46,6 +46,23 @@ public class WaterfallConfiguration extends Configuration {
      private boolean disableEntityMetadataRewrite = false;
      private boolean disableTabListRewrite = true;
  
@@ -58,7 +58,7 @@ index b88e3c8a..da0efa36 100644
      @Override
      public void load() {
          super.load();
-@@ -58,6 +75,8 @@ public class WaterfallConfiguration extends Configuration {
+@@ -59,6 +76,8 @@ public class WaterfallConfiguration extends Configuration {
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
          disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
          disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
@@ -67,7 +67,7 @@ index b88e3c8a..da0efa36 100644
      }
  
      @Override
-@@ -94,4 +113,14 @@ public class WaterfallConfiguration extends Configuration {
+@@ -95,4 +114,14 @@ public class WaterfallConfiguration extends Configuration {
      public boolean isDisableTabListRewrite() {
          return disableTabListRewrite;
      }
@@ -83,7 +83,7 @@ index b88e3c8a..da0efa36 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 55620acc..80d8843f 100644
+index d31901cc..e3447ee4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -755,9 +755,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -101,5 +101,5 @@ index 55620acc..80d8843f 100644
              }
          } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
 -- 
-2.38.1
+2.37.3.windows.1
 

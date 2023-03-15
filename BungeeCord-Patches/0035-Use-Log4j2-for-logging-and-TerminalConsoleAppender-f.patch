@@ -1,4 +1,4 @@
-From 155bccab3c402436976b06c0a4472b1a0c42a348 Mon Sep 17 00:00:00 2001
+From 149dee42dcd003b9b33567d79735dc71de3c91ca Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index bcf23a93..232b90b2 100644
+index c988cf5d..0c510f9f 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 5afd8b9c..130670bb 100644
+index 4c4597f6..7ff4a013 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -251,10 +251,10 @@ index 5afd8b9c..130670bb 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index c726cb18..1036a2e7 100644
+index 54061ec5..d3801c9b 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -78,7 +78,7 @@
+@@ -71,7 +71,7 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -263,7 +263,7 @@ index c726cb18..1036a2e7 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -100,12 +100,13 @@
+@@ -93,12 +93,13 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -278,7 +278,7 @@ index c726cb18..1036a2e7 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -137,6 +138,25 @@
+@@ -130,6 +131,25 @@
              <version>1.7.3</version>
              <scope>runtime</scope>
          </dependency>
@@ -549,7 +549,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index b995ba85..00000000
+index 1716c3cf..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -583,7 +583,7 @@ index b995ba85..00000000
 -        <dependency>
 -            <groupId>org.slf4j</groupId>
 -            <artifactId>slf4j-api</artifactId>
--            <version>1.7.32</version>
+-            <version>1.7.36</version>
 -            <scope>compile</scope>
 -        </dependency>
 -    </dependencies>
@@ -1617,5 +1617,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.39.1
+2.37.3.windows.1
 
