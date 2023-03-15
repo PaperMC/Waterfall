@@ -1,4 +1,4 @@
-From e5469d2ebf0b560f5faa4f8c94a743bd3e12264e Mon Sep 17 00:00:00 2001
+From 90fb897bb17b0b3b1baa1809759a7f9a0e2976ef Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -517,10 +517,10 @@ index 00000000..1503ac95
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java
 new file mode 100644
-index 00000000..fdfd9c8d
+index 00000000..9f65a2b3
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CountryCheck.java
-@@ -0,0 +1,148 @@
+@@ -0,0 +1,150 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.File;
@@ -560,6 +560,8 @@ index 00000000..fdfd9c8d
 +    }
 +
 +    public void load() {
++        if (!config.isAntibotCountryEnabled()) return;
++
 +        final File file = new File("GeoLite2-Country.mmdb");
 +
 +        try {
