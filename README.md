@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/github/license/2lstudios-mc/flamecord?style=flat-square" />
 </a>
 
-<a href="https://builtbybit.com/resources/13492/" alt="FlameCord">FlameCord</a> is a fork of <a href="https://github.com/SpigotMC/BungeeCord" alt="BungeeCord">BungeeCord</a> and <a href="https://github.com/PaperMC/Waterfall" alt="Waterfall">Waterfall</a> that protects your <a href="https://minecraft.net" alt="Minecraft">Minecraft</a> server from bot attacks and exploits with its advanced set of antibot filtering features. FlameCord also fixes bugs, improves performance and adds new functionalities to your server. FlameCord is the ultimate solution for a secure and fast Minecraft network.🔥
+<a href="https://builtbybit.com/resources/13492/" alt="FlameCord">FlameCord</a> is a fork of <a href="https://github.com/SpigotMC/BungeeCord" alt="BungeeCord">BungeeCord</a> and <a href="https://github.com/PaperMC/Waterfall" alt="Waterfall">Waterfall</a> that protects your <a href="https://minecraft.net" alt="Minecraft">Minecraft</a> or <a href="https://www.spigotmc.org/" alt="Spigot">Spigot</a> server from bot attacks and exploits with its advanced set of antibot filtering features. FlameCord also fixes bugs, improves performance and adds new functionalities to your server. FlameCord is the ultimate solution for a secure and fast Minecraft network.🔥
 
 ## ⭐ Features
 
