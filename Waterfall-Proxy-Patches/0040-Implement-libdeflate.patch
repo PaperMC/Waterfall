@@ -1,11 +1,11 @@
-From c2ca35b27ef725cf2ce710726aee0ea1efb84723 Mon Sep 17 00:00:00 2001
+From 0f15af459b68ab1cb21f126380e32cf17d6939ef Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 6f463b9c6..6ec047ed7 100644
+index 6f463b9c..6ec047ed 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -59,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
@@ -29,7 +29,7 @@ index 6f463b9c6..6ec047ed7 100644
  }
 diff --git a/native/compile-linux.sh b/native/compile-linux.sh
 new file mode 100644
-index 000000000..5442dce9d
+index 00000000..5442dce9
 --- /dev/null
 +++ b/native/compile-linux.sh
 @@ -0,0 +1,25 @@
@@ -61,7 +61,7 @@ index 000000000..5442dce9d
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_cipher_macos.c b/native/src/main/c/jni_cipher_macos.c
 new file mode 100644
-index 000000000..aa7d1aba3
+index 00000000..aa7d1aba
 --- /dev/null
 +++ b/native/src/main/c/jni_cipher_macos.c
 @@ -0,0 +1,66 @@
@@ -134,7 +134,7 @@ index 000000000..aa7d1aba3
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_cipher_openssl.c b/native/src/main/c/jni_cipher_openssl.c
 new file mode 100644
-index 000000000..83515be52
+index 00000000..83515be5
 --- /dev/null
 +++ b/native/src/main/c/jni_cipher_openssl.c
 @@ -0,0 +1,62 @@
@@ -203,7 +203,7 @@ index 000000000..83515be52
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_util.c b/native/src/main/c/jni_util.c
 new file mode 100644
-index 000000000..1e2b6bd8c
+index 00000000..1e2b6bd8
 --- /dev/null
 +++ b/native/src/main/c/jni_util.c
 @@ -0,0 +1,12 @@
@@ -222,7 +222,7 @@ index 000000000..1e2b6bd8c
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_util.h b/native/src/main/c/jni_util.h
 new file mode 100644
-index 000000000..8938b26c8
+index 00000000..8938b26c
 --- /dev/null
 +++ b/native/src/main/c/jni_util.h
 @@ -0,0 +1,4 @@
@@ -233,7 +233,7 @@ index 000000000..8938b26c8
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_zlib_deflate.c b/native/src/main/c/jni_zlib_deflate.c
 new file mode 100644
-index 000000000..809a7f857
+index 00000000..809a7f85
 --- /dev/null
 +++ b/native/src/main/c/jni_zlib_deflate.c
 @@ -0,0 +1,43 @@
@@ -283,7 +283,7 @@ index 000000000..809a7f857
 \ No newline at end of file
 diff --git a/native/src/main/c/jni_zlib_inflate.c b/native/src/main/c/jni_zlib_inflate.c
 new file mode 100644
-index 000000000..d91319089
+index 00000000..d9131908
 --- /dev/null
 +++ b/native/src/main/c/jni_zlib_inflate.c
 @@ -0,0 +1,61 @@
@@ -351,7 +351,7 @@ index 000000000..d91319089
 \ No newline at end of file
 diff --git a/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibDeflate.java b/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibDeflate.java
 new file mode 100644
-index 000000000..4ba41fc11
+index 00000000..4ba41fc1
 --- /dev/null
 +++ b/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibDeflate.java
 @@ -0,0 +1,15 @@
@@ -372,7 +372,7 @@ index 000000000..4ba41fc11
 +}
 diff --git a/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibInflate.java b/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibInflate.java
 new file mode 100644
-index 000000000..81d92e75b
+index 00000000..81d92e75
 --- /dev/null
 +++ b/native/src/main/java/com/velocitypowered/natives/compression/NativeZlibInflate.java
 @@ -0,0 +1,17 @@
@@ -395,7 +395,7 @@ index 000000000..81d92e75b
 +}
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/MoreByteBufUtils.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/MoreByteBufUtils.java
 new file mode 100644
-index 000000000..a16a25844
+index 00000000..a16a2584
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/MoreByteBufUtils.java
 @@ -0,0 +1,28 @@
@@ -430,7 +430,7 @@ index 000000000..a16a25844
 \ No newline at end of file
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/NativeEnvironmentDetector.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/NativeEnvironmentDetector.java
 new file mode 100644
-index 000000000..50f042bdf
+index 00000000..50f042bd
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/NativeEnvironmentDetector.java
 @@ -0,0 +1,36 @@
@@ -473,7 +473,7 @@ index 000000000..50f042bdf
 \ No newline at end of file
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/Natives.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/Natives.java
 new file mode 100644
-index 000000000..a6709a869
+index 00000000..a6709a86
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/Natives.java
 @@ -0,0 +1,138 @@
@@ -618,7 +618,7 @@ index 000000000..a6709a869
 \ No newline at end of file
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/Compressor.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/Compressor.java
 new file mode 100644
-index 000000000..f28ae3145
+index 00000000..f28ae314
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/Compressor.java
 @@ -0,0 +1,16 @@
@@ -641,7 +641,7 @@ index 000000000..f28ae3145
 \ No newline at end of file
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/CompressorFactory.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/CompressorFactory.java
 new file mode 100644
-index 000000000..3aed690ad
+index 00000000..3aed690a
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/CompressorFactory.java
 @@ -0,0 +1,13 @@
@@ -661,7 +661,7 @@ index 000000000..3aed690ad
 \ No newline at end of file
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/JavaCompressor.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/JavaCompressor.java
 new file mode 100644
-index 000000000..7d99eb02b
+index 00000000..7d99eb02
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/JavaCompressor.java
 @@ -0,0 +1,90 @@
@@ -757,7 +757,7 @@ index 000000000..7d99eb02b
 +}
 diff --git a/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/LibdeflateCompressor.java b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/LibdeflateCompressor.java
 new file mode 100644
-index 000000000..fd9f9007d
+index 00000000..fd9f9007
 --- /dev/null
 +++ b/native/src/main/java/dev/_2lstudios/flamecord/natives/compress/LibdeflateCompressor.java
 @@ -0,0 +1,83 @@
@@ -2215,7 +2215,7 @@ zH2T@TkgJhaJX@a1r<2HPIZ&R2ffRl=KRKw9izYgc1bV+%L!)=~g`8_>#jYx24ZXCh
 dDrt?1pG8*?VgAolXcm?3F1P)vl~(K?@&8}0C|Cdh
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index f33ce913a..01b208ed2 100644
+index f33ce913..01b208ed 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -30,6 +30,22 @@ public abstract class DefinedPacket
@@ -2255,10 +2255,10 @@ index f33ce913a..01b208ed2 100644
      {
          int low = buf.readUnsignedShort();
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 10fe411d8..f6daaea4d 100644
+index 02625018..37abc9f7 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -165,6 +165,12 @@
+@@ -158,6 +158,12 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -2272,7 +2272,7 @@ index 10fe411d8..f6daaea4d 100644
              <groupId>io.github.waterfallmc</groupId>
              <artifactId>waterfall-module-cmd-alert</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f5059666e..dba21bcc7 100644
+index 77149dfb..252ae3b0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -17,6 +17,7 @@ import dev._2lstudios.flamecord.commands.FlameCordCommand;
@@ -2309,7 +2309,7 @@ index f5059666e..dba21bcc7 100644
  
      /**
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
-index d07cf4627..10cb0430c 100644
+index d07cf462..10cb0430 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
 @@ -1,45 +1,74 @@
@@ -2411,7 +2411,7 @@ index d07cf4627..10cb0430c 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-index eaedf4bc4..066bdafc8 100644
+index eaedf4bc..066bdafc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 @@ -1,5 +1,6 @@
@@ -2537,7 +2537,7 @@ index eaedf4bc4..066bdafc8 100644
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
-index 8d4439ab8..95ed34416 100644
+index 8d4439ab..95ed3441 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeUtils.java
 @@ -44,8 +44,8 @@ public class ForgeUtils
@@ -2552,7 +2552,7 @@ index 8d4439ab8..95ed34416 100644
                      modTags.put( DefinedPacket.readString( buffer ), DefinedPacket.readString( buffer ) );
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index b98ee6a75..ffe038168 100644
+index b98ee6a7..ffe03816 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -1,6 +1,10 @@
@@ -2605,7 +2605,7 @@ index b98ee6a75..ffe038168 100644
      // Make the channel accessible
      public Channel getChannel() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f04fdd9ce..9aebc9e1a 100644
+index f04fdd9c..9aebc9e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -126,7 +126,8 @@ public class PipelineUtils
