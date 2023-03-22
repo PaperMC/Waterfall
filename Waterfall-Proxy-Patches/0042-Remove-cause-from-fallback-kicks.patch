@@ -1,0 +1,22 @@
+From 42615e592b18cd0212c9d99d2856dea252fe3f1a Mon Sep 17 00:00:00 2001
+From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
+Date: Tue, 21 Mar 2023 20:53:32 -0300
+Subject: [PATCH] Remove cause from fallback kicks
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 4e3982d2..e941ce8b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -389,8 +389,6 @@ public final class UserConnection implements ProxiedPlayer
+                         } else
+                         {
+                             sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
+-
+-                            sendMessage( "§cCause: " + future.cause().getMessage() + " | " + future.cause().toString() );
+                         }
+                     }
+                 }
+-- 
+2.37.3.windows.1
+
