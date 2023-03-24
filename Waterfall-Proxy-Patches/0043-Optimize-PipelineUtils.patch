@@ -1,11 +1,11 @@
-From 18f49182ce45a066df5a3cf10fb9cfc7d1c23eb3 Mon Sep 17 00:00:00 2001
+From f33e0d4b04817d111c1cd4b76b95c86193146299 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 23 Mar 2023 22:35:42 -0300
 Subject: [PATCH] Optimize PipelineUtils
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9aebc9e1..3bd25647 100644
+index 9aebc9e1..8580344d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -6,10 +6,12 @@ import dev._2lstudios.flamecord.FlameCord;
@@ -29,14 +29,11 @@ index 9aebc9e1..3bd25647 100644
      public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance( "ListerInfo" );
      public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
      {
-@@ -195,31 +196,39 @@ public class PipelineUtils
+@@ -195,31 +196,35 @@ public class PipelineUtils
      private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
      private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
  
 +    // FlameCord start - Optimize PipelineUtils
-+    private static ReadTimeoutHandler READ_TIMEOUT_HANDLER = null;
-+    private static final Varint21FrameDecoder VARINT21_FRAME_DECODER = new Varint21FrameDecoder();
-+    
      public static final class Base extends ChannelInitializer<Channel>
      {
  
@@ -66,9 +63,8 @@ index 9aebc9e1..3bd25647 100644
 -            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
 -            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 -            ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
-+            pipeline.addLast( FRAME_DECODER, VARINT21_FRAME_DECODER );
-+            if (READ_TIMEOUT_HANDLER == null) READ_TIMEOUT_HANDLER = new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS );
-+            pipeline.addLast( TIMEOUT_HANDLER, READ_TIMEOUT_HANDLER );
++            pipeline.addLast( FRAME_DECODER, new Varint21FrameDecoder() );
++            pipeline.addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 +            pipeline.addLast( FRAME_PREPENDER, framePrepender );
  
 -            ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
