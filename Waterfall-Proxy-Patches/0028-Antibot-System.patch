@@ -1,4 +1,4 @@
-From 90fb897bb17b0b3b1baa1809759a7f9a0e2976ef Mon Sep 17 00:00:00 2001
+From f3f2e3d8f146ae949b0e803c996520825fe8a8e1 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -417,10 +417,10 @@ index 00000000..7aa15796
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
 new file mode 100644
-index 00000000..bd14f56a
+index 00000000..007be392
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/AddressDataManager.java
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,50 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.InetSocketAddress;
@@ -433,11 +433,13 @@ index 00000000..bd14f56a
 +
 +    public String sanitizeAddress(String text) {
 +        // Remove the port
-+        text = text.split(":")[0];
++        int indexOfPort = text.indexOf(":");
++        if (indexOfPort != -1) {
++            text = text.substring(0, indexOfPort);
++        }
 +
-+        // Check if first character is a slash
++        // Remove the slash at the start
 +        if (text.startsWith("/")) {
-+            // Remove the first character
 +            text = text.substring(1);
 +        }
 +
@@ -1706,7 +1708,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e2e715db..7ff5540b 100644
+index fa520992..2fc20af6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
