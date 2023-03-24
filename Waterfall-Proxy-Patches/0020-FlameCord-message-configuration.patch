@@ -1,11 +1,11 @@
-From 168e63822c7f19251ff48a96fb341b230d662143 Mon Sep 17 00:00:00 2001
+From 1bcd1ea1d1480107e8e63b28761d3be67ab4467b Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 13:40:39 -0300
 Subject: [PATCH] FlameCord message configuration
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index fb3d8ca2e..676ba95b9 100644
+index fb3d8ca2..676ba95b 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -35,7 +35,7 @@ index fb3d8ca2e..676ba95b9 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 new file mode 100644
-index 000000000..ae1794385
+index 00000000..ae179438
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -0,0 +1,102 @@
@@ -143,7 +143,7 @@ index 000000000..ae1794385
 +}
 \ No newline at end of file
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 698b420f4..e4ad7e389 100644
+index 698b420f..e4ad7e38 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 @@ -50,7 +50,9 @@ public class CommandServer extends Command implements TabExecutor
@@ -158,7 +158,7 @@ index 698b420f4..e4ad7e389 100644
                      serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
                      serverList.append( serverTextComponent );
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
-index 021b38d43..fb81adee0 100644
+index 021b38d4..fb81adee 100644
 --- a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/FlameCordCommand.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -205,7 +205,7 @@ index 021b38d43..fb81adee0 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d58227fd9..8994454c7 100644
+index 7c4da8c4..0c53eba3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -620,8 +620,8 @@ public class BungeeCord extends ProxyServer
@@ -219,6 +219,18 @@ index d58227fd9..8994454c7 100644
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index e48f7713..0c4a0def 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -461,6 +461,7 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public void sendMessage(String message)
+     {
++        if (!message.equals("")) // FlameCord - FlameCord message configuration
+         sendMessage( TextComponent.fromLegacyText( message ) );
+     }
+ 
 -- 
 2.37.3.windows.1
 
