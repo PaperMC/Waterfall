@@ -1,17 +1,10 @@
-From 9eec1e3623ac972c5502b27534f7d648b78bad75 Mon Sep 17 00:00:00 2001
+From aa69ee55cd4bb1acb430cb17153c6e1bd6f0fe40 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
 
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
-diff --git a/native/mbedtls b/native/mbedtls
-index 8df2f8e7..e483a77c 160000
---- a/native/mbedtls
-+++ b/native/mbedtls
-@@ -1 +1 @@
--Subproject commit 8df2f8e7b9c7bb9390ac74bb7bace27edca81a2b
-+Subproject commit e483a77c85e1f9c1dd2eb1c5a8f552d2617fe400
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 index 70b292f0..91f71c09 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
@@ -63,7 +56,7 @@ index 3be014b2..e00c5659 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 25fdc742..1059c67f 100644
+index 05cdf684..cc0edeb8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -293,7 +293,7 @@ public class DownstreamBridge extends PacketHandler
@@ -76,10 +69,10 @@ index 25fdc742..1059c67f 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 56563346..61165e43 100644
+index 5b9c35d1..2d6885a9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -47,7 +47,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -50,7 +50,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  public class PipelineUtils
  {
  
@@ -89,5 +82,5 @@ index 56563346..61165e43 100644
      {
          @Override
 -- 
-2.38.1
+2.40.0
 

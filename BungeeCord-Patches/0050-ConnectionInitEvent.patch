@@ -1,4 +1,4 @@
-From 69c3602785646ebd3cb76a3bc20123444f9b6e0a Mon Sep 17 00:00:00 2001
+From 7bca0d049e00a28e4cedbfcccc7f02a5572ecb57 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -67,7 +67,7 @@ index 00000000..6e79675f
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2d373660..2a21243b 100644
+index 3f30da0c..af65e192 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,6 +1,7 @@
@@ -78,7 +78,7 @@ index 2d373660..2a21243b 100644
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -60,7 +61,6 @@ public class PipelineUtils
+@@ -63,7 +64,6 @@ public class PipelineUtils
                  ch.close();
                  return;
              }
@@ -86,7 +86,7 @@ index 2d373660..2a21243b 100644
              ListenerInfo listener = ch.attr( LISTENER ).get();
  
              if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
-@@ -69,7 +69,21 @@ public class PipelineUtils
+@@ -72,7 +72,21 @@ public class PipelineUtils
                  return;
              }
  
@@ -108,7 +108,7 @@ index 2d373660..2a21243b 100644
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-@@ -80,6 +94,9 @@ public class PipelineUtils
+@@ -83,6 +97,9 @@ public class PipelineUtils
              {
                  ch.pipeline().addFirst( new HAProxyMessageDecoder() );
              }
@@ -117,7 +117,7 @@ index 2d373660..2a21243b 100644
 +            BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
      };
-     public static final Base BASE = new Base();
+     public static final Base BASE = new Base( false );
 -- 
-2.37.2
+2.40.0
 
