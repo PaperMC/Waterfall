@@ -1,11 +1,11 @@
-From 62bf8051431b5035171c900d729a1c175fcda639 Mon Sep 17 00:00:00 2001
+From 7967c49c7a8e56c79de7d520f9ae03f2ed53af1e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 24 Feb 2022 23:41:57 -0300
 Subject: [PATCH] TCP Fast Open
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index b41ee92cc..14665b1f6 100644
+index b41ee92c..14665b1f 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,10 @@ import net.md_5.bungee.config.Configuration;
@@ -29,10 +29,10 @@ index b41ee92cc..14665b1f6 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index a4c3bd710..ffea15992 100644
+index d9e360a1..156ea2aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -194,6 +194,8 @@ public class PipelineUtils
+@@ -203,6 +203,8 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );

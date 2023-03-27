@@ -1,11 +1,11 @@
-From 10b29c21ab86559a31b3229ddd2f9bf156c01c97 Mon Sep 17 00:00:00 2001
+From 4bdecd3bce63e87e3c1388cf7bf9c67a9fa2c6d0 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Sun, 15 Jan 2023 19:03:34 -0300
 Subject: [PATCH] List Command Format
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index e42bb29d5..555319a7f 100644
+index e42bb29d..555319a7 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -107,6 +107,9 @@ public class MessagesConfiguration extends FlameConfig {
@@ -19,10 +19,10 @@ index e42bb29d5..555319a7f 100644
  			final Object value = configuration.get(key);
  
 diff --git a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
-index c4ac9173f..10a0cf4a8 100644
+index 79d0bb21..97b775ee 100644
 --- a/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
 +++ b/module/cmd-list/src/main/java/net/md_5/bungee/module/cmd/list/CommandList.java
-@@ -28,6 +28,8 @@ public class CommandList extends Command implements TabExecutor
+@@ -27,6 +27,8 @@ public class CommandList extends Command implements TabExecutor
      public void execute(CommandSender sender, String[] args)
      {
          boolean hideEmptyServers = ( args.length == 0 ) || !args[0].equalsIgnoreCase( "all" );

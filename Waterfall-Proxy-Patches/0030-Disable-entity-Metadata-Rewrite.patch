@@ -1,11 +1,11 @@
-From 54416b5037fd35a10bf3763fa55a9cfd4f8da531 Mon Sep 17 00:00:00 2001
+From bc07ea7e84cdbce71415ceef9fa817a6211adb3d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 10 Mar 2022 20:23:55 -0300
 Subject: [PATCH] Disable entity Metadata Rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index e855cfb6..97176901 100644
+index 469fe0e1..97bd384b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -251,11 +251,6 @@ public interface ProxyConfig
@@ -207,10 +207,10 @@ index 435b8578..00000000
 -    }
 -}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index e5662111..47d7d9d7 100644
+index 966d2442..be337a68 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -43,7 +43,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -42,7 +42,6 @@ public class WaterfallConfiguration extends Configuration {
      private int tabThrottle = 1000;
      private boolean disableModernTabLimiter = true;
  
@@ -218,7 +218,7 @@ index e5662111..47d7d9d7 100644
      private boolean disableTabListRewrite = true;
  
      /*
-@@ -75,7 +74,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -74,7 +73,6 @@ public class WaterfallConfiguration extends Configuration {
          // Throttling options
          tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
          disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
@@ -226,7 +226,7 @@ index e5662111..47d7d9d7 100644
          disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
          pluginChannelLimit = config.getInt("registered_plugin_channels_limit", pluginChannelLimit);
          pluginChannelNameLimit = config.getInt("plugin_channel_name_limit", pluginChannelNameLimit);
-@@ -106,11 +104,6 @@ public class WaterfallConfiguration extends Configuration {
+@@ -105,11 +103,6 @@ public class WaterfallConfiguration extends Configuration {
          return disableModernTabLimiter;
      }
  
@@ -324,7 +324,7 @@ index 3a07c7c8..f51c668d 100644
              // Waterfall end
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b5e20ea1..18a29ae3 100644
+index c006277f..8114095e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -44,7 +44,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;

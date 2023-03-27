@@ -1,11 +1,11 @@
-From f33e0d4b04817d111c1cd4b76b95c86193146299 Mon Sep 17 00:00:00 2001
+From 0604d2c10875114e158a82a67cf7ac743c6c1e20 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Thu, 23 Mar 2023 22:35:42 -0300
 Subject: [PATCH] Optimize PipelineUtils
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9aebc9e1..8580344d 100644
+index 5833b668..28223ec8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -6,10 +6,12 @@ import dev._2lstudios.flamecord.FlameCord;
@@ -21,7 +21,7 @@ index 9aebc9e1..8580344d 100644
  import io.netty.channel.EventLoopGroup;
  import io.netty.channel.ServerChannel;
  import io.netty.channel.WriteBufferWaterMark;
-@@ -50,7 +52,6 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -53,7 +55,6 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  
  public class PipelineUtils
  {
@@ -29,17 +29,11 @@ index 9aebc9e1..8580344d 100644
      public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance( "ListerInfo" );
      public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
      {
-@@ -195,31 +196,35 @@ public class PipelineUtils
-     private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
-     private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
- 
-+    // FlameCord start - Optimize PipelineUtils
-     public static final class Base extends ChannelInitializer<Channel>
-     {
- 
+@@ -209,26 +210,30 @@ public class PipelineUtils
          @Override
          public void initChannel(Channel ch) throws Exception
          {
++            // FlameCord start - Optimize PipelineUtils
 +            ChannelPipeline pipeline = ch.pipeline();
 +            ChannelConfig channelConfig = ch.config();
              try
@@ -62,18 +56,19 @@ index 9aebc9e1..8580344d 100644
  
 -            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
 -            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
--            ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
 +            pipeline.addLast( FRAME_DECODER, new Varint21FrameDecoder() );
 +            pipeline.addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-+            pipeline.addLast( FRAME_PREPENDER, framePrepender );
+             // No encryption bungee -> server, therefore use extra buffer to avoid copying everything for length prepending
+             // Not used bungee -> client as header would need to be encrypted separately through expensive JNI call
+-            ch.pipeline().addLast( FRAME_PREPENDER, ( toServer ) ? serverFramePrepender : framePrepender );
++            pipeline.addLast( FRAME_PREPENDER, ( toServer ) ? serverFramePrepender : framePrepender );
  
 -            ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
 +            pipeline.addLast( BOSS_HANDLER, new HandlerBoss() );
++            // FlameCord end - Optimize PipelineUtils
          }
-+        // FlameCord end - Optimize PipelineUtils
  
          // FlameCord - Close on exception caught
-         @Override
 -- 
 2.37.3.windows.1
 
