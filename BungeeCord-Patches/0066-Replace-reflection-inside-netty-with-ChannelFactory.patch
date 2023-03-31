@@ -1,4 +1,4 @@
-From cb6c54205c75372d06592002a39699cbff7064fb Mon Sep 17 00:00:00 2001
+From 6e1e60f3aa293c9337de01da58eb6f6628870840 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,7 +6,7 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e0fcd8fb..4207fc48 100644
+index 87b1698f..d88c296a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -358,7 +358,7 @@ public class BungeeCord extends ProxyServer
@@ -19,7 +19,7 @@ index e0fcd8fb..4207fc48 100644
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 1ea654f1..c2663b66 100644
+index 634dfca7..394804e8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -183,7 +183,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -29,10 +29,10 @@ index 1ea654f1..c2663b66 100644
 -                .channel( PipelineUtils.getChannel( socketAddress ) )
 +                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // Waterfall - netty reflection -> factory
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
-                 .handler( PipelineUtils.BASE )
+                 .handler( PipelineUtils.BASE_SERVERSIDE )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b44d13e5..955a7b3f 100644
+index bc0af8a5..cf82c182 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -384,7 +384,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -69,7 +69,7 @@ index 37337429..c3683c30 100644
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2a21243b..1cd64a12 100644
+index af65e192..6a045d16 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -80,7 +80,7 @@ index 2a21243b..1cd64a12 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -114,6 +115,12 @@ public class PipelineUtils
+@@ -119,6 +120,12 @@ public class PipelineUtils
      public static final String LEGACY_KICKER = "legacy-kick";
  
      private static boolean epoll;
@@ -93,7 +93,7 @@ index 2a21243b..1cd64a12 100644
  
      static
      {
-@@ -129,6 +136,12 @@ public class PipelineUtils
+@@ -134,6 +141,12 @@ public class PipelineUtils
                  ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
              }
          }
@@ -106,7 +106,7 @@ index 2a21243b..1cd64a12 100644
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -160,6 +173,34 @@ public class PipelineUtils
+@@ -165,6 +178,34 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
@@ -142,5 +142,5 @@ index 2a21243b..1cd64a12 100644
      {
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
-2.40.0.windows.1
+2.40.0
 
