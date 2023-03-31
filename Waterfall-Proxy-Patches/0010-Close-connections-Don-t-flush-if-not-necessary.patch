@@ -1,4 +1,4 @@
-From 3fcd08a5340657c1144a5d9a2c919c2297937589 Mon Sep 17 00:00:00 2001
+From e801d03bfaa70492f0ad246397b0875c8fec9668 Mon Sep 17 00:00:00 2001
 From: foss-mc <69294560+foss-mc@users.noreply.github.com>
 Date: Wed, 16 Dec 2020 18:06:17 +0800
 Subject: [PATCH] Close connections & Don't flush if not necessary
@@ -86,18 +86,18 @@ index 6dc5633f..8b0fac0a 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index af65e192..993b55b0 100644
+index 6a045d16..9227db06 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
- import io.netty.buffer.PooledByteBufAllocator;
+@@ -6,6 +6,7 @@ import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
+ import io.netty.channel.ChannelFactory;
 +import io.netty.channel.ChannelHandlerContext;
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -101,6 +102,14 @@ public class PipelineUtils
+@@ -102,6 +103,14 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
@@ -112,7 +112,7 @@ index af65e192..993b55b0 100644
      };
      public static final Base BASE = new Base( false );
      public static final Base BASE_SERVERSIDE = new Base( true );
-@@ -203,5 +212,13 @@ public class PipelineUtils
+@@ -244,5 +253,13 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }
