@@ -1,4 +1,4 @@
-From 36c85f81c24cbbe2da2bbc437c79eac7fa338bbe Mon Sep 17 00:00:00 2001
+From a49a93d24a083333541f9b78bd5e0477d343e979 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 8 Jun 2021 22:24:27 -0300
 Subject: [PATCH] FlameCord rebrand
@@ -32,7 +32,7 @@ index 3e9be796..a57fccf1 100644
  
      public final void reloadMessages()
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 820f7b03..aeda7963 100644
+index 820f7b03..76f5fed7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -16,6 +16,7 @@ public class CommandBungee extends Command
@@ -41,7 +41,7 @@ index 820f7b03..aeda7963 100644
      {
 -        sender.sendMessage( ChatColor.BLUE + "This server is running FlameCord version " + ProxyServer.getInstance().getVersion() + " by md_5" );
 +        // FlameCord - Use custom version message
-+        sender.sendMessage( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bLinsaFTW & Sammwy&e." ) );
++        sender.sendMessage( net.md_5.bungee.api.chat.TextComponent.fromLegacyText( ChatColor.translateAlternateColorCodes( '&', "&eThis server is running &c" + ProxyServer.getInstance().getName() + "&e version &a" + ProxyServer.getInstance().getVersion() + "&e by &bArkFlame Development&e." ) ) );
      }
  }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
