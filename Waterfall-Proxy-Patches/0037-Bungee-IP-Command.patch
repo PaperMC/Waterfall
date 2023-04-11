@@ -1,14 +1,14 @@
-From 79f33268f3f154170f55362decf8fcc8b99a68f8 Mon Sep 17 00:00:00 2001
+From 15952aaaac9f80d0bf3f1d7adbd42e947572d78f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Sun, 15 Jan 2023 10:12:45 -0300
 Subject: [PATCH] Bungee IP Command
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index 2ea33a94b..e42bb29d5 100644
+index e385aaab..4d9ed0c7 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -101,6 +101,12 @@ public class MessagesConfiguration extends FlameConfig {
+@@ -102,6 +102,12 @@ public class MessagesConfiguration extends FlameConfig {
  		setIfUnexistant("flamecord_bplugins_separator", ", ", configuration);
  		setIfUnexistant("flamecord_bplugins_header", "&aPlugins ({0}): ", configuration);
  
@@ -23,7 +23,7 @@ index 2ea33a94b..e42bb29d5 100644
  
 diff --git a/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java
 new file mode 100644
-index 000000000..85313491e
+index 00000000..85313491
 --- /dev/null
 +++ b/proxy/src/main/java/dev/_2lstudios/flamecord/commands/BungeeIPCommand.java
 @@ -0,0 +1,45 @@
@@ -73,7 +73,7 @@ index 000000000..85313491e
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ec5fd4af2..f5059666e 100644
+index e03c7877..63ba56f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,7 @@ import com.google.gson.Gson;

@@ -1,4 +1,4 @@
-From 4cf1d03c88fcca0a11057eed5ca57581ad9cc618 Mon Sep 17 00:00:00 2001
+From 3274980088aa9779262e38e0d48beb33ba7d1a60 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -473,10 +473,10 @@ index 00000000..007be392
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
 new file mode 100644
-index 00000000..1503ac95
+index 00000000..6af48a4d
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,44 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
@@ -499,6 +499,8 @@ index 00000000..1503ac95
 +    private final ReconnectCheck reconnectCheck;
 +    @Getter
 +    private final PacketsCheck packetsCheck;
++    @Getter
++    private final ProxyCheck proxyCheck;
 +
 +    public CheckManager(final AddressDataManager addressDataManager, final FlameCordConfiguration flameCordConfiguration) {
 +        this.accountsCheck = new AccountsCheck(addressDataManager);
@@ -509,8 +511,10 @@ index 00000000..1503ac95
 +        this.ratelimitCheck = new RatelimitCheck(addressDataManager);
 +        this.reconnectCheck = new ReconnectCheck(addressDataManager);
 +        this.packetsCheck = new PacketsCheck();
++        this.proxyCheck = new ProxyCheck(addressDataManager);
 +
 +        this.countryCheck.load();
++        this.proxyCheck.updateProxies();
 +    }
 +
 +    public void unload() {
@@ -1081,6 +1085,99 @@ index 00000000..68555de3
 +        return repeatCount;
 +    }
 +}
+diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
+new file mode 100644
+index 00000000..eefc2153
+--- /dev/null
++++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
+@@ -0,0 +1,87 @@
++package dev._2lstudios.flamecord.antibot;
++
++import java.io.BufferedReader;
++import java.io.InputStreamReader;
++import java.net.HttpURLConnection;
++import java.net.SocketAddress;
++import java.net.URL;
++import java.util.logging.Level;
++
++import dev._2lstudios.flamecord.FlameCord;
++
++public class ProxyCheck {
++    private AddressDataManager addressDataManager;
++    public String proxies = "";
++
++    public ProxyCheck(AddressDataManager addressDataManager) {
++        this.addressDataManager = addressDataManager;
++    }
++
++    public void updateProxies() {
++        // define the websites to get the proxies from
++        String[] websites = {
++                "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
++                "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
++                "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt"
++        };
++
++        // send updating proxies message
++        FlameCord.getInstance().getLoggerWrapper().log(Level.INFO,
++                "Updating proxy database from " + websites.length + " websites...");
++
++        // create a string builder to store the content
++        StringBuilder content = new StringBuilder();
++
++        // loop through each website
++        for (String website : websites) {
++            try {
++                // create a URL object with the website
++                URL url = new URL(website);
++
++                // open a connection to the URL
++                HttpURLConnection con = (HttpURLConnection) url.openConnection();
++
++                // set the request method to GET
++                con.setRequestMethod("GET");
++
++                // get the response code
++                int responseCode = con.getResponseCode();
++
++                // if the response code is OK (200)
++                if (responseCode == HttpURLConnection.HTTP_OK) {
++                    // create a buffered reader to read the response
++                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
++
++                    // read each line of the response and append it to the content
++                    String inputLine;
++                    while ((inputLine = in.readLine()) != null) {
++                        content.append(inputLine);
++                        content.append("\n");
++                    }
++
++                    // close the buffered reader
++                    in.close();
++                } else {
++                    // print an error message
++                    FlameCord.getInstance().getLoggerWrapper().log(Level.INFO, "GET request failed for " + website);
++                }
++            } catch (Exception ex) {
++                // print an error message
++                FlameCord.getInstance().getLoggerWrapper().log(Level.INFO, "GET request failed for " + website);
++            }
++        }
++
++        // set the updated proxy list
++        proxies = content.toString();
++    }
++
++    public boolean check(String ip) {
++        return !proxies.equals("") && proxies.contains(ip);
++    }
++
++    public boolean check(SocketAddress address) {
++        AddressData addressData = addressDataManager.getAddressData(address);
++
++        return check(addressData.getHostString());
++    }
++}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java
 new file mode 100644
 index 00000000..51c1866e
@@ -1482,10 +1579,10 @@ index 14665b1f..0f12f4ae 100644
          save(configuration, configurationFile);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index ae179438..6175d8e2 100644
+index ae179438..35277c4c 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-@@ -80,6 +80,22 @@ public class MessagesConfiguration extends FlameConfig {
+@@ -80,6 +80,23 @@ public class MessagesConfiguration extends FlameConfig {
  		setIfUnexistant("command_ip", "&9IP of {0} is {1}", configuration);
  		setIfUnexistant("illegal_chat_characters", "&cIllegal characters in chat ({0})", configuration);
  
@@ -1498,6 +1595,7 @@ index ae179438..6175d8e2 100644
 +		setIfUnexistant("antibot_ratelimit", "&c&lFlameCord\n\n&cYou are connecting too fast! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_reconnect", "&c&lFlameCord\n\n&cReconnect {0} more times to enter!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_country", "&c&lFlameCord\n\n&cYour country {0} is blacklisted!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
++		setIfUnexistant("antibot_proxy", "&c&lFlameCord\n\n&cYou are using a Proxy/VPN! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_stats", "&c&lFlameCord Antibot Stats\n &7■ Total Pings: &a{0}\n &7■ Total Connections: &b{1}\n\n &7■ Current Pings: &a{2}\n &7■ Current Connections: &b{3}", configuration);
 +		
 +		setIfUnexistant("flamecord_firewall_help", "&c/flamecord firewall <add/remove> <ip>", configuration);
@@ -1708,7 +1806,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 51da85ac..998445a7 100644
+index 6d798917..23d89781 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
@@ -1724,7 +1822,7 @@ index 51da85ac..998445a7 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d65884ae..29afa82c 100644
+index d65884ae..8d7bb6bf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1761,19 +1859,25 @@ index d65884ae..29afa82c 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -442,6 +458,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -442,6 +458,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
 +        // FlameCord start - Antibot System
 +        AddressData addressData = FlameCord.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
 +        CheckManager checkManager = FlameCord.getInstance().getCheckManager();
++
++        if ( checkManager.getProxyCheck().check( ch.getRemoteAddress() ) )
++        {
++            disconnect( bungee.getTranslation( "antibot_proxy" ) );
++            return;
++        }
 +        // FlameCord end - Antibot System
 +
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -453,6 +474,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +480,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1791,7 +1895,7 @@ index d65884ae..29afa82c 100644
                  break;
              case 2:
                  // Login
-@@ -464,6 +496,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -464,6 +502,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1808,7 +1912,7 @@ index d65884ae..29afa82c 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -527,6 +569,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -527,6 +575,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
