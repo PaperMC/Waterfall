@@ -1,4 +1,4 @@
-From 35f386ceb8c2b6d2e728f5a87f6a15cc7f70ae4f Mon Sep 17 00:00:00 2001
+From 3e15de1f48767b39db352670c7f987334de4ab75 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -473,10 +473,10 @@ index 00000000..007be392
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
 new file mode 100644
-index 00000000..e162de95
+index 00000000..0de7d709
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,48 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import dev._2lstudios.flamecord.FlameCord;
@@ -516,7 +516,6 @@ index 00000000..e162de95
 +
 +        this.countryCheck.load();
 +
-+        
 +        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotProxyEnabled()) {
 +            this.proxyCheck.updateProxies();
 +        }
@@ -729,10 +728,10 @@ index 00000000..e2140887
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java
 new file mode 100644
-index 00000000..df26a363
+index 00000000..5ae7580e
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/LoggerWrapper.java
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,32 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.util.logging.Level;
@@ -759,6 +758,10 @@ index 00000000..df26a363
 +            // Log the text
 +            logger.log(level, msg, params);
 +        }
++    }
++
++    public Logger getLogger() {
++        return logger;
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/NicknameCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/NicknameCheck.java
@@ -1092,10 +1095,10 @@ index 00000000..68555de3
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 00000000..69ba53e9
+index 00000000..ef64fd8c
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,103 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1129,8 +1132,7 @@ index 00000000..69ba53e9
 +        };
 +
 +        // send updating proxies message
-+        FlameCord.getInstance().getLoggerWrapper().log(Level.INFO,
-+                "Updating proxy database from " + websites.length + " websites...");
++        FlameCord.getInstance().getLoggerWrapper().getLogger().info("Updating proxy database from " + websites.length + " websites...");
 +
 +        // create a string builder to store the content
 +        StringBuilder content = new StringBuilder();
