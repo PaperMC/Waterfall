@@ -1,4 +1,4 @@
-From 3274980088aa9779262e38e0d48beb33ba7d1a60 Mon Sep 17 00:00:00 2001
+From 35f386ceb8c2b6d2e728f5a87f6a15cc7f70ae4f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -473,12 +473,13 @@ index 00000000..007be392
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
 new file mode 100644
-index 00000000..6af48a4d
+index 00000000..e162de95
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,49 @@
 +package dev._2lstudios.flamecord.antibot;
 +
++import dev._2lstudios.flamecord.FlameCord;
 +import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
 +import lombok.Getter;
 +
@@ -514,7 +515,11 @@ index 00000000..6af48a4d
 +        this.proxyCheck = new ProxyCheck(addressDataManager);
 +
 +        this.countryCheck.load();
-+        this.proxyCheck.updateProxies();
++
++        
++        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotProxyEnabled()) {
++            this.proxyCheck.updateProxies();
++        }
 +    }
 +
 +    public void unload() {
@@ -1087,10 +1092,10 @@ index 00000000..68555de3
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 00000000..eefc2153
+index 00000000..69ba53e9
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,104 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1101,13 +1106,18 @@ index 00000000..eefc2153
 +import java.util.logging.Level;
 +
 +import dev._2lstudios.flamecord.FlameCord;
++import dev._2lstudios.flamecord.configuration.FlameCordConfiguration;
 +
 +public class ProxyCheck {
++    private FlameCordConfiguration config;
++    private LoggerWrapper logger;
 +    private AddressDataManager addressDataManager;
-+    public String proxies = "";
++    private String proxies = "";
 +
 +    public ProxyCheck(AddressDataManager addressDataManager) {
 +        this.addressDataManager = addressDataManager;
++        this.config = FlameCord.getInstance().getFlameCordConfiguration();
++        this.logger = FlameCord.getInstance().getLoggerWrapper();
 +    }
 +
 +    public void updateProxies() {
@@ -1173,9 +1183,21 @@ index 00000000..eefc2153
 +    }
 +
 +    public boolean check(SocketAddress address) {
-+        AddressData addressData = addressDataManager.getAddressData(address);
++        if (!config.isAntibotProxyEnabled()) return false;
 +
-+        return check(addressData.getHostString());
++        AddressData addressData = addressDataManager.getAddressData(address);
++        String ip = addressData.getHostString();
++
++        // Check if it's a proxy
++        if (!proxies.equals("") && proxies.contains(ip)) {
++            if (config.isAntibotProxyLog()) {
++                logger.log(Level.INFO, "[FlameCord] [{0}] was blocked for using a VPN/Proxy service", address);
++            }
++
++            return true;
++        }
++
++        return false;
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java
@@ -1377,10 +1399,10 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 14665b1f..0f12f4ae 100644
+index 14665b1f..9d095964 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,187 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,197 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1496,6 +1518,12 @@ index 14665b1f..0f12f4ae 100644
 +    @Getter
 +    private double antibotPacketsVlsToCancel = 25;
 +
++    // Antibot proxy
++    @Getter
++    private boolean antibotProxyEnabled = true;
++    @Getter
++    private boolean antibotProxyLog = true;
++
 +    public void loadAntibot(final Configuration config, final Collection<String> whitelistedAddresses) {
 +        // Antibot accounts
 +        this.antibotAccountsEnabled = setIfUnexistant("antibot.accounts.enabled", this.antibotAccountsEnabled, config);
@@ -1563,12 +1591,16 @@ index 14665b1f..0f12f4ae 100644
 +        this.antibotPacketsVlsPerByte = setIfUnexistant("antibot.packets.vls-per-byte", this.antibotPacketsVlsPerByte, config);
 +        this.antibotPacketsVlsPerPacket = setIfUnexistant("antibot.packets.vls-per-packet", this.antibotPacketsVlsPerPacket, config);
 +        this.antibotPacketsVlsToKick = setIfUnexistant("antibot.packets.vls-to-kick", this.antibotPacketsVlsToKick, config);
++
++        // Antibot-proxy
++        this.antibotProxyEnabled = setIfUnexistant("antibot.proxy.enabled", this.antibotProxyEnabled, config);
++        this.antibotProxyLog = setIfUnexistant("antibot.proxy.log", this.antibotProxyLog, config);
 +    }
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -132,6 +313,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -132,6 +323,9 @@ public class FlameCordConfiguration extends FlameConfig {
          this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
  
          this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
