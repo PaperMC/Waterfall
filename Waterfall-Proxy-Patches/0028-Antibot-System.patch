@@ -1,4 +1,4 @@
-From 3e15de1f48767b39db352670c7f987334de4ab75 Mon Sep 17 00:00:00 2001
+From 0f74c662fa03c20ad745a5b6b70a92e1125fdf02 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1095,10 +1095,10 @@ index 00000000..68555de3
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 00000000..ef64fd8c
+index 00000000..a387a473
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,157 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1132,7 +1132,8 @@ index 00000000..ef64fd8c
 +        };
 +
 +        // send updating proxies message
-+        FlameCord.getInstance().getLoggerWrapper().getLogger().info("Updating proxy database from " + websites.length + " websites...");
++        FlameCord.getInstance().getLoggerWrapper().getLogger()
++                .info("Updating proxy database from " + websites.length + " websites...");
 +
 +        // create a string builder to store the content
 +        StringBuilder content = new StringBuilder();
@@ -1185,21 +1186,74 @@ index 00000000..ef64fd8c
 +    }
 +
 +    public boolean check(SocketAddress address) {
-+        if (!config.isAntibotProxyEnabled()) return false;
++        if (!config.isAntibotProxyEnabled())
++            return false;
 +
 +        AddressData addressData = addressDataManager.getAddressData(address);
 +        String ip = addressData.getHostString();
 +
 +        // Check if it's a proxy
-+        if (!proxies.equals("") && proxies.contains(ip)) {
++        if ((!proxies.equals("") && proxies.contains(ip)) || isVPN(ip)) {
 +            if (config.isAntibotProxyLog()) {
 +                logger.log(Level.INFO, "[FlameCord] [{0}] was blocked for using a VPN/Proxy service", address);
++            }
++
++            if (config.isAntibotProxyFirewall()) {
++                addressData.firewall("Using VPN/proxy services");
 +            }
 +
 +            return true;
 +        }
 +
 +        return false;
++    }
++
++    // Method to check if an IP address is a VPN using getipintel API
++    public boolean isVPN(String ip) {
++        try {
++            // Create a URL object with the API endpoint and the IP parameter
++            URL url = new URL("https://check.getipintel.net/check.php?ip=" + ip + "&contact=linsaftw@gmail.com");
++
++            // Open a connection to the URL
++            HttpURLConnection con = (HttpURLConnection) url.openConnection();
++
++            // Set the request method to GET
++            con.setRequestMethod("GET");
++
++            // Get the response code
++            int responseCode = con.getResponseCode();
++
++            // If the response code is 200 (OK), read the input stream
++            if (responseCode == 200) {
++                // Read the response from the input stream
++                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
++                String line;
++                StringBuilder response = new StringBuilder();
++
++                while ((line = in.readLine()) != null) {
++                    response.append(line);
++                }
++                in.close();
++
++                // Parse the response as a double
++                double result = Double.parseDouble(response.toString());
++
++                // If the result is greater than 0.99, it is a VPN
++                if (result > 0.99) {
++                    System.out.println("5");
++                    return true;
++                } else {
++                    System.out.println("4");
++                    return false;
++                }
++            } else {
++                System.out.println("2");
++                return false;
++            }
++        } catch (Exception e) {
++            System.out.println("1");
++            return false;
++        }
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/RatelimitCheck.java
@@ -1401,10 +1455,10 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 14665b1f..9d095964 100644
+index 14665b1f..9e34075d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,197 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,200 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1525,6 +1579,8 @@ index 14665b1f..9d095964 100644
 +    private boolean antibotProxyEnabled = true;
 +    @Getter
 +    private boolean antibotProxyLog = true;
++    @Getter
++    private boolean antibotProxyFirewall = true;
 +
 +    public void loadAntibot(final Configuration config, final Collection<String> whitelistedAddresses) {
 +        // Antibot accounts
@@ -1597,12 +1653,13 @@ index 14665b1f..9d095964 100644
 +        // Antibot-proxy
 +        this.antibotProxyEnabled = setIfUnexistant("antibot.proxy.enabled", this.antibotProxyEnabled, config);
 +        this.antibotProxyLog = setIfUnexistant("antibot.proxy.log", this.antibotProxyLog, config);
++        this.antibotProxyFirewall = setIfUnexistant("antibot.proxy.firewall", this.antibotProxyFirewall, config);
 +    }
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -132,6 +323,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -132,6 +326,9 @@ public class FlameCordConfiguration extends FlameConfig {
          this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
  
          this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
@@ -1840,7 +1897,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6d798917..23d89781 100644
+index bf126c81..0a75abc3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
@@ -1856,7 +1913,7 @@ index 6d798917..23d89781 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d65884ae..8d7bb6bf 100644
+index d65884ae..e76c0284 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1893,25 +1950,19 @@ index d65884ae..8d7bb6bf 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -442,6 +458,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -442,6 +458,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
 +        // FlameCord start - Antibot System
 +        AddressData addressData = FlameCord.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
 +        CheckManager checkManager = FlameCord.getInstance().getCheckManager();
-+
-+        if ( checkManager.getProxyCheck().check( ch.getRemoteAddress() ) )
-+        {
-+            disconnect( bungee.getTranslation( "antibot_proxy" ) );
-+            return;
-+        }
 +        // FlameCord end - Antibot System
 +
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -453,6 +480,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +474,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -1929,7 +1980,7 @@ index d65884ae..8d7bb6bf 100644
                  break;
              case 2:
                  // Login
-@@ -464,6 +502,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -464,6 +496,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -1939,6 +1990,12 @@ index d65884ae..8d7bb6bf 100644
 +                if ( checkManager.getRatelimitCheck().check( ch.getRemoteAddress(), 2 ) )
 +                {
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getConnectionsSecond() ) );
++                    return;
++                }
++        
++                if ( checkManager.getProxyCheck().check( ch.getRemoteAddress() ) )
++                {
++                    disconnect( bungee.getTranslation( "antibot_proxy" ) );
 +                    return;
 +                }
 +                // FlameCord end - Antibot System
