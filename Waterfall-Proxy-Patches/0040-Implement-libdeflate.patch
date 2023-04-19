@@ -1,11 +1,11 @@
-From d303d32c4a69eb36d79d5457411ab60da98416ad Mon Sep 17 00:00:00 2001
+From d62bc19cc15ac54fc3a5bd127b859f336cd50415 Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index b34daed7..4e9f4dc4 100644
+index 4dd59b2b..6f8f1505 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -59,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
@@ -17,7 +17,7 @@ index b34daed7..4e9f4dc4 100644
      private boolean antibotFirewallLog = true;
      @Getter
      private boolean antibotFirewallIpset = true;
-@@ -337,6 +339,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -340,6 +342,9 @@ public class FlameCordConfiguration extends FlameConfig {
          // FlameCord - Allow Invalid Names
          this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
  
