@@ -1,4 +1,4 @@
-From b960daca2f9bd96273afbbb4b017ac57d38d0808 Mon Sep 17 00:00:00 2001
+From 21cc9400af684b1c25bb3bad6f555b195ae22e45 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -824,10 +824,10 @@ index 00000000..1b35fba5
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
 new file mode 100644
-index 00000000..a7bd9f15
+index 00000000..6249fe8e
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsCheck.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,63 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.net.SocketAddress;
@@ -844,27 +844,24 @@ index 00000000..a7bd9f15
 +public class PacketsCheck {
 +    private Map<String, PacketsData> packetsData = new HashMap<>();
 +
-+    // Time since the last clear passed
-+    private long lastClear = System.currentTimeMillis();
-+
 +    public PacketsData getData(SocketAddress address) {
++        // Get the ip
 +        String ip = address.toString();
 +
-+        if (System.currentTimeMillis() - lastClear >= 60000) {
++        // Check if 60 seconds passed
++        if (System.currentTimeMillis() % 60000 == 0) {
 +            packetsData.clear();
-+            this.lastClear = System.currentTimeMillis();
 +        }
-+
-+        PacketsData data;
 +
 +        if (packetsData.containsKey(ip)) {
-+            data = packetsData.get(ip);
++            return packetsData.get(ip);
 +        } else {
-+            data = new PacketsData(address);
-+            packetsData.put(ip, data);
-+        }
++            PacketsData data = new PacketsData(address);
 +
-+        return data;
++            packetsData.put(ip, data);
++
++            return data;
++        }
 +    }
 +
 +    public PacketsCheckResult check(SocketAddress socketAddress, ByteBuf byteBuf) {
@@ -892,9 +889,6 @@ index 00000000..a7bd9f15
 +        } else {
 +            return PacketsCheckResult.NONE;
 +        }
-+    }
-+
-+    public void printPackets(SocketAddress remoteAddress) {
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/PacketsData.java
@@ -1451,7 +1445,7 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 14665b1f..019b17f5 100644
+index 14665b1f..9a960dde 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -15,6 +15,203 @@ import net.md_5.bungee.config.Configuration;
@@ -1544,7 +1538,7 @@ index 14665b1f..019b17f5 100644
 +    @Getter
 +    private int antibotReconnectAttempts = 2;
 +    @Getter
-+    private int antibotReconnectPings = 0;
++    private int antibotReconnectPings = 1;
 +    @Getter
 +    private int antibotReconnectMaxTime = 10000;
 +    @Getter
@@ -1669,7 +1663,7 @@ index 14665b1f..019b17f5 100644
          save(configuration, configurationFile);
      }
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index ae179438..35277c4c 100644
+index ae179438..276e57ac 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -80,6 +80,23 @@ public class MessagesConfiguration extends FlameConfig {
@@ -1683,7 +1677,7 @@ index ae179438..35277c4c 100644
 +		setIfUnexistant("antibot_nickname", "&c&lFlameCord\n\n&cYour nickname was detected as bot! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_password", "&c&lFlameCord\n\n&cYour password is used by other players! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_ratelimit", "&c&lFlameCord\n\n&cYou are connecting too fast! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
-+		setIfUnexistant("antibot_reconnect", "&c&lFlameCord\n\n&cReconnect {0} more times to enter!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
++		setIfUnexistant("antibot_reconnect", "&c&lFlameCord\n\n&cReconnect {0} more times to enter!\n&cRefresh {1} more times to enter!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_country", "&c&lFlameCord\n\n&cYour country {0} is blacklisted!\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_proxy", "&c&lFlameCord\n\n&cYou are using a Proxy/VPN! ({0})\n\n&cError? Contact us on discord.gg/gF36AT3", configuration);
 +		setIfUnexistant("antibot_stats", "&c&lFlameCord Antibot Stats\n &7■ Total Pings: &a{0}\n &7■ Total Connections: &b{1}\n\n &7■ Current Pings: &a{2}\n &7■ Current Connections: &b{3}", configuration);
@@ -1912,7 +1906,7 @@ index bf126c81..0a75abc3 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d65884ae..e76c0284 100644
+index d65884ae..dcace904 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1949,60 +1943,85 @@ index d65884ae..e76c0284 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -442,6 +458,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-             return;
+@@ -434,6 +450,60 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             handshake.setHost( handshake.getHost().substring( 0, handshake.getHost().length() - 1 ) );
          }
  
 +        // FlameCord start - Antibot System
-+        AddressData addressData = FlameCord.getInstance().getAddressDataManager().getAddressData( ch.getRemoteAddress() );
++        SocketAddress remoteAddress = ch.getRemoteAddress();
++        AddressData addressData = FlameCord.getInstance().getAddressDataManager().getAddressData( remoteAddress );
 +        CheckManager checkManager = FlameCord.getInstance().getCheckManager();
-+        // FlameCord end - Antibot System
 +
-         switch ( handshake.getRequestedProtocol() )
-         {
-             case 1:
-@@ -453,6 +474,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 }
-                 thisState = State.STATUS;
-                 ch.setProtocol( Protocol.STATUS );
-+
-+                // FlameCord start - Antibot System
++        // Switch protocol (ping/connect)
++        switch ( protocol )
++        {
++            // Checks for when user pings
++            case 1:
 +                addressData.addPing();
 +
-+                if ( checkManager.getRatelimitCheck().check( ch.getRemoteAddress(), 2 ) )
++                if ( checkManager.getRatelimitCheck().check( remoteAddress, 2 ) )
 +                {
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getPingsSecond() ) );
 +                    return;
 +                }
-+                // FlameCord end - Antibot System
++            // Checks for when users connect
++            case 2:
++                // Set state and protocol to allow disconnect messages
++                thisState = State.USERNAME;
++                ch.setProtocol( Protocol.LOGIN );
 +
-                 break;
-             case 2:
-                 // Login
-@@ -464,6 +496,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 thisState = State.USERNAME;
-                 ch.setProtocol( Protocol.LOGIN );
- 
-+                // FlameCord start - Antibot System
 +                addressData.addConnection();
 +
-+                if ( checkManager.getRatelimitCheck().check( ch.getRemoteAddress(), 2 ) )
++                if ( checkManager.getRatelimitCheck().check( remoteAddress, 2 ) )
 +                {
 +                    disconnect( bungee.getTranslation( "antibot_ratelimit", addressData.getConnectionsSecond() ) );
 +                    return;
 +                }
 +        
-+                if ( checkManager.getProxyCheck().check( ch.getRemoteAddress() ) )
++                if ( checkManager.getProxyCheck().check( remoteAddress ) )
 +                {
 +                    disconnect( bungee.getTranslation( "antibot_proxy" ) );
 +                    return;
 +                }
-+                // FlameCord end - Antibot System
 +
++                if ( checkManager.getReconnectCheck().check( remoteAddress ) )
++                {
++                    disconnect( bungee.getTranslation( "antibot_reconnect", Math.max(0, FlameCord.getInstance().getFlameCordConfiguration().getAntibotReconnectAttempts() - addressData.getTotalConnections() ), Math.max(0, FlameCord.getInstance().getFlameCordConfiguration().getAntibotReconnectPings() - addressData.getTotalPings() ) ) );
++                    return;
++                }
++        
++                if ( checkManager.getCountryCheck().check( remoteAddress ) )
++                {
++                    disconnect( bungee.getTranslation( "antibot_country", addressData.getCountry() ) );
++                    return;
++                }
++            // Invalid protocol
++            default:
++                break;
++        }
++        // FlameCord end - Antibot System
++
+         this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
+ 
+         // FlameCord - Make PlayerHandshakeEvent cancellable
+@@ -453,6 +523,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+                 thisState = State.STATUS;
+                 ch.setProtocol( Protocol.STATUS );
++
+                 break;
+             case 2:
+                 // Login
+@@ -461,8 +532,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 {
+                     bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                 }
+-                thisState = State.USERNAME;
+-                ch.setProtocol( Protocol.LOGIN );
+ 
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
-                     if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -527,6 +575,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -527,6 +596,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -2022,18 +2041,6 @@ index d65884ae..e76c0284 100644
 +        if ( checkManager.getNicknameCheck().check( ch.getRemoteAddress() ) )
 +        {
 +            disconnect( bungee.getTranslation( "antibot_nickname", loginRequest.getData() ) );
-+            return;
-+        }
-+
-+        if ( checkManager.getReconnectCheck().check( ch.getRemoteAddress() ) )
-+        {
-+            disconnect( bungee.getTranslation( "antibot_reconnect", FlameCord.getInstance().getFlameCordConfiguration().getAntibotReconnectAttempts() - addressData.getTotalConnections() ) );
-+            return;
-+        }
-+
-+        if ( checkManager.getCountryCheck().check( ch.getRemoteAddress() ) )
-+        {
-+            disconnect( bungee.getTranslation( "antibot_country", addressData.getCountry() ) );
 +            return;
 +        }
 +        // FlameCord end - Antibot System
@@ -2156,20 +2163,21 @@ index 14e3004f..b61ed521 100644
          {
              boolean logExceptions = !( handler instanceof PingHandler );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 1a5a0e08..f32a3747 100644
+index 1a5a0e08..9266ba8f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -63,6 +63,20 @@ public class PipelineUtils
+@@ -63,6 +63,21 @@ public class PipelineUtils
          {
              SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
  
 +            // FlameCord start - Antibot System
-+            String firewallReason = FlameCord.getInstance().getAddressDataManager().getAddressData(ch.remoteAddress()).getFirewallReason();
++            dev._2lstudios.flamecord.FlameCord flameCord = FlameCord.getInstance();
++            String firewallReason = flameCord.getAddressDataManager().getAddressData(remoteAddress).getFirewallReason();
 +            if ( firewallReason != null )
 +            {
-+                if ( FlameCord.getInstance().getFlameCordConfiguration().isAntibotFirewallLog() )
++                if ( flameCord.getFlameCordConfiguration().isAntibotFirewallLog() )
 +                {
-+                    FlameCord.getInstance().getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] is firewalled from the server. ({1})", new Object[]{ ch.remoteAddress(), firewallReason } );
++                    flameCord.getLoggerWrapper().log( Level.INFO, "[FlameCord] [{0}] is firewalled from the server. ({1})", new Object[]{ remoteAddress, firewallReason } );
 +                }
 +
 +                ch.close();
