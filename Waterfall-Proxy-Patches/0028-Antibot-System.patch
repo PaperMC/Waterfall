@@ -1,4 +1,4 @@
-From c6f61a7e7aa5adc540efdc481559b792017f5ac2 Mon Sep 17 00:00:00 2001
+From fb10293b3f8e8f6be3138619dc03780982954805 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1089,10 +1089,10 @@ index 000000000..68555de34
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 000000000..09ac1145c
+index 000000000..daa168592
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,153 @@
+@@ -0,0 +1,165 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1122,7 +1122,9 @@ index 000000000..09ac1145c
 +        String[] websites = {
 +                "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
 +                "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
-+                "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt"
++                "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
++                "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
++                "https://raw.githubusercontent.com/mmpx12/proxy-list/master/ips-list.txt"
 +        };
 +
 +        // send updating proxies message
@@ -1131,6 +1133,9 @@ index 000000000..09ac1145c
 +
 +        // create a string builder to store the content
 +        StringBuilder content = new StringBuilder();
++
++        // create the proxy count
++        int proxyCount = 0;
 +
 +        // loop through each website
 +        for (String website : websites) {
@@ -1155,8 +1160,11 @@ index 000000000..09ac1145c
 +                    // read each line of the response and append it to the content
 +                    String inputLine;
 +                    while ((inputLine = in.readLine()) != null) {
-+                        content.append(inputLine);
-+                        content.append("\n");
++                        if (content.indexOf(inputLine) == -1) {
++                            content.append(inputLine);
++                            content.append("\n");
++                            proxyCount++;
++                        }
 +                    }
 +
 +                    // close the buffered reader
@@ -1170,6 +1178,10 @@ index 000000000..09ac1145c
 +                FlameCord.getInstance().getLoggerWrapper().log(Level.INFO, "GET request failed for " + website);
 +            }
 +        }
++
++        // send updated proxies message
++        FlameCord.getInstance().getLoggerWrapper().getLogger()
++                .info("Loaded a total of " + proxyCount + " proxies to the database!");
 +
 +        // set the updated proxy list
 +        proxies = content.toString();
@@ -1890,7 +1902,7 @@ index fb81adee0..173b47f33 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2848faf3a..b94444081 100644
+index 8e413ec14..fc7b553c6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
