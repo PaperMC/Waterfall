@@ -1,4 +1,4 @@
-From fb10293b3f8e8f6be3138619dc03780982954805 Mon Sep 17 00:00:00 2001
+From 5fc5717ee2680fb61726b2c64d9ae4731af09b2e Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -473,10 +473,10 @@ index 000000000..007be392c
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
 new file mode 100644
-index 000000000..0de7d709f
+index 000000000..94fc76136
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/CheckManager.java
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,49 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import dev._2lstudios.flamecord.FlameCord;
@@ -517,7 +517,8 @@ index 000000000..0de7d709f
 +        this.countryCheck.load();
 +
 +        if (FlameCord.getInstance().getFlameCordConfiguration().isAntibotProxyEnabled()) {
-+            this.proxyCheck.updateProxies();
++            // run on a separated thread to avoid lock
++            new Thread(() -> this.proxyCheck.updateProxies()).start();
 +        }
 +    }
 +
@@ -1089,10 +1090,10 @@ index 000000000..68555de34
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 000000000..daa168592
+index 000000000..b0c5eb2db
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,165 @@
+@@ -0,0 +1,171 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1100,6 +1101,7 @@ index 000000000..daa168592
 +import java.net.HttpURLConnection;
 +import java.net.SocketAddress;
 +import java.net.URL;
++import java.util.Collection;
 +import java.util.logging.Level;
 +
 +import dev._2lstudios.flamecord.FlameCord;
@@ -1119,17 +1121,11 @@ index 000000000..daa168592
 +
 +    public void updateProxies() {
 +        // define the websites to get the proxies from
-+        String[] websites = {
-+                "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
-+                "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
-+                "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
-+                "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
-+                "https://raw.githubusercontent.com/mmpx12/proxy-list/master/ips-list.txt"
-+        };
++        Collection<String> lists = config.getAntibotProxyLists();
 +
 +        // send updating proxies message
 +        FlameCord.getInstance().getLoggerWrapper().getLogger()
-+                .info("Updating proxy database from " + websites.length + " websites...");
++                .info("[FlameCord] Updating proxy database from " + lists.size() + " websites... (It can take a while!)");
 +
 +        // create a string builder to store the content
 +        StringBuilder content = new StringBuilder();
@@ -1137,14 +1133,21 @@ index 000000000..daa168592
 +        // create the proxy count
 +        int proxyCount = 0;
 +
++        // create the time took
++        long timeTook = System.currentTimeMillis();
++
 +        // loop through each website
-+        for (String website : websites) {
++        for (String website : lists) {
 +            try {
 +                // create a URL object with the website
 +                URL url = new URL(website);
 +
 +                // open a connection to the URL
 +                HttpURLConnection con = (HttpURLConnection) url.openConnection();
++
++                // set timeouts
++                con.setConnectTimeout (5000);
++                con.setReadTimeout (5000); 
 +
 +                // set the request method to GET
 +                con.setRequestMethod("GET");
@@ -1160,7 +1163,8 @@ index 000000000..daa168592
 +                    // read each line of the response and append it to the content
 +                    String inputLine;
 +                    while ((inputLine = in.readLine()) != null) {
-+                        if (content.indexOf(inputLine) == -1) {
++                        // check if not a comment and content does not contain the ip already
++                        if (!inputLine.startsWith("#") && content.indexOf(inputLine) == -1) {
 +                            content.append(inputLine);
 +                            content.append("\n");
 +                            proxyCount++;
@@ -1179,9 +1183,12 @@ index 000000000..daa168592
 +            }
 +        }
 +
++        // update time took
++        timeTook = (System.currentTimeMillis() - timeTook) / 1000;
++
 +        // send updated proxies message
 +        FlameCord.getInstance().getLoggerWrapper().getLogger()
-+                .info("Loaded a total of " + proxyCount + " proxies to the database!");
++                .info("[FlameCord] Loaded a total of " + proxyCount + " proxies to the database! (Took " + timeTook + " seconds)");
 +
 +        // set the updated proxy list
 +        proxies = content.toString();
@@ -1457,10 +1464,10 @@ index 000000000..44d773abe
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 14665b1f6..9a960dde6 100644
+index 14665b1f6..33d9d510e 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,203 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,217 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1585,6 +1592,19 @@ index 14665b1f6..9a960dde6 100644
 +    private boolean antibotProxyFirewall = true;
 +    @Getter
 +    private String antibotProxyEmail = "flamecord@gmail.com";
++    @Getter
++    private Collection<String> antibotProxyLists = Arrays.asList(
++        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
++        "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
++        "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
++        "https://raw.githubusercontent.com/scriptzteam/ProtonVPN-VPN-IPs/main/exit_ips.txt",
++        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/ips-list.txt",
++        "https://check.torproject.org/torbulkexitlist?ip=1.1.1.1",
++        "https://cinsscore.com/list/ci-badguys.txt",
++        "https://lists.blocklist.de/lists/all.txt",
++        "https://blocklist.greensnow.co/greensnow.txt",
++        "https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset"
++        );
 +
 +    public void loadAntibot(final Configuration config, final Collection<String> whitelistedAddresses) {
 +        // Antibot accounts
@@ -1659,12 +1679,13 @@ index 14665b1f6..9a960dde6 100644
 +        this.antibotProxyLog = setIfUnexistant("antibot.proxy.log", this.antibotProxyLog, config);
 +        this.antibotProxyFirewall = setIfUnexistant("antibot.proxy.firewall", this.antibotProxyFirewall, config);
 +        this.antibotProxyEmail = setIfUnexistant("antibot.proxy.email", this.antibotProxyEmail, config);
++        this.antibotProxyLists = setIfUnexistant("antibot.proxy.lists", this.antibotProxyLists, config);
 +    }
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -132,6 +329,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -132,6 +343,9 @@ public class FlameCordConfiguration extends FlameConfig {
          this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
  
          this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
@@ -1902,7 +1923,7 @@ index fb81adee0..173b47f33 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8e413ec14..fc7b553c6 100644
+index 08455799c..4e65ad531 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
@@ -1918,7 +1939,7 @@ index 8e413ec14..fc7b553c6 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d65884ae3..141dadc5c 100644
+index d65884ae3..d7553b117 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1955,7 +1976,7 @@ index d65884ae3..141dadc5c 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -436,6 +452,60 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -436,6 +452,64 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
  
@@ -2011,12 +2032,16 @@ index d65884ae3..141dadc5c 100644
 +            default:
 +                break;
 +        }
++
++        // Reset state for event
++        thisState = State.HANDSHAKE;
++        ch.setProtocol( Protocol.HANDSHAKE );
 +        // FlameCord end - Antibot System
 +
          // FlameCord - Make PlayerHandshakeEvent cancellable
          if (bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake)).isCancelled()) {
              ch.close();
-@@ -453,6 +523,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +527,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -2024,16 +2049,15 @@ index d65884ae3..141dadc5c 100644
                  break;
              case 2:
                  // Login
-@@ -461,8 +532,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -461,6 +536,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
--                thisState = State.USERNAME;
--                ch.setProtocol( Protocol.LOGIN );
++
+                 thisState = State.USERNAME;
+                 ch.setProtocol( Protocol.LOGIN );
  
-                 if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
-                 {
-@@ -527,6 +596,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -527,6 +603,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
