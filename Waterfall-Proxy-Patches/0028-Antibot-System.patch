@@ -1,4 +1,4 @@
-From 5fc5717ee2680fb61726b2c64d9ae4731af09b2e Mon Sep 17 00:00:00 2001
+From 1e81ce57660090fbe134ca152289ae54d0c3280d Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1923,7 +1923,7 @@ index fb81adee0..173b47f33 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 08455799c..4e65ad531 100644
+index 8ea0ab4d2..2336159b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
@@ -1939,7 +1939,7 @@ index 08455799c..4e65ad531 100644
          // Need to close loggers after last message!
          org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d65884ae3..d7553b117 100644
+index d65884ae3..c2a4f1e0b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -22,8 +22,8 @@ import javax.crypto.SecretKey;
@@ -1976,7 +1976,7 @@ index d65884ae3..d7553b117 100644
          this.handshake = handshake;
          ch.setVersion( handshake.getProtocolVersion() );
          ch.getHandle().pipeline().remove( PipelineUtils.LEGACY_KICKER );
-@@ -436,6 +452,64 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -436,6 +452,68 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          this.virtualHost = InetSocketAddress.createUnresolved( handshake.getHost(), handshake.getPort() );
  
@@ -1990,6 +1990,10 @@ index d65884ae3..d7553b117 100644
 +        {
 +            // Checks for when user pings
 +            case 1:
++                // Set state and protocol to prevent errors
++                thisState = State.STATUS;
++                ch.setProtocol( Protocol.STATUS );
++
 +                addressData.addPing();
 +
 +                if ( checkManager.getRatelimitCheck().check( remoteAddress, 2 ) )
@@ -1999,7 +2003,7 @@ index d65884ae3..d7553b117 100644
 +                }
 +            // Checks for when users connect
 +            case 2:
-+                // Set state and protocol to allow disconnect messages
++                // Set state and protocol to prevent errors
 +                thisState = State.USERNAME;
 +                ch.setProtocol( Protocol.LOGIN );
 +
@@ -2041,7 +2045,7 @@ index d65884ae3..d7553b117 100644
          // FlameCord - Make PlayerHandshakeEvent cancellable
          if (bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake)).isCancelled()) {
              ch.close();
-@@ -453,6 +527,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -453,6 +531,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -2049,7 +2053,7 @@ index d65884ae3..d7553b117 100644
                  break;
              case 2:
                  // Login
-@@ -461,6 +536,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -461,6 +540,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      bungee.getLogger().log( Level.INFO, "{0} has connected", this );
                  }
@@ -2057,7 +2061,7 @@ index d65884ae3..d7553b117 100644
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
-@@ -527,6 +603,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -527,6 +607,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
