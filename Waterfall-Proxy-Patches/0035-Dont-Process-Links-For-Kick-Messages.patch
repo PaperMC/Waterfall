@@ -1,4 +1,4 @@
-From a58b481a70ed2e8a5d876468999daf60b65e3837 Mon Sep 17 00:00:00 2001
+From e74e3f56e2fdf688c56eab9f29ee8878a021d118 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 10 Jan 2023 16:37:13 -0300
 Subject: [PATCH] Dont Process Links For Kick Messages
@@ -117,10 +117,10 @@ index 4371374a9..2bb27e670 100644
       * The text of the component that will be displayed to the client
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 335fc08dd..094151d4b 100644
+index 9ad5f5205..d237a711d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -859,7 +859,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -849,7 +849,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
