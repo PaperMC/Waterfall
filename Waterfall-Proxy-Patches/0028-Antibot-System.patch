@@ -1,4 +1,4 @@
-From 3c1c6b50d0d78a409332452b39390ce5ed3ce871 Mon Sep 17 00:00:00 2001
+From 5ab898235d0a3f199036d39c3215a28eab3445ad Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -1090,10 +1090,10 @@ index 00000000..68555de3
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
 new file mode 100644
-index 00000000..77e8004e
+index 00000000..6b3ee3d0
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/antibot/ProxyCheck.java
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,180 @@
 +package dev._2lstudios.flamecord.antibot;
 +
 +import java.io.BufferedReader;
@@ -1204,6 +1204,12 @@ index 00000000..77e8004e
 +
 +        AddressData addressData = addressDataManager.getAddressData(address);
 +        String ip = addressData.getHostString();
++        Collection<String> whitelist = config.getAntibotProxyWhitelist();
++
++        // Check if the ip is whitelisted
++        if (whitelist.contains(ip)) {
++            return false;
++        }
 +
 +        // Check if it's a proxy
 +        if ((!proxies.equals("") && proxies.contains(ip)) || isVPN(ip)) {
@@ -1467,10 +1473,10 @@ index 00000000..44d773ab
 +    }
 +}
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 14665b1f..c59227cb 100644
+index 14665b1f..950a189d 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -15,6 +15,220 @@ import net.md_5.bungee.config.Configuration;
+@@ -15,6 +15,223 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -1598,6 +1604,8 @@ index 14665b1f..c59227cb 100644
 +    @Getter
 +    private String antibotProxyEmail = "flamecord@gmail.com";
 +    @Getter
++    private Collection<String> antibotProxyWhitelist = Arrays.asList("127.0.0.1");
++    @Getter
 +    private Collection<String> antibotProxyLists = Arrays.asList(
 +        "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
 +        "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
@@ -1685,13 +1693,14 @@ index 14665b1f..c59227cb 100644
 +        this.antibotProxyFirewall = setIfUnexistant("antibot.proxy.firewall", this.antibotProxyFirewall, config);
 +        this.antibotProxyOnlineCheck = setIfUnexistant("antibot.proxy.online-check", this.antibotProxyOnlineCheck, config);
 +        this.antibotProxyEmail = setIfUnexistant("antibot.proxy.email", this.antibotProxyEmail, config);
++        this.antibotProxyWhitelist = setIfUnexistant("antibot.proxy.whitelist", this.antibotProxyWhitelist, config);
 +        this.antibotProxyLists = setIfUnexistant("antibot.proxy.lists", this.antibotProxyLists, config);
 +    }
 +
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -132,6 +346,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -132,6 +349,9 @@ public class FlameCordConfiguration extends FlameConfig {
          this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
  
          this.tcpFastOpen = setIfUnexistant("tcp-fast-open", this.tcpFastOpen, configuration);
@@ -1929,7 +1938,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bc3fd9eb..fabdb256 100644
+index d48f9687..35850471 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer

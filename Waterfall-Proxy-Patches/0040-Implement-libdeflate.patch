@@ -1,11 +1,11 @@
-From 3239b8b4f31f0dab4647c938a32a9cf07a68c375 Mon Sep 17 00:00:00 2001
+From 3bc1f1f17e6f7335fb1015936f220f279c7dc4c7 Mon Sep 17 00:00:00 2001
 From: xIsm4 <soportexism4@gmail.com>
 Date: Fri, 27 Jan 2023 14:12:44 +0100
 Subject: [PATCH] Implement libdeflate
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index ad1bcf44..70a783f9 100644
+index ad7f8c8e..024398a1 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 @@ -59,6 +59,8 @@ public class FlameCordConfiguration extends FlameConfig {
@@ -17,7 +17,7 @@ index ad1bcf44..70a783f9 100644
      private boolean antibotFirewallLog = true;
      @Getter
      private boolean antibotFirewallIpset = true;
-@@ -357,6 +359,9 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -360,6 +362,9 @@ public class FlameCordConfiguration extends FlameConfig {
          // FlameCord - Allow Invalid Names
          this.allowInvalidNames = setIfUnexistant("allow-invalid-names", this.allowInvalidNames, configuration);
  
@@ -2118,7 +2118,7 @@ index 02625018..37abc9f7 100644
              <groupId>io.github.waterfallmc</groupId>
              <artifactId>waterfall-module-cmd-alert</artifactId>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 4e97d485..153ec3a9 100644
+index c5fca906..78324f6a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -17,6 +17,7 @@ import dev._2lstudios.flamecord.commands.FlameCordCommand;
