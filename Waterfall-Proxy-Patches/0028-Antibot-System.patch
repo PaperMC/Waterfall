@@ -1,4 +1,4 @@
-From 5ab898235d0a3f199036d39c3215a28eab3445ad Mon Sep 17 00:00:00 2001
+From ced4f783a28958480837fc046cdb37c93690b855 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -26,7 +26,7 @@ index 20edd900..95bdf348 100644
  
      <build>
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index 676ba95b..3824cc53 100644
+index 676ba95b..a58110b3 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -1,8 +1,16 @@
@@ -130,7 +130,7 @@ index 676ba95b..3824cc53 100644
 +     */
 +    public void runLinuxCommand(String command) {
 +        try {
-+            runtime.exec("/bin/sh -c " + command);
++            runtime.exec("/bin/sh -c '" + command + "'");
 +        } catch (IOException e) {
 +            /*
 +             * Windows throws exception.
@@ -1938,7 +1938,7 @@ index fb81adee..173b47f3 100644
                      }
                  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d48f9687..35850471 100644
+index ca093303..2d0ebc0f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -533,6 +533,11 @@ public class BungeeCord extends ProxyServer
