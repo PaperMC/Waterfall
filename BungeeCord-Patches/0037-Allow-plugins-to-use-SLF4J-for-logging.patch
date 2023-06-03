@@ -1,11 +1,11 @@
-From f5fe955f7406c4778aeeae08ca0624d2c0b6fa12 Mon Sep 17 00:00:00 2001
+From b773b7b9601c7f191de0849bd58e0758a549d2fc Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index a680e7b0..6774bed3 100644
+index 163fc93b..9a01f8c6 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -75,5 +75,11 @@
@@ -16,7 +16,7 @@ index a680e7b0..6774bed3 100644
 +        <dependency>
 +            <groupId>org.slf4j</groupId>
 +            <artifactId>slf4j-api</artifactId>
-+            <version>1.7.25</version>
++            <version>1.7.36</version>
 +        </dependency>
      </dependencies>
  </project>
@@ -39,10 +39,10 @@ index 9660234d..3d1e9a3a 100644
       * Called when the plugin has just been loaded. Most of the proxy will not
       * be initialized, so only use it for registering
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 44bf7f91..fb091698 100644
+index 9c561bcc..a01910ee 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
-@@ -38,6 +38,12 @@
+@@ -38,6 +38,24 @@
              <artifactId>log4j-jul</artifactId>
              <version>${log4j2.version}</version>
          </dependency>
@@ -51,10 +51,22 @@ index 44bf7f91..fb091698 100644
 +            <artifactId>log4j-slf4j-impl</artifactId>
 +            <version>${log4j2.version}</version>
 +            <scope>runtime</scope>
++            <exclusions>
++                <exclusion>
++                    <groupId>org.slf4j</groupId>
++                    <artifactId>slf4j-api</artifactId>
++                </exclusion>
++            </exclusions>
++        </dependency>
++        <dependency>
++            <groupId>org.slf4j</groupId>
++            <artifactId>slf4j-api</artifactId>
++            <version>1.7.36</version>
++            <scope>runtime</scope>
 +        </dependency>
          <dependency>
              <groupId>com.lmax</groupId>
              <artifactId>disruptor</artifactId>
 -- 
-2.17.2 (Apple Git-113)
+2.40.1.windows.1
 
