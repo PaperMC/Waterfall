@@ -1,11 +1,11 @@
-From 15952aaaac9f80d0bf3f1d7adbd42e947572d78f Mon Sep 17 00:00:00 2001
+From 16dfe71d77ddbc0e57a8319efc208f930dedbb94 Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Sun, 15 Jan 2023 10:12:45 -0300
 Subject: [PATCH] Bungee IP Command
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
-index e385aaab..4d9ed0c7 100644
+index 9269a6ec..bb5f1f1f 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/MessagesConfiguration.java
 @@ -102,6 +102,12 @@ public class MessagesConfiguration extends FlameConfig {
@@ -73,7 +73,7 @@ index 00000000..85313491
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e03c7877..63ba56f4 100644
+index ee1fc481..0fd585e2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,7 @@ import com.google.gson.Gson;
@@ -84,7 +84,7 @@ index e03c7877..63ba56f4 100644
  import dev._2lstudios.flamecord.commands.BungeePluginsCommand;
  import dev._2lstudios.flamecord.commands.FlameCordCommand;
  import dev._2lstudios.flamecord.configuration.ModulesConfiguration;
-@@ -916,5 +917,8 @@ public class BungeeCord extends ProxyServer
+@@ -920,5 +921,8 @@ public class BungeeCord extends ProxyServer
          
          // FlameCord - Bungee Plugins Command
          pluginManager.registerCommand(null, new BungeePluginsCommand());
@@ -94,5 +94,5 @@ index e03c7877..63ba56f4 100644
      }
  }
 -- 
-2.37.3.windows.1
+2.40.1.windows.1
 

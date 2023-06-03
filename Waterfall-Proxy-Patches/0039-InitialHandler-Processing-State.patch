@@ -1,11 +1,11 @@
-From e6eb41f0e91bc6eb3b8f894530a0481dd8c2d7aa Mon Sep 17 00:00:00 2001
+From 5e278d2226c7e96c8ba384af1b3627108f97fa9c Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Sun, 22 Jan 2023 09:41:36 -0300
 Subject: [PATCH] InitialHandler Processing State
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d237a711d..bb397a22c 100644
+index a72b7520..a4860814 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -135,6 +135,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -19,7 +19,7 @@ index d237a711d..bb397a22c 100644
      private boolean canSendKickMessage()
      {
          return thisState == State.USERNAME || thisState == State.ENCRYPT || thisState == State.FINISHING;
-@@ -275,6 +279,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -285,6 +289,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(StatusRequest statusRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
@@ -30,7 +30,7 @@ index d237a711d..bb397a22c 100644
  
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
-@@ -392,6 +400,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -402,6 +410,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
  
          thisState = State.PING;
@@ -40,7 +40,7 @@ index d237a711d..bb397a22c 100644
      }
  
      private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
-@@ -401,6 +412,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -411,6 +422,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          // FlameCord - Never accept invalid packets
          Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
@@ -51,20 +51,18 @@ index d237a711d..bb397a22c 100644
  
          unsafe.sendPacket( ping );
  
-@@ -412,7 +427,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -422,6 +437,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(Handshake handshake) throws Exception
      {
          Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
--        
 +        // FlameCord start - InitialHandler Processing State
 +        Preconditions.checkState( !processing, "Cannot request HANDSHAKE while processing another packet");
 +        this.processing = true;
 +        // FlameCord end - InitialHandler Processing State
-+
+ 
          // FlameCord start - Antibot System
          // Close and firewall on invalid protocol
-         int protocol = handshake.getRequestedProtocol();
-@@ -521,6 +540,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -531,6 +550,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      return;
                  }
                  // FlameCord end - Antibot System
@@ -75,7 +73,7 @@ index d237a711d..bb397a22c 100644
  
                  break;
              case 2:
-@@ -545,6 +568,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -555,6 +578,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      }
                      return;
                  }
@@ -87,7 +85,7 @@ index d237a711d..bb397a22c 100644
                  break;
              default:
                  throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
-@@ -555,6 +583,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -565,6 +593,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(LoginRequest loginRequest) throws Exception
      {
          Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
@@ -98,7 +96,7 @@ index d237a711d..bb397a22c 100644
  
          if ( !FlameCord.getInstance().getFlameCordConfiguration().isAllowInvalidNames() && !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
          {
-@@ -650,6 +682,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -660,6 +692,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      thisState = State.FINISHING;
                      finish();
                  }
@@ -108,7 +106,7 @@ index d237a711d..bb397a22c 100644
              }
          };
  
-@@ -663,6 +698,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -673,6 +708,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
          thisState = State.FINISHING; // Waterfall - move earlier - There is no verification of this later (and this is not API)
@@ -120,5 +118,5 @@ index d237a711d..bb397a22c 100644
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
          // Waterfall start
 -- 
-2.37.3.windows.1
+2.40.1.windows.1
 

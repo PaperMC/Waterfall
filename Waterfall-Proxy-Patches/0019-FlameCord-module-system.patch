@@ -1,11 +1,11 @@
-From 681805834a7f83cccb8de7878b8ffacbdb4b6d0d Mon Sep 17 00:00:00 2001
+From 5991a1c9046328c99d25d66ac5b82650b0646e85 Mon Sep 17 00:00:00 2001
 From: linsaftw <25271111+linsaftw@users.noreply.github.com>
 Date: Sat, 1 May 2021 14:17:48 -0300
 Subject: [PATCH] FlameCord module system
 
 
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
-index f3d5c0290..fb3d8ca2e 100644
+index f3d5c029..fb3d8ca2 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/FlameCord.java
 @@ -4,6 +4,7 @@ import java.util.Collection;
@@ -36,7 +36,7 @@ index f3d5c0290..fb3d8ca2e 100644
 \ No newline at end of file
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 new file mode 100644
-index 000000000..a6cb2638f
+index 00000000..a6cb2638
 --- /dev/null
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/ModulesConfiguration.java
 @@ -0,0 +1,35 @@
@@ -76,7 +76,7 @@ index 000000000..a6cb2638f
 +        }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0d8f02d25..d58227fd9 100644
+index d9195f43..2cb0f332 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,8 @@ import com.google.gson.Gson;
@@ -135,7 +135,7 @@ index 0d8f02d25..d58227fd9 100644
          pluginManager.enablePlugins();
  
          if ( config.getThrottle() > 0 )
-@@ -853,4 +859,53 @@ public class BungeeCord extends ProxyServer
+@@ -857,4 +863,53 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -190,5 +190,5 @@ index 0d8f02d25..d58227fd9 100644
 +    }
  }
 -- 
-2.37.3.windows.1
+2.40.1.windows.1
 

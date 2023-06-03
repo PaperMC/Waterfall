@@ -1,11 +1,11 @@
-From e74e3f56e2fdf688c56eab9f29ee8878a021d118 Mon Sep 17 00:00:00 2001
+From 848eb1a30908c8d8b77197994412cfc01a3fd5db Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Tue, 10 Jan 2023 16:37:13 -0300
 Subject: [PATCH] Dont Process Links For Kick Messages
 
 
 diff --git a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
-index 4371374a9..2bb27e670 100644
+index 4371374a..2bb27e67 100644
 --- a/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
 +++ b/chat/src/main/java/net/md_5/bungee/api/chat/TextComponent.java
 @@ -160,6 +160,107 @@ public final class TextComponent extends BaseComponent
@@ -117,10 +117,10 @@ index 4371374a9..2bb27e670 100644
       * The text of the component that will be displayed to the client
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9ad5f5205..d237a711d 100644
+index 6f336346..a72b7520 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -849,7 +849,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -859,7 +859,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( canSendKickMessage() )
          {
@@ -130,5 +130,5 @@ index 9ad5f5205..d237a711d 100644
          {
              ch.close();
 -- 
-2.37.3.windows.1
+2.40.1.windows.1
 
