@@ -1,4 +1,4 @@
-From 8b5d2b3876a6919a98b3573238ce80d45f65030c Mon Sep 17 00:00:00 2001
+From 43de49256f52a8990a41b6194163023d1e169f3d Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -39,7 +39,7 @@ index 5ec5faf7..f9ec2c1c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..44bf7f91
+index 00000000..9c561bcc
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -63,7 +63,7 @@ index 00000000..44bf7f91
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
-+        <log4j2.version>2.17.2</log4j2.version>
++        <log4j2.version>2.20.0</log4j2.version>
 +    </properties>
 +
 +    <dependencies>
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index de5b2410..c7a036c3 100644
+index 432fd5c5..77991d81 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -56,11 +56,12 @@
@@ -251,7 +251,7 @@ index de5b2410..c7a036c3 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 3a9afae9..61172190 100644
+index e004f988..368df864 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -278,8 +278,8 @@ index 3a9afae9..61172190 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -130,6 +131,25 @@
-             <version>1.9.7</version>
+@@ -130,6 +131,35 @@
+             <version>1.9.10</version>
              <scope>runtime</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->
@@ -293,6 +293,16 @@ index 3a9afae9..61172190 100644
 +            <groupId>net.minecrell</groupId>
 +            <artifactId>terminalconsoleappender</artifactId>
 +            <version>1.3.0</version>
++            <exclusions>
++                <exclusion>
++                    <groupId>org.apache.logging.log4j</groupId>
++                    <artifactId>log4j-core</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jline</groupId>
++                    <artifactId>jline-terminal</artifactId>
++                </exclusion>
++            </exclusions>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
@@ -350,7 +360,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1da5db3d..77a19a29 100644
+index 166565a7..71bb3d9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -1617,5 +1627,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.40.0
+2.40.1.windows.1
 
