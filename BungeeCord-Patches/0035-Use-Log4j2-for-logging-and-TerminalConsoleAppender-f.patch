@@ -1,4 +1,4 @@
-From 3ce400468f64409f9c80898d51168354d51f46ca Mon Sep 17 00:00:00 2001
+From 8e7c12064010cb7ea8137814837f97a2b1ca1e9e Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -39,7 +39,7 @@ index e5797d70..8328e576 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..a7d2aa8f
+index 00000000..1cc7936e
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -59,7 +59,7 @@ index 00000000..a7d2aa8f
 +    <version>1.20-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
-+    <name>Waterfall-Log</name>
++    <name>Waterfall-Log4J</name>
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
 +
 +    <properties>
@@ -233,13 +233,15 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index ef36fe95..1ab45c9e 100644
+index 1bf8b510..d333a528 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -56,11 +56,12 @@
+@@ -55,12 +55,13 @@
+         <module>chat</module>
          <module>config</module>
          <module>event</module>
-         <module>log</module>
+-        <module>log</module>
++        <!--<module>log</module>-->
 +        <module>log4j</module>
          <module>module</module>
          <module>protocol</module>
@@ -1627,5 +1629,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.41.0.windows.1
+2.41.0
 

@@ -1,4 +1,4 @@
-From 07b7cda5c28940d220005566366a47e6840de591 Mon Sep 17 00:00:00 2001
+From 5c99ae2417d30f8021126598b8694876f9e1c3c3 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -506,7 +506,7 @@ index effa68e6..2412768b 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index acdf957a..ef36fe95 100644
+index acdf957a..1bf8b510 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -615,7 +615,7 @@ index acdf957a..ef36fe95 100644
              </plugin>
              <plugin>
 +                <artifactId>maven-javadoc-plugin</artifactId>
-+                <version>3.2.0</version>
++                <version>3.5.0</version>
 +                <configuration>
 +                    <doclint>none</doclint>
 +                </configuration>
@@ -633,7 +633,23 @@ index acdf957a..ef36fe95 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -325,6 +350,7 @@
+@@ -276,6 +301,15 @@
+                                 </goals>
+                             </execution>
+                         </executions>
++                        <!-- Waterfall start: TODO: Just convert this project to gradle.
++                        Maven is a constant source of headaches, especially when we have crud like
++                        lombok inflicted upon the project mangling the build setup. I don't have the will to
++                        figure out where the duplicate artifact is coming from, I cannot reproduce this locally,
++                        and so, we'll just do this for now.-->
++                        <configuration>
++                            <forceCreation>true</forceCreation>
++                        </configuration>
++                        <!-- Waterfall end -->
+                     </plugin>
+                     <plugin>
+                         <groupId>org.projectlombok</groupId>
+@@ -325,6 +359,7 @@
                                      <!-- lombok does not add @return or @param which causes warnings, so ignore -->
                                      <doclint>none</doclint>
                                      <sourcepath>${project.build.directory}/delombok</sourcepath>
@@ -641,95 +657,6 @@ index acdf957a..ef36fe95 100644
                                  </configuration>
                              </execution>
                          </executions>
-@@ -356,5 +382,88 @@
-                 </plugins>
-             </build>
-         </profile>
-+        <!-- Waterfall Start -->
-+        <profile>
-+            <id>deployment</id>
-+            <build>
-+                <plugins>
-+                    <plugin>
-+                        <groupId>org.projectlombok</groupId>
-+                        <artifactId>lombok-maven-plugin</artifactId>
-+                        <version>1.18.12.0</version>
-+                        <executions>
-+                            <execution>
-+                                <id>delombok</id>
-+                                <phase>generate-sources</phase>
-+                                <goals>
-+                                    <goal>delombok</goal>
-+                                </goals>
-+                                <configuration>
-+                                    <addOutputDirectory>false</addOutputDirectory>
-+                                    <sourceDirectory>src/main/java</sourceDirectory>
-+                                </configuration>
-+                            </execution>
-+                        </executions>
-+                    </plugin>
-+                    <plugin>
-+                        <groupId>org.apache.maven.plugins</groupId>
-+                        <artifactId>maven-javadoc-plugin</artifactId>
-+                        <version>3.1.0</version>
-+                        <configuration>
-+                            <doclint>none</doclint>
-+                        </configuration>
-+                        <executions>
-+                            <execution>
-+                                <id>attach-javadocs</id>
-+                                <phase>package</phase>
-+                                <goals>
-+                                    <goal>jar</goal>
-+                                </goals>
-+                                <configuration>
-+                                    <sourcepath>target/generated-sources/delombok</sourcepath>
-+                                </configuration>
-+                            </execution>
-+                            <execution>
-+                                <id>aggregate-javadocs</id>
-+                                <phase>package</phase>
-+                                <goals>
-+                                    <goal>javadoc</goal>
-+                                </goals>
-+                                <inherited>false</inherited>
-+                                <configuration>
-+                                    <doctitle>Waterfall ${project.version} API</doctitle>
-+                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
-+                                    <sourcepath>
-+                                        api/target/generated-sources/delombok;
-+                                        chat/target/generated-sources/delombok
-+                                    </sourcepath>
-+                                    <source>8</source>
-+                                </configuration>
-+                            </execution>
-+                        </executions>
-+                    </plugin>
-+                    <plugin>
-+                        <groupId>org.apache.maven.plugins</groupId>
-+                        <artifactId>maven-source-plugin</artifactId>
-+                        <version>2.4</version>
-+                        <executions>
-+                            <execution>
-+                                <id>attach-sources</id>
-+                                <phase>package</phase>
-+                                <goals>
-+                                    <goal>jar-no-fork</goal>
-+                                </goals>
-+                            </execution>
-+                        </executions>
-+                    </plugin>
-+                    <plugin>
-+                        <groupId>org.apache.maven.plugins</groupId>
-+                        <artifactId>maven-deploy-plugin</artifactId>
-+                        <version>2.7</version>
-+                    </plugin>
-+                </plugins>
-+            </build>
-+        </profile>
-+        <!-- Waterfall end -->
-     </profiles>
- </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
 index d8ce7f6c..c6105b87 100644
 --- a/protocol/pom.xml
@@ -884,5 +811,5 @@ index 7688b844..fc864f83 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.41.0.windows.1
+2.41.0
 
