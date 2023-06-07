@@ -1,4 +1,4 @@
-From ae6d9010ecdfd204ce171afea813452392a5c647 Mon Sep 17 00:00:00 2001
+From 8e7c12064010cb7ea8137814837f97a2b1ca1e9e Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 5ec5faf7..f9ec2c1c 100644
+index e5797d70..8328e576 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index 5ec5faf7..f9ec2c1c 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..1ef8c1f9
+index 00000000..1cc7936e
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..1ef8c1f9
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.19-R0.1-SNAPSHOT</version>
++        <version>1.20-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.19-R0.1-SNAPSHOT</version>
++    <version>1.20-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log4J</name>
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 5fff5a09..6d3fedae 100644
+index 1bf8b510..d333a528 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -55,12 +55,13 @@
@@ -253,7 +253,7 @@ index 5fff5a09..6d3fedae 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index e004f988..368df864 100644
+index aa91ee5a..83d8719b 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -561,7 +561,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index 1716c3cf..00000000
+index 58a25501..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -573,13 +573,13 @@ index 1716c3cf..00000000
 -    <parent>
 -        <groupId>net.md-5</groupId>
 -        <artifactId>bungeecord-parent</artifactId>
--        <version>1.19-R0.1-SNAPSHOT</version>
+-        <version>1.20-R0.1-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <groupId>net.md-5</groupId>
 -    <artifactId>bungeecord-slf4j</artifactId>
--    <version>1.19-R0.1-SNAPSHOT</version>
+-    <version>1.20-R0.1-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>BungeeCord-SLF4J</name>
@@ -1629,5 +1629,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.40.1
+2.41.0
 

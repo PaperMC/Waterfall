@@ -1,4 +1,4 @@
-From 8056d2b9940e8bcf664c633e97f1a4068308dfe3 Mon Sep 17 00:00:00 2001
+From 66fcaee1c689ff5f8b4f016a31f17c9d8650cb46 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -66,7 +66,7 @@ index 746defae..dabfa4db 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1255298c..aa721cdc 100644
+index 9bceb122..66f0d0a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -34,7 +34,9 @@ import net.md_5.bungee.forge.ForgeUtils;
@@ -93,7 +93,7 @@ index 1255298c..aa721cdc 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d642e68d..bac51311 100644
+index 09b9f342..4b530a8b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -73,6 +73,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -105,10 +105,10 @@ index d642e68d..bac51311 100644
      @Getter
      @NonNull
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 81146df6..5ecca5a0 100644
+index 5440f4b5..4dde5cff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -335,6 +335,12 @@ public abstract class EntityMap
+@@ -336,6 +336,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
@@ -122,5 +122,5 @@ index 81146df6..5ecca5a0 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.37.3.windows.1
+2.41.0.windows.1
 
