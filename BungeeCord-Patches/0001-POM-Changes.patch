@@ -1,4 +1,4 @@
-From 7d40b800063160f5f81d8acdce264d2ccb635f24 Mon Sep 17 00:00:00 2001
+From cf9c35430d3e4bcdb8d2cf66ae81fdfb03ab7d31 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -506,7 +506,7 @@ index c7478c96..e137dfcc 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index c118aa69..8b2fdc8f 100644
+index c118aa69..4b5f748a 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,25 @@
@@ -641,7 +641,28 @@ index c118aa69..8b2fdc8f 100644
                                  </configuration>
                              </execution>
                          </executions>
-@@ -356,5 +382,88 @@
+@@ -333,6 +359,20 @@
+                             <failOnWarnings>true</failOnWarnings>
+                         </configuration>
+                     </plugin>
++                    <!-- Waterfall start: TODO: Just convert this project to gradle.
++                    Maven is a constant source of headaches, especially when we have crud like
++                    lombok inflicted upon the project mangling the build setup. I don't have the will to
++                    figure out where the duplicate artifact is coming from, I cannot reproduce this locally,
++                    and so, we'll just do this for now.-->
++                    <plugin>
++                        <groupId>org.apache.maven.plugins</groupId>
++                        <artifactId>maven-jar-plugin</artifactId>
++                        <version>3.3.0</version>
++                        <configuration>
++                            <forceCreation>true</forceCreation>
++                        </configuration>
++                    </plugin>
++                    <!-- Waterfall end -->
+                 </plugins>
+             </build>
+         </profile>
+@@ -356,5 +396,88 @@
                  </plugins>
              </build>
          </profile>
@@ -884,5 +905,5 @@ index 90a4c8d5..81af5457 100644
              <scope>compile</scope>
          </dependency>
 -- 
-2.40.1
+2.41.0
 
