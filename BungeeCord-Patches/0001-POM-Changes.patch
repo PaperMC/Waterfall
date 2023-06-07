@@ -1,4 +1,4 @@
-From 29f3aab48e28f4628ad6c97d557ef01709912fd7 Mon Sep 17 00:00:00 2001
+From 198c3f478bcfa82c96cd12140a6ea43298b59b62 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -145,10 +145,10 @@ index 6be22739..a4516ed9 100644
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index f695c462..3a47bbc0 100644
+index f695c462..003b3f6c 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
-@@ -4,20 +4,46 @@
+@@ -4,19 +4,19 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
@@ -172,35 +172,8 @@ index f695c462..3a47bbc0 100644
 +    <name>Waterfall-Chat</name>
 +    <description>Minecraft JSON chat API intended for use with Waterfall</description>
  
-+    <!-- Waterfall start: TODO: Just convert this project to gradle.
-+            Maven is a constant source of headaches, especially when we have crud like
-+            lombok inflicted upon the project mangling the build setup. I don't have the will to
-+            figure out where the duplicate artifact is coming from, I cannot reproduce this locally,
-+            and so, we'll just do this for now.-->
-+    <build>
-+        <plugins>
-+            <plugin>
-+                <groupId>org.apache.maven.plugins</groupId>
-+                <artifactId>maven-jar-plugin</artifactId>
-+                <version>3.3.0</version>
-+                <configuration>
-+                    <forceCreation>true</forceCreation>
-+                </configuration>
-+            </plugin>
-+            <plugin>
-+                <groupId>org.apache.maven.plugins</groupId>
-+                <artifactId>maven-source-plugin</artifactId>
-+                <version>3.3.0</version>
-+                <configuration>
-+                    <forceCreation>true</forceCreation>
-+                </configuration>
-+            </plugin>
-+        </plugins>
-+    </build>
-+    <!-- Waterfall end -->
      <dependencies>
          <dependency>
-             <groupId>com.google.code.gson</groupId>
 diff --git a/config/pom.xml b/config/pom.xml
 index 807223ec..91da386a 100644
 --- a/config/pom.xml
