@@ -1,4 +1,4 @@
-From 55c22f21707d2e9e81d2691c12f3a990b0c28c3d Mon Sep 17 00:00:00 2001
+From bdc30eaf00e869918b59265da8b7137306ebc051 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -43,7 +43,7 @@ index 70b292f0..91f71c09 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 3f01fb24..0afa455f 100644
+index a99d9914..1683ca6d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -251,7 +251,7 @@ public class ServerConnector extends PacketHandler
@@ -56,10 +56,10 @@ index 3f01fb24..0afa455f 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 05cdf684..cc0edeb8 100644
+index e133d933..e2fe18a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -293,7 +293,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -294,7 +294,7 @@ public class DownstreamBridge extends PacketHandler
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
@@ -82,5 +82,5 @@ index 5b9c35d1..2d6885a9 100644
      {
          @Override
 -- 
-2.41.0.windows.1
+2.40.1.windows.1
 
