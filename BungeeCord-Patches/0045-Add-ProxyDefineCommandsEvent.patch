@@ -1,4 +1,4 @@
-From b8ab200096dff40f7d50f5e37a545a5d79ef62bd Mon Sep 17 00:00:00 2001
+From 497b5320d7a7af6f91b0cb7e87fcbbcc01f9b5e5 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,21 +54,23 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 07e82e3c..c574eef8 100644
+index 67d57d24..b88ec9f2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -19,8 +19,10 @@ import io.netty.channel.unix.DomainSocketAddress;
+@@ -19,10 +19,12 @@ import io.netty.channel.unix.DomainSocketAddress;
  import java.io.DataInput;
  import java.net.InetSocketAddress;
  import java.util.ArrayList;
 +import java.util.HashMap; // Waterfall
  import java.util.List;
+ import java.util.Locale;
  import java.util.Map;
+ import java.util.stream.Collectors;
 +import java.util.Objects; // Waterfall
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
-@@ -755,9 +757,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -774,9 +776,25 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  

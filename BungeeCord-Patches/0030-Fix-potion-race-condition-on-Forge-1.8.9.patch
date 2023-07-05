@@ -1,4 +1,4 @@
-From 1a52982fef14b2372aa9e0bc1e3a0bd02e0d63e2 Mon Sep 17 00:00:00 2001
+From 2d8e1838383d08785a2ecf3d1ed3d7d3e87ac310 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -160,7 +160,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 32d222f7..e0a9d338 100644
+index 2982a26d..acda5834 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -173,10 +173,11 @@ index 32d222f7..e0a9d338 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
-     private final Scoreboard serverSentScoreboard = new Scoreboard();
+@@ -128,6 +130,11 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
-     private final Collection<UUID> sentBossBars = new HashSet<>();
+     @Setter
+     private String lastCommandTabbed;
++    
 +    // Waterfall start
 +    @Getter
 +    private final Multimap<Integer, Integer> potions = HashMultimap.create();
@@ -185,10 +186,10 @@ index 32d222f7..e0a9d338 100644
      @Getter
      private String displayName;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index fd100f15..faf5b97a 100644
+index 7a1d7051..f0f37cf2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -52,6 +52,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -54,6 +54,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
@@ -197,7 +198,7 @@ index fd100f15..faf5b97a 100644
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
-@@ -714,6 +716,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -733,6 +735,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  

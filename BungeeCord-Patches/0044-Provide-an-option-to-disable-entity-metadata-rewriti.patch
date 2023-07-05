@@ -1,4 +1,4 @@
-From b995f498698c773fa399ccfb76ac53fce6e3438e Mon Sep 17 00:00:00 2001
+From c18bb801217bb0af9809d339cdb6d192101f214f Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -121,10 +121,10 @@ index d45d46e8..5bec25d1 100644
                      false, login.getDeathLocation(), login.getPortalCooldown() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e0a9d338..35bf4c9f 100644
+index acda5834..fe55370c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -775,4 +775,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -779,4 +779,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -136,10 +136,10 @@ index e0a9d338..35bf4c9f 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index faf5b97a..07e82e3c 100644
+index f0f37cf2..67d57d24 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -720,6 +720,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -739,6 +739,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -147,7 +147,7 @@ index faf5b97a..07e82e3c 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -731,6 +732,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -750,6 +751,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
