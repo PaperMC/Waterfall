@@ -1,0 +1,179 @@
+From 076e7a2e1a2f118de921b5843e3baa4a75cadbbc Mon Sep 17 00:00:00 2001
+From: A248 <theanandbeh@gmail.com>
+Date: Mon, 21 Aug 2023 13:38:03 -0500
+Subject: [PATCH] Proof methods in Plugin, PluginManager against concurrent
+ access
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index 3d1e9a3a..b4d2dd51 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -113,17 +113,29 @@ public class Plugin
+     }
+ 
+     //
+-    private ExecutorService service;
++    private volatile ExecutorService service; // Waterfall - mark volatile
+ 
+     @Deprecated
+     public ExecutorService getExecutorService()
+     {
++        // Waterfall start - synchronize
++        ExecutorService service = this.service;
+         if ( service == null )
+         {
+-            String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
+-            service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
+-                    .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
++            synchronized ( this )
++            {
++                service = this.service;
++                if ( service == null )
++                {
++                    String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
++                    service = Executors
++                            .newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
++                                    .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
++                    this.service = service;
++                }
++            }
+         }
++        // Waterfall end
+         return service;
+     }
+     //
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 1ba5b249..f858e281 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -60,7 +60,7 @@ public final class PluginManager
+     private final Map<String, Plugin> plugins = new LinkedHashMap<>();
+     private final MutableGraph<String> dependencyGraph = GraphBuilder.directed().build();
+     private final LibraryLoader libraryLoader;
+-    private final Map<String, Command> commandMap = new HashMap<>();
++    private final Map<String, Command> commandMap = new java.util.concurrent.ConcurrentHashMap<>(); // Waterfall - thread safe
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
+@@ -99,12 +99,14 @@ public final class PluginManager
+      */
+     public void registerCommand(Plugin plugin, Command command)
+     {
++        synchronized ( commandsByPlugin ) { // Waterfall - synchronize mutation
+         commandMap.put( command.getName().toLowerCase( Locale.ROOT ), command );
+         for ( String alias : command.getAliases() )
+         {
+             commandMap.put( alias.toLowerCase( Locale.ROOT ), command );
+         }
+         commandsByPlugin.put( plugin, command );
++        } // Waterfall
+     }
+ 
+     /**
+@@ -114,8 +116,12 @@ public final class PluginManager
+      */
+     public void unregisterCommand(Command command)
+     {
+-        while ( commandMap.values().remove( command ) );
+-        commandsByPlugin.values().remove( command );
++        // Waterfall start - synchronize mutation
++        synchronized ( commandsByPlugin ) {
++            while ( commandMap.values().remove( command ) );
++            commandsByPlugin.values().remove( command );
++        }
++        // Waterfall end
+     }
+ 
+     /**
+@@ -125,12 +131,14 @@ public final class PluginManager
+      */
+     public void unregisterCommands(Plugin plugin)
+     {
++        synchronized ( commandsByPlugin ) { // Waterfall - synchronize mutation
+         for ( Iterator<Command> it = commandsByPlugin.get( plugin ).iterator(); it.hasNext(); )
+         {
+             Command command = it.next();
+             while ( commandMap.values().remove( command ) );
+             it.remove();
+         }
++        } // Waterfall
+     }
+ 
+     private Command getCommandIfEnabled(String commandName, CommandSender sender)
+@@ -278,7 +286,7 @@ public final class PluginManager
+      */
+     public Collection<Plugin> getPlugins()
+     {
+-        return plugins.values();
++        synchronized ( plugins ) { return new java.util.ArrayList<>( plugins.values() ); } // Waterfall - synchronize
+     }
+ 
+     /**
+@@ -289,7 +297,7 @@ public final class PluginManager
+      */
+     public Plugin getPlugin(String name)
+     {
+-        return plugins.get( name );
++        synchronized ( plugins ) { return plugins.get( name ); } // Waterfall - synchronize
+     }
+ 
+     public void loadPlugins()
+@@ -395,7 +403,7 @@ public final class PluginManager
+                 Class<?> main = loader.loadClass( plugin.getMain() );
+                 Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
+ 
+-                plugins.put( plugin.getName(), clazz );
++                synchronized ( plugins ) { plugins.put( plugin.getName(), clazz ); } // Waterfall - synchronize
+                 clazz.onLoad();
+                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
+                 {
+@@ -501,8 +509,13 @@ public final class PluginManager
+             Preconditions.checkArgument( !method.isAnnotationPresent( Subscribe.class ),
+                     "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
+         }
+-        eventBus.register( listener );
+-        listenersByPlugin.put( plugin, listener );
++        // Waterfall start - synchronize mutation
++        synchronized ( listenersByPlugin )
++        {
++            eventBus.register( listener );
++            listenersByPlugin.put( plugin, listener );
++        }
++        // Waterfall end
+     }
+ 
+     /**
+@@ -512,8 +525,13 @@ public final class PluginManager
+      */
+     public void unregisterListener(Listener listener)
+     {
+-        eventBus.unregister( listener );
+-        listenersByPlugin.values().remove( listener );
++        // Waterfall start - synchronize mutation
++        synchronized ( listenersByPlugin )
++        {
++            eventBus.unregister( listener );
++            listenersByPlugin.values().remove( listener );
++        }
++        // Waterfall end
+     }
+ 
+     /**
+@@ -523,11 +541,13 @@ public final class PluginManager
+      */
+     public void unregisterListeners(Plugin plugin)
+     {
++        synchronized ( listenersByPlugin ) { // Waterfall - synchronize mutation
+         for ( Iterator<Listener> it = listenersByPlugin.get( plugin ).iterator(); it.hasNext(); )
+         {
+             eventBus.unregister( it.next() );
+             it.remove();
+         }
++        } // Waterfall
+     }
+ 
+     /**
+-- 
+2.30.2
+
