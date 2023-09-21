@@ -1,0 +1,36 @@
+From faa0558a5ed64dd66b2aca04bc6fa870ad237df6 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Tue, 25 Oct 2016 12:34:41 -0400
+Subject: [PATCH] Validate that chat messages are non-blank
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 2038b9a8..7bcd317e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -190,6 +190,7 @@ public class UpstreamBridge extends PacketHandler
+ 
+     private String handleChat(String message)
+     {
++        boolean empty = true;
+         for ( int index = 0, length = message.length(); index < length; index++ )
+         {
+             char c = message.charAt( index );
+@@ -197,8 +198,14 @@ public class UpstreamBridge extends PacketHandler
+             {
+                 con.disconnect( bungee.getTranslation( "illegal_chat_characters", Util.unicode( c ) ) );
+                 throw CancelSendSignal.INSTANCE;
++            } else if (empty && !Character.isWhitespace(c)) {
++                empty = false;
+             }
+         }
++        if (empty) {
++            con.disconnect("Chat message is empty");
++            throw CancelSendSignal.INSTANCE;
++        }
+ 
+         ChatEvent chatEvent = new ChatEvent( con, con.getServer(), message );
+         if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
+-- 
+2.42.0
+

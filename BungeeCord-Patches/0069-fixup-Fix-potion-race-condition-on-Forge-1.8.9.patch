@@ -1,0 +1,24 @@
+From 68aa24164c2487820bc4e4dcb14117f62e04c775 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Thu, 21 Sep 2023 11:04:15 +0100
+Subject: [PATCH] fixup! Fix potion race condition on Forge 1.8.9
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 4936001c..96f4d017 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -127,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
+     private final Scoreboard serverSentScoreboard = new Scoreboard();
+     @Getter
+     private final Collection<UUID> sentBossBars = new HashSet<>();
++    // Waterfall start
++    @Getter
++    private final Multimap<Integer, Integer> potions = HashMultimap.create();
++    // Waterfall end
+     @Getter
+     @Setter
+     private String lastCommandTabbed;
+-- 
+2.42.0
+
