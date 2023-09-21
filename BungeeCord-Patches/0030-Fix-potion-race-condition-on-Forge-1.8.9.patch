@@ -1,4 +1,4 @@
-From ce79efbdf45d665fd0f018cae81294db0245c262 Mon Sep 17 00:00:00 2001
+From 42716f7bfd1552c1a7207293614d27d8105833d1 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -117,7 +117,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 07cfe1d5..c74e44b5 100644
+index 87eb9199..a129dc42 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -130,8 +130,19 @@ index 07cfe1d5..c74e44b5 100644
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
+@@ -125,6 +127,10 @@ public final class UserConnection implements ProxiedPlayer
+     private final Scoreboard serverSentScoreboard = new Scoreboard();
+     @Getter
+     private final Collection<UUID> sentBossBars = new HashSet<>();
++    // Waterfall start
++    @Getter
++    private final Multimap<Integer, Integer> potions = HashMultimap.create();
++    // Waterfall end
+     @Getter
+     @Setter
+     private String lastCommandTabbed;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 30fbb0b1..102eb1a8 100644
+index 30fbb0b1..c412bbab 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -737,6 +737,32 @@ public class DownstreamBridge extends PacketHandler
@@ -140,7 +151,7 @@ index 30fbb0b1..102eb1a8 100644
  
 +    // Waterfall start
 +    @Override
-+    public void handle(EntityEffect entityEffect) throws Exception
++    public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
 +    {
 +        // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
 +        // condition on the client.
@@ -151,7 +162,7 @@ index 30fbb0b1..102eb1a8 100644
 +    }
 +
 +    @Override
-+    public void handle(EntityRemoveEffect removeEffect) throws Exception
++    public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
 +    {
 +        con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
 +    }

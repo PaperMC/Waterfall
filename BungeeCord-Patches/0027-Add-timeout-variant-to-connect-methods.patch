@@ -1,4 +1,4 @@
-From b624f9224f0de6b440be2830fcf51b2e8cb21c30 Mon Sep 17 00:00:00 2001
+From 964bf7b3cf1b45a82b8ab24689bed4cbd549b968 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -75,10 +75,10 @@ index c3848b3c..a441a424 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e37d502b..07cfe1d5 100644
+index 65e942cd..87eb9199 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -259,9 +259,20 @@ public final class UserConnection implements ProxiedPlayer
+@@ -258,9 +258,20 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
@@ -99,7 +99,7 @@ index e37d502b..07cfe1d5 100644
          if ( callback != null )
          {
              // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-@@ -355,7 +366,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -354,7 +365,7 @@ public final class UserConnection implements ProxiedPlayer
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );

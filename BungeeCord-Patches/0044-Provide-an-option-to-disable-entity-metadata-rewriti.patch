@@ -1,4 +1,4 @@
-From 3be2c70b1860141a74772aa85bdbfb6c91b7d1f2 Mon Sep 17 00:00:00 2001
+From 8525fdb1e67b91ffd9d11342c505ecf351a29619 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 2624dd37..c3268cbe 100644
+index 2624dd37..55218447 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -255,7 +255,7 @@ public class ServerConnector extends PacketHandler
@@ -85,7 +85,7 @@ index 2624dd37..c3268cbe 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -340,13 +342,33 @@ public class ServerConnector extends PacketHandler
+@@ -340,13 +342,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -105,15 +105,16 @@ index 2624dd37..c3268cbe 100644
 +                // Only send if we are not in the same dimension
 +                if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
 +                {
-+                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation(), login.getPortalCooldown() ) );
++                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
 +                }
 +                Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
-+                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isDebug(), login.isFlat(), login.getDeathLocation(), login.getPortalCooldown() );
++                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isLimitedCrafting(), login.isDebug(), login.isFlat(), login.getDeathLocation(),
++                        login.getPortalCooldown() );
 +                user.unsafe().sendPacket(modLogin);
 +                // Only send if we're in the same dimension
 +                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
 +                {
-+                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation(), login.getPortalCooldown() ) );
++                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
 +                }
 +            }
 +            // Waterfall end
@@ -121,10 +122,10 @@ index 2624dd37..c3268cbe 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c74e44b5..9e933b1d 100644
+index a129dc42..fe6eab9b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -775,4 +775,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -778,4 +778,10 @@ public final class UserConnection implements ProxiedPlayer
      {
          return serverSentScoreboard;
      }
@@ -136,12 +137,12 @@ index c74e44b5..9e933b1d 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 102eb1a8..a2995c60 100644
+index c412bbab..5966469b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -741,6 +741,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
-     public void handle(EntityEffect entityEffect) throws Exception
+     public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
      {
 +        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
@@ -149,7 +150,7 @@ index 102eb1a8..a2995c60 100644
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
 @@ -752,6 +753,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
-     public void handle(EntityRemoveEffect removeEffect) throws Exception
+     public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
 +        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
          con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
