@@ -1,4 +1,4 @@
-From f5ddca96ef3353bc21ba8b63b1be12437c0e8424 Mon Sep 17 00:00:00 2001
+From cf604e1b03d62a3c0914712ed056c9fb538c3de0 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 16 Apr 2021 06:29:28 +0100
 Subject: [PATCH] ServerConnectRequest#sendFeedback
@@ -31,10 +31,10 @@ index c81b0a4e..d21370be 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9e933b1d..1a7fa00e 100644
+index fe6eab9b..fc8df2b8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -268,12 +268,16 @@ public final class UserConnection implements ProxiedPlayer
+@@ -271,12 +271,16 @@ public final class UserConnection implements ProxiedPlayer
          connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
      }
  
@@ -53,7 +53,7 @@ index 9e933b1d..1a7fa00e 100644
          builder.connectTimeout(timeout); // Waterfall
          if ( callback != null )
          {
-@@ -321,7 +325,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -324,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -62,7 +62,7 @@ index 9e933b1d..1a7fa00e 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -331,7 +335,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -334,7 +338,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -71,7 +71,7 @@ index 9e933b1d..1a7fa00e 100644
              return;
          }
  
-@@ -367,14 +371,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -370,14 +374,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
