@@ -1,0 +1,21 @@
+From 9dc8d90d5610ef148ac47df05d173ae3d749950e Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Thu, 21 Sep 2023 10:54:16 +0100
+Subject: [PATCH] fixup! Allow invalid packet ids for forge servers
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 7d3f079f..4936001c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -76,7 +76,6 @@ public final class UserConnection implements ProxiedPlayer
+     private final ProxyServer bungee;
+     @Getter
+     @NonNull
+-    @Getter
+     private final ChannelWrapper ch;
+     @Getter
+     @NonNull
+-- 
+2.42.0
+

@@ -1,0 +1,28 @@
+From b33f4ed8e030c9898156cfeb8db6be204ad4b962 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sun, 19 Jun 2022 10:31:51 +0100
+Subject: [PATCH] Expand packet-decode-logging usage
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index fd840d28..053cc9eb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -152,6 +152,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                     ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - read timed out", handler );
+                 } else if ( cause instanceof DecoderException )
+                 {
++                    // Waterfall start
++                    if (net.md_5.bungee.protocol.MinecraftDecoder.DEBUG) {
++                        java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(Level.WARNING, "{0} - A decoder exception has been thrown:");
++                        logRecord.setParameters(new Object[]{handler});
++                        logRecord.setThrown(cause);
++                        ProxyServer.getInstance().getLogger().log(logRecord);
++                    } else
++                    // Waterfall end
+                     if ( cause instanceof CorruptedFrameException )
+                     {
+                         ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - corrupted frame: {1}", new Object[]
+-- 
+2.42.0
+

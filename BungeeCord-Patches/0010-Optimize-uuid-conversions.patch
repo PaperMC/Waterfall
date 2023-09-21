@@ -1,4 +1,4 @@
-From 09154e5194baacc038eba0543acb428c599d33d5 Mon Sep 17 00:00:00 2001
+From c9671bec552214bb7a11f23b331be48f9486287d Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -207,7 +207,7 @@ index 00000000..cc24dd35
 +}
 \ No newline at end of file
 diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
-index 1457d4c8..70bf87f7 100644
+index 6352951c..91efc0a6 100644
 --- a/api/src/main/java/net/md_5/bungee/Util.java
 +++ b/api/src/main/java/net/md_5/bungee/Util.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -250,10 +250,10 @@ index 88d36ad2..fc92a7b5 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d2f90b93..0e08e71d 100644
+index e542c1be..107ff484 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -713,7 +713,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -735,7 +735,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {
@@ -263,5 +263,5 @@ index d2f90b93..0e08e71d 100644
  
      @Override
 -- 
-2.38.1
+2.42.0
 

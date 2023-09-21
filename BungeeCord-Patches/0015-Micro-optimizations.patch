@@ -1,4 +1,4 @@
-From feede4c38be31f029da9c86306795c9b94ae1e69 Mon Sep 17 00:00:00 2001
+From 899f2a62a91d604866e2a5a85378b2fe9bc30aa0 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Tue, 19 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Micro-optimizations
@@ -8,10 +8,10 @@ Subject: [PATCH] Micro-optimizations
 - Don't create a data input stream for every plugin message we get from servers
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1059c67f..889e60c2 100644
+index b8248ec4..23e7b6d8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -275,7 +275,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -282,7 +282,6 @@ public class DownstreamBridge extends PacketHandler
      @SuppressWarnings("checkstyle:avoidnestedblocks")
      public void handle(PluginMessage pluginMessage) throws Exception
      {
@@ -19,7 +19,7 @@ index 1059c67f..889e60c2 100644
          PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
  
          if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-@@ -302,6 +301,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -309,6 +308,7 @@ public class DownstreamBridge extends PacketHandler
  
          if ( pluginMessage.getTag().equals( "BungeeCord" ) )
          {
@@ -28,5 +28,5 @@ index 1059c67f..889e60c2 100644
              String subChannel = in.readUTF();
  
 -- 
-2.38.1
+2.42.0
 
