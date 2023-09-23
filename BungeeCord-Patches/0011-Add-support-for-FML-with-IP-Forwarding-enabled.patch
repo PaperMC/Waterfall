@@ -1,4 +1,4 @@
-From 552edd40b9f52f222c23c278103f6dae84f3cf40 Mon Sep 17 00:00:00 2001
+From 9862433d237c305eea0735ced32b5bac5a18a9b0 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -67,10 +67,10 @@ index 287a0545..7c3e9a29 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9d2df335..65e942cd 100644
+index c1c73aba..00c88e4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -168,8 +168,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -170,8 +170,12 @@ public final class UserConnection implements ProxiedPlayer
  
          forgeClientHandler = new ForgeClientHandler( this );
  
