@@ -47,7 +47,6 @@ Waterfall requires **Java 8** or above.
 
 **Or alternatively, with Gradle:**
 
-Groovy
  * Repository:
 ```groovy
 repositories {
