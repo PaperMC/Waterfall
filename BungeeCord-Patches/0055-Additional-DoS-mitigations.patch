@@ -1,4 +1,4 @@
-From 26861289a9683ec96f6b49005533cd96d77345ed Mon Sep 17 00:00:00 2001
+From 4860294f602b59bfd8013200d242ded589641a8b Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -50,7 +50,7 @@ index 5ecb5c93..70ec6c53 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index aaf1269e..b89a2e16 100644
+index 3d806129..636ecc6d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.protocol;
@@ -80,7 +80,7 @@ index aaf1269e..b89a2e16 100644
                  }
              } else
 @@ -72,6 +78,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-             out.add( new PacketWrapper( packet, slice ) );
+             out.add( new PacketWrapper( packet, slice, protocol ) );
              slice = null;
          } catch (BadPacketException | IndexOutOfBoundsException e) {
 +            // Waterfall start: Additional DoS mitigations
