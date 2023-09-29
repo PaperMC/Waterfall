@@ -1,4 +1,4 @@
-From 8bae6fb2c4cdab54ff43b787c6eeef1ee7855f3d Mon Sep 17 00:00:00 2001
+From a824f915466921ca6b97c768ca373342a1f184a0 Mon Sep 17 00:00:00 2001
 From: FivePB <admin@fivepb.me>
 Date: Tue, 16 Nov 2021 21:15:32 +0100
 Subject: [PATCH] Configurable plugin messaging limits
@@ -83,10 +83,10 @@ index b88e3c8a..da0efa36 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 699fecb8..9a3c4809 100644
+index f0346fc6..f067cfcf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -777,9 +777,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -764,9 +764,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
              for ( String id : content.split( "\0" ) )
              {

@@ -1,4 +1,4 @@
-From c1ce17266ec28c0dcc4ed252223c856eb327d2e3 Mon Sep 17 00:00:00 2001
+From 94e538b0a962da3d0d293ecafad4f7e99d257d1e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -133,7 +133,7 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index fa021598..aaf1269e 100644
+index 5f4ec289..3d806129 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -80,7 +80,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -146,7 +146,7 @@ index fa021598..aaf1269e 100644
          {
              if ( slice != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2c70d1f9..186c3890 100644
+index 0dfc1413..d7c29eb8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -16,6 +16,8 @@ import java.util.Set;
@@ -158,7 +158,7 @@ index 2c70d1f9..186c3890 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
-@@ -473,6 +475,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -472,6 +474,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );

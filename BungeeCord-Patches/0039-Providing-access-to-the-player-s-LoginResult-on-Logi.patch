@@ -1,4 +1,4 @@
-From c758a573aca65b1bb5e71a016b0c06a5673b2700 Mon Sep 17 00:00:00 2001
+From 43c06de639e73d67cd03f36d12a406236ba8fec4 Mon Sep 17 00:00:00 2001
 From: phenomax <phenomax@revayd.net>
 Date: Thu, 10 Aug 2017 18:41:17 +0200
 Subject: [PATCH] Providing access to the player's LoginResult on LoginEvent
@@ -52,10 +52,10 @@ similarity index 100%
 rename from proxy/src/main/java/net/md_5/bungee/connection/LoginResult.java
 rename to api/src/main/java/net/md_5/bungee/connection/LoginResult.java
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 72dad6d3..dfe63771 100644
+index 9fd951be..488eff1d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -618,7 +618,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -614,7 +614,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          };
  
          // fire login event
@@ -63,7 +63,7 @@ index 72dad6d3..dfe63771 100644
 +        bungee.getPluginManager().callEvent( new LoginEvent( InitialHandler.this, complete, this.getLoginProfile() ) ); // Waterfall: Parse LoginResult object to new constructor of LoginEvent
      }
  
-     @Override
+     private void finish2()
 -- 
 2.42.0
 
