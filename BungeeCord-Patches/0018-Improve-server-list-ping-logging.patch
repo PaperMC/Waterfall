@@ -1,4 +1,4 @@
-From eba275ee93b6bc3a7159b427138320eeb8eaa30c Mon Sep 17 00:00:00 2001
+From 09ffc62269020ad3f6155d99bed12aefdcdad7f6 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -7,10 +7,10 @@ This functionality of this patch was adopted upstream, however, this
 patch remains for a few misc improvements around here
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 56e500a1..0ef085ef 100644
+index a5c8de90..59403052 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -500,6 +500,6 @@ public class ServerConnector extends PacketHandler
+@@ -499,6 +499,6 @@ public class ServerConnector extends PacketHandler
      @Override
      public String toString()
      {
@@ -31,10 +31,10 @@ index 23e7b6d8..88b0156c 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c1e5a156..1f9a54f2 100644
+index 14a34f99..7e2d0c63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -741,20 +741,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -728,20 +728,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -57,10 +57,10 @@ index c1e5a156..1f9a54f2 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 0e5d0a47..37178082 100644
+index 771ebb3e..1e27872c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -372,6 +372,6 @@ public class UpstreamBridge extends PacketHandler
+@@ -385,6 +385,6 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
