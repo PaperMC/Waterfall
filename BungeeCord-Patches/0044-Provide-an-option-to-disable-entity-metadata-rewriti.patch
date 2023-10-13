@@ -1,4 +1,4 @@
-From 3a73a93ff02dde8334169942cdb6a220ab975c21 Mon Sep 17 00:00:00 2001
+From dcf0afc9f522988e7e2cc1b797274130993d1b37 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,35 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index f981313e..f8de9716 100644
+index f981313e..8f0bacd4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -40,23 +40,7 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.Protocol;
- import net.md_5.bungee.protocol.ProtocolConstants;
--import net.md_5.bungee.protocol.packet.EncryptionRequest;
--import net.md_5.bungee.protocol.packet.EntityStatus;
--import net.md_5.bungee.protocol.packet.GameState;
--import net.md_5.bungee.protocol.packet.Handshake;
--import net.md_5.bungee.protocol.packet.Kick;
--import net.md_5.bungee.protocol.packet.Login;
--import net.md_5.bungee.protocol.packet.LoginPayloadRequest;
--import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
--import net.md_5.bungee.protocol.packet.LoginRequest;
--import net.md_5.bungee.protocol.packet.LoginSuccess;
--import net.md_5.bungee.protocol.packet.PluginMessage;
--import net.md_5.bungee.protocol.packet.Respawn;
--import net.md_5.bungee.protocol.packet.ScoreboardObjective;
--import net.md_5.bungee.protocol.packet.ScoreboardScore;
--import net.md_5.bungee.protocol.packet.SetCompression;
--import net.md_5.bungee.protocol.packet.StartConfiguration;
--import net.md_5.bungee.protocol.packet.ViewDistance;
-+import net.md_5.bungee.protocol.packet.*;
- import net.md_5.bungee.util.AddressUtil;
- import net.md_5.bungee.util.BufUtil;
- import net.md_5.bungee.util.QuietException;
-@@ -254,7 +238,8 @@ public class ServerConnector extends PacketHandler
+@@ -254,7 +254,8 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -95,7 +70,7 @@ index f981313e..f8de9716 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -309,6 +294,7 @@ public class ServerConnector extends PacketHandler
+@@ -309,6 +310,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -103,7 +78,7 @@ index f981313e..f8de9716 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), objective.getValue(), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -321,6 +307,7 @@ public class ServerConnector extends PacketHandler
+@@ -321,6 +323,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -111,7 +86,7 @@ index f981313e..f8de9716 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -339,13 +326,34 @@ public class ServerConnector extends PacketHandler
+@@ -339,13 +342,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -182,18 +157,6 @@ index c412bbab..5966469b 100644
          con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
      }
  
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index b9d250d9..d7c3b871 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -308,7 +308,6 @@ public class UpstreamBridge extends PacketHandler
-     public void handle(ClientSettings settings) throws Exception
-     {
-         con.setSettings( settings );
--
-         SettingsChangedEvent settingsEvent = new SettingsChangedEvent( con );
-         bungee.getPluginManager().callEvent( settingsEvent );
-     }
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index c033118f..69accd42 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
@@ -263,5 +226,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.39.3 (Apple Git-145)
+2.34.1
 
