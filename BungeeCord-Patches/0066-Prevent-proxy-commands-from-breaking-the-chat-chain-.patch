@@ -1,0 +1,129 @@
+From 3b0394a5ae63b13ae0eb5bc03ac224c6052cb37d Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sun, 15 Oct 2023 00:36:38 +0100
+Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+index b3c8c6e2..1eaebc2e 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+@@ -247,5 +247,9 @@ public abstract class AbstractPacketHandler
+     public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
+     {
+     }
++
++    public void handle(net.md_5.bungee.protocol.packet.ClientChatAcknowledgement clientChatAcknowledgement)
++    {
++    }
+     // Waterfall end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 82bfc51b..623d817f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -476,6 +476,13 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x04 ),
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 )
+             );
++            // Waterfall start
++            TO_SERVER.registerPacket(
++                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement.class,
++                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement::new,
++                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3)
++            );
++            // Waterfall end
+             TO_SERVER.registerPacket(
+                     TabCompleteRequest.class,
+                     TabCompleteRequest::new,
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientChatAcknowledgement.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientChatAcknowledgement.java
+new file mode 100644
+index 00000000..08ecf2a3
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientChatAcknowledgement.java
+@@ -0,0 +1,33 @@
++package net.md_5.bungee.protocol.packet;
++
++import io.netty.buffer.ByteBuf;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class ClientChatAcknowledgement extends DefinedPacket  {
++    private int offset;
++
++    @Override
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        this.offset = DefinedPacket.readVarInt(buf);
++    }
++
++    @Override
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++        DefinedPacket.writeVarInt(this.offset, buf);
++    }
++
++    @Override
++    public void handle(AbstractPacketHandler handler) throws Exception {
++        handler.handle(this);
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
+index 887ff29f..d4700090 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
+@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    public boolean isSigned() {
++        if (salt == 0) return false;
++        return this.seenMessages != null && !this.seenMessages.getAcknowledged().isEmpty();
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index d7c3b871..b3422cc3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -195,10 +195,15 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public void handle(ClientCommand command) throws Exception
+     {
+-        handleChat( "/" + command.getCommand() );
++        handleChat( "/" + command.getCommand(), command ); // Waterfall
+     }
+ 
+-    private String handleChat(String message)
++    // Waterfall start
++    private String handleChat(String message) {
++        return handleChat(message, null);
++    }
++    private String handleChat(String message, @javax.annotation.Nullable ClientCommand clientCommand)
++    // Waterfall end
+     {
+         boolean empty = true;
+         for ( int index = 0, length = message.length(); index < length; index++ )
+@@ -224,6 +229,12 @@ public class UpstreamBridge extends PacketHandler
+             if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
+             {
+                 return message;
++                // Waterfall start - We're going to cancel this packet, so, no matter what, we might as well try to send this
++            } else if(clientCommand != null && clientCommand.isSigned() && clientCommand.getSeenMessages() != null) {
++                if (con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3) {
++                    con.getServer().unsafe().sendPacket(new net.md_5.bungee.protocol.packet.ClientChatAcknowledgement(clientCommand.getSeenMessages().getOffset()));
++                }
++                // Waterfall end
+             }
+         }
+         throw CancelSendSignal.INSTANCE;
+-- 
+2.39.3 (Apple Git-145)
+
