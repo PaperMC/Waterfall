@@ -1,0 +1,21 @@
+From 975be85816950e37799375a99fd69d089cee6347 Mon Sep 17 00:00:00 2001
+From: Ismael Hanbel <soportexism4@gmail.com>
+Date: Tue, 17 Oct 2023 17:01:57 +0200
+Subject: [PATCH] Add tcp fast open
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 6a045d16..9f94572c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -228,6 +228,7 @@ public class PipelineUtils
+             try
+             {
+                 ch.config().setOption( ChannelOption.IP_TOS, 0x18 );
++                ch.config().setOption( ChannelOption.TCP_FASTOPEN, 3); //Waterfall
+             } catch ( ChannelException ex )
+             {
+                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
+-- 
+2.41.0.windows.1
+
