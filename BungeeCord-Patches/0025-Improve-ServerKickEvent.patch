@@ -1,4 +1,4 @@
-From e5c22d17359ad3da880b5ae4d656b707ad0f73d3 Mon Sep 17 00:00:00 2001
+From 6811ade86ab79cff19ddbdd895abab13d3863f09 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -6,7 +6,7 @@ Subject: [PATCH] Improve ServerKickEvent
 ServerKickEvent traditionally will only fire if the server sends a kick packet. During a server shutdown, or server crash this event would not fire for most players. While ServerDisconnectEvent is fired it does not tell us if it was a kick/shutdown/server crash.  This improvement fires the ServerKickEvent for server caused disconnections, and adds a Cause to the kick event.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
-index 0e1ef5c4..ee63732d 100644
+index 3f9efaa8..5d2597ad 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerKickEvent.java
 @@ -44,6 +44,12 @@ public class ServerKickEvent extends Event implements Cancellable
@@ -22,14 +22,13 @@ index 0e1ef5c4..ee63732d 100644
  
      public enum State
      {
-@@ -51,6 +57,14 @@ public class ServerKickEvent extends Event implements Cancellable
+@@ -51,6 +57,13 @@ public class ServerKickEvent extends Event implements Cancellable
          CONNECTING, CONNECTED, UNKNOWN;
      }
  
 +    // Waterfall start
 +    public enum Cause
 +    {
-+
 +        SERVER, LOST_CONNECTION, EXCEPTION, UNKNOWN;
 +    }
 +    // Waterfall end
@@ -37,45 +36,52 @@ index 0e1ef5c4..ee63732d 100644
      @Deprecated
      public ServerKickEvent(ProxiedPlayer player, BaseComponent[] kickReasonComponent, ServerInfo cancelServer)
      {
-@@ -63,14 +77,23 @@ public class ServerKickEvent extends Event implements Cancellable
-         this( player, player.getServer().getInfo(), kickReasonComponent, cancelServer, state );
+@@ -69,14 +82,29 @@ public class ServerKickEvent extends Event implements Cancellable
+         this( player, kickedFrom, TextComponent.fromArray( kickReasonComponent ), cancelServer, state );
      }
  
+-    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent reason, ServerInfo cancelServer, State state)
 +    // Waterfall start
++
 +    @Deprecated
-     public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state)
++    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent kickReasonComponent, ServerInfo cancelServer, State state)
 +    {
-+        this( player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN );
++        this(player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN);
 +    }
 +
-+    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause)
++    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] reason, ServerInfo cancelServer, State state, Cause cause)
++    {
++        this(player, kickedFrom, TextComponent.fromArray(reason), cancelServer, state, cause);
++    }
++
++    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent reason, ServerInfo cancelServer, State state, Cause cause)
      {
          this.player = player;
          this.kickedFrom = kickedFrom;
-         this.kickReasonComponent = kickReasonComponent;
+         this.reason = reason;
          this.cancelServer = cancelServer;
          this.state = state;
 +        this.cause = cause;
      }
 +    // Waterfall end
  
-     @Deprecated
-     public String getKickReason()
+     /**
+      * @return the kick reason
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 59403052..f981313e 100644
+index 7f1992df..fd1f9266 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -416,7 +416,7 @@ public class ServerConnector extends PacketHandler
-     public void handle(Kick kick) throws Exception
-     {
-         ServerInfo def = user.updateAndGetNextServer( target );
--        ServerKickEvent event = new ServerKickEvent( user, target, ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTING );
-+        ServerKickEvent event = new ServerKickEvent( user, target, ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER );  // Waterfall
+@@ -420,7 +420,7 @@ public class ServerConnector extends PacketHandler
+         ServerKickEvent event = new ServerKickEvent( user, target, new BaseComponent[]
+         {
+             kick.getMessage()
+-        }, def, ServerKickEvent.State.CONNECTING );
++        }, def, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER );  // Waterfall );
          if ( event.getKickReason().toLowerCase( Locale.ROOT ).contains( "outdated" ) && def != null )
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 88b0156c..30fbb0b1 100644
+index 6c545f4c..f461c096 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -97,16 +97,19 @@ public class DownstreamBridge extends PacketHandler
@@ -97,7 +103,7 @@ index 88b0156c..30fbb0b1 100644
 +        else
          {
 -            con.disconnect( Util.exception( t ) );
-+            con.disconnect0( event.getKickReasonComponent() );
++            con.disconnect0( event.getReason() );
          }
 +        // Waterfall end
      }
@@ -118,22 +124,25 @@ index 88b0156c..30fbb0b1 100644
 +            }
 +            else
 +            {
-+                con.disconnect0( event.getKickReasonComponent() );
++                con.disconnect0( event.getReason() );
 +            }
 +            // Waterfall end
          }
  
          ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -620,7 +635,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -620,10 +635,14 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
--        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED ) );
 +        if ( java.util.Objects.equals( server.getInfo(), def ) )
 +        {
 +            def = null;
 +        }
-+        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) ); // Waterfall
+         ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), new BaseComponent[]
+         {
+             kick.getMessage()
+-        }, def, ServerKickEvent.State.CONNECTED ) );
++        }, def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) ); // Waterfall
          if ( event.isCancelled() && event.getCancelServer() != null )
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );

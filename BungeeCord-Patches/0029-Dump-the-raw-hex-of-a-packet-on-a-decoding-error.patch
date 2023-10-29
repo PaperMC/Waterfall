@@ -1,11 +1,11 @@
-From d7ca4dd7a639155cacd0315119bf643584cf2da8 Mon Sep 17 00:00:00 2001
+From 05898ba911116042aadf6c154f4f6c39b3234b36 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 4 Aug 2016 19:30:49 -0700
 Subject: [PATCH] Dump the raw hex of a packet on a decoding error
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 76a3ddd0..2aeca781 100644
+index 250e7620..2207c3ff 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,7 +1,9 @@
@@ -32,7 +32,7 @@ index 76a3ddd0..2aeca781 100644
              if ( packet != null )
              {
 +                packetTypeInfo = packet.getClass();
-                 packet.read( in, prot.getDirection(), protocolVersion );
+                 packet.read( in, protocol, prot.getDirection(), protocolVersion );
  
                  if ( in.isReadable() )
 @@ -60,6 +65,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
