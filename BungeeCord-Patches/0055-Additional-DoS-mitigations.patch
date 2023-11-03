@@ -1,4 +1,4 @@
-From 20f95e2da6c84fd4eae251d4562418238937e7f7 Mon Sep 17 00:00:00 2001
+From 0c9617c8a323198bdc66b4aa88b62999606f3451 Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -50,7 +50,7 @@ index 3376154d..d3c66f68 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 52f76cd9..636ecc6d 100644
+index 52f76cd9..3a4a735c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.protocol;
@@ -66,9 +66,8 @@ index 52f76cd9..636ecc6d 100644
              if ( packet != null )
              {
                  packetTypeInfo = packet.getClass();
--                packet.read( in, protocol, prot.getDirection(), protocolVersion );
 +                doLengthSanityChecks(in, packet, prot.getDirection(), packetId); // Waterfall: Additional DoS mitigations
-+                packet.read( in, prot.getDirection(), protocolVersion );
+                 packet.read( in, protocol, prot.getDirection(), protocolVersion );
  
                  if ( in.isReadable() )
                  {
@@ -80,7 +79,7 @@ index 52f76cd9..636ecc6d 100644
                      throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
                  }
              } else
-@@ -72,6 +78,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -72,6 +78,25 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              out.add( new PacketWrapper( packet, slice, protocol ) );
              slice = null;
          } catch (BadPacketException | IndexOutOfBoundsException e) {
@@ -89,10 +88,32 @@ index 52f76cd9..636ecc6d 100644
 +                throw e;
 +            }
 +            // Waterfall end
++            final String packetTypeStr;
++            if (packetTypeInfo instanceof Integer) {
++                packetTypeStr = "id " + Integer.toHexString((Integer) packetTypeInfo);
++            } else if (packetTypeInfo instanceof Class) {
++                packetTypeStr = "class " + ((Class) packetTypeInfo).getSimpleName();
++            } else {
++                packetTypeStr = "unknown";
++            }
++            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
++            // Waterfall start
++        } catch (Exception e) {
++            if (!DEBUG) {
++                throw e;
++            }
              final String packetTypeStr;
              if (packetTypeInfo instanceof Integer) {
                  packetTypeStr = "id " + Integer.toHexString((Integer) packetTypeInfo);
-@@ -89,4 +100,52 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -81,6 +106,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 packetTypeStr = "unknown";
+             }
+             throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
++            // Waterfall end
+         } finally
+         {
+             if ( slice != null )
+@@ -89,4 +115,52 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              }
          }
      }
@@ -236,5 +257,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.42.0
+2.42.1
 
