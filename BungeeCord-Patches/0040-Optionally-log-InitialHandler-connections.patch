@@ -1,4 +1,4 @@
-From ec92b7e4e5831157c23f3c2a9e721e8783d165aa Mon Sep 17 00:00:00 2001
+From 754e416935ecdc215c4e049819bf1948c3d22eb1 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
@@ -61,10 +61,10 @@ index ef44d334..4ff8da6d 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ecaab6bd..ae3c6a42 100644
+index bc98b6b1..460a79a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -355,7 +355,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -354,7 +354,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  break;
              case 2:
                  // Login
@@ -77,5 +77,5 @@ index ecaab6bd..ae3c6a42 100644
                  ch.setProtocol( Protocol.LOGIN );
  
 -- 
-2.42.0
+2.42.1
 

@@ -1,4 +1,4 @@
-From c7e03fafe03c044f0da356ac97c3b08d7b3d16c1 Mon Sep 17 00:00:00 2001
+From 73b4887d23fc0825b270acba6cc26b3f68a31e98 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -6,7 +6,7 @@ Subject: [PATCH] Add timeout variant to connect methods
 Also added more connect methods to ProxiedPlayer, in addition to the new method
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index c3848b3c..a441a424 100644
+index ab879248..4db23b3f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -126,6 +126,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -75,10 +75,10 @@ index c3848b3c..a441a424 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 00c88e4d..242b693e 100644
+index 12bd18ed..f7160a66 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -281,9 +281,20 @@ public final class UserConnection implements ProxiedPlayer
+@@ -282,9 +282,20 @@ public final class UserConnection implements ProxiedPlayer
  
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
@@ -99,7 +99,7 @@ index 00c88e4d..242b693e 100644
          if ( callback != null )
          {
              // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-@@ -377,7 +388,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -378,7 +389,7 @@ public final class UserConnection implements ProxiedPlayer
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
@@ -109,5 +109,5 @@ index 00c88e4d..242b693e 100644
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 -- 
-2.42.0
+2.42.1
 
