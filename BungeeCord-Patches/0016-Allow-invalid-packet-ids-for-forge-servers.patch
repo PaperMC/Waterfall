@@ -1,4 +1,4 @@
-From dde015048a91f44a859189f590147b9244de3f80 Mon Sep 17 00:00:00 2001
+From c900fddebb1bbe7539c16204f74c9565840d4427 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -66,27 +66,17 @@ index 2eeca50b..9bd62ceb 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8a57c5a8..b856647f 100644
+index ce925db2..6db704bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -35,7 +35,9 @@ import net.md_5.bungee.forge.ForgeUtils;
- import net.md_5.bungee.netty.ChannelWrapper;
- import net.md_5.bungee.netty.HandlerBoss;
- import net.md_5.bungee.netty.PacketHandler;
-+import net.md_5.bungee.netty.PipelineUtils;
- import net.md_5.bungee.protocol.DefinedPacket;
-+import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.Protocol;
- import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -223,6 +225,12 @@ public class ServerConnector extends PacketHandler
+@@ -224,6 +224,12 @@ public class ServerConnector extends PacketHandler
      public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception
      {
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
 +
 +        if (server.isForgeServer() && user.isForgeUser()) {
-+            ((MinecraftDecoder) server.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
-+            ((MinecraftDecoder) user.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
++            ((net.md_5.bungee.protocol.MinecraftDecoder) server.getCh().getHandle().pipeline().get(net.md_5.bungee.netty.PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
++            ((net.md_5.bungee.protocol.MinecraftDecoder) user.getCh().getHandle().pipeline().get(net.md_5.bungee.netty.PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
 +        }
 +
          bungee.getPluginManager().callEvent( event );
@@ -110,5 +100,5 @@ index 9a47f2ec..b768d54a 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.42.0
+2.42.1
 

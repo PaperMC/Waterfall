@@ -1,4 +1,4 @@
-From 15b34952e52fec2a6910f67870f79a96aaeb316c Mon Sep 17 00:00:00 2001
+From 864a8a831340faf45c4db8f6db6dd25e078e72d5 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index fd1f9266..1f30a5cb 100644
+index a1f5c709..f43aee8c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -255,7 +255,8 @@ public class ServerConnector extends PacketHandler
+@@ -254,7 +254,8 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -70,15 +70,15 @@ index fd1f9266..1f30a5cb 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -310,6 +311,7 @@ public class ServerConnector extends PacketHandler
+@@ -309,6 +310,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
 +            if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
-                 user.unsafe().sendPacket( new ScoreboardObjective( objective.getName(), ComponentSerializer.deserialize( objective.getValue() ), ScoreboardObjective.HealthDisplay.fromString( objective.getType() ), (byte) 1 ) );
-@@ -322,6 +324,7 @@ public class ServerConnector extends PacketHandler
+                 user.unsafe().sendPacket( new ScoreboardObjective(
+@@ -326,6 +328,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -86,7 +86,7 @@ index fd1f9266..1f30a5cb 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -340,13 +343,34 @@ public class ServerConnector extends PacketHandler
+@@ -344,13 +347,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -138,7 +138,7 @@ index a5ddcdc3..1d3b7a9d 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 80275a15..bc808b2c 100644
+index 4b812092..e8c7e2f2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -744,6 +744,7 @@ public class DownstreamBridge extends PacketHandler

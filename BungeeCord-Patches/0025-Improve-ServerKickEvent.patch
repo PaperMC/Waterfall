@@ -1,4 +1,4 @@
-From 6811ade86ab79cff19ddbdd895abab13d3863f09 Mon Sep 17 00:00:00 2001
+From 2edfba28d1e4a68d6253a0db84a2685af6882041 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -68,10 +68,10 @@ index 3f9efaa8..5d2597ad 100644
      /**
       * @return the kick reason
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7f1992df..fd1f9266 100644
+index 53eac723..a1f5c709 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -420,7 +420,7 @@ public class ServerConnector extends PacketHandler
+@@ -424,7 +424,7 @@ public class ServerConnector extends PacketHandler
          ServerKickEvent event = new ServerKickEvent( user, target, new BaseComponent[]
          {
              kick.getMessage()
@@ -81,7 +81,7 @@ index 7f1992df..fd1f9266 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6c545f4c..f461c096 100644
+index 6f447b6d..3df0f26c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -97,16 +97,19 @@ public class DownstreamBridge extends PacketHandler
@@ -147,5 +147,5 @@ index 6c545f4c..f461c096 100644
          {
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
 -- 
-2.42.0
+2.42.1
 
