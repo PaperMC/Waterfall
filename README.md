@@ -40,7 +40,7 @@ Waterfall requires **Java 8** or above.
 <dependency>
     <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-api</artifactId>
-    <version>1.19-R0.1-SNAPSHOT</version>
+    <version>1.20-R0.1-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
  ```
@@ -58,7 +58,7 @@ repositories {
  * Artifact:
 ```groovy
 dependencies {
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT'
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.20-R0.1-SNAPSHOT'
 }
 ```
 
