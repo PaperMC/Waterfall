@@ -1,14 +1,14 @@
-From 8eea3ccfded59af6e76549d279cf0def408a10ba Mon Sep 17 00:00:00 2001
+From d875a31567c80968074c822239555a0db45bbd6f Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 0f8f5885..b3c8c6e2 100644
+index 4383dbb5..2b4e4298 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -238,4 +238,14 @@ public abstract class AbstractPacketHandler
+@@ -243,4 +243,14 @@ public abstract class AbstractPacketHandler
      public void handle(FinishConfiguration finishConfiguration) throws Exception
      {
      }
@@ -117,7 +117,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7a62088d..cff35a06 100644
+index f7160a66..a5ddcdc3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -142,10 +142,10 @@ index 7a62088d..cff35a06 100644
      @Setter
      private String lastCommandTabbed;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f461c096..80275a15 100644
+index 7e416a6d..8a10b057 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -740,6 +740,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -753,6 +753,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -216,5 +216,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.42.0
+2.39.2
 

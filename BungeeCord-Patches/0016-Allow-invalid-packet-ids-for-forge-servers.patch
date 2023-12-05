@@ -1,4 +1,4 @@
-From c900fddebb1bbe7539c16204f74c9565840d4427 Mon Sep 17 00:00:00 2001
+From 5bcf70b740e218893c47983c08cad7e9e6beb77c Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index d79d5e5c..250e7620 100644
              {
                  packet.read( in, protocol, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 2eeca50b..9bd62ceb 100644
+index cc08447c..b55ebede 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -751,14 +751,23 @@ public enum Protocol
+@@ -770,14 +770,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -66,10 +66,10 @@ index 2eeca50b..9bd62ceb 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ce925db2..6db704bd 100644
+index b684df7d..4894b3ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -224,6 +224,12 @@ public class ServerConnector extends PacketHandler
+@@ -225,6 +225,12 @@ public class ServerConnector extends PacketHandler
      public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception
      {
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
@@ -100,5 +100,5 @@ index 9a47f2ec..b768d54a 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.42.1
+2.39.2
 
