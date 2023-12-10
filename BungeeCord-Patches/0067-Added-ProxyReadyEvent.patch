@@ -1,0 +1,71 @@
+From c7647af5e93f98b9ee7295709837b950e5c5506f Mon Sep 17 00:00:00 2001
+From: thsassmann <thorben@sassmann.nrw>
+Date: Sun, 10 Dec 2023 14:10:21 +0100
+Subject: [PATCH] Added ProxyReadyEvent
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyReadyEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyReadyEvent.java
+new file mode 100644
+index 00000000..4938c03a
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyReadyEvent.java
+@@ -0,0 +1,36 @@
++package io.github.waterfallmc.waterfall.event;
++
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * This event is posted when the proxy has started and is ready to proxy players.
++ */
++@Data
++@ToString(callSuper = false)
++@EqualsAndHashCode(callSuper = false)
++public class ProxyReadyEvent extends Event {
++
++    private final boolean isListening;
++
++
++    /**
++     * Constructor
++     * @param isListening Is Proxy listening?
++     */
++    public ProxyReadyEvent(boolean isListening) {
++        super();
++        this.isListening = isListening;
++    }
++
++    /**
++     * Returns if the listener is actually listening
++     * @return Is Proxy listening?
++     */
++    public boolean isListening() {
++        return isListening;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 01c8a172..3513861d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
++import io.github.waterfallmc.waterfall.event.ProxyReadyEvent;
+ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
+ import io.netty.bootstrap.ServerBootstrap;
+ import io.netty.channel.Channel;
+@@ -347,6 +348,7 @@ public class BungeeCord extends ProxyServer
+                 @Override
+                 public void operationComplete(ChannelFuture future) throws Exception
+                 {
++                    getPluginManager().callEvent(new ProxyReadyEvent(future.isSuccess()))
+                     if ( future.isSuccess() )
+                     {
+                         listeners.add( future.channel() );
+-- 
+2.43.0
+
