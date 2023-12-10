@@ -1,4 +1,4 @@
-From c7647af5e93f98b9ee7295709837b950e5c5506f Mon Sep 17 00:00:00 2001
+From d8d8fe6612badad1749d8261e04aeb1575ddb4d4 Mon Sep 17 00:00:00 2001
 From: thsassmann <thorben@sassmann.nrw>
 Date: Sun, 10 Dec 2023 14:10:21 +0100
 Subject: [PATCH] Added ProxyReadyEvent
@@ -47,7 +47,7 @@ index 00000000..4938c03a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 01c8a172..3513861d 100644
+index 01c8a172..4e45e6c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
@@ -62,7 +62,7 @@ index 01c8a172..3513861d 100644
                  @Override
                  public void operationComplete(ChannelFuture future) throws Exception
                  {
-+                    getPluginManager().callEvent(new ProxyReadyEvent(future.isSuccess()))
++                    getPluginManager().callEvent(new ProxyReadyEvent(future.isSuccess()));
                      if ( future.isSuccess() )
                      {
                          listeners.add( future.channel() );
