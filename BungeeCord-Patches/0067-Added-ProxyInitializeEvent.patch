@@ -1,0 +1,80 @@
+From 434ea68cc47b1b044c12ab15ed1385b8f0d45317 Mon Sep 17 00:00:00 2001
+From: thsassmann <thorben@sassmann.nrw>
+Date: Sun, 10 Dec 2023 14:10:21 +0100
+Subject: [PATCH] Added ProxyInitializeEvent
+
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyInitializeEvent.java b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyInitializeEvent.java
+new file mode 100644
+index 00000000..a1af4806
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/event/ProxyInitializeEvent.java
+@@ -0,0 +1,37 @@
++package io.github.waterfallmc.waterfall.event;
++
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.ToString;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * This event is posted when the proxy has completed the startup procedure.<br>
++ * Even if the even is posted, the proxy may be <b>NOT</b> able to accept any connections.<br>
++ * See the {@link ProxyInitializeEvent#isSuccess} method for the actual state.
++ */
++@Data
++@ToString(callSuper = false)
++@EqualsAndHashCode(callSuper = false)
++public class ProxyInitializeEvent extends Event {
++
++    private final boolean isSuccess;
++
++    /**
++     * Constructor
++     * @param isSuccess Is Proxy listening?
++     */
++    public ProxyInitializeEvent(boolean isSuccess) {
++        super();
++        this.isSuccess = isSuccess;
++    }
++
++    /**
++     * Returns if the startup is a success or not.
++     * @return {@code true} if the Proxy is ready.
++     */
++    public boolean isSuccess() {
++        return isSuccess;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 01c8a172..abf5d0c8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
+ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
++import io.github.waterfallmc.waterfall.event.ProxyInitializeEvent;
+ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
+ import io.netty.bootstrap.ServerBootstrap;
+ import io.netty.channel.Channel;
+@@ -23,7 +24,6 @@ import io.netty.util.ResourceLeakDetector;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.nio.charset.StandardCharsets;
+@@ -347,6 +347,7 @@ public class BungeeCord extends ProxyServer
+                 @Override
+                 public void operationComplete(ChannelFuture future) throws Exception
+                 {
++                    getPluginManager().callEvent(new ProxyInitializeEvent(future.isSuccess()));
+                     if ( future.isSuccess() )
+                     {
+                         listeners.add( future.channel() );
+-- 
+2.43.0
+
