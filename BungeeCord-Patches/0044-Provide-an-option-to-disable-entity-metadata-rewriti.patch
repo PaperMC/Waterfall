@@ -1,4 +1,4 @@
-From 98b9ef9fb61e64abb7be8019bee05b2c0965dd13 Mon Sep 17 00:00:00 2001
+From 297166e5e56341bf459d16a96e7186d47813d4fb Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 43af8888..bc2c4d03 100644
+index 43af8888..9a22a1f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -255,7 +255,8 @@ public class ServerConnector extends PacketHandler
@@ -66,7 +66,7 @@ index 43af8888..bc2c4d03 100644
  
 -        if ( user.getSettings() != null )
 +        // Something deeper is going wrong here, but, as it stands, this project is EOL, so, we'll just shove this through.
-+        if (user.getSettings() != null && (!user.isDisableEntityMetadataRewrite() || user.getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_20_2))
++        if (user.getSettings() != null && (!user.isDisableEntityMetadataRewrite() || user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2))
          {
              ch.write( user.getSettings() );
          }
@@ -226,5 +226,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.39.2
+2.43.0
 
