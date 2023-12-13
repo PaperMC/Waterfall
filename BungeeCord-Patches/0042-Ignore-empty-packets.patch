@@ -1,4 +1,4 @@
-From 7aae27e71a89d2753226c4f8340560fd06ab4db1 Mon Sep 17 00:00:00 2001
+From 075bc35b82064130e9b8b5919e62eb05c74fc778 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 12 Oct 2018 14:28:52 +0100
 Subject: [PATCH] Ignore empty packets
@@ -8,7 +8,7 @@ packets will be ignored. While empty packets are a sign of bad plugins,
 they are effectivly harmless vs the cost of the exception in general
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 776a0603..fa021598 100644
+index 2207c3ff..655bcd46 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -45,6 +45,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -38,5 +38,5 @@ index 277e70e8..cf7dea17 100644
                      throw new CorruptedFrameException( "Empty Packet!" );
                  }
 -- 
-2.42.0
+2.43.0
 

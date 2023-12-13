@@ -1,4 +1,4 @@
-From ceefeced5e361ab808abd4831ce7ff9d45026855 Mon Sep 17 00:00:00 2001
+From 2ec957b0ea78ef67617a5c1c41ea13bf7a138443 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 07d49112..672a813d 100644
+index fc09cc11..7fbac761 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index a6684b7c..57ee7f23 100644
+index 3e08cb3c..0c04b87a 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -55,12 +55,13 @@
@@ -253,7 +253,7 @@ index a6684b7c..57ee7f23 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 342551a6..d3de9e34 100644
+index 18a5c526..9be9aa22 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -281,7 +281,7 @@ index 342551a6..d3de9e34 100644
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
 @@ -130,6 +131,35 @@
-             <version>1.7.3</version>
+             <version>1.9.18</version>
              <scope>runtime</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->
@@ -362,7 +362,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 166565a7..71bb3d9d 100644
+index 06842eb1..d60bdeb0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -1629,5 +1629,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.42.0
+2.43.0
 

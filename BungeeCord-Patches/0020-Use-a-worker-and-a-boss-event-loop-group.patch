@@ -1,4 +1,4 @@
-From 1e597d86bd5b0bb1fbd197fdc904097e6e96012f Mon Sep 17 00:00:00 2001
+From 9431bb550c8ad9e18872691d9043dac347bb0ac6 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,7 +8,7 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b09afd88..93a96bfd 100644
+index e3eaee39..89ca9c63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -120,7 +120,7 @@ public class BungeeCord extends ProxyServer
@@ -83,5 +83,5 @@ index 671cf96f..377df7ec 100644
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
                  .remoteAddress( socketAddress )
 -- 
-2.42.0
+2.43.0
 
