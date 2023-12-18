@@ -1,4 +1,4 @@
-From c403a8786903aaa9a99c791aba55fc66337f9abe Mon Sep 17 00:00:00 2001
+From c0d0e8c309f8f6e1419b7b0cc30b7255b902e74a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -30,18 +30,10 @@ index 00000000..11e103cb
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
-index 6c0ef4df..f20104a2 100644
+index 6c0ef4df..076ddd70 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/BadPacketException.java
-@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol;
- 
- public class BadPacketException extends RuntimeException
- {
-+    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
- 
-     public BadPacketException(String message)
-     {
-@@ -12,4 +13,24 @@ public class BadPacketException extends RuntimeException
+@@ -12,4 +12,24 @@ public class BadPacketException extends RuntimeException
      {
          super( message, cause );
      }
@@ -50,7 +42,7 @@ index 6c0ef4df..f20104a2 100644
 +    @Override
 +    public Throwable initCause(Throwable cause)
 +    {
-+        if (PROCESS_TRACES) {
++        if (DefinedPacket.PROCESS_TRACES) {
 +            return super.initCause(cause);
 +        }
 +        return this;
@@ -59,7 +51,7 @@ index 6c0ef4df..f20104a2 100644
 +    @Override
 +    public Throwable fillInStackTrace()
 +    {
-+        if (PROCESS_TRACES) {
++        if (DefinedPacket.PROCESS_TRACES) {
 +            return super.fillInStackTrace();
 +        }
 +        return this;
@@ -67,15 +59,15 @@ index 6c0ef4df..f20104a2 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 94613a0a..8751f271 100644
+index 994a5320..cb1eab74 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -46,6 +46,9 @@ public abstract class DefinedPacket
          }
      }
  
-+    private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
-+    private static final BadPacketException OVERSIZED_VAR_INT_EXCEPTION = new BadPacketException( "VarInt too big" );
++    public static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
++    private static final OverflowPacketException OVERSIZED_VAR_INT_EXCEPTION = new OverflowPacketException( "VarInt too big" );
 +    private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
      public static void writeString(String s, ByteBuf buf)
      {
@@ -95,8 +87,8 @@ index 94613a0a..8751f271 100644
  
              if ( bytes > maxBytes )
              {
--                throw new RuntimeException( "VarInt too big" );
-+                throw PROCESS_TRACES ? new BadPacketException( "VarInt too big" ) : OVERSIZED_VAR_INT_EXCEPTION;
+-                throw new OverflowPacketException( "VarInt too big (max " + maxBytes + ")" );
++                throw PROCESS_TRACES ? new OverflowPacketException( "VarInt too big (max " + maxBytes + ")" ) : OVERSIZED_VAR_INT_EXCEPTION;
              }
  
              if ( ( in & 0x80 ) != 0x80 )
@@ -145,6 +137,40 @@ index 655bcd46..52f76cd9 100644
          } finally
          {
              if ( slice != null )
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/OverflowPacketException.java b/protocol/src/main/java/net/md_5/bungee/protocol/OverflowPacketException.java
+index 237955ab..d0bd4d75 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/OverflowPacketException.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/OverflowPacketException.java
+@@ -2,9 +2,28 @@ package net.md_5.bungee.protocol;
+ 
+ public class OverflowPacketException extends RuntimeException
+ {
+-
+     public OverflowPacketException(String message)
+     {
+         super( message );
+     }
++
++    // Waterfall start
++    @Override
++    public Throwable initCause(Throwable cause)
++    {
++        if (DefinedPacket.PROCESS_TRACES) {
++            return super.initCause(cause);
++        }
++        return this;
++    }
++
++    @Override
++    public Throwable fillInStackTrace()
++    {
++        if (DefinedPacket.PROCESS_TRACES) {
++            return super.fillInStackTrace();
++        }
++        return this;
++    }
++    // Waterfall end
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index 460a79a1..b0caf6d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
