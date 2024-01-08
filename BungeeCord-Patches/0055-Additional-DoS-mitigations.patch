@@ -1,4 +1,4 @@
-From d7ec1a5e11b1b0d806f2a0bdcf6a881064081651 Mon Sep 17 00:00:00 2001
+From ce7a08d595ba0ddeb36f29c728d681ef82bac66e Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,10 +8,10 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 8751f271..8c9714fd 100644
+index dffd3b7a..dafaba54 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -81,6 +81,7 @@ public abstract class DefinedPacket
+@@ -82,6 +82,7 @@ public abstract class DefinedPacket
          int len = readVarInt( buf );
          if ( len > maxLen * 3 )
          {
@@ -19,7 +19,7 @@ index 8751f271..8c9714fd 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)" );
          }
  
-@@ -89,6 +90,7 @@ public abstract class DefinedPacket
+@@ -90,6 +91,7 @@ public abstract class DefinedPacket
  
          if ( s.length() > maxLen )
          {
@@ -27,7 +27,7 @@ index 8751f271..8c9714fd 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
-@@ -550,4 +552,21 @@ public abstract class DefinedPacket
+@@ -567,4 +569,21 @@ public abstract class DefinedPacket
  
      @Override
      public abstract String toString();
