@@ -1,4 +1,4 @@
-From 7a1be158a495b23c3d4e77f29dfb72daca03aa10 Mon Sep 17 00:00:00 2001
+From 7feb3c8d993a4bf4a48b7705ff27d67e165f7368 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,10 +6,10 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7cd0017d..01c8a172 100644
+index b4e101ac..9b93d2c3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -358,7 +358,7 @@ public class BungeeCord extends ProxyServer
+@@ -361,7 +361,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()

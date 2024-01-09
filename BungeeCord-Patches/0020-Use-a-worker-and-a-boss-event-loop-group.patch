@@ -1,4 +1,4 @@
-From 9431bb550c8ad9e18872691d9043dac347bb0ac6 Mon Sep 17 00:00:00 2001
+From 092cd796c78358364ed05ae54e4b3c875879393f Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,10 +8,10 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e3eaee39..89ca9c63 100644
+index a64d916a..3501a4e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -120,7 +120,7 @@ public class BungeeCord extends ProxyServer
+@@ -122,7 +122,7 @@ public class BungeeCord extends ProxyServer
       * Localization formats.
       */
      private Map<String, Format> messageFormats;
@@ -20,7 +20,7 @@ index e3eaee39..89ca9c63 100644
      /**
       * locations.yml save thread.
       */
-@@ -270,7 +270,8 @@ public class BungeeCord extends ProxyServer
+@@ -273,7 +273,8 @@ public class BungeeCord extends ProxyServer
              ResourceLeakDetector.setLevel( ResourceLeakDetector.Level.DISABLED ); // Eats performance
          }
  
@@ -30,7 +30,7 @@ index e3eaee39..89ca9c63 100644
  
          File moduleDirectory = new File( "modules" );
          moduleManager.load( this, moduleDirectory );
-@@ -359,7 +360,7 @@ public class BungeeCord extends ProxyServer
+@@ -362,7 +363,7 @@ public class BungeeCord extends ProxyServer
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
@@ -39,7 +39,7 @@ index e3eaee39..89ca9c63 100644
                      .localAddress( info.getSocketAddress() )
                      .bind().addListener( listener );
  
-@@ -382,7 +383,7 @@ public class BungeeCord extends ProxyServer
+@@ -385,7 +386,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -48,7 +48,7 @@ index e3eaee39..89ca9c63 100644
              }
          }
      }
-@@ -491,12 +492,14 @@ public class BungeeCord extends ProxyServer
+@@ -494,12 +495,14 @@ public class BungeeCord extends ProxyServer
          }
  
          getLogger().info( "Closing IO threads" );
