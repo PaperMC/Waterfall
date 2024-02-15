@@ -1,4 +1,4 @@
-From 17682183ba6a38abcf489250d5a1806a6b9c835d Mon Sep 17 00:00:00 2001
+From e7688bc1a3e0fbb881635096f464772f804ec2be Mon Sep 17 00:00:00 2001
 From: Aurora <aurora@relanet.eu>
 Date: Mon, 18 Jul 2022 15:56:05 +0200
 Subject: [PATCH] Add message for outdated clients that don't support secure
@@ -8,10 +8,10 @@ Clients before 1.19 don't support secure profiles, but since secure profiles is 
 things checked those outdated clients didn't get a useful message telling them to update.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9c322fb5..a9358a51 100644
+index f5959b66..72d48c72 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -395,6 +395,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -427,6 +427,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
          {
@@ -20,7 +20,7 @@ index 9c322fb5..a9358a51 100644
              if ( publicKey == null )
              {
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index e42b798b..76ad621f 100644
+index 149c742f..8d5075f6 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -25,6 +25,7 @@ offline_mode_player=\u00a7cNot authenticated with Minecraft.net
@@ -32,5 +32,5 @@ index e42b798b..76ad621f 100644
  error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
  error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
 -- 
-2.43.0
+2.43.0.windows.1
 

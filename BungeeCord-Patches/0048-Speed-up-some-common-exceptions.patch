@@ -1,4 +1,4 @@
-From f7cabafe6a763350695c963966fd28baa303f3b2 Mon Sep 17 00:00:00 2001
+From 35d2dacf92f05fdb842310189d371971ee72e7a8 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -172,19 +172,19 @@ index 237955ab..d0bd4d75 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 460a79a1..b0caf6d6 100644
+index ccc80506..d8d65093 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -15,6 +15,8 @@ import java.util.Set;
- import java.util.UUID;
- import java.util.logging.Level;
- import javax.crypto.SecretKey;
+@@ -21,6 +21,8 @@ import javax.crypto.SecretKey;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ import lombok.EqualsAndHashCode;
 +import javax.crypto.spec.SecretKeySpec;
 +
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
- import net.md_5.bungee.BungeeCord;
-@@ -470,6 +472,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ import lombok.ToString;
+@@ -502,6 +504,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
@@ -221,5 +221,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.43.0
+2.43.0.windows.1
 

@@ -1,4 +1,4 @@
-From 30f946ce72014dcdcfe31aa7703a5d30b1e13d42 Mon Sep 17 00:00:00 2001
+From a43f0b8886740a47f470609a8325528f2896739a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 43af8888..9a22a1f7 100644
+index 031bf2b1..5fc9324e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -255,7 +255,8 @@ public class ServerConnector extends PacketHandler
+@@ -264,7 +264,8 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -70,7 +70,7 @@ index 43af8888..9a22a1f7 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -310,6 +311,7 @@ public class ServerConnector extends PacketHandler
+@@ -319,6 +320,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -78,7 +78,7 @@ index 43af8888..9a22a1f7 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective(
-@@ -333,6 +335,7 @@ public class ServerConnector extends PacketHandler
+@@ -342,6 +344,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -86,7 +86,7 @@ index 43af8888..9a22a1f7 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -351,13 +354,34 @@ public class ServerConnector extends PacketHandler
+@@ -360,13 +363,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -110,7 +110,7 @@ index 43af8888..9a22a1f7 100644
 +                }
 +                Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
 +                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isLimitedCrafting(), login.isDebug(), login.isFlat(), login.getDeathLocation(),
-+                        login.getPortalCooldown() );
++                        login.getPortalCooldown(), login.isSecureProfile() );
 +                user.unsafe().sendPacket(modLogin);
 +                // Only send if we're in the same dimension
 +                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
@@ -123,14 +123,13 @@ index 43af8888..9a22a1f7 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a5ddcdc3..1d3b7a9d 100644
+index 86223e17..ee527938 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -791,4 +791,10 @@ public final class UserConnection implements ProxiedPlayer
-     {
-         return serverSentScoreboard;
+@@ -816,4 +816,9 @@ public final class UserConnection implements ProxiedPlayer
+ 
+         unsafe().sendPacket( new Transfer( host, port ) );
      }
-+
 +    // Waterfall start
 +    public boolean isDisableEntityMetadataRewrite() {
 +        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
@@ -158,7 +157,7 @@ index 8a10b057..249c3f46 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index b768d54a..e22e956d 100644
+index ccebe19f..cb4f1098 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -173,7 +172,7 @@ index b768d54a..e22e956d 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -302,7 +307,13 @@ public abstract class EntityMap
+@@ -304,7 +309,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -226,5 +225,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.43.0
+2.43.0.windows.1
 

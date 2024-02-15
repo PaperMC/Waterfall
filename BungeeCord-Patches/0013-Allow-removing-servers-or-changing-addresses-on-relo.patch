@@ -1,4 +1,4 @@
-From 3a0cdd8be9488802c79ab27cc6f92ce0b661624a Mon Sep 17 00:00:00 2001
+From 9a24ff623c14bd07b709f8620d978d6432d9048a Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Thu, 28 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Allow removing servers or changing addresses on reload
@@ -10,7 +10,7 @@ Kicks players on failure to move.
 Original Issue: https://github.com/WaterfallMC/Waterfall-Old/issues/17
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 54a6cb38..ecd3b619 100644
+index 1a688179..fea0ec61 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -11,12 +11,15 @@ import java.util.UUID;
@@ -29,7 +29,7 @@ index 54a6cb38..ecd3b619 100644
  import net.md_5.bungee.util.CaseInsensitiveMap;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  
-@@ -116,20 +119,38 @@ public abstract class Configuration implements ProxyConfig
+@@ -118,20 +121,38 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -79,5 +79,5 @@ index 54a6cb38..ecd3b619 100644
  
          for ( ListenerInfo listener : listeners )
 -- 
-2.43.0
+2.43.0.windows.1
 

@@ -1,4 +1,4 @@
-From fc3c0df45ca820c858052a420e1fc8985645fb87 Mon Sep 17 00:00:00 2001
+From a7fd6d9b2d176e4f7f9e1c226e1e6e06103e20b8 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index fc09cc11..7fbac761 100644
+index 348ac8ef..187c2138 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index fc09cc11..7fbac761 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..f9a169cc
+index 00000000..4bb98d5a
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..f9a169cc
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.20-R0.2-SNAPSHOT</version>
++        <version>1.20-R0.3-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.20-R0.2-SNAPSHOT</version>
++    <version>1.20-R0.3-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log4J</name>
@@ -233,10 +233,10 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index d8c23f4d..552c279e 100644
+index 18b596f2..c31408a8 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -55,12 +55,13 @@
+@@ -48,12 +48,13 @@
          <module>chat</module>
          <module>config</module>
          <module>event</module>
@@ -253,7 +253,7 @@ index d8c23f4d..552c279e 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 18a5c526..9be9aa22 100644
+index 1d2b4ec9..15887222 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -71,7 +71,7 @@
@@ -561,7 +561,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index b7529bf3..00000000
+index 1b61e3ad..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -572,14 +572,14 @@ index b7529bf3..00000000
 -
 -    <parent>
 -        <groupId>io.github.waterfallmc</groupId>
--        <artifactId>waterfall-super</artifactId>
--        <version>dev-SNAPSHOT</version>
+-        <artifactId>waterfall-parent</artifactId>
+-        <version>1.20-R0.3-SNAPSHOT</version>
 -        <relativePath>../pom.xml</relativePath>
 -    </parent>
 -
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-slf4j</artifactId>
--    <version>1.20-R0.2-SNAPSHOT</version>
+-    <version>1.20-R0.3-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>Waterfall-SLF4J</name>
@@ -1629,5 +1629,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.43.0
+2.43.0.windows.1
 
