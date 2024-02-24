@@ -1,4 +1,4 @@
-From 49b2baa3810475443e50eea4cb36919e94b87f3f Mon Sep 17 00:00:00 2001
+From 5dc2020c97ea49af439b9277813faed5aea6eb52 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index d11f73fc..b684df7d 100644
+index c60c7dd7..3bc72011 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -7,6 +7,7 @@ import io.netty.buffer.ByteBufAllocator;
@@ -23,7 +23,7 @@ index d11f73fc..b684df7d 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -112,15 +113,39 @@ public class ServerConnector extends PacketHandler
+@@ -115,15 +116,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -67,10 +67,10 @@ index d11f73fc..b684df7d 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 04143a46..12bd18ed 100644
+index 9edec410..c8d5648c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -170,9 +170,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -173,9 +173,12 @@ public final class UserConnection implements ProxiedPlayer
  
          forgeClientHandler = new ForgeClientHandler( this );
  
@@ -101,5 +101,5 @@ index 6dca2048..f5253b89 100644
       * The FML 1.8 handshake token.
       */
 -- 
-2.43.0
+2.43.0.windows.1
 

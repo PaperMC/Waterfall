@@ -1,4 +1,4 @@
-From 6bd04a3ed17d267336bf418a14f992d682c648d6 Mon Sep 17 00:00:00 2001
+From 00cda9eb01af461e5569795a0c93db9e6cb565a0 Mon Sep 17 00:00:00 2001
 From: Gabriele C <sgdc3.mail@gmail.com>
 Date: Thu, 8 Feb 2018 19:10:52 +0100
 Subject: [PATCH] Optionally log InitialHandler connections
@@ -61,12 +61,12 @@ index ef44d334..4ff8da6d 100644
      public String getGameVersion() {
          return gameVersion;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index bc98b6b1..460a79a1 100644
+index 5fd26bf1..ccc80506 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -354,7 +354,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                 break;
-             case 2:
+@@ -380,7 +380,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             case 3:
+                 transferred = handshake.getRequestedProtocol() == 3;
                  // Login
 -                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
 +                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
@@ -77,5 +77,5 @@ index bc98b6b1..460a79a1 100644
                  ch.setProtocol( Protocol.LOGIN );
  
 -- 
-2.43.0
+2.43.0.windows.1
 

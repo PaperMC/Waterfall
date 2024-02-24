@@ -1,4 +1,4 @@
-From 7feb3c8d993a4bf4a48b7705ff27d67e165f7368 Mon Sep 17 00:00:00 2001
+From bae0045a3b7394ba2071ab4e5ac2d7fe8fa5a157 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -32,10 +32,10 @@ index 377df7ec..8f531f85 100644
                  .handler( PipelineUtils.BASE_SERVERSIDE )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 553680ee..2f996a69 100644
+index f29a6f62..1d009633 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -411,7 +411,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -414,7 +414,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -142,5 +142,5 @@ index af65e192..6a045d16 100644
      {
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
-2.43.0
+2.43.0.windows.1
 

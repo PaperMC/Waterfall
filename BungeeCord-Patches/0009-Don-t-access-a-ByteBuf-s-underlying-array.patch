@@ -1,4 +1,4 @@
-From b78e74b5f2a330f2b4544b9d601dc0703cf99aa3 Mon Sep 17 00:00:00 2001
+From 0cdb5fce7e1e629416846d4493d8eee5458b1263 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -43,10 +43,10 @@ index 70b292f0..91f71c09 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index dc6a5a8f..d11f73fc 100644
+index 47e06dcd..c60c7dd7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -268,7 +268,7 @@ public class ServerConnector extends PacketHandler
+@@ -277,7 +277,7 @@ public class ServerConnector extends PacketHandler
  
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                  DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -82,5 +82,5 @@ index 5b9c35d1..2d6885a9 100644
      {
          @Override
 -- 
-2.43.0
+2.43.0.windows.1
 
