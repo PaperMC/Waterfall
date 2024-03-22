@@ -1,0 +1,21 @@
+From f61e1e636169079ed0987cfc28a106a6007a9de3 Mon Sep 17 00:00:00 2001
+From: MiniDigger <admin@benndorf.dev>
+Date: Fri, 22 Mar 2024 09:20:53 +0100
+Subject: [PATCH] eol message
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 96a9998d..72d6a15d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -64,6 +64,7 @@ public class BungeeCordLauncher
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
++        bungee.getLogger().warning("Waterfall has reached end of life and is no longer maintained. We recommend you transition to Velocity (https://papermc.io/software/velocity). For more information, see the announcement (https://forums.papermc.io/threads/1088/)."); // Waterfall - eol message
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
+-- 
+2.42.0
+
