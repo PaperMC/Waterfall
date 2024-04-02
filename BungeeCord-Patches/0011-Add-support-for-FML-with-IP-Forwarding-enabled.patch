@@ -1,4 +1,4 @@
-From 0a7710b54fbc938b1913070090ebeb7b6e3bdd5f Mon Sep 17 00:00:00 2001
+From 5dc2020c97ea49af439b9277813faed5aea6eb52 Mon Sep 17 00:00:00 2001
 From: Daniel Naylor <git@drnaylor.co.uk>
 Date: Tue, 25 Oct 2016 12:23:07 -0400
 Subject: [PATCH] Add support for FML with IP Forwarding enabled
@@ -12,7 +12,7 @@ However, there is now at least one Forge coremod that intends to support IP forw
 No breaking changes occur due to this patch.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 76db3a71..3aacebe1 100644
+index c60c7dd7..3bc72011 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -7,6 +7,7 @@ import io.netty.buffer.ByteBufAllocator;
@@ -23,7 +23,7 @@ index 76db3a71..3aacebe1 100644
  import java.util.Queue;
  import java.util.Set;
  import java.util.UUID;
-@@ -109,15 +110,39 @@ public class ServerConnector extends PacketHandler
+@@ -115,15 +116,39 @@ public class ServerConnector extends PacketHandler
              String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
  
              LoginResult profile = user.getPendingConnection().getLoginProfile();
@@ -67,23 +67,24 @@ index 76db3a71..3aacebe1 100644
          }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index be65c3ad..6ca259cb 100644
+index 9edec410..c8d5648c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -170,8 +170,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -173,9 +173,12 @@ public final class UserConnection implements ProxiedPlayer
  
          forgeClientHandler = new ForgeClientHandler( this );
  
 +        // No-config FML handshake marker.
          // Set whether the connection has a 1.8 FML marker in the handshake.
 -        forgeClientHandler.setFmlTokenInHandshake( this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ) );
+-
 +        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
 +        {
 +            forgeClientHandler.setFmlTokenInHandshake( true );
 +        }
+         return BungeeCord.getInstance().addConnection( this );
      }
  
-     public void sendPacket(PacketWrapper packet)
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java
 index 6dca2048..f5253b89 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeConstants.java
@@ -100,5 +101,5 @@ index 6dca2048..f5253b89 100644
       * The FML 1.8 handshake token.
       */
 -- 
-2.42.0
+2.43.0.windows.1
 

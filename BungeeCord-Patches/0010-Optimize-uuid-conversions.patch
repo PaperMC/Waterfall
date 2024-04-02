@@ -1,4 +1,4 @@
-From f2c91fe1c64c1b9d468063c57165a808be7235e1 Mon Sep 17 00:00:00 2001
+From 3916ceec65caec4aaa4f049a5477856ccb69274a Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -237,7 +237,7 @@ index 6352951c..91efc0a6 100644
  
      /**
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerPing.java b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
-index 88d36ad2..fc92a7b5 100644
+index e582808f..29cd91dd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerPing.java
 @@ -74,7 +74,7 @@ public class ServerPing
@@ -250,10 +250,10 @@ index 88d36ad2..fc92a7b5 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 09080f36..14a34f99 100644
+index d9247fb2..43fb3208 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -722,7 +722,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -788,7 +788,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {
@@ -263,5 +263,5 @@ index 09080f36..14a34f99 100644
  
      @Override
 -- 
-2.42.0
+2.43.0.windows.1
 

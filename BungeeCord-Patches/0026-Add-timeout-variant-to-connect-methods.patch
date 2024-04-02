@@ -1,0 +1,113 @@
+From c489acf737b0340bc283c49f39517a14736a58a1 Mon Sep 17 00:00:00 2001
+From: Ichbinjoe <joe@ibj.io>
+Date: Sat, 16 Jul 2016 20:44:01 -0400
+Subject: [PATCH] Add timeout variant to connect methods
+
+Also added more connect methods to ProxiedPlayer, in addition to the new method
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 0fe647b8..32af4937 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -128,6 +128,38 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      */
+     void connect(ServerInfo target, Callback<Boolean> callback);
+ 
++    // Waterfall start
++    /**
++     * Connects / transfers this user to the specified connection, gracefully
++     * closing the current one. Depending on the implementation, this method
++     * might return before the user has been connected.
++     *
++     * @param target the new server to connect to
++     * @param callback the method called when the connection is complete, or
++     * when an exception is encountered. The boolean parameter denotes success
++     * or failure.
++     * @param retry whether to retry the connection if the initial connection
++     *              fails.
++     */
++    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry);
++
++    /**
++     * Connects / transfers this user to the specified connection, gracefully
++     * closing the current one. Depending on the implementation, this method
++     * might return before the user has been connected.
++     *
++     * @param target the new server to connect to
++     * @param callback the method called when the connection is complete, or
++     * when an exception is encountered. The boolean parameter denotes success
++     * or failure.
++     * @param retry whether to retry the connection if the initial connection
++     *              fails.
++     * @param timeout timeout in milliseconds of the connection created to the
++     *                target server
++     */
++    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, int timeout);
++    // Waterfall end
++
+     /**
+      * Connects / transfers this user to the specified connection, gracefully
+      * closing the current one. Depending on the implementation, this method
+@@ -141,6 +173,25 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      */
+     void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
+ 
++    // Waterfall start
++    /**
++     * Connects / transfers this user to the specified connection, gracefully
++     * closing the current one. Depending on the implementation, this method
++     * might return before the user has been connected.
++     *
++     * @param target the new server to connect to
++     * @param callback the method called when the connection is complete, or
++     * when an exception is encountered. The boolean parameter denotes success
++     * or failure.
++     * @param retry whether to retry the connection if the initial connection
++     *              fails.
++     * @param reason the reason for connecting to the new server
++     * @param timeout timeout in milliseconds of the connection created to the
++     *                target server
++     */
++    void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, ServerConnectEvent.Reason reason, int timeout);
++    // Waterfall end
++
+     /**
+      * Connects / transfers this user to the specified connection, gracefully
+      * closing the current one. Depending on the implementation, this method
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index c8d5648c..7e36c0eb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -285,9 +285,20 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
+     {
++        // Waterfall start
++        connect(info, callback, retry, reason, bungee.getConfig().getServerConnectTimeout());
++    }
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
++        connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
++    }
++
++    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout)
++    {
++        // Waterfall end
+         Preconditions.checkNotNull( info, "info" );
+ 
+         ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info );
++        builder.connectTimeout(timeout); // Waterfall
+         if ( callback != null )
+         {
+             // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
+@@ -381,7 +392,7 @@ public final class UserConnection implements ProxiedPlayer
+                     if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
+                     {
+                         sendMessage( bungee.getTranslation( "fallback_lobby" ) );
+-                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK );
++                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
+                     } else if ( dimensionChange )
+                     {
+                         disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
+-- 
+2.44.0
+
