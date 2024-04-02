@@ -24,14 +24,14 @@ Waterfall will still track upstream BungeeCord and merge changes as needed.
 
 ## How To (Server Admins)
 
-Download a copy of Waterfall.jar from our homepage here: [Waterfall](https://papermc.io/downloads#Waterfall)
+Download a copy of Waterfall.jar from our homepage here: [Waterfall](https://papermc.io/downloads/waterfall)
 
 Waterfall requires **Java 8** or above.
 
 ## How To (Plugin Developers)
 ------
  * See our API patches [here](BungeeCord-Patches)
- * Waterfall API JavaDocs here: [papermc.io/javadocs](https://papermc.io/javadocs)
+ * Waterfall API JavaDocs here: [papermc.io/javadocs](https://jd.papermc.io/waterfall/1.20)
  * Maven repository (for `waterfall-api`):
 ```xml
 <repository>
@@ -75,8 +75,8 @@ Clone this repo, run `./waterfall b` from *bash*, get jar from Waterfall-Proxy/b
 ## Join us
 
 * Feel free to open a PR! We accept contributions.
-* Join us on IRC (irc.esper.net #waterfall, [webchat](https://webchat.esper.net/?channels=waterfall)) or [Discord](https://discord.gg/papermc).
-* Visit our forums (https://papermc.io/forums).
+* Join us on [Discord](https://discord.gg/papermc).
+* Visit our forums (https://forums.papermc.io/).
 
 ## Special Thanks To
 
