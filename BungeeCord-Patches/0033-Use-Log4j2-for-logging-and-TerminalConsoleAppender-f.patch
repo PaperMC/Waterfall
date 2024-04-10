@@ -1,4 +1,4 @@
-From 96ff42638e839e92b966aaa95a50f8ee81cd16ea Mon Sep 17 00:00:00 2001
+From f8b0691ca00ae4968acfacbc9d4a86ec2e078d88 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 87ab1b76..f8491614 100644
+index a19d10da..715d3e11 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -48,12 +48,13 @@
@@ -253,10 +253,10 @@ index 87ab1b76..f8491614 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 1d2b4ec9..15887222 100644
+index 216e894e..95703fee 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -71,7 +71,7 @@
+@@ -83,7 +83,7 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -265,7 +265,7 @@ index 1d2b4ec9..15887222 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -93,12 +93,13 @@
+@@ -105,12 +105,13 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -280,7 +280,7 @@ index 1d2b4ec9..15887222 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -130,6 +131,35 @@
+@@ -142,6 +143,35 @@
              <version>1.9.18</version>
              <scope>runtime</scope>
          </dependency>
