@@ -1,4 +1,4 @@
-From f3c9d4d4def15946b7de244db86dd3d41e6b8c00 Mon Sep 17 00:00:00 2001
+From d5eaa35359d90f611f6450fb6ee12014e0a13921 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -7,7 +7,7 @@ This functionality of this patch was adopted upstream, however, this
 patch remains for a few misc improvements around here
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1b7395ad..e670a57a 100644
+index a25a493e..63920e7e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -522,6 +522,6 @@ public class ServerConnector extends PacketHandler
@@ -31,10 +31,10 @@ index d408840d..cd3ed518 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 43fb3208..4325fe23 100644
+index 616adcf1..0fbe8b0d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -794,20 +794,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -812,20 +812,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String toString()
      {
@@ -57,7 +57,7 @@ index 43fb3208..4325fe23 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 050cc29b..740c90ec 100644
+index bfd5cb5f..2dafa4d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -396,6 +396,6 @@ public class UpstreamBridge extends PacketHandler

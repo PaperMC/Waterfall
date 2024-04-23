@@ -1,4 +1,4 @@
-From b8e82d2bdf3c1b23c0338fc239357eb7dc626f1f Mon Sep 17 00:00:00 2001
+From 1c5029315edd50653076483bba5e7e406fe07848 Mon Sep 17 00:00:00 2001
 From: Aurora <aurora@relanet.eu>
 Date: Mon, 18 Jul 2022 15:56:05 +0200
 Subject: [PATCH] Add message for outdated clients that don't support secure
@@ -8,10 +8,10 @@ Clients before 1.19 don't support secure profiles, but since secure profiles is 
 things checked those outdated clients didn't get a useful message telling them to update.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f5959b66..72d48c72 100644
+index 6344462c..d58caade 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -427,6 +427,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -435,6 +435,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
          {

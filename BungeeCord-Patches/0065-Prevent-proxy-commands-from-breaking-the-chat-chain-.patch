@@ -1,11 +1,11 @@
-From 3b82a10c1ff1eacc4d4fa7d7fe16496c570c5662 Mon Sep 17 00:00:00 2001
+From a1cd3244c064607b5bc98a9ea9fb5b6ed244c852 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 14ad2e71..fe6c7339 100644
+index 33b246bc..7f5935c3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -277,5 +277,9 @@ public abstract class AbstractPacketHandler
@@ -19,10 +19,10 @@ index 14ad2e71..fe6c7339 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 414d4578..3a69fced 100644
+index 7a29eb0d..67e0f085 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -545,6 +545,13 @@ public enum Protocol
+@@ -546,6 +546,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 )
              );
@@ -76,10 +76,10 @@ index 00000000..08ecf2a3
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-index fb53ba74..f8e2db8d 100644
+index 887ff29f..d4700090 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-@@ -118,4 +118,9 @@ public class ClientCommand extends DefinedPacket
+@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -90,7 +90,7 @@ index fb53ba74..f8e2db8d 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 740c90ec..134a843f 100644
+index 2dafa4d9..b482fe2e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -196,16 +196,22 @@ public class UpstreamBridge extends PacketHandler
@@ -98,27 +98,27 @@ index 740c90ec..134a843f 100644
      public void handle(ClientCommand command) throws Exception
      {
 -        handleChat( "/" + command.getCommand() );
-+        handleChat( "/" + command.getCommand(), command, null ); // Waterfall
++        handleChat( "/" + command.getCommand(), command );
      }
  
      @Override
-     public void handle(ClientCommandSigned command) throws Exception
+     public void handle(UnsignedClientCommand command) throws Exception
      {
 -        handleChat( "/" + command.getCommand() );
-+        handleChat( "/" + command.getCommand(), null, command ); // Waterfall
++        handleChat( "/" + command.getCommand(), null); // Waterfall
      }
  
      private String handleChat(String message)
 +    {
 +        // Waterfall start
-+        return handleChat(message, null, null);
++        return handleChat(message, null);
 +    }
-+    private String handleChat(String message, @javax.annotation.Nullable ClientCommand clientCommand, @javax.annotation.Nullable ClientCommandSigned clientCommandSigned)
++    private String handleChat(String message, @javax.annotation.Nullable ClientCommand clientCommand)
 +    // Waterfall end
      {
          for ( int index = 0, length = message.length(); index < length; index++ )
          {
-@@ -224,7 +230,18 @@ public class UpstreamBridge extends PacketHandler
+@@ -224,7 +230,13 @@ public class UpstreamBridge extends PacketHandler
              if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
              {
                  return message;
@@ -126,11 +126,6 @@ index 740c90ec..134a843f 100644
 +            } else if (clientCommand != null && clientCommand.isSigned() && clientCommand.getSeenMessages() != null) {
 +                if (con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3) {
 +                    con.getServer().unsafe().sendPacket(new net.md_5.bungee.protocol.packet.ClientChatAcknowledgement(clientCommand.getSeenMessages().getOffset()));
-+                }
-+                // and then for the new one
-+            } else if (clientCommandSigned != null) {
-+                if (con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_5) {
-+                    con.getServer().unsafe().sendPacket(new net.md_5.bungee.protocol.packet.ClientChatAcknowledgement(clientCommandSigned.getSeenMessages().getOffset()));
 +                }
              }
 +            // Waterfall end

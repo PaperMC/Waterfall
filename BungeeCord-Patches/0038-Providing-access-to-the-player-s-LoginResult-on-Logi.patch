@@ -1,4 +1,4 @@
-From 6568f09ce8c2d9ad4743de43363784c40c3bce11 Mon Sep 17 00:00:00 2001
+From d45c224f7f456f0df39e9dea42d026fed59fcd77 Mon Sep 17 00:00:00 2001
 From: phenomax <phenomax@revayd.net>
 Date: Thu, 10 Aug 2017 18:41:17 +0200
 Subject: [PATCH] Providing access to the player's LoginResult on LoginEvent
@@ -51,10 +51,10 @@ similarity index 100%
 rename from proxy/src/main/java/net/md_5/bungee/connection/LoginResult.java
 rename to api/src/main/java/net/md_5/bungee/connection/LoginResult.java
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b7dd5fe3..5fd26bf1 100644
+index deb9fef3..05261ccf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -644,7 +644,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -653,7 +653,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          };
  
          // fire login event

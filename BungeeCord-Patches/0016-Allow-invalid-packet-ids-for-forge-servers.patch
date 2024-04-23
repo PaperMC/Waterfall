@@ -1,4 +1,4 @@
-From 702afc4df45926f3d96841ffb908f3b85cb2d3f0 Mon Sep 17 00:00:00 2001
+From ea36c5dc9f008d20bbef476f4af4f0ce9301aed0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -37,10 +37,10 @@ index d79d5e5c..250e7620 100644
              {
                  packet.read( in, protocol, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index cb5c30d5..a8a91955 100644
+index 2271a2e5..d932b696 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -861,14 +861,23 @@ public enum Protocol
+@@ -862,14 +862,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -66,7 +66,7 @@ index cb5c30d5..a8a91955 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 37f86325..1b7395ad 100644
+index 7a211f1b..a25a493e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -234,6 +234,12 @@ public class ServerConnector extends PacketHandler
