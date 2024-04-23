@@ -1,4 +1,4 @@
-From 25abd4454ef1e0caeeaad0e21866e8612528d916 Mon Sep 17 00:00:00 2001
+From 429d77cd283c12f043fb0da276a0a3856aa31ab2 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -69,7 +69,7 @@ index 37337429..c3683c30 100644
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index af65e192..6a045d16 100644
+index 3b157d79..52c308f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -80,10 +80,10 @@ index af65e192..6a045d16 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -119,6 +120,12 @@ public class PipelineUtils
-     public static final String LEGACY_KICKER = "legacy-kick";
+@@ -125,6 +126,12 @@ public class PipelineUtils
  
      private static boolean epoll;
+     private static boolean io_uring;
 +    // Waterfall start: netty reflection -> factory
 +    private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;
 +    private static final ChannelFactory<? extends ServerChannel> serverChannelDomainFactory;
@@ -93,21 +93,21 @@ index af65e192..6a045d16 100644
  
      static
      {
-@@ -134,6 +141,12 @@ public class PipelineUtils
-                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
+@@ -155,6 +162,12 @@ public class PipelineUtils
+                 }
              }
          }
 +        // Waterfall start: netty reflection -> factory
-+        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
-+        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
-+        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
-+        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
++        serverChannelFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
++        serverChannelDomainFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerDomainSocketChannel::new : null;
++        channelFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollSocketChannel::new : NioSocketChannel::new;
++        channelDomainFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollDomainSocketChannel::new : null;
 +        // Waterfall end
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -165,6 +178,34 @@ public class PipelineUtils
-         return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
+@@ -186,6 +199,34 @@ public class PipelineUtils
+         return io_uring ? IOUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
 +    // Waterfall start: netty reflection -> factory
@@ -140,7 +140,7 @@ index af65e192..6a045d16 100644
 +
      public static Class<? extends DatagramChannel> getDatagramChannel()
      {
-         return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
+         return io_uring ? IOUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
 2.44.0
 

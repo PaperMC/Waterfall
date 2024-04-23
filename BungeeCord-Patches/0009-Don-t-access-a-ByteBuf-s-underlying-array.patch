@@ -1,4 +1,4 @@
-From 0cdb5fce7e1e629416846d4493d8eee5458b1263 Mon Sep 17 00:00:00 2001
+From 399142c001df2d50e1cba9eee822388bc39b12ab Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -43,7 +43,7 @@ index 70b292f0..91f71c09 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 47e06dcd..c60c7dd7 100644
+index abdbfd1d..04bd6778 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -277,7 +277,7 @@ public class ServerConnector extends PacketHandler
@@ -56,7 +56,7 @@ index 47e06dcd..c60c7dd7 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 27737d1b..b7856d92 100644
+index 4684bfd8..63be43eb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -313,7 +313,7 @@ public class DownstreamBridge extends PacketHandler
@@ -69,10 +69,10 @@ index 27737d1b..b7856d92 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 5b9c35d1..2d6885a9 100644
+index 25f045be..544d34ed 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -50,7 +50,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -55,7 +55,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
  public class PipelineUtils
  {
  
@@ -82,5 +82,5 @@ index 5b9c35d1..2d6885a9 100644
      {
          @Override
 -- 
-2.43.0.windows.1
+2.44.0
 

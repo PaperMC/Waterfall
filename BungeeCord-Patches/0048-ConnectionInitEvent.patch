@@ -1,4 +1,4 @@
-From 838b44a67a3b27848d8185e5114e2dc9f8067afc Mon Sep 17 00:00:00 2001
+From bf64d9cf56589f4dc98386425c290d03b14837fc Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -67,7 +67,7 @@ index 00000000..6e79675f
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 3f30da0c..af65e192 100644
+index 6a0d3351..3b157d79 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -1,6 +1,7 @@
@@ -78,7 +78,7 @@ index 3f30da0c..af65e192 100644
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
-@@ -63,7 +64,6 @@ public class PipelineUtils
+@@ -68,7 +69,6 @@ public class PipelineUtils
                  ch.close();
                  return;
              }
@@ -86,7 +86,7 @@ index 3f30da0c..af65e192 100644
              ListenerInfo listener = ch.attr( LISTENER ).get();
  
              if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
-@@ -72,7 +72,21 @@ public class PipelineUtils
+@@ -77,7 +77,21 @@ public class PipelineUtils
                  return;
              }
  
@@ -108,7 +108,7 @@ index 3f30da0c..af65e192 100644
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-@@ -83,6 +97,9 @@ public class PipelineUtils
+@@ -88,6 +102,9 @@ public class PipelineUtils
              {
                  ch.pipeline().addFirst( new HAProxyMessageDecoder() );
              }
