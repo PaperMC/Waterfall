@@ -1,14 +1,14 @@
-From a1cd3244c064607b5bc98a9ea9fb5b6ed244c852 Mon Sep 17 00:00:00 2001
+From 0952d57b25738151a17baef23d393ed7f4356861 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 33b246bc..7f5935c3 100644
+index e2221010..4dde7257 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -277,5 +277,9 @@ public abstract class AbstractPacketHandler
+@@ -287,5 +287,9 @@ public abstract class AbstractPacketHandler
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
      }
@@ -19,10 +19,10 @@ index 33b246bc..7f5935c3 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 7a29eb0d..67e0f085 100644
+index b0473509..f25d3fab 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -546,6 +546,13 @@ public enum Protocol
+@@ -558,6 +558,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 )
              );
@@ -133,5 +133,5 @@ index 2dafa4d9..b482fe2e 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.44.0
+2.45.1
 

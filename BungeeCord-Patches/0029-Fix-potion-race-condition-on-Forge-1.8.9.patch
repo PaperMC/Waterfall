@@ -1,18 +1,18 @@
-From bf5145136df8e794c207bb4c8c49c02dbf26eb6d Mon Sep 17 00:00:00 2001
+From f5c341bf2e3a268299c88c9fe9726111194e498d Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 7f0b6105..14ad2e71 100644
+index 8d91211b..e2221010 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -268,4 +268,14 @@ public abstract class AbstractPacketHandler
-     public void handle(CookieResponse cookieResponse) throws Exception
+@@ -278,4 +278,14 @@ public abstract class AbstractPacketHandler
+     public void handle(ServerLinks serverLinks) throws Exception
      {
      }
-+    
++
 +    // Waterfall start
 +    public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
 +    {
@@ -117,7 +117,7 @@ index 00000000..7ed2dc3a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e36c0eb..86223e17 100644
+index d8f7bc95..d15f2bcc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -1,7 +1,9 @@
@@ -216,5 +216,5 @@ index d15044f4..bea2bbff 100644
       * Sends the server mod list to the client, or stores it for sending later.
       *
 -- 
-2.44.0
+2.45.1
 
