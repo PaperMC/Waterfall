@@ -1,4 +1,4 @@
-From f8b0691ca00ae4968acfacbc9d4a86ec2e078d88 Mon Sep 17 00:00:00 2001
+From 044b8172b414f1fb8a4f696402d12adc5720518f Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 15546f07..5182b664 100644
+index 22ce6779..a108e308 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index 15546f07..5182b664 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..4bb98d5a
+index 00000000..96702972
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..4bb98d5a
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.20-R0.3-SNAPSHOT</version>
++        <version>1.21-R0.1-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.20-R0.3-SNAPSHOT</version>
++    <version>1.21-R0.1-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log4J</name>
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index a19d10da..715d3e11 100644
+index b882440f..be640f9e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -48,12 +48,13 @@
@@ -253,7 +253,7 @@ index a19d10da..715d3e11 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 216e894e..95703fee 100644
+index 0886fda2..c3b1ff9f 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -83,7 +83,7 @@
@@ -559,47 +559,6 @@ index 7e465924..00000000
 -        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>
 -    </properties>
 -</project-shared-configuration>
-diff --git a/slf4j/pom.xml b/slf4j/pom.xml
-deleted file mode 100644
-index 1b61e3ad..00000000
---- a/slf4j/pom.xml
-+++ /dev/null
-@@ -1,35 +0,0 @@
--
--<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
--    <modelVersion>4.0.0</modelVersion>
--
--    <parent>
--        <groupId>io.github.waterfallmc</groupId>
--        <artifactId>waterfall-parent</artifactId>
--        <version>1.20-R0.3-SNAPSHOT</version>
--        <relativePath>../pom.xml</relativePath>
--    </parent>
--
--    <groupId>io.github.waterfallmc</groupId>
--    <artifactId>waterfall-slf4j</artifactId>
--    <version>1.20-R0.3-SNAPSHOT</version>
--    <packaging>jar</packaging>
--
--    <name>Waterfall-SLF4J</name>
--    <description>Wrapper over SLF4J for BungeeCord purposes.</description>
--
--    <properties>
--        <checkstyle.skip>true</checkstyle.skip>
--        <maven.deploy.skip>true</maven.deploy.skip>
--        <maven.javadoc.skip>true</maven.javadoc.skip>
--    </properties>
--
--    <dependencies>
--        <dependency>
--            <groupId>org.slf4j</groupId>
--            <artifactId>slf4j-api</artifactId>
--            <version>1.7.36</version>
--            <scope>compile</scope>
--        </dependency>
--    </dependencies>
--</project>
 diff --git a/slf4j/src/main/java/org/slf4j/impl/JDK14LoggerAdapter.java b/slf4j/src/main/java/org/slf4j/impl/JDK14LoggerAdapter.java
 deleted file mode 100644
 index 49589454..00000000
@@ -1629,5 +1588,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.44.0
+2.39.3 (Apple Git-146)
 
