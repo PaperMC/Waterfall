@@ -1,0 +1,57 @@
+From fa7dcf4b0fa0b5aaf20c9071b547699ae43ab530 Mon Sep 17 00:00:00 2001
+From: BoomEaro <21033866+BoomEaro@users.noreply.github.com>
+Date: Mon, 3 Apr 2023 13:03:53 +0300
+Subject: [PATCH] Always slice until entity rewrite is being used in
+ MinecraftDecoder
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index ac83e325..b6950ff1 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -20,6 +20,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+     private int protocolVersion;
+     @Setter
+     private boolean supportsForge = false;
++    @Setter
++    private boolean slice = true; // Waterfall
+ 
+     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
+         this.protocol = protocol;
+@@ -38,7 +40,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         }
+ 
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
++        ByteBuf slice = ( this.slice ? in.retainedSlice() : in.copy() ); // Waterfall
+ 
+         Object packetTypeInfo = null;
+         try
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 8181d76b..1e05104e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -385,6 +385,7 @@ public class ServerConnector extends PacketHandler
+         ServerInfo from = ( user.getServer() == null ) ? null : user.getServer().getInfo();
+         user.setServer( server );
+         ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
++        ch.getHandle().pipeline().get( MinecraftDecoder.class ).setSlice( user.isDisableEntityMetadataRewrite() ); // Waterfall: Change decoder mode for downstream connection
+ 
+         bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, from ) );
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index cf82c182..e3df5c82 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -158,6 +158,8 @@ public final class UserConnection implements ProxiedPlayer
+     {
+         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
+ 
++        ch.getHandle().pipeline().get( MinecraftDecoder.class ).setSlice( isDisableEntityMetadataRewrite() ); // Waterfall: Change decoder mode for upstream connection
++
+         this.displayName = name;
+ 
+         tabListHandler = new ServerUnique( this );
+-- 
+2.33.0.windows.2
+
