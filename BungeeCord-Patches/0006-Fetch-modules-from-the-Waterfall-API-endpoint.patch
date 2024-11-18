@@ -1,4 +1,4 @@
-From f2f55cb7743a44bc8d0db757315cbfab4d43f22f Mon Sep 17 00:00:00 2001
+From e8b830735afa54b82ac3ebbc9a64601a4dbfb360 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:34:52 -0700
 Subject: [PATCH] Fetch modules from the Waterfall API endpoint
@@ -6,24 +6,11 @@ Subject: [PATCH] Fetch modules from the Waterfall API endpoint
 Don't fetch from the BungeeCord CI, as that only has their modules
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-index 2536435c..5bb86152 100644
+index 064639f3..6a6661a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
 +++ b/proxy/src/main/java/net/md_5/bungee/module/JenkinsModuleSource.java
-@@ -1,10 +1,10 @@
- package net.md_5.bungee.module;
- 
--import com.google.common.io.ByteStreams;
--import com.google.common.io.Files;
- import java.io.IOException;
- import java.net.URL;
- import java.net.URLConnection;
-+import java.nio.file.Files;
-+import java.nio.file.StandardCopyOption;
- import lombok.Data;
- import net.md_5.bungee.Util;
- 
-@@ -18,13 +18,21 @@ public class JenkinsModuleSource implements ModuleSource
-         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
+@@ -19,11 +19,19 @@ public class JenkinsModuleSource implements ModuleSource
+         ProxyServer.getInstance().getLogger().info( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
          try
          {
 -            URL website = new URL( "https://ci.md-5.net/job/BungeeCord/" + version.getBuild() + "/artifact/module/" + module.getName().replace( '_', '-' ) + "/target/" + module.getName() + ".jar" );
@@ -41,11 +28,8 @@ index 2536435c..5bb86152 100644
              con.setReadTimeout( 15000 );
 +            con.setRequestProperty( "User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36" );
  
--            Files.write( ByteStreams.toByteArray( con.getInputStream() ), module.getFile() );
-+            Files.copy( con.getInputStream(), module.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING );
-             System.out.println( "Download complete" );
-         } catch ( IOException ex )
-         {
+             Files.write( ByteStreams.toByteArray( con.getInputStream() ), module.getFile() );
+             ProxyServer.getInstance().getLogger().info( "Download complete" );
 -- 
-2.43.0
+2.47.0
 

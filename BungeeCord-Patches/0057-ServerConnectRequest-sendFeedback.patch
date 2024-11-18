@@ -1,4 +1,4 @@
-From 63ef97642f82dd1c190d47cc6b58a42fada64c2d Mon Sep 17 00:00:00 2001
+From 8ad2dc138d2ee4a68720ce6b179dfb75f8d96c22 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 16 Apr 2021 06:29:28 +0100
 Subject: [PATCH] ServerConnectRequest#sendFeedback
@@ -31,7 +31,7 @@ index c81b0a4e..d21370be 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ee527938..2813c16f 100644
+index a84f9b12..951fa17d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -298,12 +298,16 @@ public final class UserConnection implements ProxiedPlayer
@@ -53,7 +53,7 @@ index ee527938..2813c16f 100644
          builder.connectTimeout(timeout); // Waterfall
          if ( callback != null )
          {
-@@ -351,7 +355,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -352,7 +356,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -62,7 +62,7 @@ index ee527938..2813c16f 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -361,7 +365,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -362,7 +366,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -71,7 +71,7 @@ index ee527938..2813c16f 100644
              return;
          }
  
-@@ -397,14 +401,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -398,14 +402,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
@@ -90,5 +90,5 @@ index ee527938..2813c16f 100644
                  }
              }
 -- 
-2.44.0
+2.47.0
 

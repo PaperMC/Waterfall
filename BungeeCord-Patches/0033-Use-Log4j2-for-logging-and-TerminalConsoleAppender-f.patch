@@ -1,4 +1,4 @@
-From 044b8172b414f1fb8a4f696402d12adc5720518f Mon Sep 17 00:00:00 2001
+From c9c86d9054a05493a074fab732839c90121a1b6d Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -509,19 +509,6 @@ index 3e5ca394..00000000
 -        return ( lastSpace == -1 ) ? cursor - buffer.length() : cursor - ( buffer.length() - lastSpace - 1 );
 -    }
 -}
-diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-index 9ec4920e..d3abee44 100644
---- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-+++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
-@@ -44,7 +44,7 @@ public class ModuleManager
-         ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
-         if ( bungeeVersion == null )
-         {
--            System.out.println( "Couldn't detect bungee version. Custom build?" );
-+            proxy.getLogger().warning( "Couldn't detect bungee version. Custom build?" ); // Waterfall - Use logger
-             return;
-         }
- 
 diff --git a/slf4j/nb-configuration.xml b/slf4j/nb-configuration.xml
 deleted file mode 100644
 index 7e465924..00000000
@@ -1588,5 +1575,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.39.3 (Apple Git-146)
+2.47.0
 

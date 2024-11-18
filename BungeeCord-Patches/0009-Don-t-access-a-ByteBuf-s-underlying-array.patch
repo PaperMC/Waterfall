@@ -1,4 +1,4 @@
-From 399142c001df2d50e1cba9eee822388bc39b12ab Mon Sep 17 00:00:00 2001
+From b212fd1b0a9b781f13e21b4c1e9c0432640baaf1 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -43,10 +43,10 @@ index 70b292f0..91f71c09 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index abdbfd1d..04bd6778 100644
+index b58a01c6..c7637608 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -277,7 +277,7 @@ public class ServerConnector extends PacketHandler
+@@ -286,7 +286,7 @@ public class ServerConnector extends PacketHandler
  
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                  DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -56,10 +56,10 @@ index abdbfd1d..04bd6778 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4684bfd8..63be43eb 100644
+index d518d05f..21019091 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -313,7 +313,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -325,7 +325,7 @@ public class DownstreamBridge extends PacketHandler
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
@@ -69,7 +69,7 @@ index 4684bfd8..63be43eb 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 25f045be..544d34ed 100644
+index 2446f489..380b6012 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -55,7 +55,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
@@ -82,5 +82,5 @@ index 25f045be..544d34ed 100644
      {
          @Override
 -- 
-2.44.0
+2.47.0
 

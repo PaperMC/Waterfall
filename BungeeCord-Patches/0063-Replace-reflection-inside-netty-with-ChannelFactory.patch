@@ -1,4 +1,4 @@
-From 429d77cd283c12f043fb0da276a0a3856aa31ab2 Mon Sep 17 00:00:00 2001
+From 51c676a4225026c9553e4f4f1596dbd9574773c6 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -32,10 +32,10 @@ index 377df7ec..8f531f85 100644
                  .handler( PipelineUtils.BASE_SERVERSIDE )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f29a6f62..1d009633 100644
+index e98bf147..d6561c60 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -414,7 +414,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -415,7 +415,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -69,7 +69,7 @@ index 37337429..c3683c30 100644
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 3b157d79..52c308f7 100644
+index 75d2bd0e..37e37aaf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -80,7 +80,7 @@ index 3b157d79..52c308f7 100644
  import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -125,6 +126,12 @@ public class PipelineUtils
+@@ -124,6 +125,12 @@ public class PipelineUtils
  
      private static boolean epoll;
      private static boolean io_uring;
@@ -93,7 +93,7 @@ index 3b157d79..52c308f7 100644
  
      static
      {
-@@ -155,6 +162,12 @@ public class PipelineUtils
+@@ -154,6 +161,12 @@ public class PipelineUtils
                  }
              }
          }
@@ -106,7 +106,7 @@ index 3b157d79..52c308f7 100644
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -186,6 +199,34 @@ public class PipelineUtils
+@@ -185,6 +198,34 @@ public class PipelineUtils
          return io_uring ? IOUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
@@ -142,5 +142,5 @@ index 3b157d79..52c308f7 100644
      {
          return io_uring ? IOUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
-2.44.0
+2.47.0
 

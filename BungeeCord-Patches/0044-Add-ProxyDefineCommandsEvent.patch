@@ -1,4 +1,4 @@
-From 8c33d4de8183d34c90460a315ad42307e731c4dc Mon Sep 17 00:00:00 2001
+From b93ab3b66e55042fa4965d287eb4bec71d2532dc Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,10 +54,10 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6ed25f82..1a863dc0 100644
+index da3db022..7b9c9268 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -792,9 +792,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -789,9 +789,25 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -86,5 +86,5 @@ index 6ed25f82..1a863dc0 100644
                  CommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() ).executes( DUMMY_COMMAND )
                          .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
 -- 
-2.44.0
+2.47.0
 

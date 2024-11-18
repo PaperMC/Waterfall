@@ -1,4 +1,4 @@
-From c489acf737b0340bc283c49f39517a14736a58a1 Mon Sep 17 00:00:00 2001
+From 96e88d4ac24e1ba6941f1d4f070ec88db6c67ad9 Mon Sep 17 00:00:00 2001
 From: Ichbinjoe <joe@ibj.io>
 Date: Sat, 16 Jul 2016 20:44:01 -0400
 Subject: [PATCH] Add timeout variant to connect methods
@@ -75,7 +75,7 @@ index 0fe647b8..32af4937 100644
       * Connects / transfers this user to the specified connection, gracefully
       * closing the current one. Depending on the implementation, this method
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c8d5648c..7e36c0eb 100644
+index 52bca3e9..36582d85 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -285,9 +285,20 @@ public final class UserConnection implements ProxiedPlayer
@@ -99,7 +99,7 @@ index c8d5648c..7e36c0eb 100644
          if ( callback != null )
          {
              // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-@@ -381,7 +392,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -382,7 +393,7 @@ public final class UserConnection implements ProxiedPlayer
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
                          sendMessage( bungee.getTranslation( "fallback_lobby" ) );
@@ -109,5 +109,5 @@ index c8d5648c..7e36c0eb 100644
                      {
                          disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 -- 
-2.44.0
+2.47.0
 
