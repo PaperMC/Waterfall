@@ -1,4 +1,4 @@
-From e940da46ebd2e126da2b76a536e8ef77b206eb54 Mon Sep 17 00:00:00 2001
+From e9d1882ff4461d7b04050b9d356aa7c4e40faf69 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,10 +123,10 @@ index 661c6563..cc5afa04 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index df160672..a84f9b12 100644
+index 05116ba0..dd215795 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -821,4 +821,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -835,4 +835,9 @@ public final class UserConnection implements ProxiedPlayer
  
          unsafe().sendPacket( new Transfer( host, port ) );
      }
@@ -157,7 +157,7 @@ index a9258264..da3db022 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 699bbe3a..0f9f5957 100644
+index fab7e9b9..84a090b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -172,7 +172,7 @@ index 699bbe3a..0f9f5957 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -307,7 +312,13 @@ public abstract class EntityMap
+@@ -309,7 +314,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:
@@ -225,5 +225,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.47.0
+2.47.1
 
