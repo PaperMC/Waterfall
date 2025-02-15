@@ -1,4 +1,4 @@
-From 889170a92f467a92095efe6d8f15d227ebd1d3dc Mon Sep 17 00:00:00 2001
+From 2a42041359912935f510ee82042fa012b563e60a Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Tue, 22 Mar 2022 14:56:44 +0000
 Subject: [PATCH] Don't send exceptions to the client during kicks, etc
@@ -13,10 +13,10 @@ allows for retaining much of the overall context here, i.e. who
 was this exception assocated with?
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d1089058..7262a514 100644
+index ac84a398..8c8fc7a6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -444,7 +444,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -432,7 +432,8 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
@@ -27,5 +27,5 @@ index d1089058..7262a514 100644
  
      @Override
 -- 
-2.47.1
+2.47.1.windows.2
 

@@ -1,4 +1,4 @@
-From 757eca1274c57f81da94d49198a6d1edbace28b0 Mon Sep 17 00:00:00 2001
+From a204830b43b25aba3b17bbe1ef99802d1a9a3229 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 16 Apr 2021 06:29:28 +0100
 Subject: [PATCH] ServerConnectRequest#sendFeedback
@@ -31,10 +31,10 @@ index c81b0a4e..d21370be 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index dd215795..d1089058 100644
+index e5d06305..ac84a398 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -312,12 +312,16 @@ public final class UserConnection implements ProxiedPlayer
+@@ -308,12 +308,16 @@ public final class UserConnection implements ProxiedPlayer
          connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
      }
  
@@ -53,7 +53,7 @@ index dd215795..d1089058 100644
          builder.connectTimeout(timeout); // Waterfall
          if ( callback != null )
          {
-@@ -366,7 +370,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -362,7 +366,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
  
@@ -62,7 +62,7 @@ index dd215795..d1089058 100644
              return;
          }
          if ( pendingConnects.contains( target ) )
-@@ -376,7 +380,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -372,7 +376,7 @@ public final class UserConnection implements ProxiedPlayer
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
  
@@ -71,7 +71,7 @@ index dd215795..d1089058 100644
              return;
          }
  
-@@ -412,14 +416,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -397,14 +401,14 @@ public final class UserConnection implements ProxiedPlayer
                      ServerInfo def = updateAndGetNextServer( target );
                      if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                      {
@@ -87,8 +87,8 @@ index dd215795..d1089058 100644
 -                        sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
 +                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
                      }
-                 }
-             }
+                 } else
+                 {
 -- 
-2.47.1
+2.47.1.windows.2
 

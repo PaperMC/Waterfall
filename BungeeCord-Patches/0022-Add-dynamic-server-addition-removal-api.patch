@@ -1,4 +1,4 @@
-From 578c03f455937272ca3acd2a7dac0bdbbd125412 Mon Sep 17 00:00:00 2001
+From cd4dc36e5aae4fdb8748598057b5d3a1370c6a30 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -109,10 +109,10 @@ index b6845bc4..edbae4ea 100644
       * Does the server authenticate with Mojang.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1f330bd2..a4011335 100644
+index cab7fa04..65d1d1d0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -96,9 +96,25 @@ public abstract class ProxyServer
+@@ -97,9 +97,25 @@ public abstract class ProxyServer
       * return a fresh map each time.
       *
       * @return all registered remote server destinations
@@ -170,10 +170,10 @@ index 59c104d3..698b420f 100644
              private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 3501a4e9..5a3acccf 100644
+index 33390578..31707782 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -667,10 +667,18 @@ public class BungeeCord extends ProxyServer
+@@ -683,10 +683,18 @@ public class BungeeCord extends ProxyServer
          return config.getServers();
      }
  
@@ -194,7 +194,7 @@ index 3501a4e9..5a3acccf 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index fea0ec61..37abb3c4 100644
+index 9e81fc6b..52b79ff5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 @@ -1,6 +1,7 @@
@@ -221,15 +221,15 @@ index fea0ec61..37abb3c4 100644
      /**
       * Set of all servers.
       */
-@@ -73,6 +76,7 @@ public abstract class Configuration implements ProxyConfig
-     private boolean forgeSupport;
-     private boolean rejectTransfers;
+@@ -75,6 +78,7 @@ public abstract class Configuration implements ProxyConfig
+     private int maxPacketsPerSecond = 1 << 12;
+     private int maxPacketDataPerSecond = 1 << 25;
  
 +    @Synchronized("serversLock") // Waterfall
      public void load()
      {
          ConfigurationAdapter adapter = ProxyServer.getInstance().getConfigurationAdapter();
-@@ -121,7 +125,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -125,7 +129,7 @@ public abstract class Configuration implements ProxyConfig
              servers = new CaseInsensitiveMap<>( newServers );
          } else
          {
@@ -238,7 +238,7 @@ index fea0ec61..37abb3c4 100644
  
              for ( ServerInfo oldServer : oldServers.values() )
              {
-@@ -184,4 +188,71 @@ public abstract class Configuration implements ProxyConfig
+@@ -188,4 +192,71 @@ public abstract class Configuration implements ProxyConfig
      {
          return favicon;
      }
@@ -311,5 +311,5 @@ index fea0ec61..37abb3c4 100644
 +    // Waterfall end
  }
 -- 
-2.44.0
+2.47.1.windows.2
 

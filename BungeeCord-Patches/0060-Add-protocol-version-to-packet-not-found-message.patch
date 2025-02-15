@@ -1,4 +1,4 @@
-From 1f9e69b8ef64b3ecd7ac64ac61bef3486f6b9545 Mon Sep 17 00:00:00 2001
+From 42cfa4612ea585b80ff43f1b10e95b501521d7fa Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 12 Jun 2022 06:45:54 +0100
 Subject: [PATCH] Add protocol version to packet not found message
@@ -6,7 +6,7 @@ Subject: [PATCH] Add protocol version to packet not found message
 Also avoids a double get, but, this is probably trivial
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 7a26c419..f84bfab8 100644
+index 34be8c00..b4b6f25e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -2,6 +2,8 @@ package net.md_5.bungee.protocol;
@@ -18,7 +18,7 @@ index 7a26c419..f84bfab8 100644
  import gnu.trove.map.TIntObjectMap;
  import gnu.trove.map.TObjectIntMap;
  import gnu.trove.map.hash.TIntObjectHashMap;
-@@ -998,9 +1000,12 @@ public enum Protocol
+@@ -1028,9 +1030,12 @@ public enum Protocol
              {
                  throw new BadPacketException( "Unsupported protocol version" );
              }
@@ -34,5 +34,5 @@ index 7a26c419..f84bfab8 100644
      }
  }
 -- 
-2.47.0
+2.47.1.windows.2
 
