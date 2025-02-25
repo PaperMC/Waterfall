@@ -1,4 +1,4 @@
-From b212fd1b0a9b781f13e21b4c1e9c0432640baaf1 Mon Sep 17 00:00:00 2001
+From 2dc230ec020d7ca2631a74149e6aea7bb3ce0509 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -6,7 +6,7 @@ Subject: [PATCH] Don't access a ByteBuf's underlying array
 It returns the underlying array storage, and does *not* return a view of the buffer as an array
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
-index 70b292f0..91f71c09 100644
+index 1a7d8512..ad1704dd 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
@@ -17,19 +17,20 @@ index 70b292f0..91f71c09 100644
  import java.io.ByteArrayInputStream;
  import java.io.DataInput;
  import java.io.DataInputStream;
-@@ -47,10 +48,23 @@ public class PluginMessage extends DefinedPacket
+@@ -49,10 +50,25 @@ public class PluginMessage extends DefinedPacket
              return "legacy:" + tag.toLowerCase( Locale.ROOT );
          }
      };
 -    //
 +
+     private String tag;
+     private byte[] data;
+ 
++    // Waterfall start
 +    public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
 +        this(tag, ByteBufUtil.getBytes(data), allowExtendedPacket);
 +    }
 +
-     private String tag;
-     private byte[] data;
- 
 +    public void setData(byte[] data) {
 +        this.data = Preconditions.checkNotNull(data, "Null data");
 +    }
@@ -38,15 +39,16 @@ index 70b292f0..91f71c09 100644
 +        Preconditions.checkNotNull(buf, "Null buffer");
 +        setData(ByteBufUtil.getBytes(buf));
 +    }
++    // Waterfall end
 +
      /**
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index b58a01c6..c7637608 100644
+index 8f52c50e..33c2c8ab 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -286,7 +286,7 @@ public class ServerConnector extends PacketHandler
+@@ -287,7 +287,7 @@ public class ServerConnector extends PacketHandler
  
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                  DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -56,10 +58,10 @@ index b58a01c6..c7637608 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d518d05f..21019091 100644
+index 64e9a764..f5b3f7a8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -325,7 +325,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -328,7 +328,7 @@ public class DownstreamBridge extends PacketHandler
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();
              DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
@@ -69,18 +71,18 @@ index d518d05f..21019091 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2446f489..380b6012 100644
+index 2934cdef..91c1fbdb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -55,7 +55,7 @@ import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+@@ -55,7 +55,7 @@ import net.md_5.bungee.util.PacketLimiter;
  public class PipelineUtils
  {
  
 -    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.valueOf( "ListerInfo" );
 +    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance( "ListerInfo" );
-     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
+ 
+     private static void setChannelInitializerHolders()
      {
-         @Override
 -- 
-2.47.0
+2.47.1.windows.2
 

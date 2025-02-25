@@ -1,4 +1,4 @@
-From 7ca84aa25ab2893196de3618e12e381729564243 Mon Sep 17 00:00:00 2001
+From 66fd24d779f736f3bf164336db6f434bc3d6e5f9 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -19,10 +19,10 @@ index e2221010..4dde7257 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index f84bfab8..fb239f75 100644
+index b4b6f25e..dce064d7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -586,6 +586,13 @@ public enum Protocol
+@@ -614,6 +614,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 ),
                      map( ProtocolConstants.MINECRAFT_1_21_2, 0x07 )
              );
@@ -90,7 +90,7 @@ index 33c838f9..f259ee91 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e61fcc88..e7f1be2f 100644
+index ba0ef69d..3aa97849 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -198,16 +198,22 @@ public class UpstreamBridge extends PacketHandler
@@ -133,5 +133,5 @@ index e61fcc88..e7f1be2f 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.47.1
+2.47.1.windows.2
 

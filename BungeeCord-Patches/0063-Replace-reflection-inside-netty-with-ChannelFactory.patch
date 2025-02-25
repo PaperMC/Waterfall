@@ -1,4 +1,4 @@
-From 204a28fabe424bb120b2c9c46adb0760ab10e5cf Mon Sep 17 00:00:00 2001
+From a2c2ea6ec72b2dfd0dac26da6afabd28658b0c3b Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,10 +6,10 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b4e101ac..9b93d2c3 100644
+index 27988fd5..2222791d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -361,7 +361,7 @@ public class BungeeCord extends ProxyServer
+@@ -377,7 +377,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -17,9 +17,9 @@ index b4e101ac..9b93d2c3 100644
 +                    .channelFactory( PipelineUtils.getServerChannelFactory( info.getSocketAddress() ) ) // Waterfall - netty reflection -> factory
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
-                     .childHandler( PipelineUtils.SERVER_CHILD )
+                     .childHandler( unsafe().getFrontendChannelInitializer().getChannelInitializer() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 377df7ec..8f531f85 100644
+index 0d24f1eb..0ce7b343 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -184,7 +184,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -29,20 +29,20 @@ index 377df7ec..8f531f85 100644
 -                .channel( PipelineUtils.getChannel( socketAddress ) )
 +                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // Waterfall - netty reflection -> factory
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
-                 .handler( PipelineUtils.BASE_SERVERSIDE )
+                 .handler( ProxyServer.getInstance().unsafe().getServerInfoChannelInitializer().getChannelInitializer() )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7262a514..ecfce56e 100644
+index 8c8fc7a6..867c4d4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -429,7 +429,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -417,7 +417,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
 -                .channel( PipelineUtils.getChannel( target.getAddress() ) )
 +                .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) ) // Waterfall - netty reflection -> factory
                  .group( ch.getHandle().eventLoop() )
-                 .handler( initializer )
+                 .handler( bungee.unsafe().getBackendChannelInitializer().getChannelInitializer() )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 index 37337429..c3683c30 100644
@@ -69,18 +69,19 @@ index 37337429..c3683c30 100644
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 75d2bd0e..37e37aaf 100644
+index 15f853a5..b318deab 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
+@@ -5,6 +5,8 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
  import io.netty.buffer.PooledByteBufAllocator;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelException;
 +import io.netty.channel.ChannelFactory;
- import io.netty.channel.ChannelInitializer;
++import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
-@@ -124,6 +125,12 @@ public class PipelineUtils
+ import io.netty.channel.ServerChannel;
+@@ -146,6 +148,12 @@ public class PipelineUtils
  
      private static boolean epoll;
      private static boolean io_uring;
@@ -93,10 +94,10 @@ index 75d2bd0e..37e37aaf 100644
  
      static
      {
-@@ -154,6 +161,12 @@ public class PipelineUtils
-                 }
-             }
+@@ -178,6 +186,12 @@ public class PipelineUtils
          }
+ 
+         setChannelInitializerHolders();
 +        // Waterfall start: netty reflection -> factory
 +        serverChannelFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
 +        serverChannelDomainFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerDomainSocketChannel::new : null;
@@ -106,7 +107,7 @@ index 75d2bd0e..37e37aaf 100644
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -185,6 +198,34 @@ public class PipelineUtils
+@@ -209,6 +223,34 @@ public class PipelineUtils
          return io_uring ? IOUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
@@ -142,5 +143,5 @@ index 75d2bd0e..37e37aaf 100644
      {
          return io_uring ? IOUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
-2.47.1
+2.47.1.windows.2
 

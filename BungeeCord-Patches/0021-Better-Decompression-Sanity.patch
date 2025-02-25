@@ -1,4 +1,4 @@
-From f5e7fcd4863418a7b0359249106b0c2587c90e75 Mon Sep 17 00:00:00 2001
+From fe053c35a3ec0f28a3a3d3db36e307aa3838f6a2 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Fri, 18 Mar 2016 10:53:24 -0700
 Subject: [PATCH] Better Decompression Sanity
@@ -6,7 +6,7 @@ Subject: [PATCH] Better Decompression Sanity
 Fixes #40
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-index 445ee947..eaedf4bc 100644
+index 1612ffcf..7fa07031 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 +++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 @@ -1,5 +1,7 @@
@@ -17,25 +17,29 @@ index 445ee947..eaedf4bc 100644
  import com.google.common.base.Preconditions;
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
-@@ -8,9 +10,11 @@ import java.util.List;
- import net.md_5.bungee.jni.zlib.BungeeZlib;
+@@ -9,10 +11,12 @@ import net.md_5.bungee.jni.zlib.BungeeZlib;
  import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.OverflowPacketException;
  
 +@RequiredArgsConstructor
  public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
  {
  
+     private static final int MAX_DECOMPRESSED_LEN = 1 << 23;
 +    private final int compressionThreshold;
      private final BungeeZlib zlib = CompressFactory.zlib.newInstance();
  
      @Override
-@@ -34,12 +38,13 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
-             out.add( in.retain() );
-         } else
-         {
+@@ -40,14 +44,15 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+             {
+                 throw new OverflowPacketException( "Packet may not be larger than " + MAX_DECOMPRESSED_LEN + " bytes" );
+             }
+-
++            
 +            Preconditions.checkArgument( size >= compressionThreshold, "Decompressed size %s less than compression threshold %s", size, compressionThreshold);
-             ByteBuf decompressed = ctx.alloc().directBuffer();
- 
+             // Do not use size as max capacity, as its possible that the entity rewriter increases the size afterwards
+             // This would result in a kick (it happens rarely as the entity ids size must differ)
+             ByteBuf decompressed = ctx.alloc().directBuffer( size, MAX_DECOMPRESSED_LEN );
              try
              {
                  zlib.process( in, decompressed );
@@ -45,18 +49,18 @@ index 445ee947..eaedf4bc 100644
                  out.add( decompressed );
                  decompressed = null;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index a15ba5df..032b06d4 100644
+index a3c6c8c4..909941d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -194,7 +194,7 @@ public class ChannelWrapper
+@@ -190,7 +190,7 @@ public class ChannelWrapper
  
-         if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold >= 0 )
-         {
--            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor() );
-+            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-         }
-         if ( compressionThreshold < 0 )
+             if ( decompressor == null )
+             {
+-                addBefore( PipelineUtils.PACKET_DECODER, "decompress", decompressor = new PacketDecompressor() );
++                addBefore( PipelineUtils.PACKET_DECODER, "decompress", decompressor = new PacketDecompressor(compressionThreshold) );
+             }
+         } else
          {
 -- 
-2.47.1
+2.47.1.windows.2
 
