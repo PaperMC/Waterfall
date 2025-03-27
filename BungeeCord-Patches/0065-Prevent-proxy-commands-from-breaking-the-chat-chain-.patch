@@ -1,4 +1,4 @@
-From 66fd24d779f736f3bf164336db6f434bc3d6e5f9 Mon Sep 17 00:00:00 2001
+From e162151ab133b64201819158705898b6660f7136 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -76,10 +76,10 @@ index 00000000..08ecf2a3
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-index 33c838f9..f259ee91 100644
+index f86fcd08..40df53fe 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
+@@ -119,4 +119,9 @@ public class ClientCommand extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -90,7 +90,7 @@ index 33c838f9..f259ee91 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index ba0ef69d..3aa97849 100644
+index a6176702..3e583f51 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -198,16 +198,22 @@ public class UpstreamBridge extends PacketHandler
@@ -133,5 +133,5 @@ index ba0ef69d..3aa97849 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.47.1.windows.2
+2.49.0
 

@@ -1,15 +1,15 @@
-From 8aed57d499a9973c0aed1ef0c2d1d14cff8c8d6e Mon Sep 17 00:00:00 2001
+From 14c1e03ec539868d8ddc65ef39c577ffbb9c27fc Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 19 Jun 2022 10:31:51 +0100
 Subject: [PATCH] Expand packet-decode-logging usage
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index a73a29c7..0e2b0172 100644
+index 684654d2..925cc346 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -178,6 +178,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
-                     ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - read timed out", handler );
+@@ -182,6 +182,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                     ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - write timed out", handler );
                  } else if ( cause instanceof DecoderException )
                  {
 +                    // Waterfall start
@@ -24,5 +24,5 @@ index a73a29c7..0e2b0172 100644
                      {
                          ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - corrupted frame: {1}", new Object[]
 -- 
-2.47.1.windows.2
+2.49.0
 

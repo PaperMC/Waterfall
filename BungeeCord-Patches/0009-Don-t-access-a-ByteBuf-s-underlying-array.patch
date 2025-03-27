@@ -1,4 +1,4 @@
-From 2dc230ec020d7ca2631a74149e6aea7bb3ce0509 Mon Sep 17 00:00:00 2001
+From e039f5f1fe9b20ef4c6946b2ce0b1bc55ea232a0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -71,10 +71,10 @@ index 64e9a764..f5b3f7a8 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2934cdef..91c1fbdb 100644
+index d9536149..9b7c15e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -55,7 +55,7 @@ import net.md_5.bungee.util.PacketLimiter;
+@@ -56,7 +56,7 @@ import net.md_5.bungee.util.PacketLimiter;
  public class PipelineUtils
  {
  
@@ -84,5 +84,5 @@ index 2934cdef..91c1fbdb 100644
      private static void setChannelInitializerHolders()
      {
 -- 
-2.47.1.windows.2
+2.49.0
 

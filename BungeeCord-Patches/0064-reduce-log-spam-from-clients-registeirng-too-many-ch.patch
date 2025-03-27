@@ -1,18 +1,20 @@
-From 32c5ed1673b4a9615a77bdc5c806622d45a36d38 Mon Sep 17 00:00:00 2001
+From 35620ec04456233dbe33f5f1397b9c8ed403c89e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 21 Apr 2023 15:32:33 +0100
 Subject: [PATCH] reduce log spam from clients registeirng too many channels
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b5cd0796..220f035e 100644
+index e18d288a..9ed724b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -196,7 +196,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     @Override
-     public void handle(PluginMessage pluginMessage) throws Exception
-     {
--        this.relayMessage( pluginMessage );
+@@ -199,6 +199,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         }
+     }
+ 
++    @Override
++    public void handle(PluginMessage pluginMessage) throws Exception
++    {
 +        // Waterfall start
 +        try {
 +            this.relayMessage(pluginMessage);
@@ -24,9 +26,11 @@ index b5cd0796..220f035e 100644
 +            }
 +        }
 +        // Waterfall end
-     }
- 
++    }
++
      @Override
+     public void handle(LegacyHandshake legacyHandshake) throws Exception
+     {
 -- 
-2.47.1.windows.2
+2.49.0
 

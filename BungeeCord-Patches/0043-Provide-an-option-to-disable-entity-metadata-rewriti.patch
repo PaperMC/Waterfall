@@ -1,4 +1,4 @@
-From a2919077766da5737ed63f8231f4f979f1bce3a9 Mon Sep 17 00:00:00 2001
+From 1474f598740d2d15dcb97b96f9a395e5fed00a24 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,10 +123,10 @@ index 6d0ab7bd..0b82fee9 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7eda8f16..e5d06305 100644
+index f68041db..372b95e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -823,4 +823,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -837,4 +837,9 @@ public final class UserConnection implements ProxiedPlayer
  
          unsafe().sendPacket( new Transfer( host, port ) );
      }
@@ -225,5 +225,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.47.1.windows.2
+2.49.0
 
