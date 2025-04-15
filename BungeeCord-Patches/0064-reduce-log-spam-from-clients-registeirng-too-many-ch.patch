@@ -1,14 +1,14 @@
-From 35620ec04456233dbe33f5f1397b9c8ed403c89e Mon Sep 17 00:00:00 2001
+From 7dd2e2bfd0339e12a2a8ea29240300de81b9ff10 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 21 Apr 2023 15:32:33 +0100
 Subject: [PATCH] reduce log spam from clients registeirng too many channels
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e18d288a..9ed724b7 100644
+index ab2b55f3..a2686cfa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -199,6 +199,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -198,6 +198,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          }
      }
  
@@ -32,5 +32,5 @@ index e18d288a..9ed724b7 100644
      public void handle(LegacyHandshake legacyHandshake) throws Exception
      {
 -- 
-2.49.0
+2.43.0
 

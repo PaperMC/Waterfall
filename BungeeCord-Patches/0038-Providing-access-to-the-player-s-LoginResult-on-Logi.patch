@@ -1,4 +1,4 @@
-From 7ce1a6b01a3f10e6d2a288b1dfd6c894d7a076fa Mon Sep 17 00:00:00 2001
+From 06a2a952654fa201c0d9faebedc250ee25ba919b Mon Sep 17 00:00:00 2001
 From: phenomax <phenomax@revayd.net>
 Date: Thu, 10 Aug 2017 18:41:17 +0200
 Subject: [PATCH] Providing access to the player's LoginResult on LoginEvent
@@ -51,10 +51,10 @@ similarity index 100%
 rename from proxy/src/main/java/net/md_5/bungee/connection/LoginResult.java
 rename to api/src/main/java/net/md_5/bungee/connection/LoginResult.java
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c86121d5..2ad70524 100644
+index 041c3103..1e615fa7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -48,6 +48,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
+@@ -47,6 +47,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
  import net.md_5.bungee.api.event.PreLoginEvent;
  import net.md_5.bungee.api.event.ProxyPingEvent;
  import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -62,7 +62,7 @@ index c86121d5..2ad70524 100644
  import net.md_5.bungee.http.HttpClient;
  import net.md_5.bungee.jni.cipher.BungeeCipher;
  import net.md_5.bungee.netty.ChannelWrapper;
-@@ -631,7 +632,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -630,7 +631,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          };
  
          // fire login event
@@ -72,5 +72,5 @@ index c86121d5..2ad70524 100644
  
      private void finish2()
 -- 
-2.47.1.windows.2
+2.43.0
 

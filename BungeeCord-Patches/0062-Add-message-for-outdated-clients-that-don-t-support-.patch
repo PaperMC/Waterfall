@@ -1,4 +1,4 @@
-From e3f93f26ca1b3177cefe5f013bf8d6ec0b8c5416 Mon Sep 17 00:00:00 2001
+From fb5662cec36f3364f4a7cb07599efcc63bb156dd Mon Sep 17 00:00:00 2001
 From: Aurora <aurora@relanet.eu>
 Date: Mon, 18 Jul 2022 15:56:05 +0200
 Subject: [PATCH] Add message for outdated clients that don't support secure
@@ -8,10 +8,10 @@ Clients before 1.19 don't support secure profiles, but since secure profiles is 
 things checked those outdated clients didn't get a useful message telling them to update.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 93952044..b5cd0796 100644
+index f741e7ed..ab2b55f3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -440,6 +440,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -439,6 +439,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
          if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
          {
@@ -32,5 +32,5 @@ index c0a41fb0..94254c9a 100644
  error_occurred_player=\u00a7cAn error occurred while parsing your message. (Hover for details)
  error_occurred_console=\u00a7cAn error occurred while parsing your message: {0}
 -- 
-2.47.1.windows.2
+2.43.0
 

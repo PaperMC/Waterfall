@@ -1,14 +1,14 @@
-From 0af7f17e15751b88ef2d2aa512e98c2b9989ba34 Mon Sep 17 00:00:00 2001
+From 5ca0009820e5aa93201bd9df7b4f15b57067ffc6 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 30564c2a..e7f5e598 100644
+index 5e43f8d7..db0b5a10 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -309,8 +309,6 @@ public class BungeeCord extends ProxyServer
+@@ -283,8 +283,6 @@ public class BungeeCord extends ProxyServer
              registerChannel( ForgeConstants.FML_TAG );
              registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
              registerChannel( ForgeConstants.FORGE_REGISTER );
@@ -34,5 +34,5 @@ index 52b79ff5..8a03a0ce 100644
      @Synchronized("serversLock") // Waterfall
      public void load()
 -- 
-2.47.1.windows.2
+2.43.0
 

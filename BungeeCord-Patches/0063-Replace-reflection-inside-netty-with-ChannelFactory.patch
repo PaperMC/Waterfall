@@ -1,4 +1,4 @@
-From eeb994b286298b69154248c713ad17d1902cf224 Mon Sep 17 00:00:00 2001
+From 2861c897437c561280228134d099f49fa328f293 Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,10 +6,10 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 27988fd5..2222791d 100644
+index bdd8565c..4dbf3df9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -377,7 +377,7 @@ public class BungeeCord extends ProxyServer
+@@ -351,7 +351,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -32,10 +32,10 @@ index 0d24f1eb..0ce7b343 100644
                  .handler( ProxyServer.getInstance().unsafe().getServerInfoChannelInitializer().getChannelInitializer() )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0249dc52..ea53cf42 100644
+index 57883143..971593f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -431,7 +431,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -435,7 +435,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -69,7 +69,7 @@ index 37337429..c3683c30 100644
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index b8b4b23c..1899bd75 100644
+index bd40e88c..850d4c4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -5,6 +5,8 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
@@ -80,8 +80,8 @@ index b8b4b23c..1899bd75 100644
 +import io.netty.channel.ChannelInitializer;
  import io.netty.channel.ChannelOption;
  import io.netty.channel.EventLoopGroup;
- import io.netty.channel.ServerChannel;
-@@ -148,6 +150,12 @@ public class PipelineUtils
+ import io.netty.channel.MultiThreadIoEventLoopGroup;
+@@ -149,6 +151,12 @@ public class PipelineUtils
  
      private static boolean epoll;
      private static boolean io_uring;
@@ -94,21 +94,21 @@ index b8b4b23c..1899bd75 100644
  
      static
      {
-@@ -180,6 +188,12 @@ public class PipelineUtils
+@@ -182,6 +190,12 @@ public class PipelineUtils
          }
  
          setChannelInitializerHolders();
 +        // Waterfall start: netty reflection -> factory
-+        serverChannelFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
-+        serverChannelDomainFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerDomainSocketChannel::new : null;
-+        channelFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollSocketChannel::new : NioSocketChannel::new;
-+        channelDomainFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollDomainSocketChannel::new : null;
++        serverChannelFactory = io_uring ? IoUringServerSocketChannel::new : epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
++        serverChannelDomainFactory = io_uring ? IoUringServerSocketChannel::new : epoll ? EpollServerDomainSocketChannel::new : null;
++        channelFactory = io_uring ? IoUringServerSocketChannel::new : epoll ? EpollSocketChannel::new : NioSocketChannel::new;
++        channelDomainFactory = io_uring ? IoUringServerSocketChannel::new : epoll ? EpollDomainSocketChannel::new : null;
 +        // Waterfall end
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -211,6 +225,34 @@ public class PipelineUtils
-         return io_uring ? IOUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
+@@ -213,6 +227,34 @@ public class PipelineUtils
+         return io_uring ? IoUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
 +    // Waterfall start: netty reflection -> factory
@@ -141,7 +141,7 @@ index b8b4b23c..1899bd75 100644
 +
      public static Class<? extends DatagramChannel> getDatagramChannel()
      {
-         return io_uring ? IOUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
+         return io_uring ? IoUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
 -- 
-2.49.0
+2.43.0
 

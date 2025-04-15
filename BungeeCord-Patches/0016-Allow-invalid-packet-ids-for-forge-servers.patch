@@ -1,4 +1,4 @@
-From d4f939d0362bfedb493701c2e60355a08d8004f3 Mon Sep 17 00:00:00 2001
+From caf1b27027c4eb875155e55696002d7fde32b7f0 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -66,10 +66,10 @@ index 40fdb868..34be8c00 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 86b4b8ed..1af6d465 100644
+index c0487684..2b9487dc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -244,6 +244,12 @@ public class ServerConnector extends PacketHandler
+@@ -243,6 +243,12 @@ public class ServerConnector extends PacketHandler
      public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception
      {
          ServerConnectedEvent event = new ServerConnectedEvent( user, server );
@@ -100,5 +100,5 @@ index c8fdb2e9..1bf73fd2 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.47.1.windows.2
+2.43.0
 
