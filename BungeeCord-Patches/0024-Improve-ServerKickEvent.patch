@@ -1,4 +1,4 @@
-From a3e2e1537d0fdd51e62d084d64d67a2460ff813f Mon Sep 17 00:00:00 2001
+From 5496972137855bac826642df02a03a771d8bbb2a Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -81,10 +81,10 @@ index 26abaa80..44a73622 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index ea693300..3e211afa 100644
+index 080ca279..33808905 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -647,10 +647,14 @@ public class DownstreamBridge extends PacketHandler
+@@ -648,10 +648,14 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );

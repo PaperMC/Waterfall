@@ -1,4 +1,4 @@
-From a05c46decea7a601c5c42e4809a5ce4d94072a43 Mon Sep 17 00:00:00 2001
+From 008fa635f6dfb6fae278ff403f0770ec8fae6ae0 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -123,10 +123,10 @@ index 44a73622..8ae8a30b 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 95b82a05..fda671ec 100644
+index 2e3269a2..f6da8235 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -841,4 +841,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -846,4 +846,9 @@ public final class UserConnection implements ProxiedPlayer
  
          unsafe().sendPacket( new Transfer( host, port ) );
      }
@@ -137,10 +137,10 @@ index 95b82a05..fda671ec 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c649d034..d17a585d 100644
+index 4adb4b35..4fceb653 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -756,6 +756,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -757,6 +757,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
      {
@@ -148,7 +148,7 @@ index c649d034..d17a585d 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -767,6 +768,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -768,6 +769,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
@@ -157,7 +157,7 @@ index c649d034..d17a585d 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 1bf73fd2..243acba6 100644
+index 1a27d786..140430c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -172,7 +172,7 @@ index 1bf73fd2..243acba6 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -311,7 +316,13 @@ public abstract class EntityMap
+@@ -299,7 +304,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:

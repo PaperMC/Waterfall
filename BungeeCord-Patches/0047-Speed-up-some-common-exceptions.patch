@@ -1,4 +1,4 @@
-From 14637f321215334588abbeba6b9788d3429fed60 Mon Sep 17 00:00:00 2001
+From 808743c66a48638dbecfac56ed92fa4356466f7c Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -125,10 +125,10 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 655bcd46..52f76cd9 100644
+index 8941a575..7992143f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -80,7 +80,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -78,7 +78,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -172,10 +172,10 @@ index 237955ab..d0bd4d75 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 14bcf182..d7528262 100644
+index 31cdbe48..b8f1010e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -23,6 +23,8 @@ import javax.crypto.SecretKey;
+@@ -24,6 +24,8 @@ import javax.crypto.SecretKey;
  import lombok.AllArgsConstructor;
  import lombok.Data;
  import lombok.EqualsAndHashCode;
@@ -184,7 +184,7 @@ index 14bcf182..d7528262 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import lombok.ToString;
-@@ -510,6 +512,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -513,6 +515,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );

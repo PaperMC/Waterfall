@@ -1,4 +1,4 @@
-From caf1b27027c4eb875155e55696002d7fde32b7f0 Mon Sep 17 00:00:00 2001
+From 625b7cdf886ab66523854253f2292ea3c9784665 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -9,25 +9,28 @@ Vanilla servers still error on negative/invalid packets.
 Original issue: https://github.com/WaterfallMC/Waterfall-Old/issues/11
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index d79d5e5c..250e7620 100644
+index abcb53bb..1c21a330 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -18,6 +18,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-     private final boolean server;
+@@ -14,7 +14,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ 
+     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion)
+     {
+-        this( protocol, server, protocolVersion, shouldCopyBuffer( protocol, protocolVersion ) );
++        this( protocol, server, protocolVersion, shouldCopyBuffer( protocol, protocolVersion ), false );
+     }
+ 
+     @Getter
+@@ -23,6 +23,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
      @Setter
      private int protocolVersion;
+     private boolean copyBuffer;
 +    @Setter
 +    private boolean supportsForge = false;
-+
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
-+        this.protocol = protocol;
-+        this.server = server;
-+        this.protocolVersion = protocolVersion;
-+    }
  
      @Override
      protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
-@@ -36,7 +44,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -40,7 +42,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
          {
              int packetId = DefinedPacket.readVarInt( in );
  
@@ -83,10 +86,10 @@ index c0487684..2b9487dc 100644
  
          ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index c8fdb2e9..1bf73fd2 100644
+index eab5a947..1a27d786 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-@@ -349,6 +349,12 @@ public abstract class EntityMap
+@@ -337,6 +337,12 @@ public abstract class EntityMap
          int packetId = DefinedPacket.readVarInt( packet );
          int packetIdLength = packet.readerIndex() - readerIndex;
  
