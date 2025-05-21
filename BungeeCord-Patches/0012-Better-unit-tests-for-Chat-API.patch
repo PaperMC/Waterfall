@@ -1,13 +1,13 @@
-From 8f8e0123c0deaad1471e4681e747ad93045b9798 Mon Sep 17 00:00:00 2001
+From aa3aa65e98ed3e0d1cde0d586f3977dad98310ac Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 17:36:31 -0600
 Subject: [PATCH] Better unit tests for Chat API
 
 
-diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+diff --git a/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
 index 2d8233e6..276322a8 100644
---- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
-+++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+--- a/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
 @@ -673,6 +673,26 @@ public class ComponentsTest
          assertEquals( testClickEvent, extraGetter.apply( eventRetention, 1 ).getClickEvent() );
      }
@@ -35,10 +35,10 @@ index 2d8233e6..276322a8 100644
      @Test
      public void testLoopSimple()
      {
-diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+diff --git a/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 index 995c70f2..dd9f040d 100644
---- a/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
-+++ b/chat/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+--- a/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
++++ b/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
 @@ -48,4 +48,11 @@ public class TranslatableComponentTest
          assertEquals( "Buried Treasure Map", one_four_two.toPlainText() );
      }
@@ -52,5 +52,5 @@ index 995c70f2..dd9f040d 100644
 +    }
  }
 -- 
-2.45.1
+2.49.0
 

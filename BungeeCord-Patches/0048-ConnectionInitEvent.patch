@@ -1,4 +1,4 @@
-From 07b913d9d62815a76774307a887956ac5053f18e Mon Sep 17 00:00:00 2001
+From 57ca86d8f9e2fa2e04159224754e13e0abbae01e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 2 Dec 2019 11:35:17 +0000
 Subject: [PATCH] ConnectionInitEvent
@@ -67,23 +67,15 @@ index 00000000..6e79675f
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 77a458cc..b8b4b23c 100644
+index 9caf3b80..e79500f3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee.netty;
- 
- import com.google.common.base.Preconditions;
-+import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
- import io.netty.buffer.PooledByteBufAllocator;
- import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
-@@ -75,8 +76,23 @@ public class PipelineUtils
+@@ -75,8 +75,23 @@ public class PipelineUtils
              {
                  return false;
              }
 +            // Waterfall start - ConnectionInitEvent
-+            ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
++            io.github.waterfallmc.waterfall.event.ConnectionInitEvent connectionInitEvent = new io.github.waterfallmc.waterfall.event.ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
 +
 +            if (result.isCancelled()) {
 +                ch.close();
@@ -103,7 +95,7 @@ index 77a458cc..b8b4b23c 100644
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER_AND_COMPRESS, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-@@ -95,6 +111,10 @@ public class PipelineUtils
+@@ -95,6 +110,10 @@ public class PipelineUtils
              {
                  ch.pipeline().addFirst( new HAProxyMessageDecoder() );
              }

@@ -1,4 +1,4 @@
-From 1474f598740d2d15dcb97b96f9a395e5fed00a24 Mon Sep 17 00:00:00 2001
+From 6de78f5bf677eb08883a698904d296c6ba1e7b64 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6d0ab7bd..0b82fee9 100644
+index 101fc43c..8ffddb69 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -274,7 +274,8 @@ public class ServerConnector extends PacketHandler
+@@ -275,7 +275,8 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -70,7 +70,7 @@ index 6d0ab7bd..0b82fee9 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -329,6 +330,7 @@ public class ServerConnector extends PacketHandler
+@@ -330,6 +331,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -78,7 +78,7 @@ index 6d0ab7bd..0b82fee9 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective(
-@@ -352,6 +354,7 @@ public class ServerConnector extends PacketHandler
+@@ -353,6 +355,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -86,7 +86,7 @@ index 6d0ab7bd..0b82fee9 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -370,13 +373,34 @@ public class ServerConnector extends PacketHandler
+@@ -371,13 +374,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -123,13 +123,14 @@ index 6d0ab7bd..0b82fee9 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f68041db..372b95e1 100644
+index 75476b48..4c2b52e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -837,4 +837,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -866,4 +866,10 @@ public final class UserConnection implements ProxiedPlayer
  
-         unsafe().sendPacket( new Transfer( host, port ) );
+         unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
      }
++
 +    // Waterfall start
 +    public boolean isDisableEntityMetadataRewrite() {
 +        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
@@ -137,7 +138,7 @@ index f68041db..372b95e1 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9a12f002..7a24bacd 100644
+index 4adb4b35..4fceb653 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -757,6 +757,7 @@ public class DownstreamBridge extends PacketHandler
@@ -157,7 +158,7 @@ index 9a12f002..7a24bacd 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 1bf73fd2..243acba6 100644
+index 1a27d786..140430c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -172,7 +173,7 @@ index 1bf73fd2..243acba6 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -311,7 +316,13 @@ public abstract class EntityMap
+@@ -299,7 +304,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:

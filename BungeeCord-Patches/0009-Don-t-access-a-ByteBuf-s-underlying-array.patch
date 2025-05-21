@@ -1,4 +1,4 @@
-From e039f5f1fe9b20ef4c6946b2ce0b1bc55ea232a0 Mon Sep 17 00:00:00 2001
+From 9b4411fb749b8d86c943a31dd0a40c9a983e862b Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Tue, 3 May 2016 20:31:52 -0700
 Subject: [PATCH] Don't access a ByteBuf's underlying array
@@ -45,10 +45,10 @@ index 1a7d8512..ad1704dd 100644
       * Allow this packet to be sent as an "extended" packet.
       */
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8f52c50e..33c2c8ab 100644
+index 5583a1b3..3cd625b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -287,7 +287,7 @@ public class ServerConnector extends PacketHandler
+@@ -286,7 +286,7 @@ public class ServerConnector extends PacketHandler
  
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                  DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
@@ -58,7 +58,7 @@ index 8f52c50e..33c2c8ab 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 64e9a764..f5b3f7a8 100644
+index 71470345..32cd0219 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -328,7 +328,7 @@ public class DownstreamBridge extends PacketHandler
@@ -71,7 +71,7 @@ index 64e9a764..f5b3f7a8 100644
              // changes in the packet are ignored so we need to send it manually
              con.unsafe().sendPacket( pluginMessage );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index d9536149..9b7c15e1 100644
+index 0a916c04..cfbab43a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -56,7 +56,7 @@ import net.md_5.bungee.util.PacketLimiter;

@@ -1,11 +1,11 @@
-From 26e5efd5327231309bb9dcfc080e59baec9d6767 Mon Sep 17 00:00:00 2001
+From df2c8db33eaf3ba2bb5ba04fcf249f52b0152069 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 4 Aug 2016 19:30:49 -0700
 Subject: [PATCH] Dump the raw hex of a packet on a decoding error
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 250e7620..2207c3ff 100644
+index 0dd0fe31..f126c333 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,7 +1,9 @@
@@ -18,10 +18,10 @@ index 250e7620..2207c3ff 100644
  import io.netty.handler.codec.MessageToMessageDecoder;
  import java.util.List;
  import lombok.AllArgsConstructor;
-@@ -40,13 +42,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
-         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+@@ -41,13 +43,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
  
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+         ByteBuf slice = ( copyBuffer ) ? in.copy() : in.retainedSlice();
 +        Object packetTypeInfo = null;
          try
          {
@@ -35,7 +35,7 @@ index 250e7620..2207c3ff 100644
                  packet.read( in, protocol, prot.getDirection(), protocolVersion );
  
                  if ( in.isReadable() )
-@@ -60,6 +65,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -61,6 +66,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
  
              out.add( new PacketWrapper( packet, slice, protocol ) );
              slice = null;
@@ -53,5 +53,5 @@ index 250e7620..2207c3ff 100644
          {
              if ( slice != null )
 -- 
-2.44.0
+2.49.0
 

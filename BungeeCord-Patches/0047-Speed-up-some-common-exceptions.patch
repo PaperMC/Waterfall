@@ -1,4 +1,4 @@
-From fc02f71116d3d9cf2ff5e8a0b1f788aaf9cdbe6f Mon Sep 17 00:00:00 2001
+From b78e103bcfe464180c1874abb5d8c1b99bfeb0e6 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -59,10 +59,10 @@ index 6c0ef4df..076ddd70 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index c0940352..02d39adf 100644
+index b2a4729c..17490208 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -48,6 +48,9 @@ public abstract class DefinedPacket
+@@ -47,6 +47,9 @@ public abstract class DefinedPacket
          }
      }
  
@@ -72,7 +72,7 @@ index c0940352..02d39adf 100644
      public static void writeString(String s, ByteBuf buf)
      {
          writeString( s, buf, Short.MAX_VALUE );
-@@ -252,13 +255,18 @@ public abstract class DefinedPacket
+@@ -251,13 +254,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {
@@ -125,10 +125,10 @@ index 00000000..2583aa2c
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 655bcd46..52f76cd9 100644
+index 04c8315f..9136ac7c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -80,7 +80,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -81,7 +81,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -172,7 +172,7 @@ index 237955ab..d0bd4d75 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3fe70fd8..c52f9332 100644
+index 31cdbe48..b8f1010e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -24,6 +24,8 @@ import javax.crypto.SecretKey;
@@ -184,7 +184,7 @@ index 3fe70fd8..c52f9332 100644
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
  import lombok.ToString;
-@@ -511,6 +513,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -513,6 +515,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
  
          SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
@@ -221,5 +221,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.47.1.windows.2
+2.49.0
 

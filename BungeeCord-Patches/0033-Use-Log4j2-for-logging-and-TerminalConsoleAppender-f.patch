@@ -1,4 +1,4 @@
-From 481079a9825975abc8723a13b3a416db2c446bcd Mon Sep 17 00:00:00 2001
+From d284d4e48a1fd0832649be7730fdff1196bcf465 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 40c5073d..15c0adf2 100644
+index 9a8cec20..71bda913 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -39,7 +39,7 @@ index 40c5073d..15c0adf2 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..c145f8f2
+index 00000000..5a21bdad
 --- /dev/null
 +++ b/log4j/pom.xml
 @@ -0,0 +1,48 @@
@@ -50,13 +50,13 @@ index 00000000..c145f8f2
 +    <parent>
 +        <groupId>io.github.waterfallmc</groupId>
 +        <artifactId>waterfall-parent</artifactId>
-+        <version>1.21-R0.2-SNAPSHOT</version>
++        <version>1.21-R0.3-SNAPSHOT</version>
 +        <relativePath>../pom.xml</relativePath>
 +    </parent>
 +
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-log4j</artifactId>
-+    <version>1.21-R0.2-SNAPSHOT</version>
++    <version>1.21-R0.3-SNAPSHOT</version>
 +    <packaging>jar</packaging>
 +
 +    <name>Waterfall-Log4J</name>
@@ -233,12 +233,12 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 454eb788..f1105771 100644
+index 38c70297..178c235b 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -48,12 +48,13 @@
-         <module>chat</module>
+@@ -52,13 +52,14 @@
          <module>config</module>
+         <module>dialog</module>
          <module>event</module>
 -        <module>log</module>
 +        <!--<module>log</module>-->
@@ -247,13 +247,14 @@ index 454eb788..f1105771 100644
          <module>protocol</module>
          <module>proxy</module>
          <module>query</module>
+         <module>serializer</module>
 -        <module>slf4j</module>
 +        <!--<module>slf4j</module>-->
          <module>native</module>
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 84dbc9de..4e69cc18 100644
+index d5896858..fac2e818 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -83,7 +83,7 @@
@@ -362,7 +363,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 43dd0977..30564c2a 100644
+index 96ac8bec..5f2f7241 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -373,7 +374,7 @@ index 43dd0977..30564c2a 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -83,15 +82,11 @@ import net.md_5.bungee.command.CommandEnd;
+@@ -69,15 +68,11 @@ import net.md_5.bungee.command.CommandEnd;
  import net.md_5.bungee.command.CommandIP;
  import net.md_5.bungee.command.CommandPerms;
  import net.md_5.bungee.command.CommandReload;
@@ -389,7 +390,7 @@ index 43dd0977..30564c2a 100644
  import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
-@@ -101,8 +96,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -87,8 +82,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -398,7 +399,7 @@ index 43dd0977..30564c2a 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -162,8 +155,12 @@ public class BungeeCord extends ProxyServer
+@@ -148,8 +141,12 @@ public class BungeeCord extends ProxyServer
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
@@ -410,8 +411,8 @@ index 43dd0977..30564c2a 100644
 +    // Waterfall end
      @Getter
      private final Logger logger;
-     public final Gson gson = new GsonBuilder()
-@@ -223,6 +220,8 @@ public class BungeeCord extends ProxyServer
+     @Getter
+@@ -199,6 +196,8 @@ public class BungeeCord extends ProxyServer
          // BungeeCord. This version is only used when extracting the libraries to their temp folder.
          System.setProperty( "library.jansi.version", "BungeeCord" );
  
@@ -420,7 +421,7 @@ index 43dd0977..30564c2a 100644
          AnsiConsole.systemInstall();
          consoleReader = new ConsoleReader();
          consoleReader.setExpandEvents( false );
-@@ -247,6 +246,9 @@ public class BungeeCord extends ProxyServer
+@@ -223,6 +222,9 @@ public class BungeeCord extends ProxyServer
          // since it applies a nice looking format and also writes to the logfile.
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
@@ -430,7 +431,7 @@ index 43dd0977..30564c2a 100644
  
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
-@@ -523,10 +525,7 @@ public class BungeeCord extends ProxyServer
+@@ -525,10 +527,7 @@ public class BungeeCord extends ProxyServer
  
          getLogger().info( "Thank you and goodbye" );
          // Need to close loggers after last message!

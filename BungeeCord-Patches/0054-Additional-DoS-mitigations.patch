@@ -1,4 +1,4 @@
-From 1b3f507f9f6a92f47f6c174d57f23a516384ca03 Mon Sep 17 00:00:00 2001
+From a16cf48bb8e4fa7168a359aaff73a7ea5d00d6bb Mon Sep 17 00:00:00 2001
 From: "Five (Xer)" <admin@fivepb.me>
 Date: Sat, 30 Jan 2021 18:04:14 +0100
 Subject: [PATCH] Additional DoS mitigations
@@ -8,10 +8,10 @@ Courtesy of Tux and the Velocity Contributors. See:
 https://github.com/VelocityPowered/Velocity/commit/5ceac16a821ea35572ff11412ace8929fd06e278
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 02d39adf..769ca9df 100644
+index 17490208..7fa1a5e6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -92,6 +92,7 @@ public abstract class DefinedPacket
+@@ -91,6 +91,7 @@ public abstract class DefinedPacket
          int len = readVarInt( buf );
          if ( len > maxLen * 3 )
          {
@@ -19,7 +19,7 @@ index 02d39adf..769ca9df 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)" );
          }
  
-@@ -100,6 +101,7 @@ public abstract class DefinedPacket
+@@ -99,6 +100,7 @@ public abstract class DefinedPacket
  
          if ( s.length() > maxLen )
          {
@@ -27,7 +27,7 @@ index 02d39adf..769ca9df 100644
              throw new OverflowPacketException( "Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)" );
          }
  
-@@ -602,4 +604,21 @@ public abstract class DefinedPacket
+@@ -601,4 +603,21 @@ public abstract class DefinedPacket
  
      @Override
      public abstract String toString();
@@ -50,7 +50,7 @@ index 02d39adf..769ca9df 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 52f76cd9..3a4a735c 100644
+index 9136ac7c..15832a8c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -3,7 +3,7 @@ package net.md_5.bungee.protocol;
@@ -62,7 +62,7 @@ index 52f76cd9..3a4a735c 100644
  import io.netty.handler.codec.MessageToMessageDecoder;
  import java.util.List;
  import lombok.AllArgsConstructor;
-@@ -58,10 +58,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -59,10 +59,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              if ( packet != null )
              {
                  packetTypeInfo = packet.getClass();
@@ -79,7 +79,7 @@ index 52f76cd9..3a4a735c 100644
                      throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
                  }
              } else
-@@ -72,6 +78,25 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -73,6 +79,25 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              out.add( new PacketWrapper( packet, slice, protocol ) );
              slice = null;
          } catch (BadPacketException | IndexOutOfBoundsException e) {
@@ -105,7 +105,7 @@ index 52f76cd9..3a4a735c 100644
              final String packetTypeStr;
              if (packetTypeInfo instanceof Integer) {
                  packetTypeStr = "id " + Integer.toHexString((Integer) packetTypeInfo);
-@@ -81,6 +106,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -82,6 +107,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
                  packetTypeStr = "unknown";
              }
              throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
@@ -113,9 +113,9 @@ index 52f76cd9..3a4a735c 100644
          } finally
          {
              if ( slice != null )
-@@ -89,4 +115,52 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-             }
-         }
+@@ -103,4 +129,52 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         // EntityMap is removed for 1.20.2 and up
+         return protocol == Protocol.GAME && protocolVersion < ProtocolConstants.MINECRAFT_1_20_2;
      }
 +
 +    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
@@ -257,5 +257,5 @@ index 738f0c92..ec33d337 100644
 +    // Waterfall end
  }
 -- 
-2.47.1.windows.2
+2.49.0
 
