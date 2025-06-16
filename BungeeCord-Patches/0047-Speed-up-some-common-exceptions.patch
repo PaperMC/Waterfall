@@ -1,4 +1,4 @@
-From b78e103bcfe464180c1874abb5d8c1b99bfeb0e6 Mon Sep 17 00:00:00 2001
+From bcf08b07a7659d42df94a4160ee76b0af80e93dc Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -59,10 +59,10 @@ index 6c0ef4df..076ddd70 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index b2a4729c..17490208 100644
+index 0ee7b0de..267ebc40 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -47,6 +47,9 @@ public abstract class DefinedPacket
+@@ -48,6 +48,9 @@ public abstract class DefinedPacket
          }
      }
  
@@ -72,7 +72,7 @@ index b2a4729c..17490208 100644
      public static void writeString(String s, ByteBuf buf)
      {
          writeString( s, buf, Short.MAX_VALUE );
-@@ -251,13 +254,18 @@ public abstract class DefinedPacket
+@@ -250,13 +253,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {

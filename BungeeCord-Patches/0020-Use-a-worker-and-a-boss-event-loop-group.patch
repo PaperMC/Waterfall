@@ -1,4 +1,4 @@
-From 85a14bbe4e9527f89ef9479547f658d382c8548f Mon Sep 17 00:00:00 2001
+From 015c19ba298b0a1a3dabbcf2587c5923def393a6 Mon Sep 17 00:00:00 2001
 From: kamcio96 <k.nadworski@icloud.com>
 Date: Mon, 14 Mar 2016 16:07:20 -0700
 Subject: [PATCH] Use a worker and a boss event loop group.
@@ -8,7 +8,7 @@ Merges the rest of https://github.com/SpigotMC/BungeeCord/pull/1706 by @kamcio96
 This is proper practice for netty.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d7d15286..00c47d9a 100644
+index 139426bb..e69da6c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -109,7 +109,7 @@ public class BungeeCord extends ProxyServer
@@ -20,7 +20,7 @@ index d7d15286..00c47d9a 100644
      /**
       * locations.yml save thread.
       */
-@@ -291,7 +291,8 @@ public class BungeeCord extends ProxyServer
+@@ -277,7 +277,8 @@ public class BungeeCord extends ProxyServer
              System.setProperty( "io.netty.allocator.type", "pooled" );
          }
  
@@ -30,7 +30,7 @@ index d7d15286..00c47d9a 100644
  
          File moduleDirectory = new File( "modules" );
          moduleManager.load( this, moduleDirectory );
-@@ -380,7 +381,7 @@ public class BungeeCord extends ProxyServer
+@@ -366,7 +367,7 @@ public class BungeeCord extends ProxyServer
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( unsafe().getFrontendChannelInitializer().getChannelInitializer() )
@@ -39,7 +39,7 @@ index d7d15286..00c47d9a 100644
                      .localAddress( info.getSocketAddress() )
                      .bind().addListener( listener );
  
-@@ -403,7 +404,7 @@ public class BungeeCord extends ProxyServer
+@@ -389,7 +390,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -48,7 +48,7 @@ index d7d15286..00c47d9a 100644
              }
          }
      }
-@@ -512,12 +513,14 @@ public class BungeeCord extends ProxyServer
+@@ -496,12 +497,14 @@ public class BungeeCord extends ProxyServer
          }
  
          getLogger().info( "Closing IO threads" );

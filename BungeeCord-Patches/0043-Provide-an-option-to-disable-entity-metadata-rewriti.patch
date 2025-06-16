@@ -1,4 +1,4 @@
-From 6de78f5bf677eb08883a698904d296c6ba1e7b64 Mon Sep 17 00:00:00 2001
+From f4de5e0b119fffb6b768276424eb7b837f026b95 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,10 +57,10 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 101fc43c..8ffddb69 100644
+index 6603ce9a..7c6a2e65 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -275,7 +275,8 @@ public class ServerConnector extends PacketHandler
+@@ -276,7 +276,8 @@ public class ServerConnector extends PacketHandler
              ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
@@ -70,7 +70,7 @@ index 101fc43c..8ffddb69 100644
          {
              ch.write( user.getSettings() );
          }
-@@ -330,6 +331,7 @@ public class ServerConnector extends PacketHandler
+@@ -331,6 +332,7 @@ public class ServerConnector extends PacketHandler
              user.getTabListHandler().onServerChange();
  
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
@@ -78,7 +78,7 @@ index 101fc43c..8ffddb69 100644
              for ( Objective objective : serverScoreboard.getObjectives() )
              {
                  user.unsafe().sendPacket( new ScoreboardObjective(
-@@ -353,6 +355,7 @@ public class ServerConnector extends PacketHandler
+@@ -354,6 +356,7 @@ public class ServerConnector extends PacketHandler
              {
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
              }
@@ -86,7 +86,7 @@ index 101fc43c..8ffddb69 100644
              serverScoreboard.clear();
  
              for ( UUID bossbar : user.getSentBossBars() )
-@@ -371,13 +374,34 @@ public class ServerConnector extends PacketHandler
+@@ -372,13 +375,34 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -123,10 +123,10 @@ index 101fc43c..8ffddb69 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 75476b48..4c2b52e3 100644
+index a460d43a..146033d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -866,4 +866,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -873,4 +873,10 @@ public final class UserConnection implements ProxiedPlayer
  
          unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
      }
@@ -138,10 +138,10 @@ index 75476b48..4c2b52e3 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4adb4b35..4fceb653 100644
+index 2984b988..0227c0de 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -757,6 +757,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -758,6 +758,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
      {
@@ -149,7 +149,7 @@ index 4adb4b35..4fceb653 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -768,6 +769,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -769,6 +770,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
@@ -158,7 +158,7 @@ index 4adb4b35..4fceb653 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
-index 1a27d786..140430c9 100644
+index 26c1e1be..01a60130 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 @@ -27,6 +27,11 @@ public abstract class EntityMap
@@ -173,7 +173,7 @@ index 1a27d786..140430c9 100644
          switch ( version )
          {
              case ProtocolConstants.MINECRAFT_1_8:
-@@ -299,7 +304,13 @@ public abstract class EntityMap
+@@ -301,7 +306,13 @@ public abstract class EntityMap
                      DefinedPacket.readVarInt( packet );
                      break;
                  default:

@@ -1,4 +1,4 @@
-From 2bf7abb9ebc40d15e934aa076b27cbf421e5278e Mon Sep 17 00:00:00 2001
+From 0baa81646117e2cfdf18ff8077c942bbb0d32a5c Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Wed, 21 Dec 2016 03:13:03 -0500
 Subject: [PATCH] Optionally use async Netty DNS resolver
@@ -24,7 +24,7 @@ index 749059ab..6141128b 100644
  
      /**
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index be212472..1d2b4ec9 100644
+index 86b5c04b..d5896858 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -34,6 +34,18 @@
@@ -84,7 +84,7 @@ index 111404fb..ef44d334 100644
      public int getTabThrottle() {
          return tabThrottle;
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index e0c52f21..37337429 100644
+index 0bfcc94e..9756589e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -28,6 +28,10 @@ public class HttpClient
@@ -96,9 +96,9 @@ index e0c52f21..37337429 100644
 +            new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannel(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE);
 +    // Waterfall End
  
-     @SuppressWarnings("UnusedAssignment")
      public static void get(String url, EventLoop eventLoop, final Callback<String> callback)
-@@ -57,19 +61,21 @@ public class HttpClient
+     {
+@@ -56,19 +60,21 @@ public class HttpClient
              }
          }
  
@@ -133,7 +133,7 @@ index e0c52f21..37337429 100644
  
          ChannelFutureListener future = new ChannelFutureListener()
          {
-@@ -92,7 +98,40 @@ public class HttpClient
+@@ -91,7 +97,40 @@ public class HttpClient
              }
          };
  
@@ -175,5 +175,5 @@ index e0c52f21..37337429 100644
 +    // Waterfall End
  }
 -- 
-2.44.0
+2.49.0
 

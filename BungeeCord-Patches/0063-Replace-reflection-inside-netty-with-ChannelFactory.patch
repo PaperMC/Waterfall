@@ -1,4 +1,4 @@
-From c8e803589d0a78faa84135846ba4408f4e108674 Mon Sep 17 00:00:00 2001
+From 505f313b96481c4a701ea58b44d93bb10907167c Mon Sep 17 00:00:00 2001
 From: Janmm14 <gitconfig1@janmm14.de>
 Date: Mon, 21 Jun 2021 23:43:39 +0200
 Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
@@ -6,10 +6,10 @@ Subject: [PATCH] Replace reflection inside netty with ChannelFactory.
 Thanks for pointing it out @MrIvanPlays
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cedba3eb..a03c4128 100644
+index c097f58a..c30c2746 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -379,7 +379,7 @@ public class BungeeCord extends ProxyServer
+@@ -363,7 +363,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -32,10 +32,10 @@ index 0d24f1eb..0ce7b343 100644
                  .handler( ProxyServer.getInstance().unsafe().getServerInfoChannelInitializer().getChannelInitializer() )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 56b8a37b..d4e70cae 100644
+index aee3ac4d..53243b27 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -439,7 +439,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -446,7 +446,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -45,10 +45,10 @@ index 56b8a37b..d4e70cae 100644
                  .handler( bungee.unsafe().getBackendChannelInitializer().getChannelInitializer() )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 37337429..c3683c30 100644
+index 9756589e..d3881a3c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-@@ -111,7 +111,8 @@ public class HttpClient
+@@ -110,7 +110,8 @@ public class HttpClient
  
      private static void getWithNettyResolver(EventLoop eventLoop, URI uri, int port, ChannelFutureListener future, Callback<String> callback, boolean ssl) {
          java.net.InetSocketAddress address = java.net.InetSocketAddress.createUnresolved(uri.getHost(), port);
@@ -58,7 +58,7 @@ index 37337429..c3683c30 100644
                  option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).resolver(dnsResolverGroup).remoteAddress( address ).connect().addListener( future );
      }
  
-@@ -130,7 +131,8 @@ public class HttpClient
+@@ -129,7 +130,8 @@ public class HttpClient
              }
              addressCache.put( uri.getHost(), inetHost );
          }

@@ -1,4 +1,4 @@
-From bfc12af5afb0dd0155cbde38059d4f79b03f127b Mon Sep 17 00:00:00 2001
+From e27f25af06ddd099147d4b81150e0e9ee81f5d05 Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
@@ -64,10 +64,10 @@ index f3e2fd59..c73a235e 100755
  echo "Cleaning up"
  rm shared.o NativeCipherImpl.o NativeCompressImpl.o
 diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
-index 4426823c..b11b7a07 100644
+index 3432aa2c..86802af9 100644
 --- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
 +++ b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
-@@ -27,6 +27,7 @@ public final class NativeCode<T>
+@@ -29,6 +29,7 @@ public final class NativeCode<T>
  
      public NativeCode(String name, Supplier<? extends T> javaImpl, Supplier<? extends T> nativeImpl, boolean extendedSupportCheck)
      {
@@ -75,9 +75,9 @@ index 4426823c..b11b7a07 100644
          this.name = name;
          this.javaImpl = javaImpl;
          this.nativeImpl = nativeImpl;
-@@ -95,7 +96,7 @@ public final class NativeCode<T>
+@@ -121,7 +122,7 @@ public final class NativeCode<T>
  
-     public static boolean isSupported()
+     private static boolean isSupportedPlatformAndArch()
      {
 -        return "Linux".equals( System.getProperty( "os.name" ) ) && ( isAmd64() || isAarch64() );
 +        return ("Linux".equals( System.getProperty( "os.name" ) ) && ( isAmd64() || isAarch64() )) || ("Mac OS X".equals( System.getProperty( "os.name" ) ) && "aarch64".equals( System.getProperty( "os.arch" ) )); // Waterfall
@@ -900,5 +900,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.47.0
+2.49.0
 

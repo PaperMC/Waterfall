@@ -1,4 +1,4 @@
-From 611335839905b9500cc91f17dcea19626699764a Mon Sep 17 00:00:00 2001
+From 7f4cf9d71a59d41af45ac58137c0f9b7874a9b0f Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -18,10 +18,10 @@ index f1ccd4f6..d703d6d2 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fb92e1d4..0b9e43de 100644
+index 3576d6ae..3158dbfa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -184,7 +184,7 @@ public class BungeeCord extends ProxyServer
+@@ -183,7 +183,7 @@ public class BungeeCord extends ProxyServer
      public BungeeCord() throws IOException
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
@@ -30,7 +30,7 @@ index fb92e1d4..0b9e43de 100644
  
          reloadMessages();
  
-@@ -559,7 +559,7 @@ public class BungeeCord extends ProxyServer
+@@ -543,7 +543,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -40,10 +40,10 @@ index fb92e1d4..0b9e43de 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 7281d6b2..39fc55f9 100644
+index cec7fadb..4cc58a5d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -54,7 +54,7 @@ public class BungeeCordLauncher
+@@ -56,7 +56,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Warning, this build is outdated ***" );
@@ -52,7 +52,7 @@ index 7281d6b2..39fc55f9 100644
                  System.err.println( "*** You will get NO support regarding this build ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -63,7 +63,7 @@ public class BungeeCordLauncher
+@@ -65,7 +65,7 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
@@ -88,10 +88,10 @@ index efe048c9..720d0c3b 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 95781e33..18ecdee1 100644
+index 25ef7ff5..a08d4772 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -218,7 +218,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -217,7 +217,7 @@ public class YamlConfig implements ConfigurationAdapter
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );

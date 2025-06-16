@@ -1,4 +1,4 @@
-From 72d633293c09b127438728348973c189cf595b75 Mon Sep 17 00:00:00 2001
+From d1c5a19baa41f77f7447d3c0b851c7056b35e446 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -282,7 +282,7 @@ index 61ee9b45..eab7e89d 100644
 +    <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 37679ec1..e694ea92 100644
+index 8fa24a92..857e4f36 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,19 @@
@@ -562,8 +562,23 @@ index f87a1bea..cee9d672 100644
  
      <dependencies>
          <dependency>
+diff --git a/nbt/pom.xml b/nbt/pom.xml
+index 5c0a147a..9406625f 100644
+--- a/nbt/pom.xml
++++ b/nbt/pom.xml
+@@ -4,8 +4,8 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>net.md-5</groupId>
+-        <artifactId>bungeecord-parent</artifactId>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-parent</artifactId>
+         <version>1.21-R0.3-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
 diff --git a/pom.xml b/pom.xml
-index cb567025..2e93d585 100644
+index 57bac7e4..133066bd 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,18 @@
@@ -617,7 +632,7 @@ index cb567025..2e93d585 100644
          </developer>
      </developers>
  
-@@ -48,28 +63,24 @@
+@@ -49,28 +64,24 @@
      </modules>
  
      <scm>
@@ -656,7 +671,7 @@ index cb567025..2e93d585 100644
      </distributionManagement>
  
      <properties>
-@@ -130,7 +141,7 @@
+@@ -125,7 +136,7 @@
                  <plugin>
                      <groupId>org.apache.maven.plugins</groupId>
                      <artifactId>maven-javadoc-plugin</artifactId>
@@ -665,7 +680,7 @@ index cb567025..2e93d585 100644
                  </plugin>
              </plugins>
          </pluginManagement>
-@@ -151,12 +162,21 @@
+@@ -146,12 +157,21 @@
                      </execution>
                  </executions>
              </plugin>
@@ -687,7 +702,7 @@ index cb567025..2e93d585 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.6.0</version>
-@@ -181,6 +201,7 @@
+@@ -176,6 +196,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -695,7 +710,7 @@ index cb567025..2e93d585 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -302,6 +323,15 @@
+@@ -297,6 +318,15 @@
                                  </goals>
                              </execution>
                          </executions>
@@ -712,7 +727,7 @@ index cb567025..2e93d585 100644
                      <plugin>
                          <groupId>org.projectlombok</groupId>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 77e11507..5c032ca0 100644
+index 9d68f817..1c2192ff 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,19 @@
@@ -919,7 +934,7 @@ index 670eb6bc..ec3bb3bd 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
-index 68ba54d4..214ec769 100644
+index c3015e2e..be31f62e 100644
 --- a/slf4j/pom.xml
 +++ b/slf4j/pom.xml
 @@ -4,19 +4,19 @@

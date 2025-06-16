@@ -1,14 +1,14 @@
-From b7499b31758980986e6fb4c13dca00a647cc36b0 Mon Sep 17 00:00:00 2001
+From 11bb95a80371786abd74ea5f5cbd517e0c002ff1 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index a7323094..d7547a50 100644
+index 1f33a7ce..2a4dcadc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -302,5 +302,9 @@ public abstract class AbstractPacketHandler
+@@ -307,5 +307,9 @@ public abstract class AbstractPacketHandler
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
      }
@@ -19,10 +19,10 @@ index a7323094..d7547a50 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 8374a580..f0843ebc 100644
+index ecb421e0..2a7e504c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -630,6 +630,13 @@ public enum Protocol
+@@ -634,6 +634,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_21_2, 0x07 ),
                      map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 )
              );
@@ -90,10 +90,10 @@ index f86fcd08..40df53fe 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 98c80099..c2b9d0bf 100644
+index e416f753..264cb648 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -201,16 +201,22 @@ public class UpstreamBridge extends PacketHandler
+@@ -200,16 +200,22 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(ClientCommand command) throws Exception
      {
@@ -118,7 +118,7 @@ index 98c80099..c2b9d0bf 100644
      {
          for ( int index = 0, length = message.length(); index < length; index++ )
          {
-@@ -229,7 +235,13 @@ public class UpstreamBridge extends PacketHandler
+@@ -228,7 +234,13 @@ public class UpstreamBridge extends PacketHandler
              if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
              {
                  return message;
