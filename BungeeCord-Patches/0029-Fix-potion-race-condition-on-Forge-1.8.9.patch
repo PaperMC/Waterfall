@@ -1,14 +1,14 @@
-From 786d670574b0fa2264e313cb849362d425b9b554 Mon Sep 17 00:00:00 2001
+From d085442a1209e25e7b9b2773b0d8845a21971df7 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 86088656..aaf70d03 100644
+index 93e3aaed..46f568b3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -303,4 +303,14 @@ public abstract class AbstractPacketHandler
+@@ -298,4 +298,14 @@ public abstract class AbstractPacketHandler
      public void handle(BundleDelimiter bundleDelimiter) throws Exception
      {
      }
@@ -142,7 +142,7 @@ index a5ab08e3..e062987f 100644
      @Setter
      private String lastCommandTabbed;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index f794c0b2..2984b988 100644
+index 6b611fc3..a6d49bb7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -754,6 +754,32 @@ public class DownstreamBridge extends PacketHandler
@@ -217,5 +217,5 @@ index d15044f4..087cb4b0 100644
      /**
       * Sends the server mod list to the client, or stores it for sending later.
 -- 
-2.49.0
+2.39.5
 

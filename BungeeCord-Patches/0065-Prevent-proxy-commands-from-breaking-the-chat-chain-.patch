@@ -1,14 +1,14 @@
-From 12045a5e6c9ba7ad9b1d11ef5f45d71629a2567f Mon Sep 17 00:00:00 2001
+From a39cfd90ee4d1ef08c9afc90d620323db9392f9e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index aaf70d03..9c5240e5 100644
+index 46f568b3..48048202 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -312,5 +312,9 @@ public abstract class AbstractPacketHandler
+@@ -307,5 +307,9 @@ public abstract class AbstractPacketHandler
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
      }
@@ -19,10 +19,10 @@ index aaf70d03..9c5240e5 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 2bc61878..7fc95fce 100644
+index f3a3c713..b4d980b5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -635,6 +635,13 @@ public enum Protocol
+@@ -651,6 +651,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_21_2, 0x07 ),
                      map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 )
              );
@@ -90,7 +90,7 @@ index f86fcd08..40df53fe 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e416f753..264cb648 100644
+index e416f753..e905d237 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -200,16 +200,22 @@ public class UpstreamBridge extends PacketHandler
@@ -113,7 +113,7 @@ index e416f753..264cb648 100644
 +        // Waterfall start
 +        return handleChat(message, null);
 +    }
-+    private String handleChat(String message, @javax.annotation.Nullable ClientCommand clientCommand)
++    private String handleChat(String message, ClientCommand clientCommand)
 +    // Waterfall end
      {
          for ( int index = 0, length = message.length(); index < length; index++ )
@@ -133,5 +133,5 @@ index e416f753..264cb648 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.49.0
+2.39.5
 

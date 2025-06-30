@@ -1,4 +1,4 @@
-From 359e00558c32f0c6eae1e97955e6951c82f558c1 Mon Sep 17 00:00:00 2001
+From dd3e4f64b4c3ce1dc7b0f4e67f3c37c402b113a2 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,20 +6,19 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 061f7765..14a154aa 100644
+index 3d5f497f..45405835 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
-@@ -49,6 +49,9 @@
-                             <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
+@@ -50,6 +50,8 @@
                              <Implementation-Version>${describe}</Implementation-Version>
                              <Specification-Version>${maven.build.timestamp}</Specification-Version>
-+
+                             <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
 +                            <!-- Log4j includes custom classes for Java 9+ (#293) -->
 +                            <Multi-Release>true</Multi-Release>
                          </manifestEntries>
                      </archive>
                  </configuration>
-@@ -76,7 +79,17 @@
+@@ -77,7 +79,17 @@
                              </excludes>
                          </filter>
                      </filters>
@@ -233,7 +232,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 8c35ed93..70bdee0c 100644
+index 044b45de..b51580d5 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -52,13 +52,14 @@
@@ -634,5 +633,5 @@ index 6788fbe7..00000000
 -    }
 -}
 -- 
-2.49.0
+2.39.5
 
