@@ -1,0 +1,371 @@
+From 08f6ce558f755e916b7a1eebff380a6f010acdcb Mon Sep 17 00:00:00 2001
+From: "Five (Xer)" <admin@fivepb.me>
+Date: Wed, 23 Jun 2021 23:10:02 +0200
+Subject: [PATCH] Rework information forwarding
+
+Enable Bungeeguard and Velocity/Modern forwarding modes natively
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java b/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java
+new file mode 100644
+index 00000000..67ed36d7
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java
+@@ -0,0 +1,11 @@
++package io.github.waterfallmc.waterfall.forwarding;
++
++
++/**
++ * This enum represents the forwarding modes supported by Waterfall.
++ */
++public enum ForwardingMode {
++	BUNGEECORD_LEGACY,
++	BUNGEEGUARD,
++	VELOCITY_MODERN
++}
+\ No newline at end of file
+diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
+index 77eb64a1..8ffb37e7 100644
+--- a/api/src/main/java/net/md_5/bungee/Util.java
++++ b/api/src/main/java/net/md_5/bungee/Util.java
+@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.net.URI;
+ import java.net.URISyntaxException;
++import java.security.SecureRandom;
++import java.util.Random;
+ import java.util.UUID;
+ 
+ import io.github.waterfallmc.waterfall.utils.Hex;
+@@ -106,4 +108,22 @@ public class Util
+     {
+         return new UUID( UnsignedLongs.parseUnsignedLong( uuid.substring( 0, 16 ), 16 ), UnsignedLongs.parseUnsignedLong( uuid.substring( 16 ), 16 ) );
+     }
++
++    // Waterfall start: Forwarding rework
++    /**
++     * Generates an alphanumeric A-Z,a-z,0-9 byte-sequence.
++     *
++     * @param len the length of the sequence
++     * @return a UTF/ASCII compatible alphanumeric byte-sequence
++     */
++    public static byte[] randomAlphanumericSequence(int len){
++        Random random = new SecureRandom();
++        byte[] ret = new byte[len];
++        for(int i = 0; i < len; i++){
++            int seq = random.nextInt(62);
++            ret[i] = (byte) (seq < 10 ? seq + 48 : seq < 36 ? seq + 55 : seq + 61) ;
++        }
++        return ret;
++    }
++    // Waterfall end: Forwarding rework
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index d69463f0..59f61e47 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -2,6 +2,8 @@ package net.md_5.bungee.api;
+ 
+ import java.util.Collection;
+ import java.util.Map;
++
++import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
+ import net.md_5.bungee.api.config.ListenerInfo;
+ import net.md_5.bungee.api.config.ServerInfo;
+ 
+@@ -261,4 +263,10 @@ public interface ProxyConfig
+      * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
+      */
+     boolean isDisableTabListRewrite();
++
++    /**
++     * Represents the forwarding mode as configured.
++     * @return the mode set in the config
++     */
++    ForwardingMode getForwardingMode();
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 90031156..f1aad373 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -439,6 +439,14 @@ public final class PluginManager
+                         Preconditions.checkNotNull( desc.getName(), "Plugin from %s has no name", file );
+                         Preconditions.checkNotNull( desc.getMain(), "Plugin from %s has no main", file );
+ 
++                        // Waterfall start: Forwarding rework
++                        if(desc.getName().equals("BungeeGuard")) {
++                            proxy.getLogger().warning("Detected the plugin BungeeGuard. " +
++                                    "Waterfall now supports the functionality this plugin provides natively. " +
++                                    "Please refer to the Waterfall documentation for more information.");
++                        }
++                        // Waterfall end: Forwarding rework
++
+                         desc.setFile( file );
+                         toLoad.put( desc.getName(), desc );
+                     }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 527f310e..1b805015 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,11 +1,16 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
+ import com.google.common.base.Joiner;
++import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.Util;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.io.File;
++import java.nio.charset.StandardCharsets;
++import java.util.logging.Logger;
+ 
+ public class WaterfallConfiguration extends Configuration {
+ 
+@@ -45,6 +50,9 @@ public class WaterfallConfiguration extends Configuration {
+     private boolean disableEntityMetadataRewrite = false;
+     private boolean disableTabListRewrite = false;
+ 
++    private ForwardingMode forwardingMode = ForwardingMode.BUNGEECORD_LEGACY;
++    private byte[] forwardingSecret = Util.randomAlphanumericSequence(12);
++
+     @Override
+     public void load() {
+         super.load();
+@@ -58,6 +66,36 @@ public class WaterfallConfiguration extends Configuration {
+         disableModernTabLimiter = config.getBoolean("disable_modern_tab_limiter", disableModernTabLimiter);
+         disableEntityMetadataRewrite = config.getBoolean("disable_entity_metadata_rewrite", disableEntityMetadataRewrite);
+         disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
++        forwardingMode = ForwardingMode.valueOf(config.getString("forwarding_mode", ForwardingMode.BUNGEECORD_LEGACY.toString()).toUpperCase());
++        Logger logger = BungeeCord.getInstance().getLogger();
++        if(super.isIpForward()) {
++            switch(forwardingMode) {
++                case BUNGEECORD_LEGACY:
++                    logger.info("Forwarding mode is set to Bungeecord/Legacy forwarding. " +
++                            "It is recommended to use another forwarding method to mitigate information spoofing attacks.");
++                    break;
++                case BUNGEEGUARD:
++                    logger.info("Forwarding mode is set to BungeeGuard forwarding. " +
++                            "Please ensure all connected servers make use of BungeeGuard for optimal security.");
++                    break;
++                case VELOCITY_MODERN:
++                    logger.info("Forwarding mode is set to modern/Velocity forwarding. " +
++                            "If you need to use versions older than 1.13 please use another forwarding type.");
++                    break;
++            }
++        } else {
++            logger.warning("Information forwarding (ip-forwarding) is disabled. " +
++                    "Player UUIDs may not be consistent across the servers. " +
++                    "For the optimal experience please enable ip_forward in the config.yml and " +
++                    "configure forwarding and on your servers.");
++        }
++
++        if(config.getString("forwarding_secret", "").isEmpty()) {
++            config.regenerateForwardingSecret();
++            logger.warning("A new forwarding secret has been generated. If this was the " +
++                    "first start of the proxy please configure forwarding for your network.");
++        }
++        forwardingSecret = config.getString("forwarding_secret", "").getBytes(StandardCharsets.UTF_8);
+     }
+ 
+     @Override
+@@ -94,4 +132,13 @@ public class WaterfallConfiguration extends Configuration {
+     public boolean isDisableTabListRewrite() {
+         return disableTabListRewrite;
+     }
++
++    @Override
++    public ForwardingMode getForwardingMode() {
++        return forwardingMode;
++    }
++
++    public byte[] getForwardingSecret() {
++        return forwardingSecret;
++    }
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java
+new file mode 100644
+index 00000000..d099bd13
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java
+@@ -0,0 +1,65 @@
++package io.github.waterfallmc.waterfall.forwarding;
++
++import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufUtil;
++import io.netty.buffer.Unpooled;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.connection.LoginResult;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++import javax.crypto.Mac;
++import javax.crypto.SecretKey;
++import javax.crypto.spec.SecretKeySpec;
++import java.security.InvalidKeyException;
++import java.security.NoSuchAlgorithmException;
++import java.util.UUID;
++
++public enum VelocityForwardingUtil {
++	;
++	public static final String VELOCITY_IP_FORWARDING_CHANNEL = "velocity:player_info";
++	public static final int FORWARDING_VERSION = 1;
++	public static final String MODERN_IP_FORWARDING_FAILURE = "Your server did not send a forwarding request to the proxy. Is it set up correctly?";
++
++
++	public static byte[] writeForwardingData(String address, String name, UUID playerUUID, LoginResult.Property[] properties) {
++		ByteBuf buf = Unpooled.buffer(2048);
++		try {
++			DefinedPacket.writeVarInt(FORWARDING_VERSION, buf);
++			DefinedPacket.writeString(address, buf);
++			DefinedPacket.writeUUID(playerUUID, buf);
++			DefinedPacket.writeString(name, buf);
++			DefinedPacket.writeVarInt(properties.length, buf);
++			for (LoginResult.Property property : properties) {
++				DefinedPacket.writeString(property.getName(), buf);
++				DefinedPacket.writeString(property.getValue(), buf);
++				String signature = property.getSignature();
++				if (signature != null && !signature.isEmpty()) {
++					buf.writeBoolean(true);
++					DefinedPacket.writeString(signature, buf);
++				} else {
++					buf.writeBoolean(false);
++				}
++			}
++
++			byte[] forwardingSecret = ((WaterfallConfiguration) BungeeCord.getInstance().config).getForwardingSecret();
++			SecretKey key = new SecretKeySpec(forwardingSecret, "HmacSHA256");
++			Mac mac = Mac.getInstance("HmacSHA256");
++			mac.init(key);
++			mac.update(buf.array(), buf.arrayOffset(), buf.readableBytes());
++			byte[] sig = mac.doFinal();
++
++			ByteBuf finished = Unpooled.wrappedBuffer(Unpooled.wrappedBuffer(sig), buf);
++			byte[] encoded = ByteBufUtil.getBytes(finished);
++			finished.release();
++			return encoded;
++		} catch (InvalidKeyException e) {
++			buf.release();
++			throw new RuntimeException("Unable to authenticate data", e);
++		} catch (NoSuchAlgorithmException e) {
++			// Should never happen
++			buf.release();
++			throw new AssertionError(e);
++		}
++	}
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index a5efb0af..30209520 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -1,9 +1,15 @@
+ package net.md_5.bungee;
+ 
+ import com.google.common.base.Preconditions;
++import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
++import io.github.waterfallmc.waterfall.forwarding.VelocityForwardingUtil;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ import java.net.InetSocketAddress;
++import java.nio.charset.StandardCharsets;
++import java.util.ArrayList;
++import java.util.List;
+ import java.util.Locale;
+ import java.util.Arrays; // Waterfall
+ import java.util.Queue;
+@@ -70,6 +76,7 @@ public class ServerConnector extends PacketHandler
+     @Getter
+     private ForgeServerHandler handshakeHandler;
+     private boolean obsolete;
++    private boolean didForwardInformation = false; // Waterfall: Forwarding rework
+ 
+     private enum State
+     {
+@@ -103,7 +110,7 @@ public class ServerConnector extends PacketHandler
+         this.handshakeHandler = new ForgeServerHandler( user, ch, target );
+         Handshake originalHandshake = user.getPendingConnection().getHandshake();
+         Handshake copiedHandshake = new Handshake( originalHandshake.getProtocolVersion(), originalHandshake.getHost(), originalHandshake.getPort(), 2 );
+-
++        if(BungeeCord.getInstance().config.getForwardingMode() != ForwardingMode.VELOCITY_MODERN) // Waterfall: Forwarding rework
+         if ( BungeeCord.getInstance().config.isIpForward() && user.getSocketAddress() instanceof InetSocketAddress )
+         {
+             String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
+@@ -118,6 +125,16 @@ public class ServerConnector extends PacketHandler
+                 properties = profile.getProperties();
+             }
+ 
++            // Waterfall start: Forwarding rework
++            if(BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.BUNGEEGUARD) {
++                List<LoginResult.Property> temp = new ArrayList<LoginResult.Property>();
++                temp.addAll(Arrays.asList(properties));
++                String token = new String(((WaterfallConfiguration)BungeeCord.getInstance().config).getForwardingSecret(), StandardCharsets.UTF_8);
++                temp.add(new LoginResult.Property("bungeeguard-token", token, null));
++                properties = temp.toArray(new LoginResult.Property[temp.size()]);
++            }
++            // Waterfall end: Forwarding rework
++
+             if ( user.getForgeClientHandler().isFmlTokenInHandshake() )
+             {
+                 // Get the current properties and copy them into a slightly bigger array.
+@@ -169,6 +186,12 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public void handle(LoginSuccess loginSuccess) throws Exception
+     {
++        // Waterfall start: Forwarding rework
++        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
++                && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN) {
++            throw new QuietException(VelocityForwardingUtil.MODERN_IP_FORWARDING_FAILURE);
++        }
++        // Waterfall end: Forwarding rework
+         Preconditions.checkState( thisState == State.LOGIN_SUCCESS, "Not expecting LOGIN_SUCCESS" );
+         ch.setProtocol( Protocol.GAME );
+         thisState = State.LOGIN;
+@@ -470,6 +493,20 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public void handle(LoginPayloadRequest loginPayloadRequest)
+     {
++        // Waterfall start: Forwarding rework
++        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
++                && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN
++                && loginPayloadRequest.getChannel().equals(VelocityForwardingUtil.VELOCITY_IP_FORWARDING_CHANNEL)) {
++
++            byte[] forwardingData = VelocityForwardingUtil
++                    .writeForwardingData(user.getAddress().getAddress().getHostAddress(),
++                            user.getName(), user.getUniqueId(),
++                            user.getPendingConnection().getLoginProfile().getProperties());
++            ch.write(new LoginPayloadResponse(loginPayloadRequest.getId(), forwardingData));
++            didForwardInformation = true;
++            return;
++        }
++        // Waterfall end: Forwarding rework
+         ch.write( new LoginPayloadResponse( loginPayloadRequest.getId(), null ) );
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 0644b8cd..201993d3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -10,6 +10,7 @@ import java.io.InputStream;
+ import java.io.OutputStreamWriter;
+ import java.io.Writer;
+ import java.net.SocketAddress;
++import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collection;
+@@ -332,4 +333,10 @@ public class YamlConfig implements ConfigurationAdapter
+         Collection<String> permissions = get( "permissions." + group, null );
+         return ( permissions == null ) ? Collections.EMPTY_SET : permissions;
+     }
++
++    // Waterfall start: Forwarding rework
++    public void regenerateForwardingSecret(){
++        set("forwarding_secret", new String(Util.randomAlphanumericSequence(12), StandardCharsets.UTF_8));
++    }
++    // Waterfall end: Forwarding rework
+ }
+-- 
+2.30.0
+
