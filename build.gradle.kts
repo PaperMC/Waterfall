@@ -2,7 +2,7 @@ import io.papermc.fill.model.BuildChannel
 
 // Waterfall is not a gradle project, we just use gradle to run the fill plugin for uploading artifacts
 plugins {
-    id("io.papermc.fill.gradle") version "1.0.4"
+    id("io.papermc.fill.gradle") version "1.0.6"
 }
 
 fill {
