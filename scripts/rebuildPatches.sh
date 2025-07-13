@@ -2,7 +2,7 @@
 
 (
 PS1="$"
-basedir="$(cd "$1" && pwd -P)"
+basedir="$(pwd -P)"
 workdir="$basedir/work"
 echo "Rebuilding patch files from current fork state..."
 git config core.safecrlf false

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PS1="$"
-basedir="$(cd "$1" && pwd -P)"
+basedir="$(pwd -P)"
 workdir="$basedir/work"
 gpgsign="$(git config commit.gpgsign || echo "false")"
 echo "Rebuilding Forked projects.... "
