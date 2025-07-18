@@ -1,0 +1,190 @@
+From 37e73a01d236c2436cc615778fd1393fa2d9f57d Mon Sep 17 00:00:00 2001
+From: KennyTV <kennytv@t-online.de>
+Date: Sat, 6 Jun 2020 20:23:18 +0200
+Subject: [PATCH] Reset max health on server switch
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+index 252389bd..9f1d56dc 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+@@ -7,6 +7,7 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ import net.md_5.bungee.protocol.packet.EncryptionResponse;
++import net.md_5.bungee.protocol.packet.EntityAttributes; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityStatus;
+@@ -189,5 +190,9 @@ public abstract class AbstractPacketHandler
+     public void handle(EntityRemoveEffect removeEffect) throws Exception
+     {
+     }
++
++    public void handle(EntityAttributes removeEffect) throws Exception
++    {
++    }
+     // Waterfall end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index aa1515f4..6b838527 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ import net.md_5.bungee.protocol.packet.EncryptionResponse;
++import net.md_5.bungee.protocol.packet.EntityAttributes; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityStatus;
+ import net.md_5.bungee.protocol.packet.GameState;
+ import net.md_5.bungee.protocol.packet.EntityEffect;
+@@ -130,6 +131,18 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_14, 0x38),
+                     map(ProtocolConstants.MINECRAFT_1_15, 0x39)
+             );
++            TO_CLIENT.registerPacket(
++                    EntityAttributes.class,
++                    EntityAttributes::new,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x20 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x4B ),
++                    map( ProtocolConstants.MINECRAFT_1_9_4, 0x4A ),
++                    map( ProtocolConstants.MINECRAFT_1_12, 0x4D ),
++                    map( ProtocolConstants.MINECRAFT_1_12_1, 0x4E ),
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x52 ),
++                    map( ProtocolConstants.MINECRAFT_1_14, 0x58 ),
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x59 )
++            );
+             // Waterfall end
+             TO_CLIENT.registerPacket(
+                     PlayerListItem.class, // PlayerInfo
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
+new file mode 100644
+index 00000000..487444bb
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
+@@ -0,0 +1,109 @@
++package net.md_5.bungee.protocol.packet;
++
++import io.netty.buffer.ByteBuf;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++import java.util.UUID;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class EntityAttributes extends DefinedPacket
++{
++
++    private int entityId;
++    private List<Attribute> attributes;
++
++    public EntityAttributes(int entityId)
++    {
++        this.entityId = entityId;
++    }
++
++    @Override
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        entityId = readVarInt( buf );
++        int count = buf.readInt();
++        attributes = new ArrayList<>( count );
++        for ( int i = 0; i < count; i++ )
++        {
++            Attribute attribute = new Attribute();
++            attribute.key = readString( buf );
++            attribute.value = buf.readDouble();
++            int modifierCount = readVarInt( buf );
++            attribute.modifierList = new ArrayList<>( modifierCount );
++            for ( int j = 0; j < modifierCount; j++ )
++            {
++                AttributeModifier modifier = new AttributeModifier();
++                modifier.uuid = readUUID( buf );
++                modifier.amount = buf.readDouble();
++                modifier.operation = buf.readByte();
++                attribute.modifierList.add( modifier );
++            }
++            attributes.add( attribute );
++        }
++    }
++
++    @Override
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeVarInt( entityId, buf );
++        buf.writeInt( attributes.size() );
++        for ( Attribute attribute : attributes )
++        {
++            writeString( attribute.key, buf );
++            buf.writeDouble( attribute.value );
++            writeVarInt( attribute.modifierList.size(), buf );
++            for ( AttributeModifier modifier : attribute.modifierList )
++            {
++                writeUUID( modifier.uuid, buf );
++                buf.writeDouble( modifier.amount );
++                buf.writeByte( modifier.operation );
++            }
++        }
++    }
++
++    @Override
++    public void handle(AbstractPacketHandler handler) throws Exception
++    {
++        handler.handle( this );
++    }
++
++    @Data
++    @NoArgsConstructor
++    @AllArgsConstructor
++    public static class Attribute
++    {
++
++        private String key;
++        private double value;
++        private List<AttributeModifier> modifierList;
++    }
++
++    @Data
++    public static class AttributeModifier
++    {
++
++        private UUID uuid;
++        private double amount;
++        private byte operation;
++    }
++
++    public static EntityAttributes createDefaultHealth(int entityId, int protocolVersion)
++    {
++        EntityAttributes packet = new EntityAttributes( entityId );
++        String key = "generic.maxHealth"; //TODO Differentiate for 1.16: minecraft:generic.max_health
++        packet.attributes = Collections.singletonList( new Attribute( key, 20, Collections.emptyList() ) );
++        return packet;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 35a19224..fdb48892 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -285,6 +285,8 @@ public class ServerConnector extends PacketHandler
+             }
+             user.getSentBossBars().clear();
+ 
++            user.unsafe().sendPacket( net.md_5.bungee.protocol.packet.EntityAttributes.createDefaultHealth( user.getClientEntityId(), user.getPendingConnection().getVersion() ) );   // Waterfall - Reset max health attribute
++
+             // Update debug info from login packet
+             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
+             // And immediate respawn
+-- 
+2.26.2.windows.1
+
