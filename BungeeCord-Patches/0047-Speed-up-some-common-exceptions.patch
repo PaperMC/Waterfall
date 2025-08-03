@@ -1,4 +1,4 @@
-From 3ad6bd3829e9b824be688526c3efbdc970316942 Mon Sep 17 00:00:00 2001
+From bf537f9caf3ce8c08c43d887b289b9a1dbe8c2d4 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 25 Nov 2019 19:54:06 +0000
 Subject: [PATCH] Speed up some common exceptions
@@ -59,10 +59,10 @@ index 6c0ef4df..076ddd70 100644
 +    // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 1ccca2f0..0effaf7b 100644
+index 122197e1..afad2ce2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -80,6 +80,9 @@ public abstract class DefinedPacket
+@@ -85,6 +85,9 @@ public abstract class DefinedPacket
          }
      }
  
@@ -72,7 +72,7 @@ index 1ccca2f0..0effaf7b 100644
      public static void writeString(String s, ByteBuf buf)
      {
          writeString( s, buf, Short.MAX_VALUE );
-@@ -282,13 +285,18 @@ public abstract class DefinedPacket
+@@ -286,13 +289,18 @@ public abstract class DefinedPacket
          byte in;
          while ( true )
          {
@@ -172,7 +172,7 @@ index 237955ab..d0bd4d75 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 31cdbe48..b8f1010e 100644
+index 5116128f..32199eec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -24,6 +24,8 @@ import javax.crypto.SecretKey;
@@ -221,5 +221,5 @@ index ac99d02c..0c1ecfb8 100644
  
              // Waterfall start
 -- 
-2.39.5
+2.43.0
 

@@ -1,6 +1,6 @@
-From b2315842ff1b4b216d6cb74426547ee9f6a81c96 Mon Sep 17 00:00:00 2001
-From: Shane Freeder <theboyetronic@gmail.com>
-Date: Mon, 14 Jan 2019 03:35:21 +0000
+From 25874cc79b62282c450c80a14f6a819922f9d846 Mon Sep 17 00:00:00 2001
+From: Nathan Soares <eu@nathan.com.br>
+Date: Sun, 3 Aug 2025 10:44:33 -0300
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
 
 The work here is derived from the research and guidance of
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6603ce9a..7c6a2e65 100644
+index 67c63260..5b49c447 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -276,7 +276,8 @@ public class ServerConnector extends PacketHandler
@@ -123,14 +123,14 @@ index 6603ce9a..7c6a2e65 100644
                      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e062987f..8ade4cbb 100644
+index 617edba6..430a9299 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -880,4 +880,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -895,4 +895,10 @@ public final class UserConnection implements ProxiedPlayer
  
-         unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
+         unsafe.sendPacket( new ServerLinks( links ) );
      }
-+
++    
 +    // Waterfall start
 +    public boolean isDisableEntityMetadataRewrite() {
 +        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
@@ -138,7 +138,7 @@ index e062987f..8ade4cbb 100644
 +    // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2984b988..0227c0de 100644
+index a6d49bb7..526d19b1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -758,6 +758,7 @@ public class DownstreamBridge extends PacketHandler
@@ -190,11 +190,10 @@ index 26c1e1be..01a60130 100644
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
 new file mode 100644
-index 00000000..cb81d1dd
+index 00000000..0469e7c8
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap_Dummy.java
-@@ -0,0 +1,30 @@
-+
+@@ -0,0 +1,29 @@
 +package net.md_5.bungee.entitymap;
 +
 +import io.netty.buffer.ByteBuf;
@@ -226,5 +225,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.49.0
+2.43.0
 

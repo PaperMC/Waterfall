@@ -1,4 +1,4 @@
-From 74fa2f256598a8dc5ed044c63ed059d0ddea88d6 Mon Sep 17 00:00:00 2001
+From 82fc1aac142029b332d62a693ea5d585024716d1 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Wed, 29 Jun 2016 04:29:25 +0200
 Subject: [PATCH] Add dynamic server addition/removal api.
@@ -157,18 +157,18 @@ index 262b29c8..d7ed3e11 100644
      {
          int index = path.indexOf( SEPARATOR );
 diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-index 59c104d3..698b420f 100644
+index f479a888..7d114541 100644
 --- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
 +++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
-@@ -83,7 +83,7 @@ public class CommandServer extends Command implements TabExecutor
-     @Override
+@@ -80,7 +80,7 @@ public class CommandServer extends Command implements TabExecutor
      public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
      {
--        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServers().values(), new Predicate<ServerInfo>()
-+        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
-         {
-             private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
- 
+         final String serverFilter = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
+-        return () -> ProxyServer.getInstance().getServers().values().stream()
++        return () -> ProxyServer.getInstance().getServersCopy().values().stream() // Waterfall: use #getServersCopy()
+                 .filter( serverInfo -> serverInfo.getName().toLowerCase( Locale.ROOT ).startsWith( serverFilter ) && serverInfo.canAccess( sender ) )
+                 .map( ServerInfo::getName )
+                 .iterator();
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index e69da6c5..a8041258 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -311,5 +311,5 @@ index eb651a14..7a4da21f 100644
 +    // Waterfall end
  }
 -- 
-2.49.0
+2.43.0
 

@@ -1,4 +1,4 @@
-From a39cfd90ee4d1ef08c9afc90d620323db9392f9e Mon Sep 17 00:00:00 2001
+From 8e6364d0519716ef5eb6a5252c3f40ff16ba9118 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -19,10 +19,10 @@ index 46f568b3..48048202 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index f3a3c713..b4d980b5 100644
+index 7c9ecd8f..ea84ad15 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -651,6 +651,13 @@ public enum Protocol
+@@ -652,6 +652,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_21_2, 0x07 ),
                      map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 )
              );
@@ -76,7 +76,7 @@ index 00000000..08ecf2a3
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-index f86fcd08..40df53fe 100644
+index 31104505..48b20a7e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 @@ -119,4 +119,9 @@ public class ClientCommand extends DefinedPacket
@@ -90,7 +90,7 @@ index f86fcd08..40df53fe 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e416f753..e905d237 100644
+index bf7ae09f..707e1ff2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -200,16 +200,22 @@ public class UpstreamBridge extends PacketHandler
@@ -133,5 +133,5 @@ index e416f753..e905d237 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.39.5
+2.43.0
 
