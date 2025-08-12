@@ -28,3 +28,8 @@ jobs:
           ./waterfall p
       - name: build
         run: mvn clean install javadoc:javadoc -B
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Waterfall-${{ matrix.java }}
+          path: Waterfall-Proxy/bootstrap/target/*.jar
