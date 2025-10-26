@@ -31,7 +31,7 @@ Waterfall requires **Java 8** or above.
 ## How To (Plugin Developers)
 ------
  * See our API patches [here](BungeeCord-Patches)
- * Waterfall API JavaDocs here: [papermc.io/javadocs](https://jd.papermc.io/waterfall/1.20)
+ * Waterfall API JavaDocs here: [papermc.io/javadocs](https://jd.papermc.io/waterfall/1.21)
  * Maven repository (for `waterfall-api`):
 ```xml
 <repository>
