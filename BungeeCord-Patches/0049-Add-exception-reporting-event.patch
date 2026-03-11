@@ -1,4 +1,4 @@
-From 12a7432c64b9b6eb242eac30705e72570823aa1c Mon Sep 17 00:00:00 2001
+From 20777696a5cce3ffcbf4d891dbf0c27355ec03f3 Mon Sep 17 00:00:00 2001
 From: theminecoder <theminecoder.dev@gmail.com>
 Date: Wed, 22 Apr 2020 14:00:44 +1000
 Subject: [PATCH] Add exception reporting event
@@ -446,7 +446,7 @@ index 00000000..5bf57ec1
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index b0da6460..d2cb63a4 100644
+index a7420c88..94dd956f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -31,6 +31,11 @@ import java.util.jar.JarEntry;
@@ -505,7 +505,7 @@ index b0da6460..d2cb63a4 100644
 +        // Waterfall start - split command & tab complete exception handlers for exception event
 +        } catch ( Exception ex ) {
              sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
-             ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+             ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command: " + command.getName(), ex );
 +            this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
          }
 +        // Waterfall end
@@ -695,5 +695,5 @@ index 38b75b51..02ec98fc 100644
  
              // If we have a period of 0 or less, only run once
 -- 
-2.51.0
+2.53.0
 

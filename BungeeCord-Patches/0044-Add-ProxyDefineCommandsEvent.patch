@@ -1,4 +1,4 @@
-From 77d1327467638911e6f49a8c272acb05b3e010f4 Mon Sep 17 00:00:00 2001
+From 813c08a1ff93d8f9966a24bb597c5a7f4e127c12 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Thu, 14 Mar 2019 07:44:06 +0000
 Subject: [PATCH] Add ProxyDefineCommandsEvent
@@ -54,10 +54,10 @@ index 00000000..1fd4fc90
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 0227c0de..b4a88391 100644
+index dacfe5de..3250a7be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -793,9 +793,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -803,9 +803,23 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -68,7 +68,6 @@ index 0227c0de..b4a88391 100644
 +            if ( !bungee.getDisabledCommands().contains( commandEntry.getKey() )
 +                    && commands.getRoot().getChild( commandEntry.getKey() ) == null
 +                    && commandEntry.getValue().hasPermission( this.con ) ) {
-+
 +                commandMap.put( commandEntry.getKey(), commandEntry.getValue() );
 +            }
 +        }
@@ -77,14 +76,13 @@ index 0227c0de..b4a88391 100644
 +        bungee.getPluginManager().callEvent( event );
 +
 +        for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
++        // Waterfall end
          {
--            if ( !bungee.getDisabledCommands().contains( command.getKey() ) && commands.getRoot().getChild( command.getKey() ) == null && command.getValue().hasPermission( con ) )
-+            //noinspection ConstantConditions
-+            if ( true ) // Moved up
-+            // Waterfall end
+-            if ( !bungee.getDisabledCommands().contains( command.getKey() ) && command.getValue().hasPermission( con ) )
++            if ( true ) // Waterfall - moved up
              {
-                 CommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() ).executes( DUMMY_COMMAND )
-                         .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
+                 boolean insertDummy = true;
+ 
 -- 
-2.49.0
+2.53.0
 

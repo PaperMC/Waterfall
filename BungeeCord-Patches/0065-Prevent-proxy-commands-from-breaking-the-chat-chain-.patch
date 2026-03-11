@@ -1,4 +1,4 @@
-From d7fbe97ca5e4629f505386b033700e6d99b7fa5c Mon Sep 17 00:00:00 2001
+From f60c843e1040178689968bfdafae42845fc94f0d Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -19,12 +19,12 @@ index 46f568b3..48048202 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e94c740d..4d3337ec 100644
+index cc192324..0dc446e5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -679,6 +679,13 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x07 ),
-                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 )
+@@ -707,6 +707,13 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 ),
+                     map( ProtocolConstants.MINECRAFT_26_1, 0x09 )
              );
 +            // Waterfall start
 +            TO_SERVER.registerPacket(
@@ -90,10 +90,10 @@ index 31104505..48b20a7e 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index bf7ae09f..707e1ff2 100644
+index 403c4fe2..f8c64785 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -200,16 +200,22 @@ public class UpstreamBridge extends PacketHandler
+@@ -164,16 +164,22 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(ClientCommand command) throws Exception
      {
@@ -118,7 +118,7 @@ index bf7ae09f..707e1ff2 100644
      {
          for ( int index = 0, length = message.length(); index < length; index++ )
          {
-@@ -228,7 +234,13 @@ public class UpstreamBridge extends PacketHandler
+@@ -192,7 +198,13 @@ public class UpstreamBridge extends PacketHandler
              if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
              {
                  return message;
@@ -133,5 +133,5 @@ index bf7ae09f..707e1ff2 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.51.0
+2.53.0
 

@@ -1,4 +1,4 @@
-From f9aff1b2695e8b7fd0d278c4c1dfe741a4234911 Mon Sep 17 00:00:00 2001
+From 31f1ac7f4d65c9edf1175a596055f51564a1895b Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 11:28:45 -0700
 Subject: [PATCH] Rename references from BungeeCord to Waterfall
@@ -40,15 +40,15 @@ index 23f22da8..3a1f7174 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index cec7fadb..4cc58a5d 100644
+index 6fbfc9d4..6615ad36 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -56,7 +56,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Warning, this build is outdated ***" );
--                System.err.println( "*** Please download a new build from http://ci.md-5.net/job/BungeeCord ***" );
-+                System.err.println( "*** Please download a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
+-                System.err.println( "*** Please download a new build from https://www.spigotmc.org/go/bungeecord-dl ***" );
++                System.err.println( "*** Please download a new build from https://papermc.io/downloads ***" );
                  System.err.println( "*** You will get NO support regarding this build ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
@@ -62,14 +62,14 @@ index cec7fadb..4cc58a5d 100644
  
          if ( !options.has( "noconsole" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index b0798791..b26035cf 100644
+index 13de9597..b26035cf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -16,6 +16,6 @@ public class CommandBungee extends Command
      @Override
      public void execute(CommandSender sender, String[] args)
      {
--        sender.sendMessage( ChatColor.BLUE + "This server is running BungeeCord version " + ProxyServer.getInstance().getVersion() + " by md_5" );
+-        sender.sendMessage( ChatColor.BLUE + "This server is running BungeeCord version " + ProxyServer.getInstance().getVersion() + " by md_5." );
 +        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by md_5" );
      }
  }
@@ -101,5 +101,5 @@ index 65d782f7..39809d60 100644
              SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.51.0
+2.53.0
 

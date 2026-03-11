@@ -1,4 +1,4 @@
-From b1f9a73c1233ba1df19c35c134bd6ba425139b1e Mon Sep 17 00:00:00 2001
+From 210e4665fc53d440f8260431d5d27ef7b059fdb3 Mon Sep 17 00:00:00 2001
 From: Aaron Hill <aa1ronham@gmail.com>
 Date: Thu, 15 Sep 2016 22:38:37 +0200
 Subject: [PATCH] Fix potion race condition on Forge 1.8.9
@@ -142,10 +142,10 @@ index 1d0553f8..617edba6 100644
      @Setter
      private String lastCommandTabbed;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6b611fc3..a6d49bb7 100644
+index 189b1277..8b94efff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -754,6 +754,32 @@ public class DownstreamBridge extends PacketHandler
+@@ -764,6 +764,32 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -217,5 +217,5 @@ index d15044f4..087cb4b0 100644
      /**
       * Sends the server mod list to the client, or stores it for sending later.
 -- 
-2.51.0
+2.53.0
 

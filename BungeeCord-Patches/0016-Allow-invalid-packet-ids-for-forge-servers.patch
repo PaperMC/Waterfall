@@ -1,4 +1,4 @@
-From bd42f3205d402ad06118daefc04ff6174a0ae1e6 Mon Sep 17 00:00:00 2001
+From f03b3ad3c625250f9a7c5c2e18b41e7202522b77 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@techcable.net>
 Date: Thu, 19 May 2016 17:09:22 -0600
 Subject: [PATCH] Allow invalid packet ids for forge servers
@@ -43,10 +43,10 @@ index abcb53bb..0dd0fe31 100644
              {
                  packet.read( in, protocol, prot.getDirection(), protocolVersion );
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 690e1447..53443ddc 100644
+index 85634e11..f7b0d6a7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -1063,14 +1063,23 @@ public enum Protocol
+@@ -1097,14 +1097,23 @@ public enum Protocol
              return protocol;
          }
  
@@ -72,7 +72,7 @@ index 690e1447..53443ddc 100644
                  throw new BadPacketException( "Packet with id " + id + " outside of range" );
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 6ed9e8b3..509f07c3 100644
+index 5d5c027c..102ccb5c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -246,6 +246,12 @@ public class ServerConnector extends PacketHandler
@@ -87,7 +87,7 @@ index 6ed9e8b3..509f07c3 100644
 +
          bungee.getPluginManager().callEvent( event );
  
-         ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
+         // Already sent after config start
 diff --git a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java b/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
 index 77b27c6f..26c1e1be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/entitymap/EntityMap.java
@@ -106,5 +106,5 @@ index 77b27c6f..26c1e1be 100644
          {
              rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
 -- 
-2.51.0
+2.53.0
 

@@ -1,11 +1,11 @@
-From 969bec07f28e60455559de5f1250d79ccc67571d Mon Sep 17 00:00:00 2001
+From 2dddeaebb43d79c31370421e3dcd54d007437bce Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Sat, 10 Jun 2017 20:56:02 +0100
 Subject: [PATCH] Improve outdated build message
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 4cc58a5d..ea2e8825 100644
+index 6615ad36..ea2e8825 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -55,11 +55,11 @@ public class BungeeCordLauncher
@@ -13,7 +13,7 @@ index 4cc58a5d..ea2e8825 100644
              if ( buildDate.before( deadline.getTime() ) )
              {
 -                System.err.println( "*** Warning, this build is outdated ***" );
--                System.err.println( "*** Please download a new build from https://ci.destroystokyo.com/job/Waterfall/ ***" );
+-                System.err.println( "*** Please download a new build from https://papermc.io/downloads ***" );
 -                System.err.println( "*** You will get NO support regarding this build ***" );
 -                System.err.println( "*** Server will start in 10 seconds ***" );
 -                Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
@@ -26,5 +26,5 @@ index 4cc58a5d..ea2e8825 100644
          }
  
 -- 
-2.49.0
+2.53.0
 

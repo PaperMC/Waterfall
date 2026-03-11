@@ -1,4 +1,4 @@
-From 4bf741b711326cad7051ac737d7ba112f99c205d Mon Sep 17 00:00:00 2001
+From 8ad3338a21818d6de4340cd65cdda86674500557 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index d45fb235..86da49a8 100644
+index 4924e04e..481afaaf 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,48 +4,48 @@
@@ -75,7 +75,7 @@ index d45fb235..86da49a8 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 509fddd5..67e8bad5 100644
+index 9700de8f..1e076b4b 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,40 +4,41 @@
@@ -154,7 +154,7 @@ index 6be22739..a4516ed9 100644
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index a149e83c..b5180fb8 100644
+index ed80a085..79a94905 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,19 @@
@@ -184,7 +184,7 @@ index a149e83c..b5180fb8 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 24150823..0832a8cb 100644
+index 16a66d12..a5becbcb 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,19 @@
@@ -283,7 +283,7 @@ index 463149f2..1fdbea07 100644
 +    <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 3efba3c6..3d936b77 100644
+index d15110c1..83f8ee8d 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,19 @@
@@ -595,7 +595,7 @@ index d7ff234f..ecfaeb7e 100644
          <license>
              <name>BSD-3-Clause</name>
 diff --git a/pom.xml b/pom.xml
-index 6db2b04b..8dbe11bb 100644
+index 2bb39c8a..e60e9ee1 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,18 @@
@@ -667,7 +667,7 @@ index 6db2b04b..8dbe11bb 100644
      </issueManagement>
 -    <ciManagement>
 -        <system>jenkins</system>
--        <url>http://ci.md-5.net/job/BungeeCord</url>
+-        <url>https://hub.spigotmc.org/jenkins/job/BungeeCord/</url>
 -    </ciManagement>
  
      <distributionManagement>
@@ -688,15 +688,6 @@ index 6db2b04b..8dbe11bb 100644
      </distributionManagement>
  
      <properties>
-@@ -125,7 +136,7 @@
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-javadoc-plugin</artifactId>
--                    <version>3.6.3</version>
-+                    <version>3.11.2</version>
-                 </plugin>
-             </plugins>
-         </pluginManagement>
 @@ -146,12 +157,21 @@
                      </execution>
                  </executions>
@@ -705,11 +696,11 @@ index 6db2b04b..8dbe11bb 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-compiler-plugin</artifactId>
-                 <version>3.13.0</version>
+                 <version>3.15.0</version>
              </plugin>
              <plugin>
 +                <artifactId>maven-javadoc-plugin</artifactId>
-+                <version>3.11.2</version>
++                <version>3.12.0</version>
 +                <configuration>
 +                    <doclint>none</doclint>
 +                </configuration>
@@ -727,7 +718,7 @@ index 6db2b04b..8dbe11bb 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -297,6 +318,15 @@
+@@ -295,6 +316,15 @@
                                  </goals>
                              </execution>
                          </executions>
@@ -744,7 +735,7 @@ index 6db2b04b..8dbe11bb 100644
                      <plugin>
                          <groupId>org.projectlombok</groupId>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 31f3bb52..d98dc06b 100644
+index c8aa2932..02736b2a 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,19 @@
@@ -793,7 +784,7 @@ index 31f3bb52..d98dc06b 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 7ebe35f8..f1fadd9d 100644
+index bc363b07..5e583a77 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -913,7 +904,7 @@ index 98c88cad..c57c6b13 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/serializer/pom.xml b/serializer/pom.xml
-index d22931c0..c5cb6c2d 100644
+index b082b3e6..2159b626 100644
 --- a/serializer/pom.xml
 +++ b/serializer/pom.xml
 @@ -4,19 +4,19 @@
@@ -989,5 +980,5 @@ index a062a210..2a74a343 100644
      <properties>
          <checkstyle.skip>true</checkstyle.skip>
 -- 
-2.51.0
+2.53.0
 
