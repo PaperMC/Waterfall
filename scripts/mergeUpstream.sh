@@ -13,4 +13,5 @@ function update {
 update BungeeCord
 
 # Update submodules
+git submodule sync --recursive
 git submodule update --recursive

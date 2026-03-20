@@ -1,4 +1,4 @@
-From bfe64b172f67e0f3f97d9ef7f64b5926f8582bde Mon Sep 17 00:00:00 2001
+From 9188487f4e06cbfa1fe04ec030111ef0209343b1 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -232,16 +232,17 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index e60e9ee1..79a3ccb9 100644
+index 11b85a9d..c112ffca 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -52,13 +52,14 @@
+@@ -52,14 +52,15 @@
          <module>config</module>
          <module>dialog</module>
          <module>event</module>
 -        <module>log</module>
 +        <!--<module>log</module>-->
 +        <module>log4j</module>
+         <module>maven-resolver</module>
          <module>module</module>
          <module>protocol</module>
          <module>proxy</module>
@@ -253,7 +254,7 @@ index e60e9ee1..79a3ccb9 100644
          <module>nbt</module>
      </modules>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 8460c51a..eaa67da8 100644
+index 2a2ed401..91e12a71 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -84,7 +84,7 @@
@@ -280,8 +281,8 @@ index 8460c51a..eaa67da8 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -143,6 +144,35 @@
-             <version>1.9.27</version>
+@@ -131,6 +132,35 @@
+             <version>${project.version}</version>
              <scope>runtime</scope>
          </dependency>
 +        <!-- Waterfall start - Console improvements - bring back slf4j-->

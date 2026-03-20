@@ -1,0 +1,1 @@
+git rebase -i upstream/upstream --autosquash

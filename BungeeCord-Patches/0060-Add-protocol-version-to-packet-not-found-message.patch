@@ -1,4 +1,4 @@
-From 6979c121d1289de389644d1a33cabcf2b17845f1 Mon Sep 17 00:00:00 2001
+From a3a0bb799ca91530b8e93d6ae6425c6186f95c93 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 12 Jun 2022 06:45:54 +0100
 Subject: [PATCH] Add protocol version to packet not found message
@@ -6,10 +6,10 @@ Subject: [PATCH] Add protocol version to packet not found message
 Also avoids a double get, but, this is probably trivial
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index f7b0d6a7..cc192324 100644
+index bdefc8f1..622364ff 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -1192,9 +1192,12 @@ public enum Protocol
+@@ -1198,9 +1198,12 @@ public enum Protocol
              {
                  throw new BadPacketException( "Unsupported protocol version" );
              }

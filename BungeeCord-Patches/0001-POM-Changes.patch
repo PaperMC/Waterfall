@@ -1,4 +1,4 @@
-From 8ad3338a21818d6de4340cd65cdda86674500557 Mon Sep 17 00:00:00 2001
+From bd53eb6849711b415bbb399538f48078ee50b6d8 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 4924e04e..481afaaf 100644
+index 96d71a6c..f91db7db 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,48 +4,48 @@
@@ -74,6 +74,17 @@ index 4924e04e..481afaaf 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+@@ -55,8 +55,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-maven-resolver</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-maven-resolver</artifactId>
+             <version>${project.version}</version>
+             <!-- not part of the API proper -->
+             <scope>provided</scope>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
 index 9700de8f..1e076b4b 100644
 --- a/bootstrap/pom.xml
@@ -283,7 +294,7 @@ index 463149f2..1fdbea07 100644
 +    <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index d15110c1..83f8ee8d 100644
+index 3a0eecb2..def1111f 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,19 @@
@@ -323,6 +334,29 @@ index d15110c1..83f8ee8d 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
+diff --git a/maven-resolver/pom.xml b/maven-resolver/pom.xml
+index 65bfeaa0..290e1b20 100644
+--- a/maven-resolver/pom.xml
++++ b/maven-resolver/pom.xml
+@@ -4,14 +4,14 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>net.md-5</groupId>
+-        <artifactId>bungeecord-parent</artifactId>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-parent</artifactId>
+         <version>1.21-R0.5-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>net.md-5</groupId>
+-    <artifactId>bungeecord-maven-resolver</artifactId>
++    <groupId>io.github.waterfallmc</groupId>
++    <artifactId>waterfall-maven-resolver</artifactId>
+     <version>1.21-R0.5-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
 diff --git a/module/cmd-alert/pom.xml b/module/cmd-alert/pom.xml
 index 992dc637..1d4f36a5 100644
 --- a/module/cmd-alert/pom.xml
@@ -595,7 +629,7 @@ index d7ff234f..ecfaeb7e 100644
          <license>
              <name>BSD-3-Clause</name>
 diff --git a/pom.xml b/pom.xml
-index 2bb39c8a..e60e9ee1 100644
+index 050d7d9e..11b85a9d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,18 @@
@@ -649,7 +683,7 @@ index 2bb39c8a..e60e9ee1 100644
          </developer>
      </developers>
  
-@@ -49,28 +64,24 @@
+@@ -50,28 +65,24 @@
      </modules>
  
      <scm>
@@ -688,7 +722,7 @@ index 2bb39c8a..e60e9ee1 100644
      </distributionManagement>
  
      <properties>
-@@ -146,12 +157,21 @@
+@@ -147,12 +158,21 @@
                      </execution>
                  </executions>
              </plugin>
@@ -710,7 +744,7 @@ index 2bb39c8a..e60e9ee1 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.6.0</version>
-@@ -176,6 +196,7 @@
+@@ -177,6 +197,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -718,7 +752,7 @@ index 2bb39c8a..e60e9ee1 100644
              <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -295,6 +316,15 @@
+@@ -298,6 +319,15 @@
                                  </goals>
                              </execution>
                          </executions>
@@ -784,7 +818,7 @@ index c8aa2932..02736b2a 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index bc363b07..5e583a77 100644
+index d967d6aa..a5a23725 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -861,6 +895,17 @@ index bc363b07..5e583a77 100644
 +            <artifactId>waterfall-slf4j</artifactId>
              <version>${project.version}</version>
              <scope>compile</scope>
+         </dependency>
+@@ -114,8 +114,8 @@
+         </dependency>
+         <!-- add back in as not exposed by the API -->
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-maven-resolver</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-maven-resolver</artifactId>
+             <version>${project.version}</version>
+             <scope>runtime</scope>
          </dependency>
 diff --git a/query/pom.xml b/query/pom.xml
 index 98c88cad..c57c6b13 100644
