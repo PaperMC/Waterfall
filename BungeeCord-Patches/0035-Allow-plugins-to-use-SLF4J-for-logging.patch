@@ -1,4 +1,4 @@
-From eb1ea2a59bf940e43ec68b6306193e2d220fb51b Mon Sep 17 00:00:00 2001
+From db26a22ee551104e7e5b649bf741542e9d7d9842 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 13:15:09 +0200
 Subject: [PATCH] Allow plugins to use SLF4J for logging
@@ -23,12 +23,12 @@ index 628ce968..faa06a92 100644
       * Called when the plugin has just been loaded. Most of the proxy will not
       * be initialized, so only use it for registering
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index c4b266dd..1f89eed2 100644
+index 8387393c..f9af0d5b 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
-@@ -38,6 +38,24 @@
-             <artifactId>log4j-jul</artifactId>
+@@ -41,6 +41,24 @@
              <version>${log4j2.version}</version>
+             <scope>compile</scope>
          </dependency>
 +        <dependency>
 +            <groupId>org.apache.logging.log4j</groupId>
@@ -52,5 +52,5 @@ index c4b266dd..1f89eed2 100644
              <groupId>com.lmax</groupId>
              <artifactId>disruptor</artifactId>
 -- 
-2.51.0
+2.53.0
 
