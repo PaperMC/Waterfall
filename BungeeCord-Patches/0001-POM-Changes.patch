@@ -1,4 +1,4 @@
-From 86a75ef5a2d727172ec13f240723e6b9e45cd4e0 Mon Sep 17 00:00:00 2001
+From 4a0459e8bca64f4bdedc21e3a8ae62d2a56ad9b7 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -286,7 +286,7 @@ index 11ca800f..f15f7406 100644
 +    <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index cd62b78d..b538b00f 100644
+index b498b42b..b31d7176 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,19 @@
@@ -621,15 +621,22 @@ index afb805d1..be74fd49 100644
          <license>
              <name>BSD-3-Clause</name>
 diff --git a/pom.xml b/pom.xml
-index 18bbe6f9..e0b8b453 100644
+index 18bbe6f9..939806eb 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,18 +3,18 @@
+@@ -3,18 +3,25 @@
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
  
 -    <groupId>net.md-5</groupId>
 -    <artifactId>bungeecord-parent</artifactId>
++    <parent>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-super</artifactId>
++        <version>26.1-R0.1-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
++    </parent>
++
 +    <groupId>io.github.waterfallmc</groupId>
 +    <artifactId>waterfall-parent</artifactId>
      <version>26.1-R0.1-SNAPSHOT</version>
@@ -651,7 +658,7 @@ index 18bbe6f9..e0b8b453 100644
      </organization>
      <licenses>
          <license>
-@@ -26,7 +26,22 @@
+@@ -26,7 +33,22 @@
  
      <developers>
          <developer>
@@ -675,7 +682,7 @@ index 18bbe6f9..e0b8b453 100644
          </developer>
      </developers>
  
-@@ -50,28 +65,24 @@
+@@ -50,28 +72,24 @@
      </modules>
  
      <scm>
@@ -714,7 +721,7 @@ index 18bbe6f9..e0b8b453 100644
      </distributionManagement>
  
      <properties>
-@@ -155,6 +166,7 @@
+@@ -155,6 +173,7 @@
                      </execution>
                  </executions>
              </plugin>
@@ -722,7 +729,7 @@ index 18bbe6f9..e0b8b453 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-compiler-plugin</artifactId>
-@@ -170,6 +182,14 @@
+@@ -170,6 +189,14 @@
                  </configuration>
              </plugin>
              <plugin>
@@ -737,7 +744,7 @@ index 18bbe6f9..e0b8b453 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.6.0</version>
-@@ -194,6 +214,7 @@
+@@ -194,6 +221,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -745,7 +752,7 @@ index 18bbe6f9..e0b8b453 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-enforcer-plugin</artifactId>
-@@ -257,6 +278,15 @@
+@@ -257,6 +285,15 @@
                                  </goals>
                              </execution>
                          </executions>
@@ -1018,5 +1025,5 @@ index 3020e103..4181e784 100644
      <properties>
          <checkstyle.skip>true</checkstyle.skip>
 -- 
-2.53.0
+2.51.0
 
