@@ -1,69 +1,44 @@
-From d748b38a6bfbafd428342cac2a8cdff6fe1be782 Mon Sep 17 00:00:00 2001
+From 21622197aa9f591003f472a1d66ac2dc9e29d9f9 Mon Sep 17 00:00:00 2001
 From: Josh Roy <10731363+JRoy@users.noreply.github.com>
 Date: Sun, 21 Feb 2021 23:52:11 -0500
 Subject: [PATCH] Add support for hex color codes in console
 
 Ports my Paper patch which converts upstream's hex color code legacy format into actual hex color codes in the console.
 
-diff --git a/log4j/src/main/resources/log4j2-bungee.xml b/log4j/src/main/resources/log4j2-bungee.xml
-index 6e9c09c5..1c3265ed 100644
---- a/log4j/src/main/resources/log4j2-bungee.xml
-+++ b/log4j/src/main/resources/log4j2-bungee.xml
-@@ -4,17 +4,17 @@
-     <Appenders>
-         <TerminalConsole name="TerminalConsole">
-             <PatternLayout>
--                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}%n%ex}">
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}%n%ex}">
-                     <!-- Log root and BungeeCord loggers without prefix -->
--                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}%n%ex}" />
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}%n%ex}" />
-                 </LoggerNamePatternSelector>
-             </PatternLayout>
-         </TerminalConsole>
-         <RollingRandomAccessFile name="File" fileName="proxy.log.0" filePattern="proxy.log.%i" immediateFlush="false">
-             <PatternLayout>
--                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}{strip}%n%ex">
-+                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}{strip}%n%ex">
-                     <!-- Log root and BungeeCord loggers without prefix -->
--                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}{strip}%n%ex" />
-+                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}{strip}%n%ex" />
-                 </LoggerNamePatternSelector>
-             </PatternLayout>
-             <Policies>
-diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index 8e49e002..663bddec 100644
---- a/log4j/src/main/resources/log4j2.xml
-+++ b/log4j/src/main/resources/log4j2.xml
-@@ -3,17 +3,17 @@
-     <Appenders>
-         <TerminalConsole name="TerminalConsole">
-             <PatternLayout>
--                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %minecraftFormatting{%msg}%n%xEx}">
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %paperMinecraftFormatting{%msg}%n%xEx}">
-                     <!-- Log root and BungeeCord loggers without prefix -->
--                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %paperMinecraftFormatting{%msg}%n%xEx}" />
-                 </LoggerNamePatternSelector>
-             </PatternLayout>
-         </TerminalConsole>
-         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
-             <PatternLayout>
--                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %minecraftFormatting{%msg}{strip}%n">
-+                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %paperMinecraftFormatting{%msg}{strip}%n">
-                     <!-- Log root and BungeeCord loggers without prefix -->
--                    <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
-+                    <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
-                 </LoggerNamePatternSelector>
-             </PatternLayout>
-             <Policies>
-diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java
+diff --git a/log4j/pom.xml b/log4j/pom.xml
+index f9af0d5b..2a75f406 100644
+--- a/log4j/pom.xml
++++ b/log4j/pom.xml
+@@ -41,6 +41,22 @@
+             <version>${log4j2.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        <dependency>
++            <groupId>net.minecrell</groupId>
++            <artifactId>terminalconsoleappender</artifactId>
++            <version>1.3.0</version>
++            <scope>compile</scope>
++            <exclusions>
++                <exclusion>
++                    <groupId>org.apache.logging.log4j</groupId>
++                    <artifactId>log4j-core</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jline</groupId>
++                    <artifactId>jline-terminal</artifactId>
++                </exclusion>
++            </exclusions>
++        </dependency>
+         <dependency>
+             <groupId>org.apache.logging.log4j</groupId>
+             <artifactId>log4j-slf4j-impl</artifactId>
+diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/HexFormattingConverter.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/HexFormattingConverter.java
 new file mode 100644
-index 00000000..5d1a6126
+index 00000000..7ab56d25
 --- /dev/null
-+++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/HexFormattingConverter.java
-@@ -0,0 +1,178 @@
-+package io.github.waterfallmc.waterfall.console;
++++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/HexFormattingConverter.java
+@@ -0,0 +1,179 @@
++package io.github.waterfallmc.waterfall.log4j;
 +
 +import net.minecrell.terminalconsole.TerminalConsoleAppender;
 +import org.apache.logging.log4j.core.LogEvent;
@@ -80,6 +55,7 @@ index 00000000..5d1a6126
 +
 +import static net.minecrell.terminalconsole.MinecraftFormattingConverter.KEEP_FORMATTING_PROPERTY;
 +
++// waterfall start
 +/**
 + * Modified version of <a href="https://github.com/Minecrell/TerminalConsoleAppender/blob/master/src/main/java/net/minecrell/terminalconsole/MinecraftFormattingConverter.java">
 + *     TerminalConsoleAppender's MinecraftFormattingConverter</a> to support hex color codes using the md_5 &x&r&r&g&g&b&b format.
@@ -240,7 +216,74 @@ index 00000000..5d1a6126
 +  }
 +
 +}
-+
++// waterfall end
+diff --git a/log4j/src/main/resources/log4j2-bungee.xml b/log4j/src/main/resources/log4j2-bungee.xml
+index 6e9c09c5..ecf51977 100644
+--- a/log4j/src/main/resources/log4j2-bungee.xml
++++ b/log4j/src/main/resources/log4j2-bungee.xml
+@@ -1,20 +1,20 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!-- Log4j configuration that replicates the old BungeeCord logging setup -->
+-<Configuration status="warn">
++<Configuration status="warn" packages="io.github.waterfallmc.waterfall.log4j">
+     <Appenders>
+         <TerminalConsole name="TerminalConsole">
+             <PatternLayout>
+-                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}%n%ex}">
++                <LoggerNamePatternSelector defaultPattern="%highlightError{%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}%n%ex}">
+                     <!-- Log root and BungeeCord loggers without prefix -->
+-                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}%n%ex}" />
++                    <PatternMatch key=",BungeeCord" pattern="%highlightError{%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}%n%ex}" />
+                 </LoggerNamePatternSelector>
+             </PatternLayout>
+         </TerminalConsole>
+         <RollingRandomAccessFile name="File" fileName="proxy.log.0" filePattern="proxy.log.%i" immediateFlush="false">
+             <PatternLayout>
+-                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %minecraftFormatting{%msg}{strip}%n%ex">
++                <LoggerNamePatternSelector defaultPattern="%d{HH:mm:ss} [%level] [%logger] %paperMinecraftFormatting{%msg}{strip}%n%ex">
+                     <!-- Log root and BungeeCord loggers without prefix -->
+-                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %minecraftFormatting{%msg}{strip}%n%ex" />
++                    <PatternMatch key=",BungeeCord" pattern="%d{HH:mm:ss} [%level] %paperMinecraftFormatting{%msg}{strip}%n%ex" />
+                 </LoggerNamePatternSelector>
+             </PatternLayout>
+             <Policies>
+diff --git a/log4j/src/main/resources/log4j2.component.properties b/log4j/src/main/resources/log4j2.component.properties
+index e43f5dac..60578a2e 100644
+--- a/log4j/src/main/resources/log4j2.component.properties
++++ b/log4j/src/main/resources/log4j2.component.properties
+@@ -1,2 +1,3 @@
+ log4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
+ log4j.skipJansi=true
++log4j2.pluginPackages=io.github.waterfallmc.waterfall.log4j
+diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
+index 8e49e002..564a3c7f 100644
+--- a/log4j/src/main/resources/log4j2.xml
++++ b/log4j/src/main/resources/log4j2.xml
+@@ -1,19 +1,19 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<Configuration status="warn" shutdownHook="disable">
++<Configuration status="warn" shutdownHook="disable" packages="io.github.waterfallmc.waterfall.log4j">
+     <Appenders>
+         <TerminalConsole name="TerminalConsole">
+             <PatternLayout>
+-                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %minecraftFormatting{%msg}%n%xEx}">
++                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %paperMinecraftFormatting{%msg}%n%xEx}">
+                     <!-- Log root and BungeeCord loggers without prefix -->
+-                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
++                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %paperMinecraftFormatting{%msg}%n%xEx}" />
+                 </LoggerNamePatternSelector>
+             </PatternLayout>
+         </TerminalConsole>
+         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
+             <PatternLayout>
+-                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %minecraftFormatting{%msg}{strip}%n">
++                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %paperMinecraftFormatting{%msg}{strip}%n">
+                     <!-- Log root and BungeeCord loggers without prefix -->
+-                    <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
++                    <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
+                 </LoggerNamePatternSelector>
+             </PatternLayout>
+             <Policies>
 -- 
-2.44.0
+2.51.0
 
