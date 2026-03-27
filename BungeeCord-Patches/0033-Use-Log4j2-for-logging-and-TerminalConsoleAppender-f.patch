@@ -1,4 +1,4 @@
-From ff0ec8e8ae8ff4f90cd8e0bde2f1cf1286380c00 Mon Sep 17 00:00:00 2001
+From 4b5f3ea001deb0b4f855d78e654e70574c380b0f Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -275,7 +275,7 @@ index e956060c..40a1cc35 100644
                  </configuration>
              </plugin>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 8c25ae3a..07cf55ba 100644
+index 8c25ae3a..cec44945 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -45,6 +45,7 @@
@@ -310,7 +310,7 @@ index 8c25ae3a..07cf55ba 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -131,6 +133,36 @@
+@@ -131,6 +133,42 @@
              <version>${project.version}</version>
              <scope>runtime</scope>
          </dependency>
@@ -339,8 +339,14 @@ index 8c25ae3a..07cf55ba 100644
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
-+            <artifactId>jline-terminal-jansi</artifactId>
-+            <version>3.21.0</version>
++            <artifactId>jline-terminal-ffm</artifactId>
++            <version>4.0.9</version>
++            <scope>runtime</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-terminal-jni</artifactId>
++            <version>4.0.9</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <!-- Waterfall end -->
