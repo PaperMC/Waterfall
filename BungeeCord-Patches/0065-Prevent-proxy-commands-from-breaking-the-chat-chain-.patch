@@ -1,4 +1,4 @@
-From ddae8b4af11a2c84c38b02f22c7a94c63080d20e Mon Sep 17 00:00:00 2001
+From e6b3e9434fbf200b9d3a4d564f01d08535c39274 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -19,10 +19,10 @@ index 6209292e..2afdd1c9 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 622364ff..1c63c6ca 100644
+index 622364ff..b6779092 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -708,6 +708,13 @@ public enum Protocol
+@@ -708,6 +708,14 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 ),
                      map( ProtocolConstants.MINECRAFT_26_1, 0x09 )
              );
@@ -30,7 +30,8 @@ index 622364ff..1c63c6ca 100644
 +            TO_SERVER.registerPacket(
 +                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement.class,
 +                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement::new,
-+                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3)
++                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3),
++                    map(ProtocolConstants.MINECRAFT_26_1, 0x6)
 +            );
 +            // Waterfall end
              TO_SERVER.registerPacket(
