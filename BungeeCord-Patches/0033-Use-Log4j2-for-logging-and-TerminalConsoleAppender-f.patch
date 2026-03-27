@@ -1,4 +1,4 @@
-From 067dfc16c47dc4d8fef5ddf6294ed98a90a18f4a Mon Sep 17 00:00:00 2001
+From ff0ec8e8ae8ff4f90cd8e0bde2f1cf1286380c00 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -38,10 +38,10 @@ index fd082dcd..d090e151 100644
      </build>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
 new file mode 100644
-index 00000000..8387393c
+index 00000000..eb42c916
 --- /dev/null
 +++ b/log4j/pom.xml
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,47 @@
 +<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 +         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 +    <modelVersion>4.0.0</modelVersion>
@@ -60,10 +60,6 @@ index 00000000..8387393c
 +
 +    <name>Waterfall-Log4J</name>
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
-+
-+    <properties>
-+        <log4j2.version>2.20.0</log4j2.version>
-+    </properties>
 +
 +    <dependencies>
 +        <!-- Log4j -->
@@ -235,10 +231,10 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index e0b8b453..b4371768 100644
+index e956060c..40a1cc35 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -52,14 +52,15 @@
+@@ -58,14 +58,15 @@
          <module>config</module>
          <module>dialog</module>
          <module>event</module>
@@ -256,6 +252,28 @@ index e0b8b453..b4371768 100644
          <module>native</module>
          <module>nbt</module>
      </modules>
+@@ -96,6 +97,7 @@
+         <lombok.version>1.18.44</lombok.version>
+         <maven.compiler.release>17</maven.compiler.release>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++        <log4j2.version>2.25.3</log4j2.version>
+     </properties>
+ 
+     <!-- We really shouldn't depend on external repositories -->
+@@ -184,6 +186,13 @@
+                             <artifactId>lombok</artifactId>
+                             <version>${lombok.version}</version>
+                         </annotationProcessorPath>
++                        <!-- Waterfall start - Use log4j2 for logging -->
++                        <annotationProcessorPath>
++                            <groupId>org.apache.logging.log4j</groupId>
++                            <artifactId>log4j-core</artifactId>
++                            <version>${log4j2.version}</version>
++                        </annotationProcessorPath>
++                        <!-- Waterfall end -->
+                     </annotationProcessorPaths>
+                 </configuration>
+             </plugin>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
 index 8c25ae3a..07cf55ba 100644
 --- a/proxy/pom.xml
