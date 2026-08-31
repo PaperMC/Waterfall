@@ -1,4 +1,4 @@
-From e6b3e9434fbf200b9d3a4d564f01d08535c39274 Mon Sep 17 00:00:00 2001
+From 6c6b932af860869f608bda33fb5464d8beca3449 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
@@ -91,10 +91,10 @@ index 31104505..48b20a7e 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 403c4fe2..f8c64785 100644
+index 1dae5d2f..abb5a3d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -164,16 +164,22 @@ public class UpstreamBridge extends PacketHandler
+@@ -168,16 +168,22 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(ClientCommand command) throws Exception
      {
@@ -119,7 +119,7 @@ index 403c4fe2..f8c64785 100644
      {
          for ( int index = 0, length = message.length(); index < length; index++ )
          {
-@@ -192,7 +198,13 @@ public class UpstreamBridge extends PacketHandler
+@@ -196,7 +202,13 @@ public class UpstreamBridge extends PacketHandler
              if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
              {
                  return message;
@@ -134,5 +134,5 @@ index 403c4fe2..f8c64785 100644
          throw CancelSendSignal.INSTANCE;
      }
 -- 
-2.53.0
+2.43.0
 

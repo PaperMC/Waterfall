@@ -1,4 +1,4 @@
-From 87293c7fcf50eb37fa20372140bf4c3092be86fa Mon Sep 17 00:00:00 2001
+From c96240cc4643fb2c083b6b76071a3546a5578159 Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -7,7 +7,7 @@ This functionality of this patch was adopted upstream, however, this
 patch remains for a few misc improvements around here
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 102ccb5c..2a92388f 100644
+index f8f7d7db..e80a0278 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -544,6 +544,6 @@ public class ServerConnector extends PacketHandler
@@ -19,7 +19,7 @@ index 102ccb5c..2a92388f 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c41b4f71..34860ba2 100644
+index 0823b12d..9bae4c09 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -806,20 +806,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -45,10 +45,10 @@ index c41b4f71..34860ba2 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 85659f4b..403c4fe2 100644
+index 34f5ea0f..1dae5d2f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -385,6 +385,6 @@ public class UpstreamBridge extends PacketHandler
+@@ -389,6 +389,6 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
@@ -57,5 +57,5 @@ index 85659f4b..403c4fe2 100644
      }
  }
 -- 
-2.53.0
+2.43.0
 

@@ -1,11 +1,11 @@
-From 29d7031c520483bd6cd691b9a0d2dc856ab32df7 Mon Sep 17 00:00:00 2001
+From b0dbdb7f2af5505b6ac9b30287e784f56c981d9a Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
 
 
 diff --git a/native/compile-native-arm.sh b/native/compile-native-arm.sh
-index b460fe54..64b82daf 100755
+index f38a4d2d..4a2a4d41 100755
 --- a/native/compile-native-arm.sh
 +++ b/native/compile-native-arm.sh
 @@ -1,4 +1,4 @@
@@ -30,12 +30,12 @@ index b460fe54..64b82daf 100755
 +#Waterfall end
  
  echo "Compiling zlib"
--(cd zlib && CFLAGS="-fPIC -DNO_GZIP" CC=aarch64-linux-gnu-gcc CHOST=arm64 ./configure --sprefix="bungee_" --static && make CFLAGS="-fPIC -march=armv8-a+crc" CC=aarch64-linux-gnu-gcc AR=aarch64-linux-gnu-ar)
+-(cd zlib && CFLAGS="-fPIC -DNO_GZIP" CC=aarch64-linux-gnu-gcc CHOST=arm64 ./configure --target="aarch64" --static && make CFLAGS="-fPIC -march=armv8-a+crc" CC=aarch64-linux-gnu-gcc AR=aarch64-linux-gnu-ar)
 +pushd zlib
 +if [[ "$OSTYPE" == "darwin"* ]]; then
-+  CFLAGS="-fPIC -DNO_GZIP" ./configure --sprefix="bungee_" --static && make
++  CFLAGS="-fPIC -DNO_GZIP" ./configure --static && make
 +else
-+  CFLAGS="-fPIC -DNO_GZIP" CC=aarch64-linux-gnu-gcc CHOST=arm64 ./configure --target="aarch64" --sprefix="bungee_" --static && make CFLAGS="-fPIC -march=armv8-a+crc" CC=aarch64-linux-gnu-gcc AR=aarch64-linux-gnu-ar
++  CFLAGS="-fPIC -DNO_GZIP" CC=aarch64-linux-gnu-gcc CHOST=arm64 ./configure --target="aarch64" --static && make CFLAGS="-fPIC -march=armv8-a+crc" CC=aarch64-linux-gnu-gcc AR=aarch64-linux-gnu-ar
 +fi
 +popd
  
@@ -59,8 +59,8 @@ index b460fe54..64b82daf 100755
 +$CC $LDFLAGS -o src/main/resources/"${PREFIX:-}"native-cipher-arm.so shared.o NativeCipherImpl.o mbedtls/library/libmbedcrypto.a
  
  echo "Linking native-compress-arm.so"
--$CC $LDFLAGS -o src/main/resources/native-compress-arm.so shared.o NativeCompressImpl.o zlib/libz-ng.a
-+$CC $LDFLAGS -o src/main/resources/"${PREFIX:-}"native-compress-arm.so shared.o NativeCompressImpl.o zlib/libz-ng.a
+-$CC $LDFLAGS -o src/main/resources/native-compress-arm.so shared.o NativeCompressImpl.o zlib/libz.a
++$CC $LDFLAGS -o src/main/resources/"${PREFIX:-}"native-compress-arm.so shared.o NativeCompressImpl.o zlib/libz.a
  
  echo "Cleaning up"
  rm shared.o NativeCipherImpl.o NativeCompressImpl.o
@@ -1539,5 +1539,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.53.0
+2.43.0
 
