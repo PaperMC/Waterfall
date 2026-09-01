@@ -1,4 +1,4 @@
-From 06d49b3b7be479a8255779c817bd79043c76b518 Mon Sep 17 00:00:00 2001
+From 29ff12beedfac72dbd5d8da7ce3c29981fefbdfe Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index fd082dcd..d090e151 100644
+index 31077ba7..d037f343 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,8 @@
@@ -231,7 +231,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index a11d5b50..03246559 100644
+index 35c4f077..5edd72e5 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -58,14 +58,15 @@
@@ -287,7 +287,7 @@ index a11d5b50..03246559 100644
                              </rules>
                          </configuration>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 453e269b..70cc35b6 100644
+index 9b30a1b2..81e42070 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -45,6 +45,7 @@
@@ -352,13 +352,13 @@ index 453e269b..70cc35b6 100644
 +        <dependency>
 +            <groupId>org.jline</groupId>
 +            <artifactId>jline-terminal-ffm</artifactId>
-+            <version>4.1.3</version>
++            <version>4.4.0</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
 +            <artifactId>jline-terminal-jni</artifactId>
-+            <version>4.1.3</version>
++            <version>4.4.0</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <!-- Waterfall end -->
@@ -682,5 +682,5 @@ index 6788fbe7..00000000
 -    }
 -}
 -- 
-2.54.0
+2.43.0
 

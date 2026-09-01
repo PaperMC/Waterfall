@@ -1,0 +1,72 @@
+From 51dc436d133e67cdf2860234f33d516cd7e91062 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Mon, 31 Aug 2026 19:35:59 +0200
+Subject: [PATCH] Default the native cipher to off
+
+The mbedtls native cipher is slower than the JDK's own implementation on
+every platform and every supported JDK. Benchmarked 2026-08-31, AES-128-CFB8,
+16 MiB, median of 3, across JDK 17/21/25:
+
+  Platform        mbedtls native   JDK JavaCipher   native vs JDK
+  macOS arm64        4.2 MiB/s         69.5            0.06x
+  Linux aarch64      7.2 MiB/s         ~63             0.11x
+  Linux x86_64      29.4 MiB/s         ~41             0.71x
+
+AESCE/AESNI are compiled in and dispatching correctly; the cost is that
+mbedtls's CFB8 driver calls mbedtls_aes_crypt_ecb once per byte. The native
+cipher dates to 2013 (BungeeCord c70006a3), when it was a real win on Java 7 --
+the JDK baseline moved on and the comparison was never re-run.
+
+Native compression is untouched and still enabled: it remains genuinely ahead
+of java.util.zip (1.2-1.4x).
+
+This only changes the default. The native cipher can be restored with
+-Dnet.md_5.bungee.jni.native-cipher.enable=true. NativeCode's existing
+constructors still default to enabled, so only the EncryptionUtil call site
+opts out.
+
+diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+index 3432aa2c..89b4b3be 100644
+--- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
++++ b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+@@ -28,13 +28,20 @@ public final class NativeCode<T>
+     }
+ 
+     public NativeCode(String name, Supplier<? extends T> javaImpl, Supplier<? extends T> nativeImpl, boolean extendedSupportCheck)
++    {
++        this( name, javaImpl, nativeImpl, extendedSupportCheck, true ); // Waterfall - natives are enabled by default unless the call site opts out
++    }
++
++    // Waterfall start - allow an individual native to be opt-in rather than opt-out
++    public NativeCode(String name, Supplier<? extends T> javaImpl, Supplier<? extends T> nativeImpl, boolean extendedSupportCheck, boolean defaultEnabled)
+     {
+         this.name = name;
+         this.javaImpl = javaImpl;
+         this.nativeImpl = nativeImpl;
+-        this.enableNativeFlag = Boolean.parseBoolean( System.getProperty( "net.md_5.bungee.jni." + name + ".enable", "true" ) );
++        this.enableNativeFlag = Boolean.parseBoolean( System.getProperty( "net.md_5.bungee.jni." + name + ".enable", String.valueOf( defaultEnabled ) ) );
+         this.extendedSupportCheck = extendedSupportCheck;
+     }
++    // Waterfall end
+ 
+     public T newInstance()
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+index aa4e2c07..fce63064 100644
+--- a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
++++ b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+@@ -40,7 +40,10 @@ public class EncryptionUtil
+     private static final Random random = new Random();
+     private static final Base64.Encoder MIME_ENCODER = Base64.getMimeEncoder( 76, "\n".getBytes( StandardCharsets.UTF_8 ) );
+     public static final KeyPair keys;
+-    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new );
++    // Waterfall start - default the native cipher off; it is slower than the JDK on every
++    // supported platform. Re-enable with -Dnet.md_5.bungee.jni.native-cipher.enable=true
++    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new, false, false );
++    // Waterfall end
+     private static final PublicKey MOJANG_KEY;
+ 
+     static
+-- 
+2.43.0
+
