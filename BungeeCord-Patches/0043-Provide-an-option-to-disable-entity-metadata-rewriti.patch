@@ -1,4 +1,4 @@
-From d11fb0a8e5b920353c086c716f2cbd5a4f06b1cb Mon Sep 17 00:00:00 2001
+From 8a74d6c9d80c7b7639a3746b1bd88c8cbfea6662 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Mon, 14 Jan 2019 03:35:21 +0000
 Subject: [PATCH] Provide an option to disable entity metadata rewriting
@@ -57,7 +57,7 @@ index 4ff8da6d..e860214f 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 0340226e..0b49fcb2 100644
+index 9dbcd605..dab161a6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -335,6 +335,7 @@ public class ServerConnector extends PacketHandler
@@ -100,7 +100,7 @@ index 0340226e..0b49fcb2 100644
 +                }
 +                Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
 +                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isLimitedCrafting(), login.isDebug(), login.isFlat(), login.getDeathLocation(),
-+                        login.getPortalCooldown(), login.getSeaLevel(), login.isOnlineMode(), login.isSecureProfile() );
++                        login.getPortalCooldown(), login.getSeaLevel(), user.getPendingConnection().isOnlineMode(), login.isSecureProfile() ); // Waterfall - report this connection's online mode (authenticated by the proxy) so the client prepares chat keys correctly, rather than the backend's value
 +                user.unsafe().sendPacket(modLogin);
 +                // Only send if we're in the same dimension
 +                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
@@ -216,5 +216,5 @@ index 00000000..cb81d1dd
 +// Waterfall end
 \ No newline at end of file
 -- 
-2.54.0
+2.43.0
 
