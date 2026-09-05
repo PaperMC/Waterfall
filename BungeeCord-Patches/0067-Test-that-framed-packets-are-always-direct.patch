@@ -1,0 +1,114 @@
+From fd479b4784c896f3fb2077e4dd09dfd9afdfe631 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sat, 5 Sep 2026 19:02:58 +0200
+Subject: [PATCH] Test that framed packets are always direct
+
+The native zlib behind PacketDecompressor calls ByteBuf#memoryAddress, so every
+frame leaving Varint21FrameDecoder has to be direct. Cover both the decoder's own
+non-direct fallback and the full cipher chain in front of it.
+
+diff --git a/proxy/src/test/java/net/md_5/bungee/netty/DirectFrameTest.java b/proxy/src/test/java/net/md_5/bungee/netty/DirectFrameTest.java
+new file mode 100644
+index 00000000..b718bd3a
+--- /dev/null
++++ b/proxy/src/test/java/net/md_5/bungee/netty/DirectFrameTest.java
+@@ -0,0 +1,96 @@
++package net.md_5.bungee.netty;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.PooledByteBufAllocator;
++import io.netty.channel.embedded.EmbeddedChannel;
++import java.util.Arrays;
++import javax.crypto.KeyGenerator;
++import javax.crypto.SecretKey;
++import net.md_5.bungee.jni.cipher.BungeeCipher;
++import net.md_5.bungee.jni.cipher.JavaCipher;
++import net.md_5.bungee.netty.cipher.CipherDecoder;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.Varint21FrameDecoder;
++import org.junit.jupiter.api.Test;
++
++/**
++ * The native zlib behind PacketDecompressor calls ByteBuf#memoryAddress, so every frame
++ * leaving Varint21FrameDecoder has to be direct.
++ */
++public class DirectFrameTest
++{
++
++    private static final byte[] PAYLOAD = new byte[ 64 ];
++
++    static
++    {
++        Arrays.fill( PAYLOAD, (byte) 0x42 );
++    }
++
++    private static ByteBuf framed(ByteBuf into)
++    {
++        DefinedPacket.writeVarInt( PAYLOAD.length, into );
++        into.writeBytes( PAYLOAD );
++        return into;
++    }
++
++    private static void assertDirectFrame(EmbeddedChannel channel)
++    {
++        ByteBuf frame = channel.readInbound();
++        try
++        {
++            assertNotNull( frame, "no frame decoded" );
++            byte[] got = new byte[ frame.readableBytes() ];
++            frame.getBytes( frame.readerIndex(), got );
++            assertArrayEquals( PAYLOAD, got, "frame contents" );
++            assertTrue( frame.hasMemoryAddress(), "frame handed to PacketDecompressor must be direct" );
++            frame.memoryAddress();
++        } finally
++        {
++            if ( frame != null )
++            {
++                frame.release();
++            }
++            channel.finishAndReleaseAll();
++        }
++    }
++
++    @Test
++    public void heapInputIsCopiedToDirect()
++    {
++        EmbeddedChannel channel = new EmbeddedChannel( new Varint21FrameDecoder() );
++        channel.config().setAllocator( PooledByteBufAllocator.DEFAULT );
++
++        assertTrue( channel.writeInbound( framed( PooledByteBufAllocator.DEFAULT.heapBuffer() ) ) );
++        assertDirectFrame( channel );
++    }
++
++    @Test
++    public void framesFromTheJavaCipherAreDirect() throws Exception
++    {
++        SecretKey key = newKey();
++        BungeeCipher encrypt = new JavaCipher();
++        encrypt.init( true, key );
++        BungeeCipher decrypt = new JavaCipher();
++        decrypt.init( false, key );
++
++        EmbeddedChannel channel = new EmbeddedChannel( new CipherDecoder( decrypt ), new Varint21FrameDecoder() );
++        channel.config().setAllocator( PooledByteBufAllocator.DEFAULT );
++
++        ByteBuf plain = framed( PooledByteBufAllocator.DEFAULT.directBuffer() );
++        ByteBuf encrypted = encrypt.cipher( channel.pipeline().firstContext(), plain );
++        plain.release();
++
++        assertTrue( channel.writeInbound( encrypted ) );
++        assertDirectFrame( channel );
++    }
++
++    private static SecretKey newKey() throws Exception
++    {
++        KeyGenerator gen = KeyGenerator.getInstance( "AES" );
++        gen.init( 128 );
++        return gen.generateKey();
++    }
++}
+-- 
+2.43.0
+

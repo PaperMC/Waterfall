@@ -1,0 +1,64 @@
+From 5e1fd61c298d334c96e20de0b96f67ded62bfdf5 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Sat, 5 Sep 2026 19:03:06 +0200
+Subject: [PATCH] Cipher into a direct buffer in JavaCipher
+
+JavaCipher became the default when the native cipher was turned off, and it emitted
+a heap buffer. The native zlib behind PacketDecompressor calls ByteBuf#memoryAddress,
+so Varint21FrameDecoder's non-direct fallback went from a corner case to the hot path
+for every online-mode connection: an allocation and a copy per frame, plus a spurious
+"Netty is not using direct IO buffers." on startup.
+
+Ciphering into a direct buffer instead moves that to one allocation per read and
+leaves frames as zero-copy slices. Measured over the full decrypt + frame decode path
+(AES-128-CFB8, 16KiB reads, JDK 21, Linux x86_64, median of 3):
+
+  frame size   heap out   direct out
+  64B          19.9 MiB/s   21.0 MiB/s   +5.5%
+  256B         21.2 MiB/s   21.6 MiB/s   +1.9%
+  2048B        21.6 MiB/s   21.7 MiB/s   +0.5%
+
+CFB8 dominates so the end-to-end win is small; with the crypto stubbed out the buffer
+handling alone is 30-40% faster. Cipher.update(ByteBuffer, ByteBuffer) was measured as
+an alternative and rejected: with direct buffers the JDK falls back to temporary heap
+arrays, allocating roughly the payload size per call and running no faster.
+
+diff --git a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
+index 94d02691..d3a6a35c 100644
+--- a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
++++ b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
+@@ -66,10 +66,28 @@ public class JavaCipher implements BungeeCipher
+         int readableBytes = in.readableBytes();
+         byte[] heapIn = bufToByte( in );
+ 
+-        ByteBuf heapOut = ctx.alloc().heapBuffer( cipher.getOutputSize( readableBytes ) );
+-        heapOut.writerIndex( cipher.update( heapIn, 0, readableBytes, heapOut.array(), heapOut.arrayOffset() ) );
++        // Waterfall start - cipher into a direct buffer; the native zlib downstream needs a
++        // memory address, and heap output makes Varint21FrameDecoder copy every frame
++        int outputSize = cipher.getOutputSize( readableBytes );
++        byte[] heapOut = heapOutLocal.get();
++        if ( heapOut.length < outputSize )
++        {
++            heapOut = new byte[ outputSize ];
++            heapOutLocal.set( heapOut );
++        }
++
++        ByteBuf out = ctx.alloc().directBuffer( outputSize );
++        try
++        {
++            out.writeBytes( heapOut, 0, cipher.update( heapIn, 0, readableBytes, heapOut ) );
++        } catch ( Throwable t )
++        {
++            out.release();
++            throw t;
++        }
+ 
+-        return heapOut;
++        return out;
++        // Waterfall end
+     }
+ 
+     @Override
+-- 
+2.43.0
+
