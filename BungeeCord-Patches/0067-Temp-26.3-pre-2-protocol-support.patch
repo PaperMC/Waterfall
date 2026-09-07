@@ -1,0 +1,537 @@
+From 52e2d6f3ac7e68b7a8325b9f25a98007650c7fa8 Mon Sep 17 00:00:00 2001
+From: Shane Freeder <theboyetronic@gmail.com>
+Date: Fri, 4 Sep 2026 22:24:49 +0200
+Subject: [PATCH] Temp: 26.3-pre-2 protocol support
+
+Adds MINECRAFT_26_3 behind the existing net.md_5.bungee.protocol.snapshot
+flag, using the snapshot protocol number (0x40000000 | 334) as upstream does
+during a pre-release cycle, and remaps the packets whose ids moved.
+
+26.3-pre-2 inserts post_effects into both the configuration and game
+clientbound tables, and swing_animation into the game clientbound table,
+shifting everything after them: 7 configuration and 19 game packets we
+register. Serverbound is unaffected for us, as the punch/swing shuffle sits
+in the 0x2E-0x3F window we do not register in, and CustomClickAction at 0x44
+is above it. Every id was checked against the registration order in
+GameProtocols and ConfigurationProtocols rather than the protocol summary.
+
+CommonPlayerSpawnInfo, which Login and Respawn both embed, is the one packet
+payload change. gameType moved from a byte to a var int, and previousGameType
+from a byte with a -1 sentinel to vanilla's OPTIONAL_VAR_INT, where zero means
+absent and any other value is the id plus one. Both fields are only ever
+round-tripped by the proxy, so no call site needs to change. Everything else
+we parse is a FriendlyByteBuf to StreamCodec refactor that leaves the wire
+format identical, including PlayerListItemUpdate, whose new Action id is
+enum-internal and not serialised.
+
+The command argument type registry also grew: context_float_provider,
+context_int_provider and slot_source after loot_modifier, then feature and
+swing_animation after dialog, taking it from 57 to 62 entries and shifting
+dialog and uuid. All five are singleton argument types with no payload, so
+IDS_26_3 adds them as VOID. Without this, decoding Commands from a 26.3
+backend throws ArrayIndexOutOfBoundsException. 26.3 likewise adds a
+post_effects suggestion provider; those are keyed by name rather than index
+and unknown names are rejected outright, so it is registered as a dummy for
+every version.
+
+This is temporary and should be dropped once upstream adds 26.3 support.
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 486dfad2..edb07bbf 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -71,6 +71,19 @@ public abstract class DefinedPacket
+         }
+     }
+ 
++    public static short readOptionalGameMode(ByteBuf buf)
++    {
++        int id = readVarInt( buf );
++        return (short) ( id == 0 ? -1 : id - 1 );
++    }
++
++    public static void writeOptionalGameMode(short gameMode, ByteBuf buf)
++    {
++        // -1 and 255 both denote an absent game mode, as older versions wrote it as a
++        // signed byte here but as an unsigned byte in Respawn
++        writeVarInt( ( gameMode == -1 || gameMode == 255 ) ? 0 : gameMode + 1, buf );
++    }
++
+     public static <T> T readLengthPrefixed(Function<ByteBuf, T> reader, ByteBuf buf, int maxSize)
+     {
+         int size = readVarInt( buf );
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index b6779092..b93d6a96 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -171,7 +171,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x4C ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x4B ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x50 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x52 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x52 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x53 )
+             );
+             TO_CLIENT.registerPacket(
+                     BossBar.class,
+@@ -237,7 +238,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x64 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x63 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x68 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x6A )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x6A ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x6B )
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardScore.class,
+@@ -259,7 +261,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x68 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x67 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x6C ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x6E )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x6E ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x6F )
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardScoreReset.class,
+@@ -291,7 +294,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x5C ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x5B ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x60 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x62 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x62 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x63 )
+             );
+             TO_CLIENT.registerPacket(
+                     Team.class,
+@@ -313,7 +317,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x67 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x66 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x6B ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x6D )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x6D ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x6E )
+             );
+             TO_CLIENT.registerPacket(
+                     PluginMessage.class,
+@@ -376,7 +381,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x6C ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x6B ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x70 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x72 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x72 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x73 )
+             );
+             TO_CLIENT.registerPacket(
+                     ClearTitles.class,
+@@ -404,7 +410,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x6A ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x69 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x6E ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x70 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x70 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x71 )
+             );
+             TO_CLIENT.registerPacket(
+                     TitleTimes.class,
+@@ -421,7 +428,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x6D ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x6C ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x71 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x73 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x73 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x74 )
+             );
+             TO_CLIENT.registerPacket(
+                     SystemChat.class,
+@@ -437,7 +445,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x73 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x72 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x77 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x79 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x79 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x7B )
+             );
+             TO_CLIENT.registerPacket(
+                     PlayerListHeaderFooter.class,
+@@ -464,7 +473,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x74 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x73 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x78 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x7A )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x7A ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x7C )
+             );
+             TO_CLIENT.registerPacket(
+                     EntityStatus.class,
+@@ -537,7 +547,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x59 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x58 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x5D ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x5F )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x5F ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x60 )
+             );
+             TO_CLIENT.registerPacket(
+                     ServerData.class,
+@@ -552,7 +563,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x50 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x4F ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x54 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x56 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x56 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x57 )
+             );
+             TO_CLIENT.registerPacket(
+                     PlayerListItemRemove.class,
+@@ -587,7 +599,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x70 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x6F ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x74 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x76 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x76 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x77 )
+             );
+             TO_CLIENT.registerPacket(
+                     CookieRequest.class,
+@@ -603,7 +616,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x72 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_5, 0x71 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x76 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x78 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x78 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x79 )
+             );
+             TO_CLIENT.registerPacket(
+                     Transfer.class,
+@@ -612,7 +626,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_20_5, 0x73 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x7A ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x7F ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x81 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x81 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x83 )
+             );
+             TO_CLIENT.registerPacket(
+                     DisconnectReportDetails.class,
+@@ -621,7 +636,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21, 0x7A ),
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x81 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x86 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x88 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x88 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x8A )
+             );
+             TO_CLIENT.registerPacket(
+                     ServerLinks.class,
+@@ -630,7 +646,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_21, 0x7B ),
+                     map( ProtocolConstants.MINECRAFT_1_21_2, 0x82 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x87 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x89 )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x89 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x8B )
+             );
+             TO_CLIENT.registerPacket(
+                     ClearDialog.class,
+@@ -638,7 +655,8 @@ public enum Protocol
+                     RegisterType.ENCODE,
+                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x84 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x89 ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x8B )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x8B ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x8D )
+             );
+             TO_CLIENT.registerPacket(
+                     ShowDialog.class,
+@@ -646,7 +664,8 @@ public enum Protocol
+                     RegisterType.ENCODE,
+                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x85 ),
+                     map( ProtocolConstants.MINECRAFT_1_21_9, 0x8A ),
+-                    map( ProtocolConstants.MINECRAFT_26_1, 0x8C )
++                    map( ProtocolConstants.MINECRAFT_26_1, 0x8C ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x8E )
+             );
+ 
+             TO_SERVER.registerPacket(
+@@ -929,42 +948,49 @@ public enum Protocol
+                     StoreCookie.class,
+                     StoreCookie::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0A )
++                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0A ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x0B )
+             );
+             TO_CLIENT.registerPacket(
+                     Transfer.class,
+                     Transfer::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0B )
++                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0B ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x0C )
+             );
+             TO_CLIENT.registerPacket(
+                     KnownPacks.class,
+                     KnownPacks::new,
+-                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0E )
++                    map( ProtocolConstants.MINECRAFT_1_20_5, 0x0E ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x0F )
+             );
+             TO_CLIENT.registerPacket(
+                     DisconnectReportDetails.class,
+                     DisconnectReportDetails::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_21, 0x0F )
++                    map( ProtocolConstants.MINECRAFT_1_21, 0x0F ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x10 )
+             );
+             TO_CLIENT.registerPacket(
+                     ServerLinks.class,
+                     ServerLinks::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_21, 0x10 )
++                    map( ProtocolConstants.MINECRAFT_1_21, 0x10 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x11 )
+             );
+             TO_CLIENT.registerPacket(
+                     ClearDialog.class,
+                     ClearDialog::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x11 )
++                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x11 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x12 )
+             );
+             TO_CLIENT.registerPacket(
+                     ShowDialogDirect.class,
+                     ShowDialogDirect::new,
+                     RegisterType.ENCODE,
+-                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x12 )
++                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x12 ),
++                    map( ProtocolConstants.MINECRAFT_26_3, 0x13 )
+             );
+ 
+             TO_SERVER.registerPacket(
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index 31d04a0e..46f71843 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -56,6 +56,7 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_21_11 = 774;
+     public static final int MINECRAFT_26_1 = 775;
+     public static final int MINECRAFT_26_2 = 776;
++    public static final int MINECRAFT_26_3 = 1073742158;
+     public static final List<String> SUPPORTED_VERSIONS;
+     public static final List<Integer> SUPPORTED_VERSION_IDS;
+ 
+@@ -132,8 +133,8 @@ public class ProtocolConstants
+ 
+         if ( SNAPSHOT_SUPPORT )
+         {
+-            // supportedVersions.add( "26.2.x" );
+-            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_26_2 );
++            supportedVersions.add( "26.3.x" );
++            supportedVersionIds.add( ProtocolConstants.MINECRAFT_26_3 );
+         }
+ 
+         SUPPORTED_VERSIONS = supportedVersions.build();
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+index e0953932..9aaaf197 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+@@ -314,6 +314,7 @@ public class Commands extends DefinedPacket
+         private static final ArgumentSerializer[] IDS_1_20_5;
+         private static final ArgumentSerializer[] IDS_1_21_5;
+         private static final ArgumentSerializer[] IDS_1_21_6;
++        private static final ArgumentSerializer[] IDS_26_3;
+         private static final Map<Class<?>, ProperArgumentSerializer<?>> PROPER_PROVIDERS = new HashMap<>();
+         //
+         private static final ArgumentSerializer<Void> VOID = new ArgumentSerializer<Void>()
+@@ -980,6 +981,71 @@ public class Commands extends DefinedPacket
+                 get( "minecraft:dialog", VOID ),
+                 get( "minecraft:uuid", VOID )
+             };
++            IDS_26_3 = new ArgumentSerializer[]
++            {
++                get( "brigadier:bool", VOID ),
++                get( "brigadier:float", FLOAT_RANGE ),
++                get( "brigadier:double", DOUBLE_RANGE ),
++                get( "brigadier:integer", INTEGER_RANGE ),
++                get( "brigadier:long", LONG_RANGE ),
++                get( "brigadier:string", STRING ),
++                get( "minecraft:entity", BYTE ),
++                get( "minecraft:game_profile", VOID ),
++                get( "minecraft:block_pos", VOID ),
++                get( "minecraft:column_pos", VOID ),
++                get( "minecraft:vec3", VOID ),
++                get( "minecraft:vec2", VOID ),
++                get( "minecraft:block_state", VOID ),
++                get( "minecraft:block_predicate", VOID ),
++                get( "minecraft:item_stack", VOID ),
++                get( "minecraft:item_predicate", VOID ),
++                get( "minecraft:color", VOID ),
++                get( "minecraft:hex_color", VOID ),
++                get( "minecraft:component", VOID ),
++                get( "minecraft:style", VOID ),
++                get( "minecraft:message", VOID ),
++                get( "minecraft:nbt_compound_tag", VOID ),
++                get( "minecraft:nbt_tag", VOID ),
++                get( "minecraft:nbt_path", VOID ),
++                get( "minecraft:objective", VOID ),
++                get( "minecraft:objective_criteria", VOID ),
++                get( "minecraft:operation", VOID ),
++                get( "minecraft:particle", VOID ),
++                get( "minecraft:angle", VOID ),
++                get( "minecraft:rotation", VOID ),
++                get( "minecraft:scoreboard_slot", VOID ),
++                get( "minecraft:score_holder", BYTE ),
++                get( "minecraft:swizzle", VOID ),
++                get( "minecraft:team", VOID ),
++                get( "minecraft:item_slot", VOID ),
++                get( "minecraft:item_slots", VOID ),
++                get( "minecraft:resource_location", VOID ),
++                get( "minecraft:function", VOID ),
++                get( "minecraft:entity_anchor", VOID ),
++                get( "minecraft:int_range", VOID ),
++                get( "minecraft:float_range", VOID ),
++                get( "minecraft:dimension", VOID ),
++                get( "minecraft:gamemode", VOID ),
++                get( "minecraft:time", INTEGER ),
++                get( "minecraft:resource_or_tag", RAW_STRING ),
++                get( "minecraft:resource_or_tag_key", RAW_STRING ),
++                get( "minecraft:resource", RAW_STRING ),
++                get( "minecraft:resource_key", RAW_STRING ),
++                get( "minecraft:resource_selector", RAW_STRING ),
++                get( "minecraft:template_mirror", VOID ),
++                get( "minecraft:template_rotation", VOID ),
++                get( "minecraft:heightmap", VOID ),
++                get( "minecraft:loot_table", VOID ),
++                get( "minecraft:loot_predicate", VOID ),
++                get( "minecraft:loot_modifier", VOID ),
++                get( "minecraft:context_float_provider", VOID ),
++                get( "minecraft:context_int_provider", VOID ),
++                get( "minecraft:slot_source", VOID ),
++                get( "minecraft:dialog", VOID ),
++                get( "minecraft:feature", VOID ),
++                get( "minecraft:swing_animation", VOID ),
++                get( "minecraft:uuid", VOID )
++            };
+         }
+ 
+         private static void register(String name, ArgumentSerializer serializer)
+@@ -1001,7 +1067,10 @@ public class Commands extends DefinedPacket
+             {
+                 key = readVarInt( buf );
+ 
+-                if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_6 )
++                if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++                {
++                    reader = IDS_26_3[(Integer) key];
++                } else if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_6 )
+                 {
+                     reader = IDS_1_21_6[(Integer) key];
+                 } else if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_5 )
+@@ -1110,6 +1179,7 @@ public class Commands extends DefinedPacket
+             registerDummy( "minecraft:available_sounds" );
+             registerDummy( "minecraft:available_biomes" );
+             registerDummy( "minecraft:summonable_entities" );
++            registerDummy( "minecraft:post_effects" );
+         }
+ 
+         private static void registerDummy(String name)
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+index f72a9f15..a86d15d3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Login.java
+@@ -144,8 +144,15 @@ public class Login extends DefinedPacket
+             }
+             worldName = readString( buf );
+             seed = buf.readLong();
+-            gameMode = buf.readUnsignedByte();
+-            previousGameMode = buf.readByte();
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++            {
++                gameMode = (short) readVarInt( buf );
++                previousGameMode = readOptionalGameMode( buf );
++            } else
++            {
++                gameMode = buf.readUnsignedByte();
++                previousGameMode = buf.readByte();
++            }
+         }
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
+         {
+@@ -278,8 +285,15 @@ public class Login extends DefinedPacket
+             }
+             writeString( worldName, buf );
+             buf.writeLong( seed );
+-            buf.writeByte( gameMode );
+-            buf.writeByte( previousGameMode );
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++            {
++                writeVarInt( gameMode, buf );
++                writeOptionalGameMode( previousGameMode, buf );
++            } else
++            {
++                buf.writeByte( gameMode );
++                buf.writeByte( previousGameMode );
++            }
+         }
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
+         {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
+index 650932cb..1988de59 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Respawn.java
+@@ -60,10 +60,22 @@ public class Respawn extends DefinedPacket
+         {
+             difficulty = buf.readUnsignedByte();
+         }
+-        gameMode = buf.readUnsignedByte();
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++        {
++            gameMode = (short) readVarInt( buf );
++        } else
++        {
++            gameMode = buf.readUnsignedByte();
++        }
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
+         {
+-            previousGameMode = buf.readUnsignedByte();
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++            {
++                previousGameMode = readOptionalGameMode( buf );
++            } else
++            {
++                previousGameMode = buf.readUnsignedByte();
++            }
+             debug = buf.readBoolean();
+             flat = buf.readBoolean();
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_20_2 )
+@@ -123,10 +135,22 @@ public class Respawn extends DefinedPacket
+         {
+             buf.writeByte( difficulty );
+         }
+-        buf.writeByte( gameMode );
++        if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++        {
++            writeVarInt( gameMode, buf );
++        } else
++        {
++            buf.writeByte( gameMode );
++        }
+         if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_16 )
+         {
+-            buf.writeByte( previousGameMode );
++            if ( protocolVersion >= ProtocolConstants.MINECRAFT_26_3 )
++            {
++                writeOptionalGameMode( previousGameMode, buf );
++            } else
++            {
++                buf.writeByte( previousGameMode );
++            }
+             buf.writeBoolean( debug );
+             buf.writeBoolean( flat );
+             if ( protocolVersion < ProtocolConstants.MINECRAFT_1_20_2 )
+-- 
+2.43.0
+
