@@ -1,0 +1,745 @@
+From 96103537f46c180a12768761c0b06373f4088249 Mon Sep 17 00:00:00 2001
+From: "Five (Xer)" <admin@fivepb.me>
+Date: Wed, 23 Jun 2021 23:10:02 +0200
+Subject: [PATCH] Rework information forwarding
+
+Enable Bungeeguard and Velocity/Modern forwarding modes natively.
+
+Modern forwarding transports the player's identity to the backend in a
+login plugin message on velocity:player_info, authenticated with an
+HMAC-SHA256 tag over a shared secret, rather than smuggling it through the
+handshake host as the legacy scheme does. The payload version is negotiated
+against the backend's request, the client's protocol version and whether the
+player presented a key, so 1.19 and 1.19.1 clients get their key block
+forwarded and 1.19.3+ clients get the session key model.
+
+forwarding_mode in waterfall.yml selects the mode. It defaults to whatever
+ip_forward implies, so existing configurations keep working untouched. The
+secret is read from VELOCITY_FORWARDING_SECRET or forwarding_secret_file as
+well as the config, so it can be shared with a Velocity proxy, and is
+generated on first start when a mode needs one and none is configured.
+
+Clients below 1.13 are refused up front, as they cannot carry login plugin
+messages.
+
+Based on PaperMC/Waterfall#663 by Five (Xer). The BungeeGuard plugin
+detection warning from the original patch is omitted.
+
+Co-authored-by: Shane Freeder <theboyetronic@gmail.com>
+
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java b/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java
+new file mode 100644
+index 00000000..91f3b971
+--- /dev/null
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/forwarding/ForwardingMode.java
+@@ -0,0 +1,15 @@
++package io.github.waterfallmc.waterfall.forwarding;
++
++
++/**
++ * This enum represents the forwarding modes supported by Waterfall.
++ */
++public enum ForwardingMode {
++	/**
++	 * No forwarding. Backends see the proxy's address and offline mode UUIDs.
++	 */
++	NONE,
++	BUNGEECORD_LEGACY,
++	BUNGEEGUARD,
++	VELOCITY_MODERN
++}
+diff --git a/api/src/main/java/net/md_5/bungee/Util.java b/api/src/main/java/net/md_5/bungee/Util.java
+index 91efc0a6..0e7aefc1 100644
+--- a/api/src/main/java/net/md_5/bungee/Util.java
++++ b/api/src/main/java/net/md_5/bungee/Util.java
+@@ -8,7 +8,9 @@ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.net.URI;
+ import java.net.URISyntaxException;
++import java.security.SecureRandom;
+ import java.util.Locale;
++import java.util.Random;
+ import java.util.UUID;
+ 
+ import io.github.waterfallmc.waterfall.utils.Hex;
+@@ -141,4 +143,22 @@ public class Util
+     {
+         return new UUID( UnsignedLongs.parseUnsignedLong( uuid.substring( 0, 16 ), 16 ), UnsignedLongs.parseUnsignedLong( uuid.substring( 16 ), 16 ) );
+     }
++
++    // Waterfall start: Forwarding rework
++    /**
++     * Generates an alphanumeric A-Z,a-z,0-9 byte-sequence.
++     *
++     * @param len the length of the sequence
++     * @return a UTF/ASCII compatible alphanumeric byte-sequence
++     */
++    public static byte[] randomAlphanumericSequence(int len){
++        Random random = new SecureRandom();
++        byte[] ret = new byte[len];
++        for(int i = 0; i < len; i++){
++            int seq = random.nextInt(62);
++            ret[i] = (byte) (seq < 10 ? seq + 48 : seq < 36 ? seq + 55 : seq + 61) ;
++        }
++        return ret;
++    }
++    // Waterfall end: Forwarding rework
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 469fe0e1..4f8fbbff 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -275,4 +275,10 @@ public interface ProxyConfig
+      * @return the configured limit
+      */
+     int getPluginChannelNameLimit();
++
++    /**
++     * Represents the forwarding mode as configured.
++     * @return the mode set in the config
++     */
++    io.github.waterfallmc.waterfall.forwarding.ForwardingMode getForwardingMode();
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index da0efa36..70119917 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -1,11 +1,18 @@
+ package io.github.waterfallmc.waterfall.conf;
+ 
+ import com.google.common.base.Joiner;
++import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.io.File;
++import java.io.IOException;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.util.Locale;
++import java.util.logging.Logger;
+ 
+ public class WaterfallConfiguration extends Configuration {
+ 
+@@ -62,6 +69,9 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private int pluginChannelNameLimit = 128;
+ 
++    private ForwardingMode forwardingMode = ForwardingMode.NONE;
++    private byte[] forwardingSecret = new byte[0];
++
+     @Override
+     public void load() {
+         super.load();
+@@ -77,6 +87,80 @@ public class WaterfallConfiguration extends Configuration {
+         disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
+         pluginChannelLimit = config.getInt("registered_plugin_channels_limit", pluginChannelLimit);
+         pluginChannelNameLimit = config.getInt("plugin_channel_name_limit", pluginChannelNameLimit);
++        forwardingMode = readForwardingMode(config);
++        forwardingSecret = readForwardingSecret(config);
++        Logger logger = BungeeCord.getInstance().getLogger();
++        switch(forwardingMode) {
++            case NONE:
++                logger.warning("Information forwarding is disabled. " +
++                        "Player UUIDs may not be consistent across the servers. " +
++                        "For the optimal experience please set forwarding_mode in waterfall.yml and " +
++                        "configure forwarding on your servers.");
++                break;
++            case BUNGEECORD_LEGACY:
++                logger.info("Forwarding mode is set to Bungeecord/Legacy forwarding. " +
++                        "It is recommended to use another forwarding method to mitigate information spoofing attacks.");
++                break;
++            case BUNGEEGUARD:
++                logger.info("Forwarding mode is set to BungeeGuard forwarding. " +
++                        "Please ensure all connected servers make use of BungeeGuard for optimal security.");
++                break;
++            case VELOCITY_MODERN:
++                logger.info("Forwarding mode is set to modern/Velocity forwarding. " +
++                        "If you need to use versions older than 1.13 please use another forwarding type.");
++                break;
++        }
++
++        if(forwardingSecret.length == 0 && (forwardingMode == ForwardingMode.BUNGEEGUARD || forwardingMode == ForwardingMode.VELOCITY_MODERN)) {
++            config.regenerateForwardingSecret();
++            forwardingSecret = config.getString("forwarding_secret", "").getBytes(StandardCharsets.UTF_8);
++            logger.warning("A new forwarding secret has been generated. If this was the " +
++                    "first start of the proxy please configure forwarding for your network.");
++        }
++    }
++
++    /**
++     * Reads the configured mode, falling back to whatever the legacy {@code ip_forward}
++     * option implies so that existing configurations keep working untouched.
++     */
++    private ForwardingMode readForwardingMode(YamlConfig config) {
++        // Written back as the default so the generated config names a concrete mode rather
++        // than an empty string, without changing what an existing configuration resolves to.
++        ForwardingMode derived = isIpForward() ? ForwardingMode.BUNGEECORD_LEGACY : ForwardingMode.NONE;
++        String mode = config.getString("forwarding_mode", derived.name().toLowerCase(Locale.ROOT)).trim();
++        if (mode.isEmpty()) {
++            return derived;
++        }
++        try {
++            return ForwardingMode.valueOf(mode.toUpperCase(Locale.ROOT));
++        } catch (IllegalArgumentException ex) {
++            throw new IllegalArgumentException("Invalid forwarding_mode '" + mode
++                    + "', expected one of none, bungeecord_legacy, bungeeguard or velocity_modern", ex);
++        }
++    }
++
++    /**
++     * The secret is taken from the environment first, so that it can be shared with a
++     * Velocity proxy without either side having to own the file.
++     */
++    private byte[] readForwardingSecret(YamlConfig config) {
++        String env = System.getenv("VELOCITY_FORWARDING_SECRET");
++        if (env != null && !env.trim().isEmpty()) {
++            return env.trim().getBytes(StandardCharsets.UTF_8);
++        }
++        String secret = config.getString("forwarding_secret", "").trim();
++        if (!secret.isEmpty()) {
++            return secret.getBytes(StandardCharsets.UTF_8);
++        }
++        File file = new File(config.getString("forwarding_secret_file", "forwarding.secret"));
++        if (!file.isFile()) {
++            return new byte[0];
++        }
++        try {
++            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
++        } catch (IOException ex) {
++            throw new RuntimeException("Could not read the forwarding secret from " + file, ex);
++        }
+     }
+ 
+     @Override
+@@ -123,4 +207,13 @@ public class WaterfallConfiguration extends Configuration {
+     public int getPluginChannelNameLimit() {
+         return pluginChannelNameLimit;
+     }
++
++    @Override
++    public ForwardingMode getForwardingMode() {
++        return forwardingMode;
++    }
++
++    public byte[] getForwardingSecret() {
++        return forwardingSecret;
++    }
+ }
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java
+new file mode 100644
+index 00000000..ee727073
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtil.java
+@@ -0,0 +1,141 @@
++package io.github.waterfallmc.waterfall.forwarding;
++
++import com.google.common.base.Preconditions;
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufUtil;
++import io.netty.buffer.Unpooled;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.data.PlayerPublicKey;
++import net.md_5.bungee.protocol.data.Property;
++
++import javax.crypto.Mac;
++import javax.crypto.SecretKey;
++import javax.crypto.spec.SecretKeySpec;
++import java.security.InvalidKeyException;
++import java.security.NoSuchAlgorithmException;
++import java.util.UUID;
++
++public enum VelocityForwardingUtil {
++	;
++	public static final String VELOCITY_IP_FORWARDING_CHANNEL = "velocity:player_info";
++	public static final String MODERN_IP_FORWARDING_FAILURE = "Your server did not send a forwarding request to the proxy. Is it set up correctly?";
++
++	/**
++	 * Base payload: address, UUID, name and profile properties.
++	 */
++	public static final int MODERN_DEFAULT = 1;
++	/**
++	 * Adds a 1.19 ({@code GENERIC_V1}) player key.
++	 */
++	public static final int MODERN_WITH_KEY = 2;
++	/**
++	 * Adds a 1.19.1+ ({@code LINKED_V2}) player key plus the UUID it was signed for.
++	 */
++	public static final int MODERN_WITH_KEY_V2 = 3;
++	/**
++	 * 1.19.3+ session key model. Carries no key block.
++	 */
++	public static final int MODERN_LAZY_SESSION = 4;
++	public static final int MODERN_MAX_VERSION = MODERN_LAZY_SESSION;
++
++	/**
++	 * Reads the forwarding version the backend asked for out of a login plugin request.
++	 *
++	 * <p>The version is a single raw signed byte, not a VarInt. An absent or malformed
++	 * request is taken to mean version 1.</p>
++	 */
++	public static int readRequestedVersion(byte[] data) {
++		return (data == null || data.length != 1) ? MODERN_DEFAULT : data[0];
++	}
++
++	/**
++	 * Picks the version to actually send, given what the backend asked for, the client's
++	 * protocol version and whether it presented a key.
++	 *
++	 * <p>The result may be lower than the request: a key whose layout does not fit the
++	 * requested version is dropped rather than mis-encoded.</p>
++	 */
++	public static int getForwardingVersion(int requested, int protocolVersion, PlayerPublicKey playerKey) {
++		requested = Math.min(requested, MODERN_MAX_VERSION);
++		if (requested <= MODERN_DEFAULT) {
++			return MODERN_DEFAULT;
++		}
++
++		if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19_3) {
++			return (requested >= MODERN_LAZY_SESSION) ? MODERN_LAZY_SESSION : MODERN_DEFAULT;
++		}
++
++		if (playerKey != null) {
++			// The key revision follows the client version: 1.19 signs a bare key (GENERIC_V1),
++			// 1.19.1 and 1.19.2 sign it against the player's UUID (LINKED_V2).
++			if (protocolVersion < ProtocolConstants.MINECRAFT_1_19_1) {
++				return MODERN_WITH_KEY;
++			}
++			return (requested >= MODERN_WITH_KEY_V2) ? MODERN_WITH_KEY_V2 : MODERN_DEFAULT;
++		}
++
++		return MODERN_DEFAULT;
++	}
++
++	/**
++	 * Builds the response body: a 32 byte HMAC-SHA256 tag over the payload, followed by the
++	 * payload itself.
++	 *
++	 * @param forwardingSecret the shared secret, used directly as the MAC key
++	 * @param version the negotiated version, from {@link #getForwardingVersion}
++	 * @param address the player's real address, without a port or an IPv6 scope suffix
++	 * @param name the player's username
++	 * @param playerUUID the player's authenticated UUID
++	 * @param properties the game profile properties, may be null
++	 * @param playerKey the player's key, required for versions 2 and 3
++	 * @param signerUuid the UUID the key was signed for, may be null
++	 */
++	public static byte[] writeForwardingData(byte[] forwardingSecret, int version, String address, String name, UUID playerUUID,
++			Property[] properties, PlayerPublicKey playerKey, UUID signerUuid) {
++		ByteBuf buf = Unpooled.buffer(2048);
++		try {
++			DefinedPacket.writeVarInt(version, buf);
++			DefinedPacket.writeString(address, buf);
++			DefinedPacket.writeUUID(playerUUID, buf);
++			DefinedPacket.writeString(name, buf);
++			DefinedPacket.writeProperties(properties, buf);
++
++			if (version > MODERN_DEFAULT && version < MODERN_LAZY_SESSION) {
++				Preconditions.checkArgument(playerKey != null, "Forwarding version %s requires a player key", version);
++				// Not writePublicKey: that writes a leading presence boolean, which the
++				// forwarding payload does not have.
++				buf.writeLong(playerKey.getExpiry());
++				DefinedPacket.writeArray(playerKey.getKey(), buf);
++				DefinedPacket.writeArray(playerKey.getSignature(), buf);
++
++				if (version >= MODERN_WITH_KEY_V2) {
++					if (signerUuid != null) {
++						buf.writeBoolean(true);
++						DefinedPacket.writeUUID(signerUuid, buf);
++					} else {
++						buf.writeBoolean(false);
++					}
++				}
++			}
++
++			SecretKey key = new SecretKeySpec(forwardingSecret, "HmacSHA256");
++			Mac mac = Mac.getInstance("HmacSHA256");
++			mac.init(key);
++			mac.update(buf.array(), buf.arrayOffset() + buf.readerIndex(), buf.readableBytes());
++			byte[] sig = mac.doFinal();
++
++			ByteBuf finished = Unpooled.wrappedBuffer(Unpooled.wrappedBuffer(sig), buf);
++			byte[] encoded = ByteBufUtil.getBytes(finished);
++			finished.release();
++			return encoded;
++		} catch (InvalidKeyException e) {
++			buf.release();
++			throw new RuntimeException("Unable to authenticate data", e);
++		} catch (NoSuchAlgorithmException e) {
++			// Should never happen
++			buf.release();
++			throw new AssertionError(e);
++		}
++	}
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index dab161a6..109c1cd5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -2,10 +2,17 @@ package net.md_5.bungee;
+ 
+ import com.google.common.base.Joiner;
+ import com.google.common.base.Preconditions;
++import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
++import io.github.waterfallmc.waterfall.forwarding.VelocityForwardingUtil;
++import net.md_5.bungee.protocol.data.PlayerPublicKey;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ import java.net.InetSocketAddress;
+ import java.nio.charset.StandardCharsets;
++import java.util.ArrayList;
++import java.util.List;
++import java.nio.charset.StandardCharsets;
+ import java.util.Locale;
+ import java.util.Arrays; // Waterfall
+ import java.util.Queue;
+@@ -76,6 +83,7 @@ public class ServerConnector extends PacketHandler
+     private State thisState = State.LOGIN_SUCCESS;
+     @Getter
+     private ForgeServerHandler handshakeHandler;
++    private boolean didForwardInformation = false; // Waterfall: Forwarding rework
+     private boolean obsolete;
+ 
+     private enum State
+@@ -112,7 +120,10 @@ public class ServerConnector extends PacketHandler
+         Handshake originalHandshake = user.getPendingConnection().getHandshake();
+         Handshake copiedHandshake = new Handshake( originalHandshake.getProtocolVersion(), originalHandshake.getHost(), originalHandshake.getPort(), 2 );
+ 
+-        if ( BungeeCord.getInstance().config.isIpForward() && user.getSocketAddress() instanceof InetSocketAddress )
++        ForwardingMode forwardingMode = BungeeCord.getInstance().config.getForwardingMode(); // Waterfall: Forwarding rework
++        // Waterfall - only the handshake based modes rewrite the host; modern forwarding must fall
++        // through to the branch below so that Forge markers and other extra data survive
++        if ( ( forwardingMode == ForwardingMode.BUNGEECORD_LEGACY || forwardingMode == ForwardingMode.BUNGEEGUARD ) && user.getSocketAddress() instanceof InetSocketAddress )
+         {
+             String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
+ 
+@@ -127,6 +138,16 @@ public class ServerConnector extends PacketHandler
+                 properties = profile.getProperties();
+             }
+ 
++            // Waterfall start: Forwarding rework
++            if(forwardingMode == ForwardingMode.BUNGEEGUARD) {
++                List<net.md_5.bungee.protocol.data.Property> temp = new ArrayList<net.md_5.bungee.protocol.data.Property>();
++                temp.addAll(Arrays.asList(properties));
++                String token = new String(((WaterfallConfiguration)BungeeCord.getInstance().config).getForwardingSecret(), StandardCharsets.UTF_8);
++                temp.add(new net.md_5.bungee.protocol.data.Property("bungeeguard-token", token, null));
++                properties = temp.toArray(new net.md_5.bungee.protocol.data.Property[temp.size()]);
++            }
++            // Waterfall end: Forwarding rework
++
+             if ( user.getForgeClientHandler().isFmlTokenInHandshake() )
+             {
+                 // Get the current properties and copy them into a slightly bigger array.
+@@ -188,6 +209,11 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public void handle(LoginSuccess loginSuccess) throws Exception
+     {
++        // Waterfall start: Forwarding rework
++        if ( !didForwardInformation && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN) {
++            throw new QuietException(VelocityForwardingUtil.MODERN_IP_FORWARDING_FAILURE);
++        }
++        // Waterfall end: Forwarding rework
+         Preconditions.checkState( thisState == State.LOGIN_SUCCESS, "Not expecting LOGIN_SUCCESS" );
+         if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2 )
+         {
+@@ -561,9 +587,45 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public void handle(LoginPayloadRequest loginPayloadRequest)
+     {
++        // Waterfall start: Forwarding rework
++        if ( !didForwardInformation && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN
++                && loginPayloadRequest.getChannel().equals(VelocityForwardingUtil.VELOCITY_IP_FORWARDING_CHANNEL)) {
++
++            ch.write(new LoginPayloadResponse(loginPayloadRequest.getId(), createModernForwardingData(loginPayloadRequest.getData())));
++            didForwardInformation = true;
++            return;
++        }
++        // Waterfall end: Forwarding rework
+         ch.write( new LoginPayloadResponse( loginPayloadRequest.getId(), null ) );
+     }
+ 
++    // Waterfall start: Forwarding rework
++    private byte[] createModernForwardingData(byte[] requestData)
++    {
++        net.md_5.bungee.connection.InitialHandler pendingConnection = user.getPendingConnection();
++        PlayerPublicKey playerKey = ( pendingConnection.getLoginRequest() == null )
++                ? null : pendingConnection.getLoginRequest().getPublicKey();
++        int version = VelocityForwardingUtil.getForwardingVersion(
++                VelocityForwardingUtil.readRequestedVersion( requestData ),
++                pendingConnection.getVersion(), playerKey );
++
++        LoginResult profile = pendingConnection.getLoginProfile();
++        // The signer UUID is only known for an online mode connection; offline players have
++        // no Mojang signed key to link against.
++        UUID signerUuid = pendingConnection.isOnlineMode() ? pendingConnection.getUniqueId() : null;
++
++        return VelocityForwardingUtil.writeForwardingData(
++                ( (WaterfallConfiguration) BungeeCord.getInstance().config ).getForwardingSecret(),
++                version,
++                AddressUtil.sanitizeAddress( user.getAddress() ),
++                user.getName(),
++                pendingConnection.getUniqueId(),
++                ( profile == null ) ? null : profile.getProperties(),
++                playerKey,
++                signerUuid );
++    }
++    // Waterfall end: Forwarding rework
++
+     @Override
+     public String toString()
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index f8df7d10..0faadb7b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -332,4 +332,10 @@ public class YamlConfig implements ConfigurationAdapter
+         Collection<String> permissions = get( "permissions." + group, null );
+         return ( permissions == null ) ? Collections.EMPTY_SET : permissions;
+     }
++
++    // Waterfall start: Forwarding rework
++    public void regenerateForwardingSecret(){
++        set("forwarding_secret", new String(Util.randomAlphanumericSequence(12), StandardCharsets.UTF_8));
++    }
++    // Waterfall end: Forwarding rework
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 9d29bf32..7a7bbb07 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -439,6 +439,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     disconnect( bungee.getTranslation( "reject_transfer" ) );
+                     return;
+                 }
++
++                // Waterfall start: Forwarding rework - modern forwarding needs login plugin
++                // messages, which 1.12.2 and older cannot carry
++                if ( bungee.config.getForwardingMode() == io.github.waterfallmc.waterfall.forwarding.ForwardingMode.VELOCITY_MODERN
++                        && handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_13 )
++                {
++                    disconnect( bungee.getTranslation( "modern_forwarding_needs_new_client" ) );
++                    return;
++                }
++                // Waterfall end: Forwarding rework
+                 break;
+             default:
+                 throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
+@@ -600,7 +610,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             uniqueId = offlineId;
+         }
+-        rewriteId = ( bungee.config.isIpForward() ) ? uniqueId : offlineId;
++        rewriteId = ( bungee.config.getForwardingMode() != io.github.waterfallmc.waterfall.forwarding.ForwardingMode.NONE ) ? uniqueId : offlineId; // Waterfall - any forwarding mode passes the real UUID through
+ 
+         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() )
+         {
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 94254c9a..45f88835 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -43,3 +43,4 @@ illegal_chat_characters=\u00a7cIllegal characters in chat ({0})
+ kick_message=\u00a7cYou have been kicked off the proxy.
+ reject_transfer=\u00a7cYour transfer was rejected.
+ packet_limit_kick=\u00a7cYou have sent too many packets
++modern_forwarding_needs_new_client=\u00a7cThis server requires Minecraft 1.13 or newer.
+diff --git a/proxy/src/test/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtilTest.java b/proxy/src/test/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtilTest.java
+new file mode 100644
+index 00000000..a85346c8
+--- /dev/null
++++ b/proxy/src/test/java/io/github/waterfallmc/waterfall/forwarding/VelocityForwardingUtilTest.java
+@@ -0,0 +1,188 @@
++package io.github.waterfallmc.waterfall.forwarding;
++
++import static org.junit.jupiter.api.Assertions.*;
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.Unpooled;
++import java.nio.charset.StandardCharsets;
++import java.security.MessageDigest;
++import java.util.UUID;
++import javax.crypto.Mac;
++import javax.crypto.spec.SecretKeySpec;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.data.PlayerPublicKey;
++import net.md_5.bungee.protocol.data.Property;
++import org.junit.jupiter.api.Test;
++
++public class VelocityForwardingUtilTest
++{
++
++    private static final byte[] SECRET = "a-shared-secret".getBytes( StandardCharsets.UTF_8 );
++    private static final UUID UUID_ = UUID.fromString( "1bb815b4-1ced-3f90-babf-5307c13324f4" );
++    private static final UUID SIGNER = UUID.fromString( "00000000-0000-0000-0000-0000deadbeef" );
++    private static final PlayerPublicKey KEY = new PlayerPublicKey( 1234567890L, new byte[]
++    {
++        1, 2, 3
++    }, new byte[]
++    {
++        4, 5, 6, 7
++    } );
++
++    @Test
++    public void testRequestedVersion()
++    {
++        assertEquals( VelocityForwardingUtil.MODERN_DEFAULT, VelocityForwardingUtil.readRequestedVersion( null ) );
++        assertEquals( VelocityForwardingUtil.MODERN_DEFAULT, VelocityForwardingUtil.readRequestedVersion( new byte[ 0 ] ) );
++        // A raw signed byte, not a VarInt.
++        assertEquals( 4, VelocityForwardingUtil.readRequestedVersion( new byte[]
++        {
++            4
++        } ) );
++        // Anything that is not exactly one byte means "unspecified".
++        assertEquals( VelocityForwardingUtil.MODERN_DEFAULT, VelocityForwardingUtil.readRequestedVersion( new byte[]
++        {
++            4, 0
++        } ) );
++    }
++
++    @Test
++    public void testVersionNegotiation()
++    {
++        // Never above the request, and never above what we can encode.
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 0, ProtocolConstants.MINECRAFT_1_21, null ) );
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 1, ProtocolConstants.MINECRAFT_1_21, null ) );
++        assertEquals( 4, VelocityForwardingUtil.getForwardingVersion( 99, ProtocolConstants.MINECRAFT_1_21, null ) );
++
++        // 1.19.3 and up: the session key model, or nothing.
++        assertEquals( 4, VelocityForwardingUtil.getForwardingVersion( 4, ProtocolConstants.MINECRAFT_1_19_3, null ) );
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 3, ProtocolConstants.MINECRAFT_1_19_3, null ) );
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 2, ProtocolConstants.MINECRAFT_1_19_3, null ) );
++
++        // 1.19 signs a bare key.
++        assertEquals( 2, VelocityForwardingUtil.getForwardingVersion( 4, ProtocolConstants.MINECRAFT_1_19, KEY ) );
++        assertEquals( 2, VelocityForwardingUtil.getForwardingVersion( 2, ProtocolConstants.MINECRAFT_1_19, KEY ) );
++
++        // 1.19.1 and 1.19.2 sign it against the player's UUID, which version 2 cannot carry,
++        // so the key is dropped rather than mis-encoded.
++        assertEquals( 3, VelocityForwardingUtil.getForwardingVersion( 4, ProtocolConstants.MINECRAFT_1_19_1, KEY ) );
++        assertEquals( 3, VelocityForwardingUtil.getForwardingVersion( 3, ProtocolConstants.MINECRAFT_1_19_1, KEY ) );
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 2, ProtocolConstants.MINECRAFT_1_19_1, KEY ) );
++
++        // No key, so nothing to describe.
++        assertEquals( 1, VelocityForwardingUtil.getForwardingVersion( 4, ProtocolConstants.MINECRAFT_1_19_1, null ) );
++    }
++
++    @Test
++    public void testSignature() throws Exception
++    {
++        byte[] data = VelocityForwardingUtil.writeForwardingData( SECRET, 1, "127.0.0.1", "Probe", UUID_, null, null, null );
++
++        byte[] signature = new byte[ 32 ];
++        System.arraycopy( data, 0, signature, 0, 32 );
++        byte[] payload = new byte[ data.length - 32 ];
++        System.arraycopy( data, 32, payload, 0, payload.length );
++
++        // The tag covers the payload only, with no framing.
++        Mac mac = Mac.getInstance( "HmacSHA256" );
++        mac.init( new SecretKeySpec( SECRET, "HmacSHA256" ) );
++        assertTrue( MessageDigest.isEqual( signature, mac.doFinal( payload ) ) );
++    }
++
++    @Test
++    public void testBasePayload()
++    {
++        Property[] properties = new Property[]
++        {
++            new Property( "textures", "value", "signature" ),
++            new Property( "unsigned", "value" )
++        };
++        ByteBuf payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 1, "127.0.0.1", "Probe", UUID_, properties, null, null ) );
++
++        assertEquals( 1, DefinedPacket.readVarInt( payload ) );
++        assertEquals( "127.0.0.1", DefinedPacket.readString( payload ) );
++        assertEquals( UUID_, DefinedPacket.readUUID( payload ) );
++        assertEquals( "Probe", DefinedPacket.readString( payload ) );
++        assertEquals( 2, DefinedPacket.readVarInt( payload ) );
++        assertEquals( "textures", DefinedPacket.readString( payload ) );
++        assertEquals( "value", DefinedPacket.readString( payload ) );
++        assertTrue( payload.readBoolean() );
++        assertEquals( "signature", DefinedPacket.readString( payload ) );
++        assertEquals( "unsigned", DefinedPacket.readString( payload ) );
++        assertEquals( "value", DefinedPacket.readString( payload ) );
++        assertFalse( payload.readBoolean() );
++        assertFalse( payload.isReadable() );
++    }
++
++    @Test
++    public void testNullPropertiesAreAnEmptyList()
++    {
++        // An offline mode proxy has no login profile at all.
++        ByteBuf payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 1, "127.0.0.1", "Probe", UUID_, null, null, null ) );
++        skipBase( payload, 1 );
++        assertFalse( payload.isReadable() );
++    }
++
++    @Test
++    public void testKeyPayload()
++    {
++        ByteBuf payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 2, "127.0.0.1", "Probe", UUID_, null, KEY, SIGNER ) );
++        skipBase( payload, 2 );
++        // The key block has no presence boolean, unlike DefinedPacket#writePublicKey.
++        assertEquals( KEY.getExpiry(), payload.readLong() );
++        assertArrayEquals( KEY.getKey(), DefinedPacket.readArray( payload ) );
++        assertArrayEquals( KEY.getSignature(), DefinedPacket.readArray( payload ) );
++        // Version 2 stops before the signer UUID even when we know it.
++        assertFalse( payload.isReadable() );
++    }
++
++    @Test
++    public void testKeyPayloadWithSignerUuid()
++    {
++        ByteBuf payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 3, "127.0.0.1", "Probe", UUID_, null, KEY, SIGNER ) );
++        skipBase( payload, 3 );
++        assertEquals( KEY.getExpiry(), payload.readLong() );
++        assertArrayEquals( KEY.getKey(), DefinedPacket.readArray( payload ) );
++        assertArrayEquals( KEY.getSignature(), DefinedPacket.readArray( payload ) );
++        assertTrue( payload.readBoolean() );
++        assertEquals( SIGNER, DefinedPacket.readUUID( payload ) );
++        assertFalse( payload.isReadable() );
++
++        // An offline player has no signer to link the key to.
++        payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 3, "127.0.0.1", "Probe", UUID_, null, KEY, null ) );
++        skipBase( payload, 3 );
++        payload.readLong();
++        DefinedPacket.readArray( payload );
++        DefinedPacket.readArray( payload );
++        assertFalse( payload.readBoolean() );
++        assertFalse( payload.isReadable() );
++    }
++
++    @Test
++    public void testLazySessionCarriesNoKey()
++    {
++        ByteBuf payload = payloadOf( VelocityForwardingUtil.writeForwardingData( SECRET, 4, "127.0.0.1", "Probe", UUID_, null, KEY, SIGNER ) );
++        skipBase( payload, 4 );
++        assertFalse( payload.isReadable() );
++    }
++
++    @Test
++    public void testKeyIsRequiredWhenTheVersionSaysSo()
++    {
++        assertThrows( IllegalArgumentException.class,
++                () -> VelocityForwardingUtil.writeForwardingData( SECRET, 3, "127.0.0.1", "Probe", UUID_, null, null, SIGNER ) );
++    }
++
++    private static ByteBuf payloadOf(byte[] data)
++    {
++        return Unpooled.wrappedBuffer( data, 32, data.length - 32 );
++    }
++
++    private static void skipBase(ByteBuf payload, int expectedVersion)
++    {
++        assertEquals( expectedVersion, DefinedPacket.readVarInt( payload ) );
++        DefinedPacket.readString( payload );
++        DefinedPacket.readUUID( payload );
++        DefinedPacket.readString( payload );
++        assertEquals( 0, DefinedPacket.readVarInt( payload ) );
++    }
++}
+-- 
+2.43.0
+
