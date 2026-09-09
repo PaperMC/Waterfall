@@ -1,0 +1,191 @@
+From 66a33e05c78cdfa067874a0aa42bd9e64ba1dd4f Mon Sep 17 00:00:00 2001
+From: LinTx <lintx@lintx.org>
+Date: Thu, 4 Jan 2024 23:15:46 +0800
+Subject: [PATCH] Add config with http request proxy
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 469fe0e1..b4b6ad64 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -275,4 +275,48 @@ public interface ProxyConfig
+      * @return the configured limit
+      */
+     int getPluginChannelNameLimit();
++
++    /**
++     * Get the proxy type of http(s) request (such as MOJANG AUTH request). Optional values include socks5 and http.
++     * default:http
++     *
++     * @return proxy type
++     */
++    String getHttpRequestProxyType();
++
++    /**
++     * Get the proxy host address for http(s) requests (such as MOJANG AUTH requests). for example: 127.0.0.1
++     * If it is empty, it will connect directly.
++     * default:empty string
++     *
++     * @return proxy host
++     */
++    String getHttpRequestProxyHost();
++
++    /**
++     * Get the proxy host port for http(s) requests (such as MOJANG AUTH requests), for example: 1080
++     * When it is 0, it will connect directly
++     * default:0
++     *
++     * @return proxy host port
++     */
++    int getHttpRequestProxyPort();
++
++    /**
++     * Get the proxy host username for http(s) requests (such as MOJANG AUTH requests)
++     * If the proxy host does not have username verification, remove this entry
++     * default:null
++     *
++     * @return proxy host username
++     */
++    String getHttpRequestProxyUsername();
++
++    /**
++     * Get the proxy host password for http(s) requests (such as MOJANG AUTH requests)
++     * If the proxy host does not have password authentication, delete this entry
++     * default:null
++     *
++     * @return proxy host password
++     */
++    String getHttpRequestProxyPassword();
+ }
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 9be9aa22..8ba09658 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -46,6 +46,13 @@
+             <classifier>osx-x86_64</classifier>
+         </dependency>
+         <!-- Waterfall End -->
++        <!-- Waterfall Start - add Netty proxy handler -->
++        <dependency>
++            <groupId>io.netty</groupId>
++            <artifactId>netty-handler-proxy</artifactId>
++            <scope>compile</scope>
++        </dependency>
++        <!-- Waterfall End -->
+         <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-handler</artifactId>
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index da0efa36..2c0a5496 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -62,6 +62,16 @@ public class WaterfallConfiguration extends Configuration {
+      */
+     private int pluginChannelNameLimit = 128;
+ 
++    private String httpRequestProxyType = "http";
++
++    private String httpRequestProxyHost = "";
++
++    private int httpRequestProxyPort = 0;
++
++    private String httpRequestProxyUsername = null;
++
++    private String httpRequestProxyPassword = null;
++
+     @Override
+     public void load() {
+         super.load();
+@@ -77,6 +87,11 @@ public class WaterfallConfiguration extends Configuration {
+         disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
+         pluginChannelLimit = config.getInt("registered_plugin_channels_limit", pluginChannelLimit);
+         pluginChannelNameLimit = config.getInt("plugin_channel_name_limit", pluginChannelNameLimit);
++        httpRequestProxyType = config.getString("http_request_proxy.type", httpRequestProxyType);
++        httpRequestProxyHost = config.getString("http_request_proxy.host", httpRequestProxyHost);
++        httpRequestProxyPort = config.getInt("http_request_proxy.port", httpRequestProxyPort);
++        httpRequestProxyUsername = config.getString("http_request_proxy.username", httpRequestProxyUsername);
++        httpRequestProxyPassword = config.getString("http_request_proxy.password", httpRequestProxyPassword);
+     }
+ 
+     @Override
+@@ -123,4 +138,29 @@ public class WaterfallConfiguration extends Configuration {
+     public int getPluginChannelNameLimit() {
+         return pluginChannelNameLimit;
+     }
++
++    @Override
++    public String getHttpRequestProxyType(){
++        return httpRequestProxyType;
++    }
++
++    @Override
++    public String getHttpRequestProxyHost(){
++        return httpRequestProxyHost;
++    }
++
++    @Override
++    public int getHttpRequestProxyPort(){
++        return httpRequestProxyPort;
++    }
++
++    @Override
++    public String getHttpRequestProxyUsername(){
++        return httpRequestProxyUsername;
++    }
++
++    @Override
++    public String getHttpRequestProxyPassword(){
++        return httpRequestProxyPassword;
++    }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpInitializer.java b/proxy/src/main/java/net/md_5/bungee/http/HttpInitializer.java
+index 37657c4c..820dab84 100644
+--- a/proxy/src/main/java/net/md_5/bungee/http/HttpInitializer.java
++++ b/proxy/src/main/java/net/md_5/bungee/http/HttpInitializer.java
+@@ -3,13 +3,18 @@ package net.md_5.bungee.http;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelInitializer;
+ import io.netty.handler.codec.http.HttpClientCodec;
++import io.netty.handler.proxy.HttpProxyHandler;
++import io.netty.handler.proxy.Socks5ProxyHandler;
+ import io.netty.handler.ssl.SslContextBuilder;
+ import io.netty.handler.ssl.SslHandler;
+ import io.netty.handler.timeout.ReadTimeoutHandler;
++
++import java.net.InetSocketAddress;
+ import java.util.concurrent.TimeUnit;
+ import javax.net.ssl.SSLEngine;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.api.Callback;
++import net.md_5.bungee.api.ProxyConfig;
+ 
+ @RequiredArgsConstructor
+ public class HttpInitializer extends ChannelInitializer<Channel>
+@@ -32,5 +37,24 @@ public class HttpInitializer extends ChannelInitializer<Channel>
+         }
+         ch.pipeline().addLast( "http", new HttpClientCodec() );
+         ch.pipeline().addLast( "handler", new HttpHandler( callback ) );
++        ProxyConfig config = net.md_5.bungee.api.ProxyServer.getInstance().getConfig();
++        if (!config.getHttpRequestProxyHost().isEmpty() && config.getHttpRequestProxyPort() > 0){
++            InetSocketAddress address = new InetSocketAddress(config.getHttpRequestProxyHost(),config.getHttpRequestProxyPort());
++            String username = config.getHttpRequestProxyUsername();
++            String password = config.getHttpRequestProxyPassword();
++            if (config.getHttpRequestProxyType().equalsIgnoreCase("socks5")){
++                if (username==null || password==null){
++                    ch.pipeline().addFirst("proxy", new Socks5ProxyHandler(address));
++                }else {
++                    ch.pipeline().addFirst("proxy", new Socks5ProxyHandler(address,username,password));
++                }
++            }else {
++                if (username==null || password==null){
++                    ch.pipeline().addFirst("proxy", new HttpProxyHandler(address));
++                }else {
++                    ch.pipeline().addFirst("proxy", new HttpProxyHandler(address,username,password));
++                }
++            }
++        }
+     }
+ }
+-- 
+2.25.1
+
