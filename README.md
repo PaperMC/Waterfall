@@ -83,3 +83,5 @@ Clone this repo, run `./waterfall b` from *bash*, get jar from Waterfall-Proxy/b
 ![YourKit-Logo](https://yourkit.com/images/yklogo.png)
 
 [YourKit](https://yourkit.com/), makers of the outstanding Java profiler, supports open source projects of all kinds with their full-featured [Java](https://yourkit.com/features/) and [.NET](https://yourkit.com/dotnet/features/) application profilers. We thank them for granting Waterfall an OSS license so that we can make our software the best it can be.
+
+<img src="https://papermc.io/assets/misc/namespace-oss-badge.svg?project=waterfall" alt="CI powered by namespace badge" />

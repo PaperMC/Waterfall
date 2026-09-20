@@ -9,18 +9,19 @@ on:
       - master
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [17, 21]
-      fail-fast: true
+    runs-on: namespace-profile-linux-default
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Java ${{ matrix.java }}
+      - uses: namespacelabs/nscloud-checkout-action@v9
+      - name: Install Java
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 21
           distribution: 'zulu'
+          cache: "" # namespace handles this
+      - name: Set up maven cache
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          cache: maven
       - name: patch
         run: |
           git config --global user.email "no-reply@github.com"
