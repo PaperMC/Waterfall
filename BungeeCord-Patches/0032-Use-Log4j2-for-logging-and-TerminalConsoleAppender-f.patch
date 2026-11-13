@@ -1,4 +1,4 @@
-From ceb495cd679ff767fb57ac1d4f0a307b007cc9f1 Mon Sep 17 00:00:00 2001
+From f75dec6619dd6ac8a7a01a340a42ef67ea201b3a Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -256,7 +256,7 @@ index 80c4ea53..e69ba4a6 100644
                              </rules>
                          </configuration>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 043d5709..0e27f723 100644
+index 043d5709..8051083a 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -45,6 +45,7 @@
@@ -291,17 +291,11 @@ index 043d5709..0e27f723 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -131,6 +133,53 @@
+@@ -131,6 +133,47 @@
              <version>${project.version}</version>
              <scope>runtime</scope>
          </dependency>
-+        <!-- Waterfall start - Console improvements - bring back slf4j-->
-+        <dependency>
-+            <groupId>org.slf4j</groupId>
-+            <artifactId>slf4j-jdk14</artifactId>
-+            <version>1.7.36</version>
-+            <scope>compile</scope>
-+        </dependency>
++        <!-- Waterfall start - Console improvements -->
 +        <dependency>
 +            <groupId>net.minecrell</groupId>
 +            <artifactId>terminalconsoleappender</artifactId>
