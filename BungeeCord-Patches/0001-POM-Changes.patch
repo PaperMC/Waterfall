@@ -1,4 +1,4 @@
-From eacbcc52c1b877ebb7de6d20b54d38de7c88d4e6 Mon Sep 17 00:00:00 2001
+From afea9368826cc8bfa157d5f31356f54bf62cac37 Mon Sep 17 00:00:00 2001
 From: Tux <write@imaginarycode.com>
 Date: Thu, 19 May 2016 19:33:31 +0200
 Subject: [PATCH] POM Changes
@@ -7,7 +7,7 @@ Subject: [PATCH] POM Changes
 - Deploy to papermc mvn repo
 
 diff --git a/api/pom.xml b/api/pom.xml
-index f6f279e8..4030c6c8 100644
+index 97172181..1e9c0a54 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,48 +4,48 @@
@@ -86,7 +86,7 @@ index f6f279e8..4030c6c8 100644
              <!-- not part of the API proper -->
              <scope>provided</scope>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 6f37a4f4..fd082dcd 100644
+index a9e58eaa..ce60efda 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,19 @@
@@ -109,13 +109,13 @@ index 6f37a4f4..fd082dcd 100644
      <packaging>jar</packaging>
  
 -    <name>BungeeCord-Bootstrap</name>
--    <description>Java 1.6 loader for BungeeCord</description>
+-    <description>Java loader for BungeeCord</description>
 +    <name>Waterfall-Bootstrap</name>
-+    <description>Java 1.6 loader for Waterfall</description>
++    <description>Java loader for Waterfall</description>
  
      <properties>
          <skipPublishing>true</skipPublishing>
-@@ -28,15 +28,15 @@
+@@ -26,50 +26,50 @@
  
      <dependencies>
          <dependency>
@@ -126,38 +126,108 @@ index 6f37a4f4..fd082dcd 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-     </dependencies>
- 
-     <build>
--        <finalName>BungeeCord</finalName>
-+        <finalName>Waterfall</finalName>
-         <plugins>
-             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-@@ -45,7 +45,7 @@
-                 <configuration>
-                     <archive>
-                         <manifestEntries>
--                            <Main-Class>net.md_5.bungee.Bootstrap</Main-Class> 
-+                            <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
-                             <Implementation-Version>${describe}</Implementation-Version>
-                             <Specification-Version>${maven.build.timestamp}</Specification-Version>
-                             <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-alert</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-alert</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-find</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-find</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-kick</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-kick</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-list</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-list</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-send</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-send</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-cmd-server</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-cmd-server</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-module-reconnect-yaml</artifactId>
++            <groupId>io.github.waterfallmc</groupId>
++            <artifactId>waterfall-module-reconnect-yaml</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+@@ -124,7 +124,7 @@
+                             <descriptors>
+                                 <descriptor>${project.basedir}/src/assembly/bootstrap.xml</descriptor>
+                             </descriptors>
+-                            <finalName>BungeeCord</finalName>
++                            <finalName>Waterfall</finalName>
+                             <appendAssemblyId>false</appendAssemblyId>
+                         </configuration>
+                     </execution>
+diff --git a/bootstrap/src/assembly/bootstrap.xml b/bootstrap/src/assembly/bootstrap.xml
+index 4d97a146..e8a582ec 100644
+--- a/bootstrap/src/assembly/bootstrap.xml
++++ b/bootstrap/src/assembly/bootstrap.xml
+@@ -35,7 +35,7 @@
+             <fileMode>0644</fileMode>
+             <directoryMode>0775</directoryMode>
+             <excludes>
+-                <exclude>${project.groupId}:bungeecord-module-*</exclude>
++                <exclude>${project.groupId}:waterfall-module-*</exclude>
+             </excludes>
+             <outputDirectory>META-INF/libraries</outputDirectory>
+             <useProjectArtifact>false</useProjectArtifact>
+@@ -46,7 +46,7 @@
+             <fileMode>0644</fileMode>
+             <directoryMode>0775</directoryMode>
+             <includes>
+-                <include>${project.groupId}:bungeecord-module-*</include>
++                <include>${project.groupId}:waterfall-module-*</include>
+             </includes>
+             <outputDirectory>META-INF/modules</outputDirectory>
+             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
-index 6b36c7cc..cbb740c9 100644
+index becc4fa0..f43c5a89 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
-@@ -7,7 +7,7 @@ public class Bootstrap
-     {
-         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 61.0 )
+@@ -91,7 +91,7 @@ public class Bootstrap
+         for ( String line : resource2Lines( type + ".list" ) )
          {
--            System.err.println( "*** ERROR *** BungeeCord requires Java 17 or above to function! Please download and install it!" );
-+            System.err.println( "*** ERROR *** Waterfall requires Java 17 or above to function! Please download and install it!" );
-             System.out.println( "You can check your Java version with the command: java -version" );
-             return;
-         }
+             HashEntry hashEntry = HashEntry.fromString( line );
+-            if ( hashEntry.file.startsWith( "bungeecord-module-" ) )
++            if ( hashEntry.file.startsWith( "waterfall-module-" ) )
+             {
+                 continue;
+             }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index a4da8cad..5e6c2025 100644
+index e7c09d49..3d3be1c4 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,19 @@
@@ -187,7 +257,7 @@ index a4da8cad..5e6c2025 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index c8b25234..effe58d5 100644
+index 357d9f9b..5b2e859d 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,19 @@
@@ -286,7 +356,7 @@ index 11ca800f..f15f7406 100644
 +    <description>Generic java event dispatching API intended for use with Waterfall.</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 87e87634..2bd289ee 100644
+index 6822d1ab..042054c6 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,19 @@
@@ -327,7 +397,7 @@ index 87e87634..2bd289ee 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/maven-resolver/pom.xml b/maven-resolver/pom.xml
-index 01ae76f5..c33746f1 100644
+index 8611cc83..fbcafd45 100644
 --- a/maven-resolver/pom.xml
 +++ b/maven-resolver/pom.xml
 @@ -4,14 +4,14 @@
@@ -488,7 +558,7 @@ index d07a6baa..7aeabfef 100644
      <packaging>jar</packaging>
  
 diff --git a/module/pom.xml b/module/pom.xml
-index b36d2f08..279ef27a 100644
+index 9ae8c58e..5c0fda9a 100644
 --- a/module/pom.xml
 +++ b/module/pom.xml
 @@ -4,19 +4,19 @@
@@ -621,7 +691,7 @@ index afb805d1..be74fd49 100644
          <license>
              <name>BSD-3-Clause</name>
 diff --git a/pom.xml b/pom.xml
-index e489b6eb..a11d5b50 100644
+index 0b8d3679..80c4ea53 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,24 @@
@@ -720,7 +790,7 @@ index e489b6eb..a11d5b50 100644
      </distributionManagement>
  
      <properties>
-@@ -194,6 +211,7 @@
+@@ -195,6 +212,7 @@
                      </execution>
                  </executions>
              </plugin>
@@ -728,7 +798,7 @@ index e489b6eb..a11d5b50 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-compiler-plugin</artifactId>
-@@ -209,6 +227,14 @@
+@@ -210,6 +228,14 @@
                  </configuration>
              </plugin>
              <plugin>
@@ -743,7 +813,7 @@ index e489b6eb..a11d5b50 100644
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-checkstyle-plugin</artifactId>
                  <version>3.6.0</version>
-@@ -233,6 +259,7 @@
+@@ -234,6 +260,7 @@
                      </dependency>
                  </dependencies>
              </plugin>
@@ -751,7 +821,7 @@ index e489b6eb..a11d5b50 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-enforcer-plugin</artifactId>
-@@ -297,6 +324,15 @@
+@@ -314,6 +341,15 @@
                                  </goals>
                              </execution>
                          </executions>
@@ -768,7 +838,7 @@ index e489b6eb..a11d5b50 100644
                      <plugin>
                          <groupId>org.projectlombok</groupId>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index bf46a988..51c8e3a3 100644
+index 49f53f75..f8d3a4dc 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,19 @@
@@ -817,7 +887,7 @@ index bf46a988..51c8e3a3 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index b8cce095..0b910017 100644
+index 9fe6f3b8..300f9c4b 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,18 @@
@@ -906,6 +976,19 @@ index b8cce095..0b910017 100644
              <version>${project.version}</version>
              <scope>runtime</scope>
          </dependency>
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/BootstrapModuleSource.java b/proxy/src/main/java/net/md_5/bungee/module/BootstrapModuleSource.java
+index 7c739aec..ee437a64 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/BootstrapModuleSource.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/BootstrapModuleSource.java
+@@ -18,7 +18,7 @@ public class BootstrapModuleSource implements ModuleSource
+     {
+         ProxyServer.getInstance().getLogger().info( "Attempting to extract module " + module.getName() );
+ 
+-        String modulePath = "META-INF/modules/bungeecord-module-" + module.getName().replace( '_', '-' ) + ".jar";
++        String modulePath = "META-INF/modules/waterfall-module-" + module.getName().replace( '_', '-' ) + ".jar";
+         boolean success = tryGet( getClass().getClassLoader(), modulePath, module.getFile() );
+ 
+         if ( !success )
 diff --git a/query/pom.xml b/query/pom.xml
 index 5e592889..7f2bc955 100644
 --- a/query/pom.xml
@@ -948,7 +1031,7 @@ index 5e592889..7f2bc955 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/serializer/pom.xml b/serializer/pom.xml
-index d515972c..58048e8c 100644
+index d36941a1..d15938de 100644
 --- a/serializer/pom.xml
 +++ b/serializer/pom.xml
 @@ -4,19 +4,19 @@
@@ -994,7 +1077,7 @@ index d515972c..58048e8c 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
-index 73aa291e..30efeb47 100644
+index be5e35da..2d284b33 100644
 --- a/slf4j/pom.xml
 +++ b/slf4j/pom.xml
 @@ -4,19 +4,19 @@
@@ -1024,5 +1107,5 @@ index 73aa291e..30efeb47 100644
      <properties>
          <checkstyle.skip>true</checkstyle.skip>
 -- 
-2.54.0
+2.56.0
 

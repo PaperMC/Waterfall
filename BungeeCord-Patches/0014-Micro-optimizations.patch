@@ -1,0 +1,32 @@
+From 59be60f9f18207155d5a648d93416f207a186e87 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Tue, 19 Jan 2016 15:13:29 -0700
+Subject: [PATCH] Micro-optimizations
+
+- PluginManager.dispatchCommand() avoids regex while splitting commands. Java 7 introduced an optimized String.split() that should be used instead (affects command dispatch).
+- Don't attempt to format arguments when there are none provided
+- Don't create a data input stream for every plugin message we get from servers
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 8a5789c1..2807c9e7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -322,7 +322,6 @@ public class DownstreamBridge extends PacketHandler
+     @SuppressWarnings("checkstyle:avoidnestedblocks")
+     public void handle(PluginMessage pluginMessage) throws Exception
+     {
+-        DataInput in = pluginMessage.getStream();
+         PluginMessageEvent event = new PluginMessageEvent( server, con, pluginMessage.getTag(), pluginMessage.getData().clone() );
+ 
+         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
+@@ -349,6 +348,7 @@ public class DownstreamBridge extends PacketHandler
+ 
+         if ( pluginMessage.getTag().equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) )
+         {
++            DataInput in = pluginMessage.getStream();
+             ByteArrayDataOutput out = ByteStreams.newDataOutput();
+             String subChannel = in.readUTF();
+ 
+-- 
+2.56.0
+
