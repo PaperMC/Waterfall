@@ -1,4 +1,4 @@
-From cd8e0f82e168624042bb56212a1bab4c9513afef Mon Sep 17 00:00:00 2001
+From ceb495cd679ff767fb57ac1d4f0a307b007cc9f1 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -256,7 +256,7 @@ index 80c4ea53..e69ba4a6 100644
                              </rules>
                          </configuration>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 043d5709..947b5598 100644
+index 043d5709..0e27f723 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -45,6 +45,7 @@
@@ -291,7 +291,7 @@ index 043d5709..947b5598 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -131,6 +133,42 @@
+@@ -131,6 +133,53 @@
              <version>${project.version}</version>
              <scope>runtime</scope>
          </dependency>
@@ -316,18 +316,29 @@ index 043d5709..947b5598 100644
 +                    <groupId>org.jline</groupId>
 +                    <artifactId>jline-terminal</artifactId>
 +                </exclusion>
++                <exclusion>
++                    <groupId>org.jline</groupId>
++                    <artifactId>jline-reader</artifactId>
++                </exclusion>
 +            </exclusions>
++        </dependency>
++        <!-- Keep in sync with the jline version used upstream in log/pom.xml -->
++        <dependency>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-reader</artifactId>
++            <version>4.4.8</version>
++            <scope>compile</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
 +            <artifactId>jline-terminal-ffm</artifactId>
-+            <version>4.4.0</version>
++            <version>4.4.8</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <dependency>
 +            <groupId>org.jline</groupId>
 +            <artifactId>jline-terminal-jni</artifactId>
-+            <version>4.4.0</version>
++            <version>4.4.8</version>
 +            <scope>runtime</scope>
 +        </dependency>
 +        <!-- Waterfall end -->
