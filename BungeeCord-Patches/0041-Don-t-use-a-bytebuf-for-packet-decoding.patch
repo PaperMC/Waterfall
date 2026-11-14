@@ -1,0 +1,40 @@
+From b737bc7a58f41408f848d16f95b4a493e47332cc Mon Sep 17 00:00:00 2001
+From: creeper123123321 <creeper123123321@gmail.com>
+Date: Thu, 17 Jan 2019 03:25:59 +0000
+Subject: [PATCH] Don't use a bytebuf for packet decoding
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index cf7dea17..3d7bdd02 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -27,8 +27,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+ 
+         in.markReaderIndex();
+ 
+-        final byte[] buf = new byte[ 3 ];
+-        for ( int i = 0; i < buf.length; i++ )
++        for ( int i = 0; i < 3; i++ ) // Waterfall
+         {
+             if ( !in.isReadable() )
+             {
+@@ -36,10 +35,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+                 return;
+             }
+ 
+-            buf[i] = in.readByte();
+-            if ( buf[i] >= 0 )
++            // Waterfall start
++            byte read = in.readByte();
++            if ( read >= 0 )
+             {
+-                int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
++                in.resetReaderIndex();
++                int length = DefinedPacket.readVarInt( in );
++                // Waterfall end
+                 if ( false && length == 0) // Waterfall - ignore
+                 {
+                     throw new CorruptedFrameException( "Empty Packet!" );
+-- 
+2.56.0
+

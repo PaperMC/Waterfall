@@ -1,0 +1,659 @@
+From f75dec6619dd6ac8a7a01a340a42ef67ea201b3a Mon Sep 17 00:00:00 2001
+From: Minecrell <minecrell@minecrell.net>
+Date: Fri, 22 Sep 2017 12:46:47 +0200
+Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
+ console
+
+
+diff --git a/log4j/pom.xml b/log4j/pom.xml
+new file mode 100644
+index 00000000..eb42c916
+--- /dev/null
++++ b/log4j/pom.xml
+@@ -0,0 +1,47 @@
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <parent>
++        <groupId>io.github.waterfallmc</groupId>
++        <artifactId>waterfall-parent</artifactId>
++        <version>26.1-R0.1-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
++    </parent>
++
++    <groupId>io.github.waterfallmc</groupId>
++    <artifactId>waterfall-log4j</artifactId>
++    <version>26.1-R0.1-SNAPSHOT</version>
++    <packaging>jar</packaging>
++
++    <name>Waterfall-Log4J</name>
++    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++
++    <dependencies>
++        <!-- Log4j -->
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-core</artifactId>
++            <version>${log4j2.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-iostreams</artifactId>
++            <version>${log4j2.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.logging.log4j</groupId>
++            <artifactId>log4j-jul</artifactId>
++            <version>${log4j2.version}</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>com.lmax</groupId>
++            <artifactId>disruptor</artifactId>
++            <version>3.4.4</version>
++            <scope>runtime</scope>
++        </dependency>
++    </dependencies>
++</project>
+diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
+new file mode 100644
+index 00000000..63f66d3c
+--- /dev/null
++++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/Log4JLogHandler.java
+@@ -0,0 +1,59 @@
++package io.github.waterfallmc.waterfall.log4j;
++
++import com.google.common.base.Strings;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.apache.logging.log4j.jul.LevelTranslator;
++import org.apache.logging.log4j.message.MessageFormatMessage;
++
++import java.util.Map;
++import java.util.MissingResourceException;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.logging.Handler;
++import java.util.logging.LogRecord;
++
++/**
++ * A {@link Handler} that forwards all log messages to the Log4J logger.
++ *
++ * <p>We don't use Log4J's custom JUL LogManager currently, because it breaks
++ * adding custom handlers to JUL loggers. Some plugins may depend on that
++ * functionality...</p>
++ */
++class Log4JLogHandler extends Handler {
++
++    private final Map<String, Logger> cache = new ConcurrentHashMap<>();
++
++    @Override
++    public void publish(LogRecord record) {
++        if (!isLoggable(record)) {
++            return;
++        }
++
++        Logger logger = cache.computeIfAbsent(Strings.nullToEmpty(record.getLoggerName()), LogManager::getLogger);
++
++        String message = record.getMessage();
++        if (record.getResourceBundle() != null) {
++            try {
++                message = record.getResourceBundle().getString(message);
++            } catch (MissingResourceException ignored) {
++            }
++        }
++
++        final Level level = LevelTranslator.toLevel(record.getLevel());
++        if (record.getParameters() != null && record.getParameters().length > 0) {
++            logger.log(level, new MessageFormatMessage(message, record.getParameters()), record.getThrown());
++        } else {
++            logger.log(level, message, record.getThrown());
++        }
++    }
++
++    @Override
++    public void flush() {
++    }
++
++    @Override
++    public void close() {
++    }
++
++}
+diff --git a/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
+new file mode 100644
+index 00000000..e046897a
+--- /dev/null
++++ b/log4j/src/main/java/io/github/waterfallmc/waterfall/log4j/WaterfallLogger.java
+@@ -0,0 +1,34 @@
++package io.github.waterfallmc.waterfall.log4j;
++
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.io.IoBuilder;
++import java.util.logging.Handler;
++import java.util.logging.Logger;
++
++public final class WaterfallLogger {
++
++    private WaterfallLogger() {
++    }
++
++    public static Logger create() {
++        org.apache.logging.log4j.Logger redirect = LogManager.getRootLogger();
++        System.setOut(IoBuilder.forLogger(redirect).setLevel(Level.INFO).buildPrintStream());
++        System.setErr(IoBuilder.forLogger(redirect).setLevel(Level.ERROR).buildPrintStream());
++
++        Logger root = Logger.getLogger("");
++        root.setUseParentHandlers(false);
++
++        // Remove existing handlers
++        for (Handler handler : root.getHandlers()) {
++            root.removeHandler(handler);
++        }
++
++        // Setup forward log handler
++        root.setLevel(java.util.logging.Level.ALL); // Log4j will handle filtering the log
++        root.addHandler(new Log4JLogHandler());
++
++        return Logger.getLogger("BungeeCord");
++    }
++
++}
+diff --git a/log4j/src/main/resources/log4j2.component.properties b/log4j/src/main/resources/log4j2.component.properties
+new file mode 100644
+index 00000000..e43f5dac
+--- /dev/null
++++ b/log4j/src/main/resources/log4j2.component.properties
+@@ -0,0 +1,2 @@
++log4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
++log4j.skipJansi=true
+diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
+new file mode 100644
+index 00000000..cfd039cd
+--- /dev/null
++++ b/log4j/src/main/resources/log4j2.xml
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<Configuration status="warn" shutdownHook="disable">
++    <Appenders>
++        <TerminalConsole name="TerminalConsole">
++            <PatternLayout pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
++        </TerminalConsole>
++        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
++            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
++            <Policies>
++                <TimeBasedTriggeringPolicy />
++                <OnStartupTriggeringPolicy />
++            </Policies>
++        </RollingRandomAccessFile>
++    </Appenders>
++
++    <Loggers>
++        <Root level="info">
++            <AppenderRef ref="TerminalConsole" />
++            <AppenderRef ref="File" />
++        </Root>
++    </Loggers>
++</Configuration>
+diff --git a/pom.xml b/pom.xml
+index 80c4ea53..e69ba4a6 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -58,14 +58,15 @@
+         <module>config</module>
+         <module>dialog</module>
+         <module>event</module>
+-        <module>log</module>
++        <!--<module>log</module>-->
++        <module>log4j</module>
+         <module>maven-resolver</module>
+         <module>module</module>
+         <module>protocol</module>
+         <module>proxy</module>
+         <module>query</module>
+         <module>serializer</module>
+-        <module>slf4j</module>
++        <!--<module>slf4j</module>-->
+         <module>native</module>
+         <module>nbt</module>
+     </modules>
+@@ -97,6 +98,7 @@
+         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+         <maven.compiler.release>17</maven.compiler.release>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++        <log4j2.version>2.25.3</log4j2.version>
+     </properties>
+ 
+     <!-- We really shouldn't depend on external repositories -->
+@@ -224,6 +226,13 @@
+                             <artifactId>lombok</artifactId>
+                             <version>${lombok.version}</version>
+                         </annotationProcessorPath>
++                        <!-- Waterfall start - Use log4j2 for logging -->
++                        <annotationProcessorPath>
++                            <groupId>org.apache.logging.log4j</groupId>
++                            <artifactId>log4j-core</artifactId>
++                            <version>${log4j2.version}</version>
++                        </annotationProcessorPath>
++                        <!-- Waterfall end -->
+                     </annotationProcessorPaths>
+                 </configuration>
+             </plugin>
+@@ -293,6 +302,11 @@
+                                     <ignoreClasses>
+                                         <ignoreClass>org.jline.terminal.impl.ffm.*</ignoreClass>
+                                     </ignoreClasses>
++                                    <!-- Waterfall - jline-terminal-ffm is compiled for java 22, but should only be used in environments where it's needed, i.e. java 22+ -->
++                                    <excludes>
++                                        <exclude>org.jline:jline-terminal-ffm</exclude>
++                                    </excludes>
++                                    <!-- Waterfall end -->
+                                 </enforceBytecodeVersion>
+                             </rules>
+                         </configuration>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index 043d5709..8051083a 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -45,6 +45,7 @@
+             <groupId>io.netty</groupId>
+             <artifactId>netty-resolver-dns-native-macos</artifactId>
+             <classifier>osx-x86_64</classifier>
++            <scope>compile</scope>
+         </dependency>
+         <!-- Waterfall End -->
+         <dependency>
+@@ -84,7 +85,7 @@
+         </dependency>
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-log</artifactId>
++            <artifactId>waterfall-log4j</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+@@ -106,12 +107,13 @@
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
++        <!-- // Waterfall - We already bundle an slf4j impl
+         <dependency>
+             <groupId>io.github.waterfallmc</groupId>
+             <artifactId>waterfall-slf4j</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+-        </dependency>
++        </dependency> // Waterfall - We already bundle an slf4j impl -->
+         <dependency>
+             <groupId>net.sf.jopt-simple</groupId>
+             <artifactId>jopt-simple</artifactId>
+@@ -131,6 +133,47 @@
+             <version>${project.version}</version>
+             <scope>runtime</scope>
+         </dependency>
++        <!-- Waterfall start - Console improvements -->
++        <dependency>
++            <groupId>net.minecrell</groupId>
++            <artifactId>terminalconsoleappender</artifactId>
++            <version>1.3.0</version>
++            <scope>compile</scope>
++            <exclusions>
++                <exclusion>
++                    <groupId>org.apache.logging.log4j</groupId>
++                    <artifactId>log4j-core</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jline</groupId>
++                    <artifactId>jline-terminal</artifactId>
++                </exclusion>
++                <exclusion>
++                    <groupId>org.jline</groupId>
++                    <artifactId>jline-reader</artifactId>
++                </exclusion>
++            </exclusions>
++        </dependency>
++        <!-- Keep in sync with the jline version used upstream in log/pom.xml -->
++        <dependency>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-reader</artifactId>
++            <version>4.4.8</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-terminal-ffm</artifactId>
++            <version>4.4.8</version>
++            <scope>runtime</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.jline</groupId>
++            <artifactId>jline-terminal-jni</artifactId>
++            <version>4.4.8</version>
++            <scope>runtime</scope>
++        </dependency>
++        <!-- Waterfall end -->
+     </dependencies>
+ 
+     <!-- Waterfall start - copy license files into jar -->
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+new file mode 100644
+index 00000000..765d24bc
+--- /dev/null
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/console/WaterfallConsole.java
+@@ -0,0 +1,39 @@
++package io.github.waterfallmc.waterfall.console;
++
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.minecrell.terminalconsole.SimpleTerminalConsole;
++import org.jline.reader.LineReader;
++import org.jline.reader.LineReaderBuilder;
++
++public final class WaterfallConsole extends SimpleTerminalConsole {
++
++    @Override
++    protected LineReader buildReader(LineReaderBuilder builder) {
++        ProxyServer proxy = ProxyServer.getInstance();
++        return super.buildReader(builder
++                .appName(proxy.getName())
++        );
++    }
++
++    @Override
++    protected boolean isRunning() {
++        return BungeeCord.getInstance().isRunning;
++    }
++
++    @Override
++    protected void runCommand(String command) {
++        ProxyServer proxy = ProxyServer.getInstance();
++        if (!proxy.getPluginManager().dispatchCommand(proxy.getConsole(), command)) {
++            proxy.getConsole().sendMessage(new ComponentBuilder("Command not found").color(ChatColor.RED).create());
++        }
++    }
++
++    @Override
++    protected void shutdown() {
++        ProxyServer.getInstance().stop();
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index aaa01e77..6e6fffe1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -66,15 +66,11 @@ import net.md_5.bungee.command.CommandEnd;
+ import net.md_5.bungee.command.CommandIP;
+ import net.md_5.bungee.command.CommandPerms;
+ import net.md_5.bungee.command.CommandReload;
+-import net.md_5.bungee.command.ConsoleCommandCompleter;
+ import net.md_5.bungee.command.ConsoleCommandSender;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.jni.NativeCode;
+-import net.md_5.bungee.log.BungeeLogger;
+-import net.md_5.bungee.log.LoggingForwardHandler;
+-import net.md_5.bungee.log.LoggingOutputStream;
+ import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+@@ -84,11 +80,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+-import org.jline.reader.LineReader;
+-import org.jline.reader.LineReaderBuilder;
+-import org.jline.terminal.Terminal;
+-import org.jline.terminal.TerminalBuilder;
+-import org.slf4j.jul.JDK14LoggerFactory;
+ 
+ /**
+  * Main BungeeCord proxy class.
+@@ -148,8 +139,12 @@ public class BungeeCord extends ProxyServer
+     private final File pluginsFolder = new File( "plugins" );
+     @Getter
+     private final BungeeScheduler scheduler = new BungeeScheduler();
++    // Waterfall start - Remove ConsoleReader for JLine 3 update
++    /*
+     @Getter
+     private final LineReader consoleReader;
++    */
++    // Waterfall end
+     @Getter
+     private final Logger logger;
+     @Getter
+@@ -198,6 +193,8 @@ public class BungeeCord extends ProxyServer
+         // BungeeCord. This version is only used when extracting the libraries to their temp folder.
+         System.setProperty( "library.jansi.version", "BungeeCord" );
+ 
++        // Waterfall start - Use TerminalConsoleAppender and Log4J
++        /*
+         Terminal terminal = TerminalBuilder.builder().build();
+         consoleReader = LineReaderBuilder.builder().terminal( terminal )
+                 .option( LineReader.Option.DISABLE_EVENT_EXPANSION, true )
+@@ -223,6 +220,9 @@ public class BungeeCord extends ProxyServer
+         // since it applies a nice looking format and also writes to the logfile.
+         System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
+         System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
++        */
++        logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
++        // Waterfall end
+ 
+         pluginManager = new PluginManager( this );
+         getPluginManager().registerCommand( null, new CommandReload() );
+@@ -502,10 +502,7 @@ public class BungeeCord extends ProxyServer
+ 
+         getLogger().info( "Thank you and goodbye" );
+         // Need to close loggers after last message!
+-        for ( Handler handler : getLogger().getHandlers() )
+-        {
+-            handler.close();
+-        }
++        org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
+ 
+         // Unlock the thread before optionally calling system exit, which might invoke this function again.
+         // If that happens, the system will obtain the lock, and then see that isRunning == false and return without doing anything.
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index ea2e8825..4e27f6d6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -70,6 +70,9 @@ public class BungeeCordLauncher
+ 
+         if ( !options.has( "noconsole" ) )
+         {
++            // Waterfall start - Use TerminalConsoleAppender
++            new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
++            /*
+             try
+             {
+                 String line;
+@@ -84,6 +87,8 @@ public class BungeeCordLauncher
+             {
+                 // ignore
+             }
++            */
++            // Waterfall end
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
+deleted file mode 100644
+index 783ed60e..00000000
+--- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandCompleter.java
++++ /dev/null
+@@ -1,43 +0,0 @@
+-package net.md_5.bungee.command;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Map;
+-import java.util.stream.Collectors;
+-import lombok.RequiredArgsConstructor;
+-import net.md_5.bungee.api.ProxyServer;
+-import org.jline.reader.Candidate;
+-import org.jline.reader.Completer;
+-import org.jline.reader.LineReader;
+-import org.jline.reader.ParsedLine;
+-
+-@RequiredArgsConstructor
+-public class ConsoleCommandCompleter implements Completer
+-{
+-
+-    private final ProxyServer proxy;
+-
+-    @Override
+-    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates)
+-    {
+-        List<String> suggestions;
+-        String buffer = line.line();
+-
+-        int lastSpace = buffer.lastIndexOf( ' ' );
+-        if ( lastSpace == -1 )
+-        {
+-            String lowerCase = buffer.toLowerCase( Locale.ROOT );
+-            suggestions = proxy.getPluginManager().getCommands().stream()
+-                    .map( Map.Entry::getKey )
+-                    .filter( (name) -> name.toLowerCase( Locale.ROOT ).startsWith( lowerCase ) )
+-                    .collect( Collectors.toList() );
+-        } else
+-        {
+-            suggestions = new ArrayList<>();
+-            proxy.getPluginManager().dispatchCommand( proxy.getConsole(), buffer, suggestions );
+-        }
+-
+-        suggestions.stream().map( Candidate::new ).forEach( (candidate) -> candidates.add( candidate ) );
+-    }
+-}
+diff --git a/slf4j/nb-configuration.xml b/slf4j/nb-configuration.xml
+deleted file mode 100644
+index 7e465924..00000000
+--- a/slf4j/nb-configuration.xml
++++ /dev/null
+@@ -1,31 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project-shared-configuration>
+-    <!--
+-    This file contains additional configuration written by modules in the NetBeans IDE.
+-    The configuration is intended to be shared among all the users of project and
+-    therefore it is assumed to be part of version control checkout.
+-    Without this configuration present, some functionality in the IDE may be limited or fail altogether.
+-    -->
+-    <properties xmlns="http://www.netbeans.org/ns/maven-properties-data/1">
+-        <!--
+-        Properties that influence various parts of the IDE, especially code formatting and the like. 
+-        You can copy and paste the single properties, into the pom.xml file and the IDE will pick them up.
+-        That way multiple projects can share the same settings (useful for formatting rules for example).
+-        Any value defined here will override the pom.xml file value but is only applicable to the current project.
+-        -->
+-        <org-netbeans-modules-editor-indent.CodeStyle.usedProfile>project</org-netbeans-modules-editor-indent.CodeStyle.usedProfile>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodCallParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodCallParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSwitchParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSwitchParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinCatchParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinCatchParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinTryParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinTryParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSynchronizedParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSynchronizedParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinArrayInitBrackets>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinArrayInitBrackets>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinWhileParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinWhileParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinIfParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinIfParens>
+-        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>
+-    </properties>
+-</project-shared-configuration>
+diff --git a/slf4j/src/main/java/org/slf4j/jul/JDK14LoggerFactory.java b/slf4j/src/main/java/org/slf4j/jul/JDK14LoggerFactory.java
+deleted file mode 100644
+index 6788fbe7..00000000
+--- a/slf4j/src/main/java/org/slf4j/jul/JDK14LoggerFactory.java
++++ /dev/null
+@@ -1,79 +0,0 @@
+-/**
+- * Copyright (c) 2004-2011 QOS.ch
+- * All rights reserved.
+- *
+- * Permission is hereby granted, free  of charge, to any person obtaining
+- * a  copy  of this  software  and  associated  documentation files  (the
+- * "Software"), to  deal in  the Software without  restriction, including
+- * without limitation  the rights to  use, copy, modify,  merge, publish,
+- * distribute,  sublicense, and/or sell  copies of  the Software,  and to
+- * permit persons to whom the Software  is furnished to do so, subject to
+- * the following conditions:
+- *
+- * The  above  copyright  notice  and  this permission  notice  shall  be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
+- * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
+- * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+- * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
+- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+- *
+- */
+-package org.slf4j.jul;
+-
+-import org.slf4j.Logger;
+-import org.slf4j.ILoggerFactory;
+-
+-import java.util.concurrent.ConcurrentHashMap;
+-import java.util.concurrent.ConcurrentMap;
+-
+-/**
+- * JDK14LoggerFactory is an implementation of {@link ILoggerFactory} returning
+- * the appropriately named {@link JDK14LoggerAdapter} instance.
+- * 
+- * @author Ceki G&uuml;lc&uuml;
+- */
+-public class JDK14LoggerFactory implements ILoggerFactory {
+-
+-    // key: name (String), value: a JDK14LoggerAdapter;
+-    ConcurrentMap<String, Logger> loggerMap;
+-    public static java.util.logging.Logger LOGGER; // BungeeCord
+-
+-    /**
+-     * the root logger is called "" in JUL
+-     */
+-    private static String JUL_ROOT_LOGGER_NAME = "";
+-    
+-    public JDK14LoggerFactory() {
+-        loggerMap = new ConcurrentHashMap<>();
+-        // ensure jul initialization. see SLF4J-359
+-        // note that call to java.util.logging.LogManager.getLogManager() fails on the Google App Engine platform. See
+-        // SLF4J-363
+-        java.util.logging.Logger.getLogger("");
+-    }
+-
+-    /*
+-     * (non-Javadoc)
+-     * 
+-     * @see org.slf4j.ILoggerFactory#getLogger(java.lang.String)
+-     */
+-    public Logger getLogger(String name) {
+-        // the root logger is called "" in JUL
+-        if (name.equalsIgnoreCase(Logger.ROOT_LOGGER_NAME)) {
+-            name = JUL_ROOT_LOGGER_NAME;
+-        }
+-
+-        Logger slf4jLogger = loggerMap.get(name);
+-        if (slf4jLogger != null)
+-            return slf4jLogger;
+-        else {
+-            java.util.logging.Logger julLogger = LOGGER; // BungeeCord - TODO: per-plugin loggers
+-            Logger newInstance = new JDK14LoggerAdapter(julLogger);
+-            Logger oldInstance = loggerMap.putIfAbsent(name, newInstance);
+-            return oldInstance == null ? newInstance : oldInstance;
+-        }
+-    }
+-}
+-- 
+2.56.0
+

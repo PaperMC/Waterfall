@@ -1,0 +1,66 @@
+From dd059c00b224fd8ee9e8a9fb3eebf1bdf79765dd Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Fri, 18 Mar 2016 10:53:24 -0700
+Subject: [PATCH] Better Decompression Sanity
+
+Fixes #40
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
+index f1840698..cef709e2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
++++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
+@@ -1,5 +1,7 @@
+ package net.md_5.bungee.compress;
+ 
++import lombok.*;
++
+ import com.google.common.base.Preconditions;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+@@ -11,10 +13,12 @@ import java.util.zip.Inflater;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.OverflowPacketException;
+ 
++@RequiredArgsConstructor
+ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+ {
+ 
+     private static final int MAX_DECOMPRESSED_LEN = 1 << 23;
++    private final int compressionThreshold;
+     private final Inflater zlib = new Inflater();
+ 
+     @Override
+@@ -89,14 +93,15 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+             {
+                 throw new OverflowPacketException( "Packet may not be larger than " + MAX_DECOMPRESSED_LEN + " bytes" );
+             }
+-
++            
++            Preconditions.checkArgument( size >= compressionThreshold, "Decompressed size %s less than compression threshold %s", size, compressionThreshold);
+             // Do not use size as max capacity, as its possible that the entity rewriter increases the size afterwards
+             // This would result in a kick (it happens rarely as the entity ids size must differ)
+             ByteBuf decompressed = ctx.alloc().directBuffer( size, MAX_DECOMPRESSED_LEN );
+             try
+             {
+                 process( in, decompressed );
+-                Preconditions.checkState( decompressed.readableBytes() == size, "Decompressed packet size mismatch" );
++                Preconditions.checkArgument( decompressed.readableBytes() == size, "Decompressed size %s is not equal to actual decompressed bytes %s", size, decompressed.readableBytes() );
+ 
+                 out.add( decompressed );
+                 decompressed = null;
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 94ec569b..7abe0a29 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -196,7 +196,7 @@ public class ChannelWrapper
+ 
+             if ( decompressor == null )
+             {
+-                addBefore( PipelineUtils.PACKET_DECODER, "decompress", decompressor = new PacketDecompressor() );
++                addBefore( PipelineUtils.PACKET_DECODER, "decompress", decompressor = new PacketDecompressor(compressionThreshold) );
+             }
+         } else
+         {
+-- 
+2.56.0
+

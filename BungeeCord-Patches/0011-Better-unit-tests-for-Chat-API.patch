@@ -1,0 +1,56 @@
+From c1b9762ccb1d66d27af153a2d8ab5fb6cea81808 Mon Sep 17 00:00:00 2001
+From: Tux <write@imaginarycode.com>
+Date: Thu, 19 May 2016 17:36:31 -0600
+Subject: [PATCH] Better unit tests for Chat API
+
+
+diff --git a/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+index 13e85684..15fe39b2 100644
+--- a/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/serializer/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+@@ -703,6 +703,26 @@ public class ComponentsTest
+         assertEquals( testClickEvent, extraGetter.apply( eventRetention, 1 ).getClickEvent() );
+     }
+ 
++    @Test
++    public void testBuilderSpecialFormatting()
++    {
++        BaseComponent[] components = new ComponentBuilder( "Hello " )
++                .bold(true).underlined(true).italic(true).strikethrough(true).obfuscated(true)
++                .append("World").underlined(false).strikethrough(false).create();
++
++        assertTrue( components[0].isBold() );
++        assertTrue( components[0].isUnderlined() );
++        assertTrue( components[0].isItalic() );
++        assertTrue( components[0].isStrikethrough() );
++        assertTrue( components[0].isObfuscated() );
++
++        assertTrue( components[1].isBold() );
++        assertFalse( components[1].isUnderlined() );
++        assertTrue( components[1].isItalic() );
++        assertFalse( components[1].isStrikethrough() );
++        assertTrue( components[1].isObfuscated() );
++    }
++
+     @Test
+     public void testLoopSimple()
+     {
+diff --git a/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java b/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+index 995c70f2..dd9f040d 100644
+--- a/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
++++ b/serializer/src/test/java/net/md_5/bungee/api/chat/TranslatableComponentTest.java
+@@ -48,4 +48,11 @@ public class TranslatableComponentTest
+         assertEquals( "Buried Treasure Map", one_four_two.toPlainText() );
+     }
+ 
++    @Test
++    public void testEscapedPercentInPlainText()
++    {
++        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
++        assertEquals( "Test string with % sign", testComponent.toPlainText() );
++        assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
++    }
+ }
+-- 
+2.56.0
+

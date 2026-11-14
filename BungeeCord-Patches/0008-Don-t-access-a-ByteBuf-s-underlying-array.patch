@@ -1,0 +1,49 @@
+From f6ff69cf249cdb220d221e5df0367a35b110dee7 Mon Sep 17 00:00:00 2001
+From: Techcable <Techcable@techcable.net>
+Date: Tue, 3 May 2016 20:31:52 -0700
+Subject: [PATCH] Don't access a ByteBuf's underlying array
+
+It returns the underlying array storage, and does *not* return a view of the buffer as an array
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+index 1a7d8512..ad1704dd 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PluginMessage.java
+@@ -3,6 +3,7 @@ package net.md_5.bungee.protocol.packet;
+ import com.google.common.base.Function;
+ import com.google.common.base.Preconditions;
+ import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufUtil; // Waterfall
+ import java.io.ByteArrayInputStream;
+ import java.io.DataInput;
+ import java.io.DataInputStream;
+@@ -49,10 +50,25 @@ public class PluginMessage extends DefinedPacket
+             return "legacy:" + tag.toLowerCase( Locale.ROOT );
+         }
+     };
+-    //
++
+     private String tag;
+     private byte[] data;
+ 
++    // Waterfall start
++    public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
++        this(tag, ByteBufUtil.getBytes(data), allowExtendedPacket);
++    }
++
++    public void setData(byte[] data) {
++        this.data = Preconditions.checkNotNull(data, "Null data");
++    }
++
++    public void setData(ByteBuf buf) {
++        Preconditions.checkNotNull(buf, "Null buffer");
++        setData(ByteBufUtil.getBytes(buf));
++    }
++    // Waterfall end
++
+     /**
+      * Allow this packet to be sent as an "extended" packet.
+      */
+-- 
+2.56.0
+
